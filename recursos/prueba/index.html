@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================= -->
+<!--  EDITA ESTO PARA CADA RECURSO: título y descripción para SEO  -->
+<!-- ============================================================= -->
+<title>Título del recurso — Didaxis Lab</title>
+<meta name="description" content="Breve descripción del recurso para que aparezca bien en Google. Cámbiala en cada recurso.">
+
+<style>
+  :root{
+    --ink:#16243A;
+    --muted:#5B6B82;
+    --bg:#FAFBFC;
+    --panel:#FFFFFF;
+    --accent:#5B47E0;
+    --accent-soft:#EEEBFB;
+    --line:#E6E9EF;
+    --grid:rgba(22,36,58,0.045);
+    --radius:14px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --maxw:860px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ---------- Top bar (marca) ---------- */
+  .topbar{
+    border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);
+    position:sticky;top:0;z-index:10;
+  }
+  .topbar-inner{
+    max-width:var(--maxw);margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{
+    font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--ink);
+  }
+  .brand span{color:var(--accent);}
+  .brand:hover{text-decoration:none;}
+  .topbar a.back{font-size:14px;font-weight:600;color:var(--muted);}
+
+  /* ---------- Layout ---------- */
+  main{max-width:var(--maxw);margin:0 auto;padding:36px 20px 64px;}
+  section{margin-bottom:40px;}
+
+  /* ---------- Encabezado del recurso ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .chip{
+    font-size:12px;font-weight:600;letter-spacing:.02em;
+    padding:5px 11px;border-radius:999px;
+    background:#EEF1F6;color:var(--muted);
+  }
+  .chip.topic{background:var(--accent-soft);color:var(--accent);}
+  .resource-title{
+    font-size:clamp(30px,5.5vw,44px);font-weight:800;
+    letter-spacing:-.025em;line-height:1.12;
+  }
+  .resource-lead{
+    margin-top:14px;font-size:clamp(16px,2.4vw,19px);color:var(--muted);
+    max-width:62ch;
+  }
+
+  /* ---------- Escenario del simulador ---------- */
+  .stage-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 4px 12px;
+  }
+  .stage-label{
+    font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent);display:inline-flex;align-items:center;gap:8px;
+  }
+  .stage-label::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  .btn-ghost{
+    font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+    color:var(--ink);background:var(--panel);
+    border:1px solid var(--line);border-radius:9px;padding:7px 13px;
+    display:inline-flex;align-items:center;gap:7px;transition:border-color .15s,background .15s;
+  }
+  .btn-ghost:hover{border-color:var(--accent);background:var(--accent-soft);}
+  .stage{
+    position:relative;
+    min-height:440px;
+    border:1px solid var(--line);border-radius:var(--radius);
+    background-color:var(--panel);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size:28px 28px;
+    box-shadow:var(--shadow);
+    display:flex;align-items:center;justify-content:center;
+    padding:28px;overflow:hidden;
+  }
+
+  /* ======================================================= */
+  /*  DEMO — bórralo y pon aquí tu simulador. Es solo un      */
+  /*  ejemplo de "control → resultado en vivo".               */
+  /* ======================================================= */
+  .demo{width:100%;max-width:460px;text-align:center;}
+  .demo .tag{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);
+    background:#EEF1F6;border-radius:999px;padding:4px 10px;margin-bottom:22px;
+  }
+  .demo .value{font-size:56px;font-weight:800;letter-spacing:-.03em;color:var(--ink);line-height:1;}
+  .demo .track{margin:22px 0 10px;}
+  .demo svg{width:100%;height:54px;display:block;}
+  .demo input[type=range]{
+    width:100%;margin-top:18px;accent-color:var(--accent);height:24px;cursor:pointer;
+  }
+  .demo .hint{font-size:13px;color:var(--muted);margin-top:6px;}
+
+  /* ---------- Contenido / descripción ---------- */
+  .content h2, .share h2{
+    font-size:21px;font-weight:700;letter-spacing:-.01em;margin-bottom:12px;
+  }
+  .content h2:not(:first-child){margin-top:28px;}
+  .content p{color:#2C3A4F;margin-bottom:10px;}
+  .content ul{padding-left:20px;color:#2C3A4F;}
+  .content li{margin-bottom:6px;}
+
+  /* ---------- Compartir / iframe ---------- */
+  .share{
+    background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);
+  }
+  .share p{color:var(--muted);margin-bottom:16px;max-width:60ch;}
+  .code-row{
+    display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;
+  }
+  code#embedCode{
+    flex:1;min-width:240px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12.5px;line-height:1.5;color:#33415A;
+    background:#F4F6F9;border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;overflow-x:auto;white-space:nowrap;
+  }
+  .btn-copy{
+    font:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;
+    color:#fff;background:var(--accent);border:none;border-radius:10px;
+    padding:0 20px;transition:opacity .15s,transform .05s;
+  }
+  .btn-copy:hover{opacity:.92;}
+  .btn-copy:active{transform:translateY(1px);}
+  .btn-copy.done{background:#1E9E6A;}
+
+  /* ---------- Pie ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    max-width:var(--maxw);margin:0 auto;padding:24px 20px 40px;
+    font-size:13px;color:var(--muted);
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+
+  /* ---------- Foco accesible ---------- */
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px;border-radius:6px;
+  }
+
+  /* ============================================================ */
+  /*  MODO EMBEBIDO: al cargar con ?embed=1 se oculta todo menos   */
+  /*  el simulador. Así el iframe en Moodle muestra solo el        */
+  /*  recurso, limpio.                                             */
+  /* ============================================================ */
+  body.embed [data-chrome]{display:none !important;}
+  body.embed main{padding:0;max-width:none;}
+  body.embed section{margin:0;}
+  body.embed .stage{
+    min-height:100vh;border:none;border-radius:0;box-shadow:none;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;}
+  }
+  @media (max-width:480px){
+    .btn-copy{width:100%;padding:12px 0;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ====================== BARRA DE MARCA ====================== -->
+  <header class="topbar" data-chrome>
+    <div class="topbar-inner">
+      <a class="brand" href="/">Didaxis <span>Lab</span></a>
+      <a class="back" href="/recursos/">← Todos los recursos</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================== ENCABEZADO DEL RECURSO ================== -->
+    <!-- EDITA: chips (área, grado, tema), título y frase de entrada -->
+    <section class="resource-head" data-chrome>
+      <div class="chips">
+        <span class="chip">Matemáticas</span>
+        <span class="chip">Grado 10°</span>
+        <span class="chip topic">Tema del recurso</span>
+      </div>
+      <h1 class="resource-title">Título del recurso</h1>
+      <p class="resource-lead">Una frase clara que explica qué hace este recurso y qué puede hacer el estudiante con él. Reemplázala en cada recurso.</p>
+    </section>
+
+    <!-- ===================== SIMULADOR ===================== -->
+    <section class="stage-wrap">
+      <div class="stage-bar" data-chrome>
+        <span class="stage-label">Simulador interactivo</span>
+        <button class="btn-ghost" id="fsBtn" type="button" aria-label="Abrir el simulador en pantalla completa">⛶ Pantalla completa</button>
+      </div>
+
+      <div class="stage" id="stage">
+        <!-- ======================================================= -->
+        <!--  REEMPLAZA TODO ESTE BLOQUE .demo CON TU SIMULADOR.     -->
+        <!--  Lo de abajo es solo un ejemplo del patrón básico:      -->
+        <!--  un control (deslizador) que actualiza algo en vivo.    -->
+        <!-- ======================================================= -->
+        <div class="demo">
+          <span class="tag">Demostración · reemplázame</span>
+          <div class="value" id="demoValue">50</div>
+          <div class="track">
+            <svg viewBox="0 0 460 54" role="img" aria-label="Barra que cambia con el deslizador">
+              <rect x="0" y="22" width="460" height="10" rx="5" fill="#E6E9EF"/>
+              <rect id="demoBar" x="0" y="22" width="230" height="10" rx="5" fill="#5B47E0"/>
+              <circle id="demoDot" cx="230" cy="27" r="11" fill="#5B47E0"/>
+            </svg>
+          </div>
+          <input type="range" id="demoRange" min="0" max="100" value="50" aria-label="Mueve para cambiar el valor">
+          <p class="hint">Mueve el deslizador: el número y la barra cambian en vivo.</p>
+        </div>
+        <!-- ===================== FIN DEL SIMULADOR ===================== -->
+      </div>
+    </section>
+
+    <!-- ===================== DESCRIPCIÓN ===================== -->
+    <!-- EDITA: explica el recurso. Esto también ayuda al SEO. -->
+    <section class="content" data-chrome>
+      <h2>¿Qué es esto?</h2>
+      <p>Describe en dos o tres frases qué representa el simulador y para qué sirve en clase. Escribe pensando en un docente que llega desde Google sin conocerte.</p>
+
+      <h2>¿Qué aprenderás?</h2>
+      <ul>
+        <li>Primer concepto o habilidad que el recurso ayuda a entender.</li>
+        <li>Segundo punto clave.</li>
+        <li>Tercero (puedes añadir o quitar los que necesites).</li>
+      </ul>
+    </section>
+
+    <!-- ===================== COMPARTIR / IFRAME ===================== -->
+    <section class="share" data-chrome>
+      <h2>Compartir en tu clase</h2>
+      <p>Copia este código y pégalo en Moodle, Google Sites, WordPress o tu plataforma. El recurso aparecerá embebido, listo para usar, sin que el estudiante necesite registrarse.</p>
+      <div class="code-row">
+        <code id="embedCode">El código aparecerá aquí al abrir la página en tu sitio.</code>
+        <button class="btn-copy" id="copyBtn" type="button">Copiar código</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== PIE ===================== -->
+  <footer data-chrome>
+    <span>Didaxis Lab · Recursos educativos abiertos</span>
+    <span>CC BY 4.0 · Héctor Banquez</span>
+  </footer>
+
+<script>
+  // ---- Modo embebido: ?embed=1 oculta todo menos el simulador ----
+  (function(){
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('embed') === '1') document.body.classList.add('embed');
+  })();
+
+  // ---- Generar el código del iframe automáticamente ----
+  (function(){
+    var base = window.location.href.split('?')[0].split('#')[0];
+    var code = '<iframe src="' + base + '?embed=1" width="100%" height="600" '
+             + 'style="border:1px solid #e5e7eb;border-radius:12px" '
+             + 'loading="lazy" allowfullscreen></iframe>';
+    var box = document.getElementById('embedCode');
+    // Solo mostramos el código real cuando la página está en un sitio (http/https),
+    // no cuando se abre como archivo local.
+    if (location.protocol === 'http:' || location.protocol === 'https:') {
+      box.textContent = code;
+    }
+    var btn = document.getElementById('copyBtn');
+    btn.addEventListener('click', function(){
+      navigator.clipboard.writeText(code).then(function(){
+        btn.textContent = '¡Copiado!';
+        btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = 'Copiar código'; btn.classList.remove('done'); }, 1800);
+      }).catch(function(){
+        // Respaldo para navegadores antiguos
+        var r = document.createRange(); r.selectNode(box);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); btn.textContent='¡Copiado!'; } catch(e){}
+        s.removeAllRanges();
+        setTimeout(function(){ btn.textContent = 'Copiar código'; }, 1800);
+      });
+    });
+  })();
+
+  // ---- Botón de pantalla completa ----
+  (function(){
+    var btn = document.getElementById('fsBtn');
+    var stage = document.getElementById('stage');
+    btn.addEventListener('click', function(){
+      if (!document.fullscreenElement) {
+        (stage.requestFullscreen || stage.webkitRequestFullscreen || function(){}).call(stage);
+      } else {
+        document.exitFullscreen();
+      }
+    });
+  })();
+
+  // ---- Lógica del DEMO (bórrala junto con el bloque .demo) ----
+  (function(){
+    var range = document.getElementById('demoRange');
+    if(!range) return;
+    var val = document.getElementById('demoValue');
+    var bar = document.getElementById('demoBar');
+    var dot = document.getElementById('demoDot');
+    function update(){
+      var v = +range.value;
+      val.textContent = v;
+      var w = (v/100)*460;
+      bar.setAttribute('width', w);
+      dot.setAttribute('cx', Math.max(11, Math.min(449, w)));
+    }
+    range.addEventListener('input', update);
+    update();
+  })();
+</script>
+</body>
+</html>
