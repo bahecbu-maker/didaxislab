@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratorio Interactivo: Área vs Perímetro — Didaxis Lab</title>
+<meta name="description" content="Simulador interactivo de área y perímetro: manipula, mide y descubre por qué un mayor perímetro no siempre implica mayor área. Incluye preguntas tipo ICFES con retroalimentación y guía docente alineada a los DBA de Colombia.">
+
+<style>
+  :root{
+    --navy:#1B2A5A;
+    --navy-dark:#0F1C3F;
+    --cyan:#0BC0D8;
+    --cyan-soft:#E2F7FA;
+    --ink:#1B2A5A;
+    --muted:#5B6B82;
+    --line:#E6E9EF;
+    --bg:#FAFBFC;
+    --panel:#FFFFFF;
+    --grid:rgba(11,192,216,0.06);
+    --ok:#1E9E6A;
+    --ok-soft:#E7F7EF;
+    --warn:#C0392B;
+    --warn-soft:#FCECEA;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --maxw:880px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--navy);}
+  h2,h3,h4{color:var(--navy);letter-spacing:-.01em;}
+
+  /* ---------- Barra de marca ---------- */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:20;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 20px;
+    display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .topbar a.back{font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;}
+  .topbar a.back:hover{color:var(--navy);}
+
+  /* ---------- Layout ---------- */
+  main{max-width:var(--maxw);margin:0 auto;padding:32px 20px 16px;}
+  section{margin-bottom:36px;}
+
+  /* ---------- Encabezado del recurso ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;
+    background:#EEF1F6;color:var(--muted);}
+  .chip.topic{background:var(--cyan-soft);color:var(--navy);}
+  .resource-title{font-size:clamp(30px,5.5vw,44px);font-weight:800;line-height:1.12;color:var(--navy);}
+  .resource-lead{margin-top:14px;font-size:clamp(16px,2.4vw,19px);color:var(--muted);max-width:62ch;}
+
+  /* ---------- Escenario del simulador ---------- */
+  .stage-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:0 2px 12px;flex-wrap:wrap;}
+  .stage-label{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--navy);display:inline-flex;align-items:center;gap:8px;}
+  .stage-label::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .stage-open{font-size:14px;font-weight:600;color:var(--navy);text-decoration:none;
+    display:inline-flex;align-items:center;gap:6px;}
+  .stage-open:hover{text-decoration:underline;}
+  .stage{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    box-shadow:var(--shadow);background:var(--panel);}
+  .stage iframe{display:block;width:100%;height:720px;border:0;}
+
+  /* ---------- Sección de preguntas (carrusel) ---------- */
+  .section-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .section-head h2{font-size:23px;font-weight:800;}
+  .section-sub{color:var(--muted);font-size:15px;margin-bottom:18px;max-width:64ch;}
+
+  .quiz-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+  .quiz-counter{display:flex;align-items:center;gap:10px;}
+  .quiz-counter .label{font-size:13px;font-weight:700;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:#CBD5E1;border:0;padding:0;cursor:pointer;transition:.2s;}
+  .dot.active{background:var(--cyan);transform:scale(1.25);}
+  .nav-btn{font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--navy);
+    background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 14px;
+    display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,background .15s;}
+  .nav-btn:hover:not(:disabled){border-color:var(--cyan);background:var(--cyan-soft);}
+  .nav-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .quiz-viewport{overflow:hidden;border-radius:var(--radius);}
+  .quiz-track{display:flex;transition:transform .35s cubic-bezier(.2,.7,.2,1);}
+  .quiz-card{flex:0 0 100%;min-width:0;}
+  .qc-inner{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+    box-shadow:var(--shadow);padding:24px;margin:2px;}
+  .qc-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;}
+  .qc-badge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    padding:4px 10px;border-radius:999px;background:var(--navy);color:#fff;}
+  .qc-badge.dba{background:var(--cyan-soft);color:var(--navy);}
+  .qc-context{font-size:14.5px;color:#2C3A4F;background:#F4F6F9;border-left:3px solid var(--cyan);
+    border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:14px;}
+  .qc-stem{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px;}
+  .opts{display:flex;flex-direction:column;gap:9px;}
+  .opt{font:inherit;text-align:left;cursor:pointer;width:100%;
+    border:1.5px solid var(--line);border-radius:11px;background:var(--panel);
+    padding:12px 14px;display:flex;gap:11px;align-items:flex-start;transition:.15s;color:#2C3A4F;}
+  .opt:hover:not(.locked){border-color:var(--cyan);background:var(--cyan-soft);}
+  .opt .key{flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:#EEF1F6;
+    color:var(--navy);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;}
+  .opt.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .opt.correct .key{background:var(--ok);color:#fff;}
+  .opt.wrong{border-color:var(--warn);background:var(--warn-soft);}
+  .opt.wrong .key{background:var(--warn);color:#fff;}
+  .opt.locked{cursor:default;}
+  .opt.dim{opacity:.55;}
+  .qc-feedback{margin-top:14px;border-radius:11px;padding:13px 15px;font-size:14px;line-height:1.55;display:none;}
+  .qc-feedback.show{display:block;}
+  .qc-feedback.good{background:var(--ok-soft);border:1px solid #BCE7D2;color:#16623F;}
+  .qc-feedback.bad{background:var(--warn-soft);border:1px solid #F3C7C1;color:#8A2B20;}
+  .qc-feedback .verdict{font-weight:800;display:block;margin-bottom:3px;}
+  .qc-retry{margin-top:10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+    background:none;border:0;color:var(--navy);text-decoration:underline;padding:0;}
+
+  /* ---------- Acordeones ---------- */
+  .docs h3.group{font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);margin:26px 0 12px;}
+  .acc{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);margin-bottom:10px;}
+  .acc-head{width:100%;font:inherit;text-align:left;cursor:pointer;background:var(--panel);
+    border:0;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    font-size:16px;font-weight:700;color:var(--navy);transition:background .15s;}
+  .acc-head:hover{background:#F7F9FB;}
+  .acc-head .chev{flex:0 0 auto;width:18px;height:18px;transition:transform .25s;color:var(--cyan);}
+  .acc.open .acc-head .chev{transform:rotate(90deg);}
+  .acc-body{display:none;padding:2px 18px 20px;font-size:14.5px;color:#2C3A4F;}
+  .acc.open .acc-body{display:block;}
+  .acc-body p{margin:8px 0;}
+  .acc-body ul{margin:8px 0 8px 20px;}
+  .acc-body li{margin-bottom:5px;}
+  .acc-body h4{font-size:14px;font-weight:700;color:var(--navy);margin:14px 0 6px;}
+  .acc-body .pair{margin:6px 0;}
+  .acc-body .pair b{color:var(--navy);}
+  .misc{background:#F4F6F9;border-radius:10px;padding:11px 14px;margin:8px 0;}
+  .misc b{color:var(--warn);}
+
+  table.seq{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px;}
+  table.seq th,table.seq td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  table.seq th{background:var(--cyan-soft);color:var(--navy);font-weight:700;white-space:nowrap;}
+  table.seq td:first-child{font-weight:700;color:var(--navy);white-space:nowrap;}
+  table.seq td:nth-child(2){white-space:nowrap;color:var(--muted);}
+  .table-scroll{overflow-x:auto;}
+
+  /* ---------- Compartir ---------- */
+  .share{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);}
+  .share h2{font-size:21px;font-weight:800;margin-bottom:10px;}
+  .share p{color:var(--muted);margin-bottom:16px;max-width:60ch;}
+  .code-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;}
+  code#embedCode{flex:1;min-width:240px;font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12.5px;line-height:1.5;color:#33415A;background:#F4F6F9;border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:nowrap;}
+  .btn-copy{font:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;color:#fff;
+    background:var(--navy);border:0;border-radius:10px;padding:0 20px;transition:background .15s;}
+  .btn-copy:hover{background:var(--navy-dark);}
+  .btn-copy.done{background:var(--ok);}
+
+  /* ---------- Pie ---------- */
+  footer{border-top:1px solid var(--line);max-width:var(--maxw);margin:0 auto;padding:24px 20px 40px;
+    font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;}
+
+  a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
+
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none !important;}}
+  @media (max-width:700px){
+    .stage iframe{height:860px;}
+    .btn-copy{width:100%;padding:12px 0;}
+    .qc-inner{padding:18px;}
+  }
+  /* ---------- Guía docente (PDF) ---------- */
+  .guide-card{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 24px;}
+  .guide-icon{flex:0 0 auto;width:46px;height:46px;border-radius:11px;background:var(--cyan-soft);
+    display:flex;align-items:center;justify-content:center;color:var(--navy);}
+  .guide-icon svg{width:24px;height:24px;}
+  .guide-text{flex:1;min-width:220px;}
+  .guide-text h2{font-size:20px;font-weight:800;margin-bottom:4px;}
+  .guide-text p{color:var(--muted);font-size:14.5px;}
+  .guide-btn{flex:0 0 auto;font-size:14px;font-weight:700;color:#fff;background:var(--navy);
+    border-radius:10px;padding:11px 18px;text-decoration:none;white-space:nowrap;transition:background .15s;}
+  .guide-btn:hover{background:var(--navy-dark);}
+  @media (max-width:560px){.guide-btn{width:100%;text-align:center;}}
+</style>
+</head>
+<body>
+
+  <!-- ====================== BARRA DE MARCA ====================== -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </a>
+      <a class="back" href="/recursos/">← Todos los recursos</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================== ENCABEZADO DEL RECURSO ================== -->
+    <section class="resource-head">
+      <div class="chips">
+        <span class="chip topic">Geometría y medición</span>
+      </div>
+      <h1 class="resource-title">Laboratorio Interactivo: Área vs Perímetro</h1>
+      <p class="resource-lead">Manipula, mide y descubre: no siempre un mayor perímetro implica mayor área. Un laboratorio para construir la idea por exploración, no por definición.</p>
+    </section>
+
+    <!-- ===================== SIMULADOR ===================== -->
+    <section class="stage-wrap">
+      <div class="stage">
+        <iframe src="./simulador.html" title="Laboratorio Interactivo: Área vs Perímetro" loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <!-- ===================== COMPARTIR ESTE SIMULADOR (justo después) ===================== -->
+    <section class="share">
+      <h2>Compartir este simulador en tu clase</h2>
+      <p>Copia este código para incrustar <b>solo el simulador</b> en Moodle, Google Sites o tu plataforma. Aparecerá listo para usar, sin que el estudiante necesite registrarse.</p>
+      <div class="code-row">
+        <code id="embedCode">El código aparecerá aquí al abrir la página en tu sitio.</code>
+        <button class="btn-copy" id="copyBtn" type="button">Copiar código</button>
+      </div>
+    </section>
+
+    <!-- ===================== PREGUNTAS ICFES (CARRUSEL) ===================== -->
+    <section class="quiz-section">
+      <div class="section-head"><h2>Pon a prueba lo que descubriste</h2></div>
+      <p class="section-sub">Tres preguntas tipo ICFES Saber 11, una por competencia. Elige una opción y recibe retroalimentación inmediata, incluso de por qué fallan los distractores.</p>
+
+      <div class="quiz-nav">
+        <button class="nav-btn" id="qPrev" type="button" aria-label="Pregunta anterior">← Anterior</button>
+        <div class="quiz-counter">
+          <span class="label" id="qLabel">Pregunta 1 de 3</span>
+          <div class="dots" id="qDots"></div>
+        </div>
+        <button class="nav-btn" id="qNext" type="button" aria-label="Pregunta siguiente">Siguiente →</button>
+      </div>
+
+      <div class="quiz-viewport">
+        <div class="quiz-track" id="qTrack"><!-- tarjetas generadas por JS --></div>
+      </div>
+    </section>
+
+    <!-- ===================== GUÍA DOCENTE (PDF) ===================== -->
+    <section class="guide">
+      <div class="guide-card">
+        <span class="guide-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>
+            <path d="M9 13h6M9 17h6"/>
+          </svg>
+        </span>
+        <div class="guide-text">
+          <h2>Guía docente (PDF)</h2>
+          <p>Marco curricular completo, DBA por grados, competencias ICFES, las preguntas con retroalimentación y la secuencia didáctica de dos sesiones — todo en un documento para imprimir o proyectar.</p>
+        </div>
+        <a class="guide-btn" href="./guia-docente.pdf" target="_blank" rel="noopener">⬇ Descargar PDF</a>
+      </div>
+    </section>
+
+
+  </main>
+
+  <footer>
+    <span>Didaxis Lab · Recursos educativos abiertos</span>
+    <span>CC BY 4.0 · Héctor Banquez</span>
+  </footer>
+
+<script>
+  /* ====================== PREGUNTAS ICFES (CARRUSEL) ====================== */
+  var QUESTIONS = [
+    {
+      comp: 'Interpretación y representación',
+      dba: 'Grado 7.° · DBA 6',
+      context: 'En el Laboratorio Interactivo, una estudiante construyó cinco rectángulos diferentes manteniendo el perímetro fijo en 24 unidades. El simulador graficó el Área (eje Y) frente al Perímetro (eje X) y obtuvo cinco puntos alineados verticalmente sobre el valor 24 del eje X, pero a alturas distintas: 11, 20, 27, 32 y 35 unidades cuadradas.',
+      stem: 'De la gráfica obtenida, ¿cuál es la interpretación correcta?',
+      options: [
+        { k:'A', text:'A medida que aumenta el perímetro, aumenta el área de los rectángulos.', correct:false,
+          fb:'El perímetro NO está aumentando: se mantiene constante en 24 (todos los puntos están sobre el mismo valor del eje X). Este distractor activa la idea errónea de que perímetro y área varían siempre en el mismo sentido.' },
+        { k:'B', text:'Para un mismo perímetro existen distintos rectángulos con áreas diferentes.', correct:true,
+          fb:'La gráfica muestra cinco puntos con la misma abscisa (perímetro = 24) pero diferentes ordenadas (áreas distintas): rectángulos con igual perímetro pueden tener áreas muy distintas. Es justo lo que buscan el DBA 5 de 5.° y el DBA 6 de 7.°.' },
+        { k:'C', text:'El área y el perímetro son magnitudes proporcionales entre sí.', correct:false,
+          fb:'Si fueran proporcionales, a igual perímetro correspondería una única área y los puntos coincidirían en uno solo. La gráfica muestra exactamente lo contrario.' },
+        { k:'D', text:'El rectángulo con menor área tiene menor perímetro.', correct:false,
+          fb:'Todos los rectángulos tienen el mismo perímetro (24), así que no es posible afirmar que uno tenga «menor perímetro» que otro. Confunde área pequeña con perímetro pequeño.' }
+      ]
+    },
+    {
+      comp: 'Formulación y ejecución',
+      dba: 'Grado 5.° · DBA 5',
+      context: 'Don Hernando dispone de 40 metros de malla para cercar un jardín rectangular (se cercan los cuatro lados). Quiere encerrar la mayor superficie posible para sembrar hortalizas y considera cuatro configuraciones de ancho y alto.',
+      stem: '¿Cuáles deben ser las dimensiones del rectángulo que cumple los 40 m de perímetro y produce el área MÁXIMA?',
+      options: [
+        { k:'A', text:'5 m × 15 m, con área de 75 m².', correct:false,
+          fb:'Cumple el perímetro 2(5+15) = 40 m, pero no maximiza el área. Es el error común de detenerse en la primera solución que satisface una condición.' },
+        { k:'B', text:'8 m × 12 m, con área de 96 m².', correct:false,
+          fb:'Cumple 2(8+12) = 40 m y mejora respecto a A, pero todavía no es la óptima. La intuición de «acercarse a dimensiones similares» es correcta, pero se detiene antes del cuadrado.' },
+        { k:'C', text:'10 m × 10 m, con área de 100 m².', correct:true,
+          fb:'Para un perímetro fijo, el rectángulo de área máxima es el cuadrado: 2(10+10) = 40 m ✓, área = 100 m². Cualquier otra configuración con perímetro 40 m da menos área. Es el descubrimiento que provoca el simulador.' },
+        { k:'D', text:'2 m × 18 m, con área de 36 m².', correct:false,
+          fb:'Cumple 2(2+18) = 40 m pero da el área menor de todas. Refleja la idea errónea de que «estirar más» el rectángulo aumenta su área, cuando la disminuye.' }
+      ]
+    },
+    {
+      comp: 'Argumentación',
+      dba: 'Grado 3.° · DBA 4',
+      context: 'Camila afirma: «Si el perímetro de un rectángulo aumenta, su área también debe aumentar, porque al tener más contorno se encierra más espacio». Para probarlo, Mateo construyó dos rectángulos: R₁ (6 u × 6 u → P = 24 u, A = 36 u²) y R₂ (1 u × 14 u → P = 30 u, A = 14 u²).',
+      stem: '¿Cuál de las siguientes afirmaciones REFUTA correctamente la afirmación de Camila?',
+      options: [
+        { k:'A', text:'Es correcta, porque R₂ tiene mayor perímetro y por lo tanto mayor área.', correct:false,
+          fb:'Ni revisa los valores: R₂ tiene mayor perímetro (30 > 24) pero MENOR área (14 < 36). Este distractor es exactamente la concepción errónea que el simulador busca desmontar.' },
+        { k:'B', text:'Es incorrecta, porque R₂ tiene mayor perímetro (30 > 24) pero menor área (14 < 36): aumentar el perímetro no garantiza aumentar el área.', correct:true,
+          fb:'Es un contraejemplo válido: el perímetro aumenta y, aun así, el área disminuye. Un solo contraejemplo basta para refutar una afirmación universal. Esa es la argumentación matemática que evalúa el ICFES.' },
+        { k:'C', text:'No se puede juzgar, porque los rectángulos tienen dimensiones distintas.', correct:false,
+          fb:'Confunde «comparable» con «igual». Precisamente porque tienen dimensiones distintas pueden compararse su perímetro y su área. No comprende qué es un contraejemplo.' },
+        { k:'D', text:'Es incorrecta, porque R₁ es cuadrado y los cuadrados siempre tienen mayor área.', correct:false,
+          fb:'Generalización falsa: un cuadrado 2×2 (4 u²) tiene menos área que un rectángulo 3×10 (30 u²). R₁ tiene más área no por ser cuadrado, sino porque para SU perímetro el cuadrado es óptimo. Vale solo a igualdad de perímetro.' }
+      ]
+    }
+  ];
+
+  var track = document.getElementById('qTrack');
+  var dotsWrap = document.getElementById('qDots');
+  var label = document.getElementById('qLabel');
+  var prevBtn = document.getElementById('qPrev');
+  var nextBtn = document.getElementById('qNext');
+  var current = 0;
+  var answered = QUESTIONS.map(function(){ return false; });
+
+  QUESTIONS.forEach(function(q, qi){
+    var card = document.createElement('div');
+    card.className = 'quiz-card';
+    var opts = q.options.map(function(o, oi){
+      return '<button class="opt" data-q="'+qi+'" data-o="'+oi+'">'
+           + '<span class="key">'+o.k+'</span><span>'+o.text+'</span></button>';
+    }).join('');
+    card.innerHTML =
+      '<div class="qc-inner">'
+      + '<div class="qc-top"><span class="qc-badge">Pregunta '+(qi+1)+' · '+q.comp+'</span>'
+      + '<span class="qc-badge dba">'+q.dba+'</span></div>'
+      + '<div class="qc-context">'+q.context+'</div>'
+      + '<div class="qc-stem">'+q.stem+'</div>'
+      + '<div class="opts">'+opts+'</div>'
+      + '<div class="qc-feedback" data-fb="'+qi+'"><span class="verdict"></span><span class="msg"></span>'
+      + '<button class="qc-retry" data-retry="'+qi+'">↺ Intentar de nuevo</button></div>'
+      + '</div>';
+    track.appendChild(card);
+
+    var dot = document.createElement('button');
+    dot.className = 'dot' + (qi===0 ? ' active' : '');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', 'Ir a la pregunta ' + (qi+1));
+    dot.addEventListener('click', function(){ goTo(qi); });
+    dotsWrap.appendChild(dot);
+  });
+
+  function goTo(i){
+    current = Math.max(0, Math.min(QUESTIONS.length-1, i));
+    track.style.transform = 'translateX(' + (-current*100) + '%)';
+    label.textContent = 'Pregunta ' + (current+1) + ' de ' + QUESTIONS.length;
+    prevBtn.disabled = (current===0);
+    nextBtn.disabled = (current===QUESTIONS.length-1);
+    Array.prototype.forEach.call(dotsWrap.children, function(d, di){
+      d.classList.toggle('active', di===current);
+    });
+  }
+  prevBtn.addEventListener('click', function(){ goTo(current-1); });
+  nextBtn.addEventListener('click', function(){ goTo(current+1); });
+
+  function reveal(qi, chosen){
+    var q = QUESTIONS[qi];
+    var card = track.children[qi];
+    var optEls = card.querySelectorAll('.opt');
+    optEls.forEach(function(el, oi){
+      el.classList.add('locked');
+      var o = q.options[oi];
+      if(o.correct) el.classList.add('correct');
+      else if(oi===chosen) el.classList.add('wrong');
+      else el.classList.add('dim');
+    });
+    var fb = card.querySelector('.qc-feedback');
+    var ok = q.options[chosen].correct;
+    fb.classList.remove('good','bad');
+    fb.classList.add('show', ok ? 'good' : 'bad');
+    fb.querySelector('.verdict').textContent = ok ? '✓ Respuesta correcta' : '✗ Opción ' + q.options[chosen].k + ' — revisa por qué';
+    fb.querySelector('.msg').textContent = q.options[chosen].fb;
+    answered[qi] = true;
+  }
+
+  function resetQuestion(qi){
+    var card = track.children[qi];
+    card.querySelectorAll('.opt').forEach(function(el){
+      el.classList.remove('locked','correct','wrong','dim');
+    });
+    var fb = card.querySelector('.qc-feedback');
+    fb.classList.remove('show','good','bad');
+    answered[qi] = false;
+  }
+
+  track.addEventListener('click', function(e){
+    var opt = e.target.closest('.opt');
+    if(opt && !opt.classList.contains('locked')){
+      var qi = +opt.getAttribute('data-q');
+      var oi = +opt.getAttribute('data-o');
+      if(!answered[qi]) reveal(qi, oi);
+      return;
+    }
+    var retry = e.target.closest('.qc-retry');
+    if(retry){ resetQuestion(+retry.getAttribute('data-retry')); }
+  });
+
+  goTo(0);
+
+  /* ====================== CÓDIGO DE INCRUSTACIÓN ====================== */
+  (function(){
+    var box = document.getElementById('embedCode');
+    var btn = document.getElementById('copyBtn');
+    // El simulador embebible es el archivo simulador.html de esta misma carpeta
+    var simUrl = window.location.href.split('?')[0].split('#')[0].replace(/[^\/]*$/, '') + 'simulador.html';
+    var code = '<iframe src="' + simUrl + '" width="100%" height="720" '
+             + 'style="border:1px solid #e5e7eb;border-radius:12px" '
+             + 'loading="lazy" allowfullscreen></iframe>';
+    if(location.protocol === 'http:' || location.protocol === 'https:') box.textContent = code;
+    btn.addEventListener('click', function(){
+      navigator.clipboard.writeText(code).then(function(){
+        btn.textContent = '¡Copiado!'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = 'Copiar código'; btn.classList.remove('done'); }, 1800);
+      }).catch(function(){
+        var r = document.createRange(); r.selectNode(box);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        try { document.execCommand('copy'); btn.textContent = '¡Copiado!'; } catch(err){}
+        sel.removeAllRanges();
+        setTimeout(function(){ btn.textContent = 'Copiar código'; }, 1800);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
