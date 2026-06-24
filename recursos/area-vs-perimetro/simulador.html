@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Didaxis Lab · Laboratorio Interactivo: Área vs Perímetro</title>
+<style>
+  /* ============================================================
+     DIDAXIS LAB · Área vs Perímetro
+     Diseño inspirado en PhET, GeoGebra y Desmos
+     ============================================================ */
+  :root{
+    --bg:#f5f7fa;
+    --panel:#ffffff;
+    --primary:#1f4e79;
+    --primary-dark:#15375a;
+    --accent:#2e86ab;
+    --accent-2:#5ab4d6;
+    --soft:#eaf2f8;
+    --soft-2:#d6eaf8;
+    --text:#2c3e50;
+    --muted:#6b7c8c;
+    --ok:#1e884e;
+    --warn:#c0392b;
+    --area:#f39c12;
+    --area-fill:rgba(243,156,18,0.22);
+    --perim:#27ae60;
+    --vertex:#c0392b;
+    --grid:#cfd8dc;
+    --grid-major:#90a4ae;
+    --shadow:0 4px 20px rgba(31,78,121,0.10);
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;padding:0;
+    height:100%;
+    font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== layout principal ===== */
+  .app{
+    width:100%;
+    max-width:1200px;
+    height:700px;
+    margin:0 auto;
+    background:var(--bg);
+    display:grid;
+    grid-template-rows:54px 1fr 28px;
+    overflow:hidden;
+  }
+
+  /* ----- header ----- */
+  header{
+    background:#ffffff;
+    color:#1B2A5A;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    border-bottom:1px solid #E6E9EF;
+    z-index:5;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-weight:600;font-size:15px;letter-spacing:.3px;
+  }
+  .brand .logo{
+    width:32px;height:32px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .brand .logo svg{width:100%;height:100%;display:block;}
+  .brand small{
+    font-weight:400;color:#5B6B82;font-size:12px;margin-left:6px;
+    border-left:1px solid #D7DEE8;padding-left:8px;
+  }
+  .header-actions{display:flex;gap:8px;}
+  .btn-header{
+    background:#ffffff;
+    color:#1B2A5A;
+    border:1px solid #CBD5E1;
+    padding:6px 12px;
+    border-radius:8px;
+    font-size:12px;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .btn-header:hover{background:#E2F7FA;border-color:#0BC0D8;}
+  .btn-header.active{background:#E2F7FA;border-color:#0BC0D8;font-weight:600;}
+
+  /* ----- main ----- */
+  main{
+    display:grid;
+    grid-template-columns:240px 1fr 270px;
+    gap:10px;
+    padding:10px;
+    overflow:hidden;
+  }
+
+  .panel{
+    background:var(--panel);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:12px 14px;
+    overflow:auto;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .panel h3{
+    margin:0 0 4px 0;
+    font-size:13px;
+    color:var(--primary);
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    border-bottom:2px solid var(--soft);
+    padding-bottom:6px;
+  }
+
+  /* scrollbar más fina */
+  .panel::-webkit-scrollbar{width:6px;}
+  .panel::-webkit-scrollbar-thumb{background:var(--soft-2);border-radius:4px;}
+
+  /* ----- controles ----- */
+  .control{display:flex;flex-direction:column;gap:4px;}
+  .control label{
+    font-size:12px;font-weight:600;color:var(--text);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .control label .value{
+    background:var(--soft);
+    color:var(--primary);
+    padding:2px 8px;border-radius:6px;
+    font-variant-numeric:tabular-nums;
+    font-size:12px;
+  }
+  input[type="range"]{
+    -webkit-appearance:none;width:100%;height:6px;
+    background:var(--soft);border-radius:4px;outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;
+    background:var(--accent);border-radius:50%;
+    cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);
+    transition:.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover{background:var(--primary);transform:scale(1.1);}
+  input[type="range"]::-moz-range-thumb{
+    width:18px;height:18px;border:none;
+    background:var(--accent);border-radius:50%;cursor:pointer;
+  }
+
+  .btn{
+    background:var(--accent);color:#fff;border:none;
+    padding:8px 10px;border-radius:8px;
+    font-size:12px;font-weight:600;
+    cursor:pointer;transition:.2s;
+    width:100%;
+  }
+  .btn:hover{background:var(--primary);}
+  .btn.secondary{background:#fff;color:var(--primary);border:1px solid var(--soft-2);}
+  .btn.secondary:hover{background:var(--soft);}
+  .btn.small{padding:6px 8px;font-size:11px;}
+
+  .checkbox-row{
+    display:flex;align-items:center;gap:8px;
+    background:var(--soft);
+    padding:8px 10px;border-radius:8px;
+    cursor:pointer;
+  }
+  .checkbox-row input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer;}
+  .checkbox-row label{font-size:12px;font-weight:600;cursor:pointer;flex:1;}
+
+  .fixed-p-input{
+    display:flex;align-items:center;gap:6px;
+    background:var(--soft);padding:6px 8px;border-radius:8px;
+  }
+  .fixed-p-input label{font-size:11px;color:var(--muted);}
+  .fixed-p-input input{
+    width:60px;padding:4px 6px;border:1px solid var(--soft-2);
+    border-radius:6px;font-size:12px;text-align:center;
+  }
+  .hidden{display:none !important;}
+
+  /* ===== panel central ===== */
+  .center{
+    position:relative;display:flex;flex-direction:column;gap:8px;padding:8px;
+  }
+  .canvas-wrap{
+    flex:1;
+    background:linear-gradient(180deg,#fafdff 0%,#f0f6fb 100%);
+    border-radius:var(--radius);
+    border:1px solid var(--soft-2);
+    overflow:hidden;
+    position:relative;
+    min-height:0;
+  }
+  #canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none;}
+  #canvas:active{cursor:grabbing;}
+
+  /* tab strip for charts */
+  .chart-tabs{
+    display:flex;gap:6px;
+    border-bottom:2px solid var(--soft);
+    padding:0 4px;
+  }
+  .chart-tab{
+    background:transparent;border:none;
+    padding:6px 10px;font-size:11px;color:var(--muted);
+    cursor:pointer;border-bottom:2px solid transparent;
+    margin-bottom:-2px;font-weight:600;
+  }
+  .chart-tab.active{color:var(--primary);border-bottom:2px solid var(--primary);}
+
+  .charts-row{
+    display:grid;grid-template-columns:1fr 1fr auto;gap:8px;
+    height:130px;
+  }
+  .chart-box{
+    background:#fff;border-radius:10px;border:1px solid var(--soft-2);
+    padding:4px;position:relative;
+  }
+  .chart-box canvas{display:block;width:100%;height:100%;}
+  .chart-title{
+    position:absolute;top:4px;left:8px;font-size:10px;font-weight:600;
+    color:var(--primary);text-transform:uppercase;letter-spacing:.4px;
+  }
+  .chart-actions{
+    display:flex;flex-direction:column;gap:4px;justify-content:center;
+  }
+
+  /* ===== panel derecho ===== */
+  .result-card{
+    background:linear-gradient(135deg,var(--soft) 0%,#fff 100%);
+    border:1px solid var(--soft-2);
+    border-radius:10px;
+    padding:8px 10px;
+  }
+  .result-card .label{
+    font-size:10px;text-transform:uppercase;letter-spacing:.6px;
+    color:var(--muted);font-weight:700;
+  }
+  .result-card .value{
+    font-size:22px;font-weight:700;color:var(--primary);
+    margin-top:2px;font-variant-numeric:tabular-nums;
+  }
+  .result-card .formula{
+    font-size:11px;color:var(--text);font-family:'Consolas',monospace;
+    margin-top:2px;
+  }
+  .result-card.area .value{color:var(--area);}
+  .result-card.perim .value{color:var(--perim);}
+
+  /* velocímetro */
+  .speedo-wrap{
+    text-align:center;
+    background:#fff;border:1px solid var(--soft-2);
+    border-radius:10px;padding:8px 6px;
+  }
+  .speedo-wrap .label{
+    font-size:10px;color:var(--muted);font-weight:700;
+    text-transform:uppercase;letter-spacing:.6px;
+  }
+  #speedo{display:block;margin:4px auto 2px;}
+  .speedo-text{font-size:11px;color:var(--primary);font-weight:600;}
+
+  /* retos */
+  .challenge{
+    background:#fff;border:1px solid var(--soft-2);border-radius:10px;
+    padding:8px 10px;font-size:12px;
+  }
+  .challenge .title{font-weight:700;color:var(--primary);font-size:12px;margin-bottom:4px;}
+  .challenge .desc{color:var(--text);font-size:11.5px;line-height:1.35;}
+  .challenge .stats{
+    display:flex;justify-content:space-between;font-size:10px;
+    margin-top:6px;color:var(--muted);
+  }
+  .challenge .feedback{
+    margin-top:6px;font-size:11px;font-weight:600;
+    padding:4px 8px;border-radius:6px;text-align:center;
+    min-height:18px;
+  }
+  .challenge .feedback.ok{background:#e8f6ee;color:var(--ok);}
+  .challenge .feedback.fail{background:#fcecea;color:var(--warn);}
+
+  /* descubrimientos */
+  .discovery{
+    position:absolute;
+    top:14px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,#fff7e0 0%,#ffeec2 100%);
+    border:2px solid #f1c40f;
+    color:#7d5a00;
+    padding:8px 16px;border-radius:30px;
+    font-size:13px;font-weight:700;
+    box-shadow:0 6px 18px rgba(241,196,15,0.35);
+    z-index:10;
+    animation:popIn .4s ease;
+    max-width:80%;text-align:center;
+  }
+  @keyframes popIn{
+    0%{opacity:0;transform:translate(-50%,-12px) scale(.85);}
+    100%{opacity:1;transform:translate(-50%,0) scale(1);}
+  }
+
+  /* modal docente */
+  .modal-backdrop{
+    position:absolute;inset:0;background:rgba(31,78,121,0.45);
+    display:flex;align-items:center;justify-content:center;
+    z-index:50;backdrop-filter:blur(2px);
+  }
+  .modal{
+    background:#fff;border-radius:14px;
+    width:88%;max-width:760px;max-height:88%;
+    overflow:auto;padding:18px 22px;box-shadow:0 12px 40px rgba(0,0,0,0.25);
+  }
+  .modal h2{
+    margin:0 0 8px;color:var(--primary);font-size:18px;
+    border-bottom:2px solid var(--soft);padding-bottom:6px;
+  }
+  .modal h4{
+    margin:14px 0 6px;color:var(--accent);font-size:13px;
+    text-transform:uppercase;letter-spacing:.5px;
+  }
+  .modal ul{margin:4px 0 8px 18px;padding:0;font-size:13px;line-height:1.5;}
+  .modal .close{
+    position:relative;float:right;margin-top:-4px;
+    background:var(--warn);color:#fff;border:none;border-radius:8px;
+    padding:6px 12px;font-weight:600;cursor:pointer;font-size:12px;
+  }
+  .modal .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+  /* footer */
+  footer{
+    background:var(--soft);
+    color:var(--muted);
+    font-size:11px;
+    display:flex;align-items:center;justify-content:center;
+    border-top:1px solid var(--soft-2);
+  }
+  footer b{color:var(--primary);}
+
+  /* tooltip simple */
+  [data-tip]{position:relative;}
+  [data-tip]:hover::after{
+    content:attr(data-tip);
+    position:absolute;bottom:120%;left:50%;transform:translateX(-50%);
+    background:var(--primary-dark);color:#fff;padding:4px 8px;
+    border-radius:6px;font-size:11px;white-space:nowrap;z-index:20;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* alto contraste */
+  body.high-contrast{
+    --bg:#000;--panel:#fff;--text:#000;--primary:#000;
+    --soft:#ffeb3b;--accent:#000;--area:#ff6f00;--perim:#1b5e20;
+  }
+  body.high-contrast .btn{background:#000;color:#ffeb3b;border:2px solid #ffeb3b;}
+  body.high-contrast .btn:hover{background:#ffeb3b;color:#000;}
+
+  /* responsividad básica */
+  @media (max-width:1100px){
+    .app{height:auto;grid-template-rows:54px auto auto;}
+    main{grid-template-columns:1fr;}
+    .canvas-wrap{height:340px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app" role="application" aria-label="Laboratorio interactivo Área vs Perímetro">
+
+  <!-- ================== HEADER ================== -->
+  <header>
+    <a class="brand" href="https://didaxislab.com/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="logo"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Didaxis Lab"><line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="13" stroke-linecap="round"/><line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="13" stroke-linecap="round"/><circle cx="20" cy="20" r="16" fill="#0BC0D8"/><circle cx="80" cy="20" r="16" fill="#0BC0D8"/><circle cx="80" cy="80" r="16" fill="#0BC0D8"/><circle cx="20" cy="80" r="16" fill="#0BC0D8"/></svg></div>
+      <div>Didaxis Lab <small>Laboratorio Interactivo: Área vs Perímetro</small></div>
+    </a>
+    <div class="header-actions">
+      <button class="btn-header" id="btn-fullscreen" data-tip="Ver en pantalla completa">⛶ Pantalla completa</button>
+    </div>
+  </header>
+
+  <!-- ================== MAIN ================== -->
+  <main>
+
+    <!-- ===== PANEL IZQUIERDO ===== -->
+    <aside class="panel" id="panel-left" aria-label="Panel de control">
+      <h3>🎛 Controles</h3>
+
+      <div class="control">
+        <label for="slider-w">Ancho del rectángulo <span class="value" id="val-w">8</span></label>
+        <input type="range" id="slider-w" min="1" max="30" step="1" value="8" aria-label="Ancho del rectángulo" />
+      </div>
+
+      <div class="control">
+        <label for="slider-h">Alto del rectángulo <span class="value" id="val-h">5</span></label>
+        <input type="range" id="slider-h" min="1" max="30" step="1" value="5" aria-label="Alto del rectángulo" />
+      </div>
+
+      <button class="btn" id="btn-random" data-tip="Genera un rectángulo con dimensiones aleatorias">🎲 Generar aleatorio</button>
+      <button class="btn secondary" id="btn-reset" data-tip="Restablece la configuración inicial">↺ Restablecer</button>
+
+      <div class="checkbox-row" data-tip="Mantén el perímetro constante mientras varías una dimensión">
+        <input type="checkbox" id="chk-fixp" />
+        <label for="chk-fixp">🔒 Fijar perímetro</label>
+      </div>
+
+      <div class="fixed-p-input hidden" id="fixp-input">
+        <label for="inp-fixp">Perímetro:</label>
+        <input type="number" id="inp-fixp" min="4" max="120" step="2" value="26" />
+        <span style="font-size:11px;color:var(--muted)">u</span>
+      </div>
+
+      <h3 style="margin-top:6px;">🎯 Retos</h3>
+      <div class="challenge" id="challenge-card">
+        <div class="title" id="ch-title">Reto 1</div>
+        <div class="desc" id="ch-desc">Construye dos rectángulos diferentes con perímetro = 24 y encuentra cuál tiene mayor área.</div>
+        <div class="stats">
+          <span id="ch-attempts">Intentos: 0</span>
+          <span id="ch-success">Éxitos: 0</span>
+        </div>
+        <div class="feedback" id="ch-feedback"></div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button class="btn small" id="btn-check">Verificar</button>
+          <button class="btn secondary small" id="btn-next">Siguiente reto</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== PANEL CENTRAL ===== -->
+    <section class="center" aria-label="Visualización geométrica">
+      <div class="canvas-wrap">
+        <canvas id="canvas" tabindex="0" aria-label="Rectángulo interactivo sobre cuadrícula cartesiana"></canvas>
+        <div id="discovery" class="discovery hidden"></div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="chart-title">Perímetro → Área</div>
+          <canvas id="chart1"></canvas>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">Ancho/Alto → Área</div>
+          <canvas id="chart2"></canvas>
+        </div>
+        <div class="chart-actions">
+          <button class="btn secondary small" id="btn-clear-charts" data-tip="Borrar todos los puntos">🧹 Limpiar</button>
+          <button class="btn secondary small" id="btn-save-point" data-tip="Guardar la configuración actual">📍 Guardar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PANEL DERECHO ===== -->
+    <aside class="panel" id="panel-right" aria-label="Panel de resultados">
+      <h3>📊 Resultados</h3>
+
+      <div class="result-card area">
+        <div class="label">Área</div>
+        <div class="value"><span id="res-area">40</span> u²</div>
+        <div class="formula" id="res-area-formula">Área = 8 × 5 = 40 u²</div>
+      </div>
+
+      <div class="result-card perim">
+        <div class="label">Perímetro</div>
+        <div class="value"><span id="res-perim">26</span> u</div>
+        <div class="formula" id="res-perim-formula">P = 2(8 + 5) = 26 u</div>
+      </div>
+
+      <div class="result-card">
+        <div class="label">Razón Área / Perímetro</div>
+        <div class="value" style="color:var(--accent)"><span id="res-ratio">1.54</span></div>
+        <div class="formula" id="res-ratio-formula">40 / 26 = 1.54</div>
+      </div>
+
+      <div class="speedo-wrap">
+        <div class="label">Eficiencia espacial</div>
+        <canvas id="speedo" width="190" height="100"></canvas>
+        <div class="speedo-text" id="speedo-text">Eficiencia media</div>
+      </div>
+
+      <div class="result-card" style="background:#fff;border:1px dashed var(--soft-2);">
+        <div class="label">💡 Pista</div>
+        <div style="font-size:11.5px;line-height:1.4;margin-top:4px;color:var(--text)" id="hint-text">
+          Mueve los sliders o arrastra los vértices rojos del rectángulo. Activa <b>Fijar perímetro</b> para explorar áreas distintas con el mismo contorno.
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <span>Didaxis Lab · <b>Laboratorio Interactivo: Área vs Perímetro</b> · Manipula, observa, descubre.</span>
+  </footer>
+
+
+</div>
+
+<script>
+/* ============================================================
+   DIDAXIS LAB · Área vs Perímetro · lógica JS
+   ============================================================ */
+
+/* ---------- estado global ---------- */
+const state = {
+  w: 8,
+  h: 5,
+  fixedPerimeter: false,
+  pFixed: 26,
+  points: [],          // {p, a, ratio}
+  discoveries: {       // descubrimientos ya mostrados (para no repetir)
+    square: false,
+    sameArea: false,
+    moreP_lessA: false,
+  },
+  lastConfigs: [],     // historial para detectar "más P, menos A"
+  challenge: 0,
+  attempts: [0,0,0],
+  successes: [0,0,0],
+  challengeData: [],   // datos del reto actual
+};
+
+/* ---------- canvases ---------- */
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const chart1 = document.getElementById('chart1');
+const ctx1 = chart1.getContext('2d');
+const chart2 = document.getElementById('chart2');
+const ctx2 = chart2.getContext('2d');
+const speedo = document.getElementById('speedo');
+const sctx = speedo.getContext('2d');
+
+/* ---------- DOM refs ---------- */
+const $ = id => document.getElementById(id);
+const sliderW = $('slider-w'), sliderH = $('slider-h');
+const valW = $('val-w'), valH = $('val-h');
+const chkFix = $('chk-fixp'), fixpInput = $('fixp-input'), inpFixp = $('inp-fixp');
+const btnRandom = $('btn-random'), btnReset = $('btn-reset');
+const resArea = $('res-area'), resPerim = $('res-perim'), resRatio = $('res-ratio');
+const resAreaF = $('res-area-formula'), resPerimF = $('res-perim-formula'), resRatioF = $('res-ratio-formula');
+const speedoText = $('speedo-text');
+const btnClear = $('btn-clear-charts'), btnSave = $('btn-save-point');
+const discoveryBox = $('discovery');
+const btnFs = $('btn-fullscreen');
+const hintText = $('hint-text');
+
+/* ---------- redimensionado responsivo ---------- */
+function resizeCanvas(c){
+  const rect = c.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  c.width = rect.width * dpr;
+  c.height = rect.height * dpr;
+  c.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+}
+function resizeAll(){
+  resizeCanvas(canvas);
+  resizeCanvas(chart1);
+  resizeCanvas(chart2);
+  draw();
+  drawChart1();
+  drawChart2();
+  drawSpeedo();
+}
+window.addEventListener('resize', resizeAll);
+
+/* ============================================================
+   DIBUJO DEL RECTÁNGULO
+   ============================================================ */
+function getViewport(){
+  const w = canvas.getBoundingClientRect().width;
+  const h = canvas.getBoundingClientRect().height;
+  // unidad del eje en píxeles: rango -2 ... 32
+  const padding = 30;
+  const range = 32; // unidades visibles
+  const unitX = (w - padding*2) / range;
+  const unitY = (h - padding*2) / range;
+  const unit = Math.min(unitX, unitY);
+  // origen
+  const ox = padding + unit*2;
+  const oy = h - padding - unit*2;
+  return {w, h, unit, ox, oy, padding};
+}
+
+function draw(){
+  const {w,h,unit,ox,oy} = getViewport();
+  ctx.clearRect(0,0,w,h);
+
+  // fondo suave
+  ctx.fillStyle = '#fafdff';
+  ctx.fillRect(0,0,w,h);
+
+  // cuadrícula
+  ctx.strokeStyle = '#e0e8ee';
+  ctx.lineWidth = 1;
+  for(let i=-2;i<=30;i++){
+    // verticales
+    const x = ox + i*unit;
+    ctx.beginPath();
+    ctx.moveTo(x, oy - 30*unit);
+    ctx.lineTo(x, oy + 2*unit);
+    ctx.stroke();
+    // horizontales
+    const y = oy - i*unit;
+    ctx.beginPath();
+    ctx.moveTo(ox - 2*unit, y);
+    ctx.lineTo(ox + 30*unit, y);
+    ctx.stroke();
+  }
+
+  // ejes principales
+  ctx.strokeStyle = '#90a4ae';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(ox - 2*unit, oy);
+  ctx.lineTo(ox + 30*unit, oy);
+  ctx.moveTo(ox, oy + 2*unit);
+  ctx.lineTo(ox, oy - 30*unit);
+  ctx.stroke();
+
+  // marcas y etiquetas (cada 5)
+  ctx.fillStyle = '#6b7c8c';
+  ctx.font = '11px Segoe UI';
+  ctx.textAlign = 'center';
+  for(let i=0;i<=30;i+=5){
+    ctx.fillText(i, ox + i*unit, oy + 14);
+    if(i>0) ctx.fillText(i, ox - 14, oy - i*unit + 4);
+  }
+  ctx.textAlign='left';
+  ctx.fillStyle='#1f4e79';
+  ctx.font='bold 11px Segoe UI';
+  ctx.fillText('X (u)', ox + 30*unit + 4, oy + 4);
+  ctx.fillText('Y (u)', ox - 10, oy - 30*unit - 4);
+
+  // rectángulo
+  const W = state.w, H = state.h;
+  const x0 = ox, y0 = oy;
+  const x1 = ox + W*unit, y1 = oy - H*unit;
+
+  // área (relleno)
+  ctx.fillStyle = 'rgba(243,156,18,0.22)';
+  ctx.fillRect(x0, y1, W*unit, H*unit);
+
+  // borde (perímetro)
+  ctx.strokeStyle = '#27ae60';
+  ctx.lineWidth = 3.5;
+  ctx.strokeRect(x0, y1, W*unit, H*unit);
+
+  // etiquetas de lados
+  ctx.fillStyle = '#15375a';
+  ctx.font = 'bold 13px Segoe UI';
+  ctx.textAlign='center';
+  ctx.fillText(`${W} u`, x0 + (W*unit)/2, y0 + 18);
+  ctx.fillText(`${W} u`, x0 + (W*unit)/2, y1 - 8);
+  ctx.save();
+  ctx.translate(x0 - 14, y1 + (H*unit)/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText(`${H} u`, 0, 0);
+  ctx.restore();
+  ctx.save();
+  ctx.translate(x1 + 14, y1 + (H*unit)/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText(`${H} u`, 0, 0);
+  ctx.restore();
+
+  // etiqueta interna área
+  ctx.fillStyle='#7d4a00';
+  ctx.font='bold 14px Segoe UI';
+  ctx.textAlign='center';
+  ctx.fillText(`A = ${W*H} u²`, x0 + (W*unit)/2, y1 + (H*unit)/2 + 5);
+
+  // vértices (grandes, táctiles)
+  const verts = [
+    {x:x0,y:y0,role:'origin'},   // origen fijo
+    {x:x1,y:y0,role:'rightBottom'}, // controla ancho
+    {x:x0,y:y1,role:'leftTop'},     // controla alto
+    {x:x1,y:y1,role:'topRight'},    // controla ambos
+  ];
+  verts.forEach(v=>{
+    ctx.beginPath();
+    ctx.arc(v.x, v.y, 10, 0, Math.PI*2);
+    ctx.fillStyle = v.role==='origin' ? '#7f8c8d' : '#c0392b';
+    ctx.fill();
+    ctx.lineWidth=2;ctx.strokeStyle='#fff';
+    ctx.stroke();
+  });
+}
+
+/* ============================================================
+   ACTUALIZACIÓN DE VALORES
+   ============================================================ */
+function update(opts={}){
+  const W = state.w, H = state.h;
+  const area = W*H;
+  const perim = 2*(W+H);
+  const ratio = perim===0?0:(area/perim);
+
+  // panel resultados
+  resArea.textContent = area;
+  resPerim.textContent = perim;
+  resRatio.textContent = ratio.toFixed(2);
+  resAreaF.textContent  = `Área = ${W} × ${H} = ${area} u²`;
+  resPerimF.textContent = `P = 2(${W} + ${H}) = ${perim} u`;
+  resRatioF.textContent = `${area} / ${perim} = ${ratio.toFixed(2)}`;
+
+  // sliders
+  sliderW.value = W; sliderH.value = H;
+  valW.textContent = W; valH.textContent = H;
+
+  // velocímetro / interpretación
+  let efText, efLevel;
+  // r máximo aprox cuando lado grande con cuadrado: r = L/4 (cuadrado), ej. 30x30 → A=900/P=120=7.5
+  // normalizamos contra 7.5
+  const norm = Math.min(1, ratio / 7.5);
+  if (norm < 0.33){ efText='Baja eficiencia espacial'; efLevel='baja'; }
+  else if (norm < 0.66){ efText='Eficiencia media'; efLevel='media'; }
+  else { efText='Alta eficiencia espacial'; efLevel='alta'; }
+  speedoText.textContent = efText;
+  drawSpeedo(norm);
+
+  // registrar punto en historial (limit 60)
+  if (opts.savePoint!==false){
+    state.points.push({p:perim, a:area, w:W, h:H, ratio});
+    if (state.points.length>60) state.points.shift();
+    drawChart1();
+    drawChart2();
+  }
+
+  // descubrimientos
+  detectDiscoveries(W,H,area,perim);
+
+  // dibujar rectángulo
+  draw();
+}
+
+/* ============================================================
+   VELOCÍMETRO
+   ============================================================ */
+function drawSpeedo(norm){
+  if(norm===undefined){
+    const area = state.w*state.h;
+    const perim = 2*(state.w+state.h);
+    norm = Math.min(1, (perim===0?0:(area/perim))/7.5);
+  }
+  const w = speedo.width, h = speedo.height;
+  sctx.clearRect(0,0,w,h);
+  const cx = w/2, cy = h-10, r = 70;
+
+  // arcos por zona
+  const zones = [
+    {a0:Math.PI, a1:Math.PI + Math.PI/3, color:'#e74c3c'},   // baja
+    {a0:Math.PI + Math.PI/3, a1:Math.PI + 2*Math.PI/3, color:'#f1c40f'}, // media
+    {a0:Math.PI + 2*Math.PI/3, a1:2*Math.PI, color:'#27ae60'},  // alta
+  ];
+  sctx.lineWidth = 14;
+  zones.forEach(z=>{
+    sctx.beginPath();
+    sctx.arc(cx,cy,r,z.a0,z.a1);
+    sctx.strokeStyle = z.color;
+    sctx.stroke();
+  });
+
+  // aguja
+  const ang = Math.PI + norm * Math.PI;
+  sctx.strokeStyle = '#15375a';
+  sctx.lineWidth = 3;
+  sctx.beginPath();
+  sctx.moveTo(cx,cy);
+  sctx.lineTo(cx + Math.cos(ang)*r*0.85, cy + Math.sin(ang)*r*0.85);
+  sctx.stroke();
+  sctx.beginPath();
+  sctx.arc(cx,cy,5,0,Math.PI*2);
+  sctx.fillStyle='#15375a';
+  sctx.fill();
+}
+
+/* ============================================================
+   GRÁFICOS
+   ============================================================ */
+function drawAxes(c, ctxC, xLabel, yLabel, xMax, yMax){
+  const w = c.getBoundingClientRect().width;
+  const h = c.getBoundingClientRect().height;
+  ctxC.clearRect(0,0,w,h);
+  ctxC.fillStyle='#fff';
+  ctxC.fillRect(0,0,w,h);
+
+  const pad = {l:30,r:8,t:18,b:22};
+  // ejes
+  ctxC.strokeStyle='#90a4ae';
+  ctxC.lineWidth=1;
+  ctxC.beginPath();
+  ctxC.moveTo(pad.l,pad.t);ctxC.lineTo(pad.l,h-pad.b);ctxC.lineTo(w-pad.r,h-pad.b);
+  ctxC.stroke();
+
+  // grid
+  ctxC.strokeStyle='#eef2f5';
+  ctxC.fillStyle='#90a4ae';
+  ctxC.font='9px Segoe UI';
+  ctxC.textAlign='right';
+  const steps=4;
+  for(let i=1;i<=steps;i++){
+    const y = h-pad.b - (h-pad.b-pad.t)*i/steps;
+    ctxC.beginPath();
+    ctxC.moveTo(pad.l,y);ctxC.lineTo(w-pad.r,y);ctxC.stroke();
+    ctxC.fillText(((yMax*i/steps)|0), pad.l-3, y+3);
+  }
+  ctxC.textAlign='center';
+  for(let i=1;i<=steps;i++){
+    const x = pad.l + (w-pad.l-pad.r)*i/steps;
+    ctxC.beginPath();
+    ctxC.moveTo(x,pad.t);ctxC.lineTo(x,h-pad.b);ctxC.stroke();
+    ctxC.fillStyle='#90a4ae';
+    ctxC.fillText((xMax*i/steps).toFixed(1), x, h-pad.b+12);
+  }
+
+  // etiquetas ejes
+  ctxC.fillStyle='#1f4e79';
+  ctxC.font='bold 10px Segoe UI';
+  ctxC.textAlign='right';
+  ctxC.fillText(xLabel, w-pad.r, h-4);
+  ctxC.textAlign='left';
+  ctxC.fillText(yLabel, 2, pad.t-4);
+
+  return {w,h,pad};
+}
+
+function drawChart1(){
+  if (state.points.length===0){
+    drawAxes(chart1,ctx1,'Perímetro','Área',120,900);
+    return;
+  }
+  const maxP = Math.max(120, ...state.points.map(p=>p.p)) * 1.1;
+  const maxA = Math.max(50,  ...state.points.map(p=>p.a)) * 1.1;
+  const {w,h,pad} = drawAxes(chart1,ctx1,'Perímetro','Área', maxP, maxA);
+  const cx = (p)=> pad.l + (w-pad.l-pad.r)*(p/maxP);
+  const cy = (a)=> h-pad.b - (h-pad.b-pad.t)*(a/maxA);
+
+  // puntos antiguos
+  state.points.forEach((pt,i)=>{
+    ctx1.beginPath();
+    ctx1.arc(cx(pt.p), cy(pt.a), 3.5, 0, Math.PI*2);
+    ctx1.fillStyle = i===state.points.length-1 ? '#c0392b' : 'rgba(46,134,171,0.7)';
+    ctx1.fill();
+  });
+}
+
+function drawChart2(){
+  if (state.points.length===0){
+    drawAxes(chart2,ctx2,'Ancho/Alto','Área',5,900);
+    return;
+  }
+  const ratios = state.points.map(p=>p.w/p.h);
+  const maxR = Math.max(5, ...ratios);
+  const maxA = Math.max(50, ...state.points.map(p=>p.a));
+  const {w,h,pad} = drawAxes(chart2,ctx2,'Ancho/Alto','Área', maxR, maxA);
+  const cx = (r)=> pad.l + (w-pad.l-pad.r)*Math.min(1,r/maxR);
+  const cy = (a)=> h-pad.b - (h-pad.b-pad.t)*(a/maxA);
+
+  // línea x=1 (cuadrado)
+  ctx2.strokeStyle='#f1c40f';
+  ctx2.setLineDash([4,3]);
+  ctx2.beginPath();
+  const xCuad = cx(1);
+  ctx2.moveTo(xCuad, pad.t); ctx2.lineTo(xCuad, h-pad.b);
+  ctx2.stroke();
+  ctx2.setLineDash([]);
+
+  state.points.forEach((pt,i)=>{
+    const r = pt.w/pt.h;
+    ctx2.beginPath();
+    ctx2.arc(cx(r), cy(pt.a), 3.5, 0, Math.PI*2);
+    ctx2.fillStyle = i===state.points.length-1 ? '#c0392b' : 'rgba(243,156,18,0.8)';
+    ctx2.fill();
+  });
+}
+
+/* ============================================================
+   DESCUBRIMIENTOS AUTOMÁTICOS
+   ============================================================ */
+function showDiscovery(text){
+  discoveryBox.textContent = text;
+  discoveryBox.classList.remove('hidden');
+  clearTimeout(showDiscovery._t);
+  showDiscovery._t = setTimeout(()=>discoveryBox.classList.add('hidden'), 5000);
+}
+
+function detectDiscoveries(W,H,area,perim){
+  // 1. cuadrado
+  if (W===H && !state.discoveries.square){
+    state.discoveries.square = true;
+    showDiscovery('🏆 ¡Descubrimiento! El cuadrado es el rectángulo que maximiza el área para un perímetro fijo.');
+    return;
+  }
+  // 2. misma área, perímetros distintos
+  const sameArea = state.points.slice(0,-1).find(p=>p.a===area && p.p!==perim);
+  if (sameArea && !state.discoveries.sameArea){
+    state.discoveries.sameArea = true;
+    showDiscovery(`✨ ¡Excelente! Has encontrado dos rectángulos con la misma área (${area} u²) y distinto perímetro.`);
+    return;
+  }
+  // 3. más P y menos A respecto al inmediato anterior
+  if (state.points.length>=2){
+    const prev = state.points[state.points.length-2];
+    if (perim > prev.p && area < prev.a && !state.discoveries.moreP_lessA){
+      state.discoveries.moreP_lessA = true;
+      showDiscovery('🔍 Observa: el perímetro aumentó, pero el área DISMINUYÓ. ¡Un mayor perímetro no implica mayor área!');
+    }
+  }
+}
+
+/* ============================================================
+   INTERACCIÓN: SLIDERS Y CHECKBOX
+   ============================================================ */
+function applyFixedPerimeter(changed){
+  if (!state.fixedPerimeter) return;
+  const P = state.pFixed;
+  // P = 2(W+H) → W+H = P/2
+  const sum = P/2;
+  if (changed==='w'){
+    state.h = Math.max(1, Math.min(30, sum - state.w));
+  } else {
+    state.w = Math.max(1, Math.min(30, sum - state.h));
+  }
+  // ajustar también si el sum es demasiado pequeño/grande
+  if (state.w<1){state.w=1;state.h=Math.max(1,sum-1);}
+  if (state.h<1){state.h=1;state.w=Math.max(1,sum-1);}
+}
+
+sliderW.addEventListener('input',e=>{
+  state.w = parseInt(e.target.value);
+  if (state.fixedPerimeter) applyFixedPerimeter('w');
+  update();
+});
+sliderH.addEventListener('input',e=>{
+  state.h = parseInt(e.target.value);
+  if (state.fixedPerimeter) applyFixedPerimeter('h');
+  update();
+});
+
+chkFix.addEventListener('change',e=>{
+  state.fixedPerimeter = e.target.checked;
+  fixpInput.classList.toggle('hidden', !state.fixedPerimeter);
+  if (state.fixedPerimeter){
+    state.pFixed = 2*(state.w+state.h);
+    inpFixp.value = state.pFixed;
+    hintText.innerHTML = `🔒 Perímetro fijado en <b>${state.pFixed} u</b>. Mueve un slider y observa cómo se ajusta el otro automáticamente.`;
+  } else {
+    hintText.innerHTML = 'Mueve los sliders o arrastra los vértices rojos del rectángulo. Activa <b>Fijar perímetro</b> para explorar áreas distintas con el mismo contorno.';
+  }
+});
+inpFixp.addEventListener('change',e=>{
+  let v = parseInt(e.target.value);
+  if (isNaN(v)||v<4) v=4;
+  if (v>120) v=120;
+  if (v%2!==0) v++; // par
+  state.pFixed = v;
+  e.target.value = v;
+  // recalc h preservando w
+  applyFixedPerimeter('w');
+  update();
+});
+
+btnRandom.addEventListener('click',()=>{
+  state.w = 2 + Math.floor(Math.random()*20);
+  state.h = 2 + Math.floor(Math.random()*20);
+  if (state.fixedPerimeter){
+    // mantener perímetro fijo, ajustar h
+    applyFixedPerimeter('w');
+  }
+  update();
+});
+btnReset.addEventListener('click',()=>{
+  state.w = 8; state.h = 5;
+  state.fixedPerimeter=false;
+  chkFix.checked=false;
+  fixpInput.classList.add('hidden');
+  update();
+});
+
+/* ============================================================
+   INTERACCIÓN: ARRASTRE DE VÉRTICES
+   ============================================================ */
+let dragging = null;
+function getMouseUnit(evt){
+  const r = canvas.getBoundingClientRect();
+  const x = (evt.touches?evt.touches[0].clientX:evt.clientX) - r.left;
+  const y = (evt.touches?evt.touches[0].clientY:evt.clientY) - r.top;
+  const {unit,ox,oy} = getViewport();
+  return {ux:(x-ox)/unit, uy:(oy-y)/unit, px:x, py:y};
+}
+function hitVertex(px,py){
+  const {unit,ox,oy} = getViewport();
+  const verts = {
+    rightBottom: {x:ox+state.w*unit, y:oy},
+    leftTop:     {x:ox, y:oy-state.h*unit},
+    topRight:    {x:ox+state.w*unit, y:oy-state.h*unit},
+  };
+  for (const k of Object.keys(verts)){
+    const v=verts[k];
+    if (Math.hypot(px-v.x,py-v.y) < 14) return k;
+  }
+  return null;
+}
+canvas.addEventListener('mousedown',e=>{
+  const {px,py} = getMouseUnit(e);
+  dragging = hitVertex(px,py);
+});
+canvas.addEventListener('touchstart',e=>{
+  const {px,py} = getMouseUnit(e);
+  dragging = hitVertex(px,py);
+  if (dragging) e.preventDefault();
+},{passive:false});
+function onMove(e){
+  if (!dragging) return;
+  const {ux,uy} = getMouseUnit(e);
+  let nw = state.w, nh = state.h;
+  if (dragging==='rightBottom'){ nw = Math.round(ux); }
+  if (dragging==='leftTop')    { nh = Math.round(uy); }
+  if (dragging==='topRight')   { nw = Math.round(ux); nh = Math.round(uy); }
+  nw = Math.max(1,Math.min(30,nw));
+  nh = Math.max(1,Math.min(30,nh));
+  state.w = nw; state.h = nh;
+  if (state.fixedPerimeter){
+    if (dragging==='leftTop') applyFixedPerimeter('h'); else applyFixedPerimeter('w');
+  }
+  update();
+  e.preventDefault?.();
+}
+window.addEventListener('mousemove',onMove);
+window.addEventListener('touchmove',onMove,{passive:false});
+window.addEventListener('mouseup',()=>dragging=null);
+window.addEventListener('touchend',()=>dragging=null);
+
+/* teclado */
+canvas.addEventListener('keydown',e=>{
+  let h=false;
+  if (e.key==='ArrowRight'){state.w=Math.min(30,state.w+1);h=true;}
+  if (e.key==='ArrowLeft') {state.w=Math.max(1,state.w-1);h=true;}
+  if (e.key==='ArrowUp')   {state.h=Math.min(30,state.h+1);h=true;}
+  if (e.key==='ArrowDown') {state.h=Math.max(1,state.h-1);h=true;}
+  if (h){
+    if (state.fixedPerimeter) applyFixedPerimeter(e.key.includes('Up')||e.key.includes('Down')?'h':'w');
+    e.preventDefault();
+    update();
+  }
+});
+
+/* ============================================================
+   GRÁFICAS · acciones
+   ============================================================ */
+btnClear.addEventListener('click',()=>{
+  state.points = [];
+  state.discoveries = {square:false,sameArea:false,moreP_lessA:false};
+  drawChart1();drawChart2();
+});
+btnSave.addEventListener('click',()=>{
+  update(); // re-registra el punto actual
+});
+
+/* ============================================================
+   RETOS AUTOMÁTICOS
+   ============================================================ */
+const challenges = [
+  {
+    title:'Reto 1 · Mismo perímetro, áreas distintas',
+    desc:'Construye DOS rectángulos diferentes con perímetro = 24 y encuentra cuál tiene mayor área.',
+    check:()=>{
+      // verifica si hay al menos 2 puntos con p=24 y dimensiones distintas
+      const eligibles = state.points.filter(p=>p.p===24);
+      const unique = new Set(eligibles.map(p=>`${p.w}x${p.h}`));
+      return unique.size>=2;
+    },
+    successMsg:'¡Lo lograste! Mismo perímetro (24), áreas diferentes. El cuadrado 6×6 da el área máxima: 36 u².',
+    failMsg:'Aún no. Necesitas al menos dos rectángulos con perímetro exacto de 24 unidades.',
+  },
+  {
+    title:'Reto 2 · Misma área, perímetros distintos',
+    desc:'Encuentra DOS rectángulos con la MISMA área pero distinto perímetro.',
+    check:()=>{
+      // dos puntos con misma area, dif perimetro
+      const byA = {};
+      for(const p of state.points){
+        byA[p.a] = byA[p.a]||new Set();
+        byA[p.a].add(p.p);
+      }
+      return Object.values(byA).some(s=>s.size>=2);
+    },
+    successMsg:'¡Excelente! Encontraste rectángulos con misma área pero diferente perímetro.',
+    failMsg:'Sigue intentando. Por ejemplo: 2×12 (P=28, A=24) y 3×8 (P=22, A=24).',
+  },
+  {
+    title:'Reto 3 · Maximiza el área',
+    desc:'Encuentra el rectángulo que MAXIMIZA el área para perímetro = 40.',
+    check:()=>{
+      // necesita encontrar 10x10 con p=40
+      return state.points.some(p=>p.p===40 && p.w===10 && p.h===10);
+    },
+    successMsg:'🏆 ¡Perfecto! 10×10 = 100 u² es el área máxima para P=40. El cuadrado siempre maximiza.',
+    failMsg:'Casi. Recuerda: para un perímetro fijo, el cuadrado da el área máxima. Si P=40, ¿cuáles son los lados?',
+  },
+];
+function loadChallenge(){
+  const c = challenges[state.challenge];
+  $('ch-title').textContent = c.title;
+  $('ch-desc').textContent  = c.desc;
+  $('ch-attempts').textContent = `Intentos: ${state.attempts[state.challenge]}`;
+  $('ch-success').textContent  = `Éxitos: ${state.successes[state.challenge]}`;
+  $('ch-feedback').className = 'feedback';
+  $('ch-feedback').textContent = '';
+}
+$('btn-check').addEventListener('click',()=>{
+  state.attempts[state.challenge]++;
+  const c = challenges[state.challenge];
+  const fb = $('ch-feedback');
+  if (c.check()){
+    state.successes[state.challenge]++;
+    fb.textContent = '✅ ' + c.successMsg;
+    fb.className = 'feedback ok';
+  } else {
+    fb.textContent = '❌ ' + c.failMsg;
+    fb.className = 'feedback fail';
+  }
+  $('ch-attempts').textContent = `Intentos: ${state.attempts[state.challenge]}`;
+  $('ch-success').textContent  = `Éxitos: ${state.successes[state.challenge]}`;
+});
+$('btn-next').addEventListener('click',()=>{
+  state.challenge = (state.challenge+1) % challenges.length;
+  loadChallenge();
+});
+
+/* ============================================================
+   MODALES
+   ============================================================ */
+btnFs && btnFs.addEventListener('click',()=>{
+  const el = document.documentElement;
+  if(!document.fullscreenElement){
+    (el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);
+  } else {
+    (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document);
+  }
+});
+
+/* ============================================================
+   INICIO
+   ============================================================ */
+window.addEventListener('load',()=>{
+  resizeAll();
+  loadChallenge();
+  update();
+});
+</script>
+</body>
+</html>
