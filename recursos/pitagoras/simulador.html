@@ -447,10 +447,11 @@
   <!-- ============================================================ -->
   <header>
     <a class="logo-link" href="https://didaxislab.com/" target="_blank" rel="noopener">
-      <svg class="logo-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M6 8 L34 32" stroke="#0BC0D8" stroke-width="5.5" stroke-linecap="round"/>
-        <path d="M34 8 L6 32" stroke="#0BC0D8" stroke-width="5.5" stroke-linecap="round"/>
-        <circle cx="20" cy="20" r="3.2" fill="#0F172A"/>
+      <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+        <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+        <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
       </svg>
       <span class="logo-text">Didaxis Lab</span>
     </a>
@@ -749,7 +750,8 @@
 
   function setPresetVertices(a, b) {
     const { w, h } = getLogicalSize();
-    const scale = getPxPerUnit() / zoomLevel;  // compensar zoom actual
+    // Las medidas son invariantes al zoom; aplicamos el zoom visual a las posiciones.
+    const scale = getPxPerUnit() * zoomLevel;
     const cx = w * 0.38;
     const cy = h * 0.62;
     vertexC = { x: cx,             y: cy            };
@@ -767,7 +769,7 @@
   function applyIsosceles() {
     if (demoActive) stopDemo();
     const { w, h } = getLogicalSize();
-    const side = 5 * getPxPerUnit() / zoomLevel;
+    const side = 5 * getPxPerUnit() * zoomLevel;
     const cx = w * 0.38;
     const cy = h * 0.62;
     vertexC = { x: cx,         y: cy        };
@@ -815,7 +817,9 @@
   // SECCIÓN: Cálculo de medidas del triángulo
   // ============================================================
   function getSideLengths() {
-    const ppu = getPxPerUnit();
+    // Los lados se reportan en "unidades" invariantes al zoom:
+    // el zoom es solo una transformación visual y no debe alterar las medidas.
+    const ppu = getPxPerUnit() * zoomLevel;
     const a = Math.hypot(vertexA.x - vertexC.x, vertexA.y - vertexC.y) / ppu;
     const b = Math.hypot(vertexB.x - vertexC.x, vertexB.y - vertexC.y) / ppu;
     const c = Math.hypot(vertexA.x - vertexB.x, vertexA.y - vertexB.y) / ppu;
