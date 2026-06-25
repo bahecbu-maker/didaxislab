@@ -776,7 +776,7 @@
       <div class="card-title">Vista Numérica</div>
       <div id="numeric-col">
         <!-- Frac 1 -->
-        <div id="frac1-display">
+        <div id="frac1-display" style="display:flex;flex-direction:column;align-items:center;gap:6px;">
           <div class="frac-big" style="color:var(--blue)">
             <span class="frac-num" id="num1-big" style="border-bottom:3px solid var(--blue)">3</span>
             <span class="frac-den" id="den1-big">4</span>
@@ -788,15 +788,18 @@
           </div>
         </div>
 
-        <!-- Frac 2 -->
-        <div id="frac2-display" style="display:none">
-          <div style="font-size:28px;font-weight:800;color:var(--cyan);padding:8px">=</div>
+        <!-- Separador entre fracciones (elemento independiente para alineación correcta) -->
+        <div id="frac2-sep" style="display:none;font-size:30px;font-weight:800;color:var(--cyan);line-height:1;flex-shrink:0;">=</div>
+
+        <!-- Frac 2: columna pura, sin el signo -->
+        <div id="frac2-display" style="display:none;flex-direction:column;align-items:center;gap:6px;">
           <div class="frac-big" style="color:var(--amber)">
             <span class="frac-num" id="num2-big" style="border-bottom:3px solid var(--amber)">1</span>
             <span class="frac-den" id="den2-big">2</span>
           </div>
           <div class="frac-badges">
             <span class="badge" id="dec2-badge">0.5</span>
+            <span class="badge" id="pct2-badge">50.0%</span>
           </div>
         </div>
       </div>
@@ -1169,10 +1172,12 @@ function render() {
     const w2=document.getElementById('svg2-wrap');
     w2.innerHTML=''; w2.appendChild(makeGraphic(num2,den2,AMBER,view));
     document.getElementById('g2-lbl').textContent=`${num2}/${den2}`;
+    document.getElementById('frac2-sep').style.display='block';
     document.getElementById('frac2-display').style.display='flex';
   } else {
     document.getElementById('op-symbol').style.display='none';
     document.getElementById('graphic2-wrap').style.display='none';
+    document.getElementById('frac2-sep').style.display='none';
     document.getElementById('frac2-display').style.display='none';
   }
 
@@ -1193,6 +1198,7 @@ function render() {
     document.getElementById('num2-big').textContent = num2;
     document.getElementById('den2-big').textContent = den2;
     document.getElementById('dec2-badge').textContent = toDecimal(num2,den2);
+    document.getElementById('pct2-badge').textContent = toPercent(num2,den2);
   }
 
   drawNumberLine();
