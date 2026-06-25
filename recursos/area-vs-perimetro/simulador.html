@@ -1,1467 +1,1198 @@
 <!DOCTYPE html>
-  <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pitágoras Interactivo — Didaxis Lab</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-    <style>
-      /* ============================================================ */
-      /* RESET Y BASE                                                  */
-      /* ============================================================ */
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Didaxis Lab · Laboratorio Interactivo: Área vs Perímetro</title>
+<style>
+  :root{
+    --bg:#f5f7fa;
+    --panel:#ffffff;
+    --primary:#1f4e79;
+    --primary-dark:#15375a;
+    --accent:#2e86ab;
+    --accent-2:#5ab4d6;
+    --soft:#eaf2f8;
+    --soft-2:#d6eaf8;
+    --text:#2c3e50;
+    --muted:#6b7c8c;
+    --ok:#1e884e;
+    --warn:#c0392b;
+    --area:#f39c12;
+    --perim:#27ae60;
+    --vertex:#c0392b;
+    --shadow:0 4px 20px rgba(31,78,121,0.10);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    min-height:100%;
+    font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
 
-      :root {
-        --white:  #FFFFFF;
-        --blue:   #1B2A5A;
-        --cyan:   #0BC0D8;
-        --gray:   #6B7280;
-        --red:    #DC2626;
-        --grid:   #E5E7EB;
-        --shadow: 0 2px 8px rgba(27,42,90,0.08);
-        --radius: 10px;
-      }
+  /* ===== SHELL (desktop: header | main | footer en pantalla completa) ===== */
+  .app{
+    width:100%;
+    display:grid;
+    grid-template-rows:54px 1fr 28px;
+    height:100vh;
+    height:100dvh;
+    overflow:hidden;
+  }
 
-      html, body {
-        height: 100%;
-        font-family: 'Inter', system-ui, sans-serif;
-        background: #F3F6FB;
-        color: var(--blue);
-        overflow-x: hidden;
-      }
+  /* ----- header ----- */
+  header{
+    background:#fff;
+    color:#1B2A5A;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    border-bottom:1px solid #E6E9EF;
+    z-index:10;
+    flex-shrink:0;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-weight:600;font-size:15px;letter-spacing:.3px;
+    text-decoration:none;color:inherit;
+  }
+  .brand .logo{ width:32px;height:32px;display:flex;align-items:center;justify-content:center; }
+  .brand .logo svg{width:100%;height:100%;display:block;}
+  .brand small{
+    font-weight:400;color:#5B6B82;font-size:12px;margin-left:6px;
+    border-left:1px solid #D7DEE8;padding-left:8px;
+  }
+  .header-actions{display:flex;gap:8px;}
+  .btn-header{
+    background:#fff;color:#1B2A5A;border:1px solid #CBD5E1;
+    padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;transition:.2s;
+    display:inline-flex;align-items:center;gap:5px;
+    font-family:inherit;font-weight:600;
+  }
+  .btn-header:hover{background:#E2F7FA;border-color:#0BC0D8;}
 
-      /* ============================================================ */
-      /* HEADER                                                        */
-      /* ============================================================ */
-      header {
-        height: 64px;
-        background: var(--white);
-        box-shadow: var(--shadow);
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        gap: 14px;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
+  /* ===== MAIN (3 columnas en desktop) ===== */
+  main{
+    display:grid;
+    grid-template-columns:240px 1fr 270px;
+    grid-template-areas:"left center right";
+    gap:10px;
+    padding:10px;
+    overflow:hidden;
+    min-height:0;
+  }
 
-      .logo-link {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        text-decoration: none;
-        color: var(--blue);
-        flex-shrink: 0;
-        transition: opacity .2s;
-      }
-      .logo-link:hover { opacity: .8; }
-      .logo-mark { height: 32px; width: 32px; flex-shrink: 0; }
-      .logo-text {
-        font-size: 1.05rem;
-        font-weight: 700;
-        letter-spacing: -0.01em;
-        white-space: nowrap;
-      }
+  /* ===== PANELES LATERALES ===== */
+  .panel{
+    background:var(--panel);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:12px 14px;
+    overflow:auto;
+    display:flex;flex-direction:column;gap:10px;
+    min-height:0;
+  }
+  #panel-left  { grid-area:left;  }
+  #panel-right { grid-area:right; }
 
-      .header-sub {
-        border-left: 1.5px solid var(--grid);
-        padding-left: 14px;
-        font-size: 0.92rem;
-        color: var(--gray);
-        font-weight: 400;
-        flex: 1;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+  .panel h3{
+    margin:0 0 4px;font-size:13px;color:var(--primary);
+    text-transform:uppercase;letter-spacing:.6px;
+    border-bottom:2px solid var(--soft);padding-bottom:6px;
+    flex-shrink:0;
+  }
+  .panel::-webkit-scrollbar{width:5px;}
+  .panel::-webkit-scrollbar-thumb{background:var(--soft-2);border-radius:4px;}
 
-      .btn-fullscreen {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        border-radius: 999px;
-        border: 1.5px solid var(--grid);
-        background: var(--white);
-        color: var(--blue);
-        font-family: inherit;
-        font-size: 0.82rem;
-        font-weight: 600;
-        cursor: pointer;
-        flex-shrink: 0;
-        transition: background .2s, border-color .2s, color .2s;
-      }
-      .btn-fullscreen:hover { border-color: var(--cyan); color: var(--cyan); }
-      .btn-fullscreen svg { width: 14px; height: 14px; }
+  /* ===== CONTROLES ===== */
+  .control{display:flex;flex-direction:column;gap:4px;}
+  .control label{
+    font-size:12px;font-weight:600;color:var(--text);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .control label .value{
+    background:var(--soft);color:var(--primary);
+    padding:2px 8px;border-radius:6px;
+    font-variant-numeric:tabular-nums;font-size:12px;
+  }
+  input[type="range"]{
+    -webkit-appearance:none;width:100%;height:6px;
+    background:var(--soft);border-radius:4px;outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;
+    background:var(--accent);border-radius:50%;cursor:pointer;
+    box-shadow:0 2px 6px rgba(0,0,0,.2);transition:.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover{background:var(--primary);transform:scale(1.1);}
+  input[type="range"]::-moz-range-thumb{
+    width:18px;height:18px;border:none;
+    background:var(--accent);border-radius:50%;cursor:pointer;
+  }
 
-      /* ============================================================ */
-      /* MAIN LAYOUT                                                   */
-      /* ============================================================ */
-      main {
-        display: flex;
-        height: calc(100vh - 64px - 30px);
-        padding: 14px 14px 0 14px;
-        gap: 0;
-      }
+  .btn{
+    background:var(--accent);color:#fff;border:none;
+    padding:8px 10px;border-radius:8px;font-size:12px;font-weight:600;
+    cursor:pointer;transition:.2s;width:100%;font-family:inherit;
+  }
+  .btn:hover{background:var(--primary);}
+  .btn.secondary{background:#fff;color:var(--primary);border:1px solid var(--soft-2);}
+  .btn.secondary:hover{background:var(--soft);}
+  .btn.small{padding:6px 8px;font-size:11px;}
 
-      /* ============================================================ */
-      /* COLUMNA IZQUIERDA — CANVAS AREA                              */
-      /* ============================================================ */
-      .canvas-area {
-        flex: 0 0 70%;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        min-width: 0;
-      }
+  .checkbox-row{
+    display:flex;align-items:center;gap:8px;
+    background:var(--soft);padding:8px 10px;border-radius:8px;cursor:pointer;
+  }
+  .checkbox-row input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer;}
+  .checkbox-row label{font-size:12px;font-weight:600;cursor:pointer;flex:1;}
 
-      /* Barra de controles (presets + zoom) */
-      .controls-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
+  .fixed-p-input{
+    display:flex;align-items:center;gap:6px;
+    background:var(--soft);padding:6px 8px;border-radius:8px;
+  }
+  .fixed-p-input label{font-size:11px;color:var(--muted);}
+  .fixed-p-input input{
+    width:60px;padding:4px 6px;border:1px solid var(--soft-2);
+    border-radius:6px;font-size:12px;text-align:center;font-family:inherit;
+  }
+  .hidden{display:none !important;}
 
-      .controls-sep {
-        width: 1px;
-        height: 24px;
-        background: var(--grid);
-        margin: 0 2px;
-        flex-shrink: 0;
-      }
+  /* ===== PANEL CENTRAL ===== */
+  .center{
+    grid-area:center;
+    position:relative;
+    display:flex;flex-direction:column;
+    gap:8px;padding:8px;
+    min-height:0;overflow:hidden;
+  }
 
-      .zoom-group {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        background: var(--white);
-        border: 2px solid var(--grid);
-        border-radius: var(--radius);
-        padding: 2px 6px;
-      }
+  /* Lienzo principal: ocupa todo el espacio disponible */
+  .canvas-wrap{
+    flex:1 1 0;
+    min-height:0;
+    background:linear-gradient(180deg,#fafdff 0%,#f0f6fb 100%);
+    border-radius:var(--radius);
+    border:1px solid var(--soft-2);
+    overflow:hidden;
+    position:relative;
+  }
+  #canvas{
+    display:block;width:100%;height:100%;
+    cursor:grab;touch-action:none;
+  }
+  #canvas:active{cursor:grabbing;}
 
-      .zoom-group span {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--gray);
-        min-width: 38px;
-        text-align: center;
-        user-select: none;
-      }
+  /* Banner de descubrimiento (flotante DENTRO del canvas-wrap) */
+  #discovery{
+    position:absolute;
+    top:12px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,#fff7e0 0%,#ffeec2 100%);
+    border:2px solid #f1c40f;color:#7d5a00;
+    padding:8px 16px;border-radius:30px;
+    font-size:13px;font-weight:700;
+    box-shadow:0 6px 18px rgba(241,196,15,.35);
+    z-index:10;
+    animation:popIn .4s ease;
+    max-width:80%;text-align:center;
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  @keyframes popIn{
+    0%{opacity:0;transform:translate(-50%,-12px) scale(.85);}
+    100%{opacity:1;transform:translate(-50%,0) scale(1);}
+  }
 
-      .btn-zoom {
-        width: 26px;
-        height: 26px;
-        border-radius: 6px;
-        border: none;
-        background: transparent;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--blue);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.15s;
-        line-height: 1;
-      }
+  /* ===== FILA DE GRÁFICAS ===== */
+  /*
+     CORRECCIÓN CLAVE:
+     - Sin height fijo en el contenedor → cada chart-box controla su propia altura.
+     - Los canvas internos se posicionan en absolute para llenar 100% del chart-box.
+  */
+  .charts-row{
+    display:grid;
+    grid-template-columns:1fr 1fr auto;
+    gap:8px;
+    flex-shrink:0;
+  }
+  .chart-box{
+    background:#fff;
+    border-radius:10px;
+    border:1px solid var(--soft-2);
+    padding:4px;
+    position:relative;   /* âœ" canvas interno se posiciona aquí */
+    min-height:130px;    /* âœ" altura mínima garantizada */
+    overflow:hidden;
+  }
+  .chart-box canvas{
+    display:block;
+    position:absolute;  /* âœ" llena el chart-box sin depender del flujo */
+    inset:0;
+    width:100%;
+    height:100%;
+  }
+  .chart-title{
+    position:absolute;top:4px;left:8px;
+    font-size:10px;font-weight:600;color:var(--primary);
+    text-transform:uppercase;letter-spacing:.4px;
+    z-index:2;
+    pointer-events:none;
+    /* fondo blanco semitransparente para que no se mezcle con los ejes del canvas */
+    background:rgba(255,255,255,0.92);
+    padding:1px 4px 1px 2px;
+    border-radius:3px;
+    line-height:1.4;
+  }
+  .chart-actions{
+    display:flex;flex-direction:column;gap:4px;justify-content:center;
+  }
+  .chart-actions .btn{width:auto;white-space:nowrap;}
 
-      .btn-zoom:hover { background: var(--grid); }
-      .btn-zoom:focus-visible { outline: 2px solid var(--cyan); }
+  /* ===== PANEL DERECHO — tarjetas ===== */
+  .result-card{
+    background:linear-gradient(135deg,var(--soft) 0%,#fff 100%);
+    border:1px solid var(--soft-2);border-radius:10px;padding:8px 10px;
+    flex-shrink:0;
+  }
+  .result-card .label{
+    font-size:10px;text-transform:uppercase;letter-spacing:.6px;
+    color:var(--muted);font-weight:700;
+  }
+  .result-card .value{
+    font-size:22px;font-weight:700;color:var(--primary);
+    margin-top:2px;font-variant-numeric:tabular-nums;
+  }
+  .result-card .formula{font-size:11px;color:var(--text);font-family:'Consolas',monospace;margin-top:2px;}
+  .result-card.area  .value{color:var(--area);}
+  .result-card.perim .value{color:var(--perim);}
 
-      .btn {
-        padding: 7px 14px;
-        border-radius: var(--radius);
-        border: 2px solid var(--blue);
-        background: var(--white);
-        color: var(--blue);
-        font-family: inherit;
-        font-size: 0.78rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s;
-        white-space: nowrap;
-      }
-      .btn:hover { background: var(--blue); color: var(--white); }
-      .btn:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+  /* Velocímetro — canvas fill con dimensiones CSS; DPR gestionado en JS */
+  .speedo-wrap{
+    text-align:center;background:#fff;
+    border:1px solid var(--soft-2);border-radius:10px;
+    padding:8px 6px;flex-shrink:0;
+  }
+  .speedo-wrap .label{
+    font-size:10px;color:var(--muted);font-weight:700;
+    text-transform:uppercase;letter-spacing:.6px;
+    display:block;margin-bottom:4px;
+  }
+  /* El canvas del speedo llena el ancho del contenedor y tiene altura fija */
+  #speedo{
+    display:block;
+    width:100%;
+    height:90px;  /* CSS height — JS aplica DPR */
+    margin:0 auto 2px;
+  }
+  .speedo-text{font-size:11px;color:var(--primary);font-weight:600;}
 
-      .btn-demo { border-color: var(--cyan); color: var(--cyan); }
-      .btn-demo:hover { background: var(--cyan); color: var(--white); }
-      .btn-demo.active { background: var(--cyan); color: var(--white); }
+  /* Retos */
+  .challenge{
+    background:#fff;border:1px solid var(--soft-2);border-radius:10px;
+    padding:8px 10px;font-size:12px;flex-shrink:0;
+  }
+  .challenge .title{font-weight:700;color:var(--primary);font-size:12px;margin-bottom:4px;}
+  .challenge .desc{color:var(--text);font-size:11.5px;line-height:1.4;}
+  .challenge .stats{
+    display:flex;justify-content:space-between;font-size:10px;
+    margin-top:6px;color:var(--muted);
+  }
+  .challenge .feedback{
+    margin-top:6px;font-size:11px;font-weight:600;
+    padding:4px 8px;border-radius:6px;text-align:center;min-height:18px;
+  }
+  .challenge .feedback.ok{background:#e8f6ee;color:var(--ok);}
+  .challenge .feedback.fail{background:#fcecea;color:var(--warn);}
 
-      /* ============================================================ */
-      /* CANVAS WRAPPER                                                */
-      /* ============================================================ */
-      .canvas-wrapper {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        flex: 1;
-        position: relative;
-        overflow: hidden;
-      }
+  /* ===== FOOTER ===== */
+  footer{
+    background:var(--soft);color:var(--muted);font-size:11px;
+    display:flex;align-items:center;justify-content:center;
+    border-top:1px solid var(--soft-2);flex-shrink:0;
+  }
+  footer b{color:var(--primary);}
 
-      #mainCanvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+  /* tooltip */
+  [data-tip]{position:relative;}
+  [data-tip]:hover::after{
+    content:attr(data-tip);
+    position:absolute;bottom:120%;left:50%;transform:translateX(-50%);
+    background:var(--primary-dark);color:#fff;padding:4px 8px;
+    border-radius:6px;font-size:11px;white-space:nowrap;z-index:20;
+    box-shadow:0 4px 10px rgba(0,0,0,.2);pointer-events:none;
+  }
 
-      /* Demo label strip — pequeño, no bloquea el canvas */
-      .demo-strip {
-        display: none;
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        background: linear-gradient(90deg, var(--blue) 0%, #2563EB 100%);
-        color: var(--white);
-        font-size: 0.78rem;
-        font-weight: 600;
-        padding: 7px 16px;
-        text-align: center;
-        pointer-events: none;
-        z-index: 5;
-      }
-      .demo-strip.show { display: block; }
+  /* alto contraste */
+  body.high-contrast{
+    --bg:#000;--panel:#fff;--text:#000;--primary:#000;
+    --soft:#ffeb3b;--accent:#000;--area:#ff6f00;--perim:#1b5e20;
+  }
+  body.high-contrast .btn{background:#000;color:#ffeb3b;border:2px solid #ffeb3b;}
+  body.high-contrast .btn:hover{background:#ffeb3b;color:#000;}
 
-      /* ============================================================ */
-      /* FÓRMULA EN VIVO                                               */
-      /* ============================================================ */
-      .formula-bar {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 11px 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .formula-text  { flex: 1; font-size: 1rem; font-weight: 600; color: var(--blue); }
-      .formula-check { font-size: 1.25rem; font-weight: 700; color: var(--cyan); min-width: 26px; text-align: center; }
+  /* =====================================================================
+     RESPONSIVIDAD
+     Estrategia:
+     ≥ 1101px  → 3 columnas, shell height:100vh (ya arriba)
+     960-1100  → 2 columnas (center + right apilados, left a la izquierda)
+     ≤ 960px   → 1 columna, scroll libre
+  ===================================================================== */
 
-      /* ============================================================ */
-      /* BARRA DE MEDIDAS EXACTAS                                      */
-      /* ============================================================ */
-      .measure-bar {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 9px 16px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .measure-bar label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--gray);
-        white-space: nowrap;
-      }
-      .measure-bar .measure-group {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .measure-bar .measure-tag {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--cyan);
-        min-width: 14px;
-      }
-      .measure-bar input[type="number"] {
-        width: 68px;
-        padding: 5px 8px;
-        border-radius: 7px;
-        border: 1.5px solid var(--grid);
-        font-family: inherit;
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: var(--blue);
-        outline: none;
-        transition: border-color 0.2s;
-      }
-      .measure-bar input[type="number"]:focus { border-color: var(--cyan); }
-      .measure-bar .measure-hint {
-        font-size: 0.72rem;
-        color: var(--gray);
-        margin-left: 4px;
-      }
+  /* --- Pantallas medianas: 2 columnas --- */
+  @media (max-width:1100px){
+    .app{
+      height:auto;
+      min-height:100vh;
+      min-height:100dvh;
+      overflow-y:auto;
+      grid-template-rows:54px auto 28px;
+    }
+    main{
+      grid-template-columns:240px 1fr;
+      grid-template-areas:
+        "left  center"
+        "left  right";
+      grid-template-rows:auto auto;
+      overflow:visible;
+      align-items:start;
+    }
+    .center{overflow:visible;min-height:0;}
+    .canvas-wrap{min-height:360px;}
+    #panel-right{overflow:visible;}
+    .charts-row{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
+    .chart-actions{
+      flex-direction:row;
+      grid-column:1 / -1;
+      justify-content:flex-end;
+    }
+    .chart-actions .btn{width:auto;}
+  }
 
-      /* Botón "Cargar en canvas" dentro de tarjeta de reto */
-      .btn-load-canvas {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px 11px;
-        border-radius: 7px;
-        border: 1.5px solid var(--cyan);
-        background: transparent;
-        color: var(--cyan);
-        font-family: inherit;
-        font-size: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s, color 0.2s;
-        margin-bottom: 8px;
-      }
-      .btn-load-canvas:hover { background: var(--cyan); color: var(--white); }
+  /* --- Tablets pequeñas: 1 columna --- */
+  @media (max-width:820px){
+    main{
+      grid-template-columns:1fr;
+      grid-template-areas:
+        "center"
+        "left"
+        "right";
+      gap:10px;
+    }
+    .canvas-wrap{min-height:320px;}
+    .brand small{display:none;}
+    .brand{font-size:13px;}
+    .btn-header{padding:5px 10px;font-size:11px;}
+  }
 
-      /* ============================================================ */
-      /* PANEL DE RETOS                                                */
-      /* ============================================================ */
-      .challenges-panel {
-        flex: 0 0 30%;
-        min-width: 0;           /* evita desbordamiento del contenedor flex */
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding-left: 16px;
-        overflow-y: auto;
-      }
-      .challenges-panel::-webkit-scrollbar { width: 4px; }
-      .challenges-panel::-webkit-scrollbar-thumb { background: var(--grid); border-radius: 4px; }
+  /* --- Móviles --- */
+  @media (max-width:520px){
+    header{padding:0 10px;}
+    .brand{font-size:12px;gap:6px;}
+    .brand .logo{width:28px;height:28px;}
+    .btn-header{padding:4px 8px;font-size:10px;}
+    main{gap:8px;padding:8px;}
+    .panel{padding:10px 12px;}
+    .canvas-wrap{min-height:260px;}
+    .charts-row{
+      grid-template-columns:1fr;
+      grid-template-rows:auto;
+    }
+    /* En 1 columna los botones van al final */
+    .chart-actions{
+      flex-direction:row;
+      grid-column:1;
+      justify-content:flex-end;
+    }
+    .chart-box{min-height:140px;}
+    .result-card .value{font-size:18px;}
+    .panel h3{font-size:12px;}
+    .control label{font-size:11px;}
+  }
 
-      .challenges-header { font-size: 1.1rem; font-weight: 700; color: var(--blue); padding: 6px 0 2px; flex-shrink: 0; }
+  /* Pantalla completa */
+  :fullscreen .app,:-webkit-full-screen .app,:-moz-full-screen .app{
+    height:100vh;height:100dvh;
+    grid-template-rows:54px 1fr 28px;
+    overflow:hidden;
+  }
+</style>
+</head>
+<body>
 
-      .challenge-card {
-        background: var(--white);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 2px solid var(--grid);
-        padding: 14px 16px;
-        transition: border-color 0.25s;
-        /* Impide que el contenido desborde el contenedor flex */
-        min-width: 0;
-        overflow: hidden;
-      }
-      .challenge-card.correct   { border-color: var(--cyan); }
-      .challenge-card.incorrect { border-color: #FCA5A5; }
+<div class="app" role="application" aria-label="Laboratorio interactivo Área vs Perímetro">
 
-      .challenge-card h3 {
-        font-size: 0.75rem; font-weight: 700; color: var(--cyan);
-        text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px;
-        line-height: 1.35;
-        overflow-wrap: break-word;
-        word-break: break-word;
-      }
-      .challenge-card p.challenge-text {
-        font-size: 0.82rem; color: var(--blue); line-height: 1.5; margin-bottom: 10px;
-        overflow-wrap: break-word;
-        word-break: break-word;
-      }
-
-      .challenge-input-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-      .challenge-input-row input[type="number"] {
-        flex: 1; min-width: 80px; padding: 7px 10px; border-radius: 8px;
-        border: 1.5px solid var(--grid); font-family: inherit;
-        font-size: 0.88rem; color: var(--blue); outline: none; transition: border-color 0.2s;
-      }
-      .challenge-input-row input[type="number"]:focus { border-color: var(--cyan); }
-
-      .btn-check {
-        padding: 7px 14px; background: var(--cyan); color: var(--white);
-        border: none; border-radius: 8px; font-family: inherit;
-        font-size: 0.82rem; font-weight: 600; cursor: pointer;
-        transition: background 0.2s; white-space: nowrap;
-      }
-      .btn-check:hover { background: #09a8be; }
-      .btn-check:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
-
-      .challenge-feedback {
-        display: none; margin-top: 9px; font-size: 0.8rem;
-        border-radius: 7px; padding: 8px 12px; line-height: 1.45;
-      }
-      .challenge-feedback.show { display: block; }
-      .challenge-feedback.ok   { background: #E0FAF8; color: #065f5a; }
-      .challenge-feedback.fail { background: #FEF2F2; color: var(--red); }
-      .feedback-icon { font-weight: 700; margin-right: 4px; }
-
-      /* ============================================================ */
-      /* BANNER COMPLETADO                                             */
-      /* ============================================================ */
-      .completion-banner {
-        display: none; border-radius: var(--radius); padding: 14px 18px;
-        font-size: 0.88rem; font-weight: 600; text-align: center;
-        background: linear-gradient(135deg, var(--blue) 0%, #2d4a9e 100%);
-        color: var(--white); position: relative; overflow: hidden; flex-shrink: 0;
-      }
-      .completion-banner.show { display: block; }
-      .completion-banner::before {
-        content: ''; position: absolute; inset: 0;
-        background: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.05) 6px, rgba(255,255,255,0.05) 12px);
-      }
-      .completion-banner span { position: relative; z-index: 1; }
-
-      /* ============================================================ */
-      /* FOOTER                                                        */
-      /* ============================================================ */
-      footer {
-        height: 30px; display: flex; align-items: center;
-        justify-content: center; font-size: 0.72rem; color: var(--gray);
-        text-align: center; padding: 0 12px;
-      }
-
-      /* Tablet ancho */
-      @media (max-width: 1100px) {
-        main { padding: 12px; }
-        .canvas-area { flex: 0 0 60%; }
-        .challenges-panel { flex: 0 0 40%; padding-left: 12px; }
-        .challenge-card h3 { letter-spacing: 0.04em; }
-      }
-
-      /* Tablet estrecho — el panel ya necesita algo de espacio extra */
-      @media (max-width: 960px) {
-        .canvas-area { flex: 0 0 56%; }
-        .challenges-panel { flex: 0 0 44%; padding-left: 10px; }
-        .challenge-card { padding: 12px 13px; }
-        .challenge-card h3 { font-size: 0.7rem; letter-spacing: 0.03em; }
-      }
-
-      /* Mobile / apilado */
-      @media (max-width: 900px) {
-        header { height: auto; padding: 10px 14px; flex-wrap: wrap; gap: 10px; }
-        .header-sub { font-size: 0.82rem; padding-left: 10px; }
-        .btn-fullscreen { padding: 6px 12px; font-size: 0.75rem; }
-
-        main {
-          flex-direction: column;
-          height: auto;           /* sin altura fija; el contenido la dicta */
-          min-height: 0;
-          padding: 10px;
-          padding-bottom: 20px;
-        }
-
-        /* canvas-area también crece según su contenido:
-           el canvas-wrapper tiene min-height propio, así que hay espacio garantizado */
-        .canvas-area {
-          flex: none;
-          height: auto;           /* ← quitamos el 58vh que causaba el desbordamiento */
-          min-height: 0;
-        }
-        .canvas-wrapper {
-          /* el canvas ocupa este espacio mínimo; las barras de control/fórmula/medidas
-             se apilan encima y debajo sin salirse de la caja */
-          height: 55vw;
-          min-height: 260px;
-          max-height: 480px;
-        }
-
-        .challenges-panel {
-          flex: none;
-          padding-left: 0;
-          padding-bottom: 16px;
-          /* separación clara entre el área de canvas y los retos */
-          margin-top: 8px;
-          max-height: none;
-          overflow-y: visible;
-        }
-
-        /* Separador vertical no tiene sentido en barra que puede saltar de línea */
-        .controls-sep { display: none; }
-
-        .controls-bar .btn { font-size: 0.72rem; padding: 6px 10px; }
-        .measure-bar { padding: 8px 10px; gap: 8px; }
-        .measure-bar input[type="number"] { width: 58px; }
-        .formula-bar { padding: 9px 14px; font-size: 0.88rem; }
-
-        /* Títulos de retos: sin mayúsculas + tracking ajustado */
-        .challenge-card h3 {
-          font-size: 0.78rem;
-          letter-spacing: 0.02em;
-          text-transform: none;
-        }
-      }
-
-      /* Móvil pequeño */
-      @media (max-width: 560px) {
-        .header-sub { display: none; }
-        .logo-text { font-size: 0.95rem; }
-        /* Ocultar el texto del botón fullscreen para no colapsar el header */
-        .btn-fs-label { display: none; }
-        .btn-fullscreen { padding: 6px 10px; gap: 0; }
-
-        .controls-bar { gap: 6px; }
-        .controls-bar .btn { font-size: 0.68rem; padding: 5px 8px; }
-        .zoom-group span { min-width: 32px; font-size: 0.7rem; }
-
-        .canvas-area { height: 52vh; min-height: 300px; }
-
-        .challenge-card { padding: 11px 12px; }
-        .challenge-card h3 { font-size: 0.73rem; }
-        .challenge-input-row { gap: 6px; }
-        .btn-check { padding: 7px 11px; font-size: 0.78rem; }
-      }
-
-      /* Móvil muy pequeño */
-      @media (max-width: 380px) {
-        .challenge-card h3 { font-size: 0.7rem; }
-        .controls-bar .btn { font-size: 0.64rem; padding: 5px 7px; }
-        .zoom-group { padding: 2px 4px; }
-      }
-
-      /* Fullscreen */
-      :fullscreen header, :-webkit-full-screen header { border-radius: 0; }
-      body:fullscreen, body:-webkit-full-screen { background: #F3F6FB; }
-    </style>
-  </head>
-  <body>
-
-  <!-- ============================================================ -->
-  <!-- HEADER                                                        -->
-  <!-- ============================================================ -->
+  <!-- ================== HEADER ================== -->
   <header>
-    <a class="logo-link" href="https://didaxislab.com/" target="_blank" rel="noopener">
-      <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-        <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
-        <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
-        <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
-        <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
-      </svg>
-      <span class="logo-text">Didaxis Lab</span>
+    <a class="brand" href="https://didaxislab.com/" target="_blank" rel="noopener">
+      <div class="logo">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Didaxis Lab">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="13" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="13" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="16" fill="#0BC0D8"/>
+          <circle cx="80" cy="20" r="16" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="16" fill="#0BC0D8"/>
+          <circle cx="20" cy="80" r="16" fill="#0BC0D8"/>
+        </svg>
+      </div>
+      <div>Didaxis Lab <small>Laboratorio Interactivo: Área vs Perímetro</small></div>
     </a>
-    <div class="header-sub">Laboratorio Interactivo: Pitágoras</div>
-    <button class="btn-fullscreen" id="btnFullscreen" onclick="toggleFullscreen()" aria-label="Pantalla completa">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/>
-      </svg>
-      <span class="btn-fs-label">Pantalla completa</span>
-    </button>
+    <div class="header-actions">
+      <button class="btn-header" id="btn-fullscreen" data-tip="Ver en pantalla completa">
+        <svg id="fs-expand" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+        <svg id="fs-shrink" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:none">
+          <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/>
+          <line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>
+        </svg>
+        Pantalla completa
+      </button>
+    </div>
   </header>
 
-  <!-- ============================================================ -->
-  <!-- CONTENIDO PRINCIPAL                                           -->
-  <!-- ============================================================ -->
+  <!-- ================== MAIN ================== -->
   <main>
-    <!-- COLUMNA IZQUIERDA: CANVAS -->
-    <section class="canvas-area" aria-label="Área de simulación interactiva">
 
-      <div class="controls-bar">
-        <button class="btn" onclick="applyPreset(3,4,5)"      aria-label="Preset triángulo 3-4-5">Triángulo 3-4-5</button>
-        <button class="btn" onclick="applyPreset(5,12,13)"    aria-label="Preset triángulo 5-12-13">Triángulo 5-12-13</button>
-        <button class="btn" onclick="applyIsosceles()"        aria-label="Triángulo isósceles rectángulo">Isósceles rectángulo</button>
-        <button class="btn btn-demo" id="btnDemo" onclick="toggleDemo()" aria-label="Modo Demostración Visual">▶ Demostración Visual</button>
+    <!-- ===== PANEL IZQUIERDO ===== -->
+    <aside class="panel" id="panel-left" aria-label="Panel de control">
+      <h3>🎛 Controles</h3>
 
-        <div class="controls-sep"></div>
-
-        <!-- Controles de zoom -->
-        <div class="zoom-group" aria-label="Controles de zoom">
-          <button class="btn-zoom" onclick="changeZoom(-0.25)" aria-label="Reducir zoom" title="Alejar">−</button>
-          <span id="zoomLabel">100%</span>
-          <button class="btn-zoom" onclick="resetZoom()" aria-label="Zoom al 100%" title="Restablecer zoom">↺</button>
-          <button class="btn-zoom" onclick="changeZoom(+0.25)" aria-label="Aumentar zoom" title="Acercar">+</button>
-        </div>
+      <div class="control">
+        <label for="slider-w">Ancho del rectángulo <span class="value" id="val-w">8</span></label>
+        <input type="range" id="slider-w" min="1" max="30" step="1" value="8" aria-label="Ancho del rectángulo">
       </div>
 
-      <div class="canvas-wrapper">
-        <canvas id="mainCanvas" aria-label="Canvas del triángulo rectángulo interactivo"></canvas>
-        <!-- Strip informativo de la demo — no bloquea el canvas -->
-        <div class="demo-strip" id="demoStrip">
-          ▶ Demostración: los cuadrados de los catetos se suman para formar el cuadrado de la hipotenusa
-        </div>
+      <div class="control">
+        <label for="slider-h">Alto del rectángulo <span class="value" id="val-h">5</span></label>
+        <input type="range" id="slider-h" min="1" max="30" step="1" value="5" aria-label="Alto del rectángulo">
       </div>
 
-      <div class="formula-bar" aria-live="polite">
-        <span class="formula-text"  id="formulaText">a² + b² = c²</span>
-        <span class="formula-check" id="formulaCheck">✓</span>
+      <button class="btn" id="btn-random" data-tip="Genera dimensiones aleatorias">🎲 Generar aleatorio</button>
+      <button class="btn secondary" id="btn-reset" data-tip="Restablece configuración inicial">↺ Restablecer</button>
+
+      <div class="checkbox-row" data-tip="Mantén el perímetro constante">
+        <input type="checkbox" id="chk-fixp">
+        <label for="chk-fixp">🔒 Fijar perímetro</label>
+      </div>
+      <div class="fixed-p-input hidden" id="fixp-input">
+        <label for="inp-fixp">Perímetro:</label>
+        <input type="number" id="inp-fixp" min="4" max="120" step="2" value="26">
+        <span style="font-size:11px;color:var(--muted)">u</span>
       </div>
 
-      <!-- Barra de medidas exactas -->
-      <div class="measure-bar" aria-label="Ajuste de medidas exactas">
-        <label>📐 Medidas exactas:</label>
-        <div class="measure-group">
-          <span class="measure-tag">a =</span>
-          <input type="number" id="inputA" min="0.5" max="99" step="0.5" value="3"
-                 aria-label="Cateto a" oninput="onMeasureInput()" />
+      <h3 style="margin-top:6px;">🎯 Retos</h3>
+      <div class="challenge" id="challenge-card">
+        <div class="title" id="ch-title">Reto 1 · Tu primer rectángulo</div>
+        <div class="desc" id="ch-desc">Construye un rectángulo cuya área sea exactamente 12 u². Usa los sliders o arrastra los vértices.</div>
+        <div class="stats">
+          <span id="ch-attempts">Intentos: 0</span>
+          <span id="ch-success">Éxitos: 0</span>
         </div>
-        <div class="measure-group">
-          <span class="measure-tag">b =</span>
-          <input type="number" id="inputB" min="0.5" max="99" step="0.5" value="4"
-                 aria-label="Cateto b" oninput="onMeasureInput()" />
+        <div class="feedback" id="ch-feedback"></div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button class="btn small" id="btn-check">Verificar</button>
+          <button class="btn secondary small" id="btn-next">Siguiente reto</button>
         </div>
-        <span class="measure-hint">Escribe los valores y el triángulo se ajusta solo</span>
+      </div>
+    </aside>
+
+    <!-- ===== PANEL CENTRAL ===== -->
+    <section class="center" id="center">
+      <div class="canvas-wrap" id="canvas-wrap">
+        <canvas id="canvas" tabindex="0" aria-label="Rectángulo interactivo sobre cuadrícula cartesiana"></canvas>
+        <div id="discovery" class="hidden"></div>
       </div>
 
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="chart-title">Perímetro → Área</div>
+          <canvas id="chart1" aria-label="Gráfica Perímetro versus Área"></canvas>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">Ancho/Alto → Área</div>
+          <canvas id="chart2" aria-label="Gráfica Razón Ancho/Alto versus Área"></canvas>
+        </div>
+        <div class="chart-actions">
+          <button class="btn secondary small" id="btn-save-point" data-tip="Guardar configuración actual">📍 Guardar</button>
+          <button class="btn secondary small" id="btn-clear-charts" data-tip="Borrar todos los puntos">🧹 Limpiar</button>
+        </div>
+      </div>
     </section>
 
-    <!-- COLUMNA DERECHA: RETOS -->
-    <aside class="challenges-panel" aria-label="Panel de retos de Pitágoras">
-      <div class="challenges-header">🎯 Retos</div>
+    <!-- ===== PANEL DERECHO ===== -->
+    <aside class="panel" id="panel-right" aria-label="Panel de resultados">
+      <h3>📊 Resultados</h3>
 
-      <div class="challenge-card" id="card1">
-        <h3>Reto 1 — El triángulo clásico</h3>
-        <p class="challenge-text">Ajusta los vértices para construir un triángulo donde <strong>a = 3</strong> y <strong>b = 4</strong> unidades. ¿Cuál es el valor de <strong>c</strong>?</p>
-        <div class="challenge-input-row">
-          <input type="number" step="0.01" placeholder="Tu respuesta…" id="ans1" aria-label="Respuesta reto 1" />
-          <button class="btn-check" onclick="checkChallenge(1)" aria-label="Comprobar reto 1">Comprobar</button>
-        </div>
-        <div class="challenge-feedback" id="fb1"></div>
+      <div class="result-card area">
+        <div class="label">Área</div>
+        <div class="value"><span id="res-area">40</span> u²</div>
+        <div class="formula" id="res-area-formula">Área = 8 × 5 = 40 u²</div>
       </div>
 
-      <div class="challenge-card" id="card2">
-        <h3>Reto 2 — Cuadrados que conversan</h3>
-        <p class="challenge-text">Si el cuadrado sobre un cateto mide <strong>36</strong> y el cuadrado sobre la hipotenusa mide <strong>100</strong>, ¿cuánto mide el cuadrado sobre el otro cateto?</p>
-        <div class="challenge-input-row">
-          <input type="number" step="0.01" placeholder="Tu respuesta…" id="ans2" aria-label="Respuesta reto 2" />
-          <button class="btn-check" onclick="checkChallenge(2)" aria-label="Comprobar reto 2">Comprobar</button>
-        </div>
-        <div class="challenge-feedback" id="fb2"></div>
+      <div class="result-card perim">
+        <div class="label">Perímetro</div>
+        <div class="value"><span id="res-perim">26</span> u</div>
+        <div class="formula" id="res-perim-formula">P = 2(8 + 5) = 26 u</div>
       </div>
 
-      <div class="challenge-card" id="card3">
-        <h3>Reto 3 — El reto del piloto</h3>
-        <p class="challenge-text">Un avión vuela <strong>8 km</strong> al este y luego <strong>6 km</strong> al norte. ¿Qué distancia recta lo separa de su punto de partida?</p>
-        <button class="btn-load-canvas" onclick="loadChallenge3Canvas()" aria-label="Cargar triángulo 6-8 en el canvas">
-          📐 Ver en el canvas (a=6, b=8)
-        </button>
-        <div class="challenge-input-row">
-          <input type="number" step="0.01" placeholder="Tu respuesta…" id="ans3" aria-label="Respuesta reto 3" />
-          <button class="btn-check" onclick="checkChallenge(3)" aria-label="Comprobar reto 3">Comprobar</button>
-        </div>
-        <div class="challenge-feedback" id="fb3"></div>
+      <div class="result-card">
+        <div class="label">Razón Área / Perímetro</div>
+        <div class="value" style="color:var(--accent)"><span id="res-ratio">1.54</span></div>
+        <div class="formula" id="res-ratio-formula">40 / 26 = 1.54</div>
       </div>
 
-      <div class="challenge-card" id="card4">
-        <h3>Reto 4 — Pensamiento inverso</h3>
-        <p class="challenge-text">Construye un triángulo rectángulo cuya hipotenusa sea exactamente el doble de uno de sus catetos. ¿Cuál es la razón entre el otro cateto y la hipotenusa? (Pista: usa decimales)</p>
-        <div class="challenge-input-row">
-          <input type="number" step="0.01" placeholder="Tu respuesta…" id="ans4" aria-label="Respuesta reto 4" />
-          <button class="btn-check" onclick="checkChallenge(4)" aria-label="Comprobar reto 4">Comprobar</button>
-        </div>
-        <div class="challenge-feedback" id="fb4"></div>
+      <div class="speedo-wrap">
+        <span class="label">Eficiencia espacial</span>
+        <canvas id="speedo" aria-label="Velocímetro de eficiencia espacial"></canvas>
+        <div class="speedo-text" id="speedo-text">Eficiencia media</div>
       </div>
 
-      <div class="completion-banner" id="completionBanner">
-        <span>🏆 ¡Reto completado! Has demostrado dominio del Teorema de Pitágoras.</span>
+      <div class="result-card" style="background:#fff;border:1px dashed var(--soft-2);">
+        <div class="label">💡 Pista</div>
+        <div style="font-size:11.5px;line-height:1.4;margin-top:4px;color:var(--text)" id="hint-text">
+          Mueve los sliders o arrastra los vértices rojos del rectángulo. Activa <b>Fijar perímetro</b> para explorar áreas distintas con el mismo contorno.
+        </div>
       </div>
     </aside>
   </main>
 
-  <footer><span>© Didaxis Lab — Recurso educativo abierto</span></footer>
+  <footer>
+    <span>Didaxis Lab · <b>Laboratorio Interactivo: Área vs Perímetro</b> · Manipula, observa, descubre.</span>
+  </footer>
+</div>
 
-  <script>
-  // ============================================================
-  // SECCIÓN: Variables globales y estado de la aplicación
-  // ============================================================
-  const canvas = document.getElementById('mainCanvas');
-  const ctx    = canvas.getContext('2d');
+<script>
+/* ============================================================
+   DIDAXIS LAB · Área vs Perímetro · JS
+   ============================================================ */
 
-  // Paleta Didaxis
-  const C_BLUE  = '#1B2A5A';
-  const C_CYAN  = '#0BC0D8';
-  const C_GRID  = '#E5E7EB';
-  const C_WHITE = '#FFFFFF';
+/* ---------- estado ---------- */
+const state = {
+  w:8, h:5,
+  fixedPerimeter:false, pFixed:26,
+  points:[],
+  discoveries:{square:false, sameArea:false, moreP_lessA:false},
+  lastConfigs:[],
+  challenge:0,
+  attempts:[0,0,0],
+  successes:[0,0,0],
+};
 
-  // Vértices: C = ángulo recto, A = arriba, B = derecha
-  let vertexA = { x: 0, y: 0 };
-  let vertexB = { x: 0, y: 0 };
-  let vertexC = { x: 0, y: 0 };
+/* ---------- canvases ---------- */
+const canvas   = document.getElementById('canvas');
+const ctx      = canvas.getContext('2d');
+const chart1   = document.getElementById('chart1');
+const ctx1     = chart1.getContext('2d');
+const chart2   = document.getElementById('chart2');
+const ctx2     = chart2.getContext('2d');
+const speedoCv = document.getElementById('speedo');
+const sctx     = speedoCv.getContext('2d');
 
-  // Arrastre y hover
-  let dragging  = null;   // 'A' | 'B' | null
-  let hoveredSq = null;   // 'a' | 'b' | 'c' | null
+/* ---------- DOM refs ---------- */
+const $ = id => document.getElementById(id);
+const sliderW = $('slider-w'), sliderH = $('slider-h');
+const valW = $('val-w'), valH = $('val-h');
+const chkFix = $('chk-fixp'), fixpInput = $('fixp-input'), inpFixp = $('inp-fixp');
+const resArea = $('res-area'), resPerim = $('res-perim'), resRatio = $('res-ratio');
+const resAreaF = $('res-area-formula'), resPerimF = $('res-perim-formula'), resRatioF = $('res-ratio-formula');
+const speedoText = $('speedo-text');
+const discoveryBox = $('discovery');
+const hintText = $('hint-text');
 
-  // ============================================================
-  // SECCIÓN: Estado de zoom
-  // ============================================================
-  let zoomLevel = 1.0;
-  const ZOOM_MIN = 0.25;
-  const ZOOM_MAX = 4.0;
+/* ============================================================
+   REDIMENSIONADO CON DPR
+   Se aplica a TODOS los canvas (incluido speedo)
+   ============================================================ */
+function resizeCanvas(c) {
+  const rect = c.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) return;
+  const dpr = window.devicePixelRatio || 1;
+  c.width  = Math.round(rect.width  * dpr);
+  c.height = Math.round(rect.height * dpr);
+  c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+}
 
-  function changeZoom(delta) {
-    const newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomLevel + delta));
-    applyZoomScale(newZoom);
+function resizeAll() {
+  resizeCanvas(canvas);
+  resizeCanvas(chart1);
+  resizeCanvas(chart2);
+  resizeCanvas(speedoCv);
+  draw();
+  drawChart1();
+  drawChart2();
+  drawSpeedo();
+}
+
+/* ResizeObserver → redibuja cuando el tamaño del contenedor cambia */
+if (window.ResizeObserver) {
+  const ro = new ResizeObserver(() => { resizeAll(); });
+  ro.observe(document.getElementById('center'));
+  ro.observe(document.getElementById('panel-right'));
+}
+window.addEventListener('resize', resizeAll);
+window.addEventListener('orientationchange', () => setTimeout(resizeAll, 150));
+
+/* ============================================================
+   VIEWPORT DEL CANVAS PRINCIPAL
+   ============================================================ */
+function getViewport() {
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  const padding = Math.max(22, Math.min(32, w * 0.06));
+  const range   = 32;
+  const unit    = Math.min((w - padding*2) / range, (h - padding*2) / range);
+  const ox = padding + unit * 2;
+  const oy = h - padding - unit * 2;
+  return {w, h, unit, ox, oy, padding};
+}
+
+/* ============================================================
+   DIBUJO DEL RECTÁNGULO
+   ============================================================ */
+function draw() {
+  const {w, h, unit, ox, oy} = getViewport();
+  ctx.clearRect(0, 0, w, h);
+
+  /* fondo */
+  ctx.fillStyle = '#fafdff';
+  ctx.fillRect(0, 0, w, h);
+
+  /* cuadrícula menor */
+  ctx.strokeStyle = '#e0e8ee';
+  ctx.lineWidth   = .8;
+  for (let i = -2; i <= 30; i++) {
+    const x = ox + i * unit;
+    ctx.beginPath(); ctx.moveTo(x, oy - 30*unit); ctx.lineTo(x, oy + 2*unit); ctx.stroke();
+    const y = oy - i * unit;
+    ctx.beginPath(); ctx.moveTo(ox - 2*unit, y); ctx.lineTo(ox + 30*unit, y); ctx.stroke();
   }
 
-  function resetZoom() {
-    applyZoomScale(1.0);
-    // Re-center the triangle
-    const { w, h } = getLogicalSize();
-    const cx = w * 0.38;
-    const cy = h * 0.62;
-    const dx = cx - vertexC.x;
-    const dy = cy - vertexC.y;
-    vertexA.x += dx; vertexA.y += dy;
-    vertexB.x += dx; vertexB.y += dy;
-    vertexC.x += dx; vertexC.y += dy;
-    requestAnimationFrame(render);
+  /* ejes */
+  ctx.strokeStyle = '#90a4ae';
+  ctx.lineWidth   = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(ox - 2*unit, oy); ctx.lineTo(ox + 30*unit, oy);
+  ctx.moveTo(ox, oy + 2*unit); ctx.lineTo(ox, oy - 30*unit);
+  ctx.stroke();
+
+  /* marcas de eje (cada 5) */
+  const fSize = Math.max(9, Math.min(12, unit * 0.6));
+  ctx.fillStyle = '#6b7c8c';
+  ctx.font = `${fSize}px Segoe UI`;
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 30; i += 5) {
+    ctx.fillText(i, ox + i*unit, oy + fSize + 3);
+    if (i > 0) ctx.fillText(i, ox - fSize - 4, oy - i*unit + fSize/2);
+  }
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#1f4e79';
+  ctx.font = `bold ${fSize}px Segoe UI`;
+  ctx.fillText('X (u)', ox + 30*unit + 4, oy + 4);
+  ctx.fillText('Y (u)', ox - 10, oy - 30*unit - 5);
+
+  /* rectángulo */
+  const W = state.w, H = state.h;
+  const x0 = ox, y0 = oy;
+  const x1 = ox + W*unit, y1 = oy - H*unit;
+
+  /* relleno área */
+  ctx.fillStyle = 'rgba(243,156,18,.22)';
+  ctx.fillRect(x0, y1, W*unit, H*unit);
+
+  /* borde perímetro */
+  ctx.strokeStyle = '#27ae60';
+  ctx.lineWidth   = 3;
+  ctx.strokeRect(x0, y1, W*unit, H*unit);
+
+  /* etiquetas de lados */
+  const lSize = Math.max(10, Math.min(14, unit * 0.75));
+  ctx.fillStyle = '#15375a';
+  ctx.font = `bold ${lSize}px Segoe UI`;
+  ctx.textAlign = 'center';
+  ctx.fillText(`${W} u`, x0 + W*unit/2, y0 + lSize + 4);
+  ctx.fillText(`${W} u`, x0 + W*unit/2, y1 - 6);
+  ctx.save();
+  ctx.translate(x0 - lSize - 2, y1 + H*unit/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText(`${H} u`, 0, 0);
+  ctx.restore();
+  ctx.save();
+  ctx.translate(x1 + lSize + 2, y1 + H*unit/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText(`${H} u`, 0, 0);
+  ctx.restore();
+
+  /* etiqueta área interna */
+  if (W*unit > 40 && H*unit > 20) {
+    ctx.fillStyle = '#7d4a00';
+    ctx.font = `bold ${lSize}px Segoe UI`;
+    ctx.textAlign = 'center';
+    ctx.fillText(`A = ${W*H} u²`, x0 + W*unit/2, y1 + H*unit/2 + lSize/2);
   }
 
-  function applyZoomScale(newZoom) {
-    // Scale all vertices relative to canvas center
-    const { w, h } = getLogicalSize();
-    const cx = w / 2;
-    const cy = h / 2;
-    const factor = newZoom / zoomLevel;
-    vertexA = scalePoint(vertexA, cx, cy, factor);
-    vertexB = scalePoint(vertexB, cx, cy, factor);
-    vertexC = scalePoint(vertexC, cx, cy, factor);
-    zoomLevel = newZoom;
-    document.getElementById('zoomLabel').textContent = Math.round(zoomLevel * 100) + '%';
-    requestAnimationFrame(render);
-  }
-
-  function scalePoint(p, cx, cy, factor) {
-    return {
-      x: cx + (p.x - cx) * factor,
-      y: cy + (p.y - cy) * factor
-    };
-  }
-
-  // ============================================================
-  // SECCIÓN: Demostración visual animada
-  // ============================================================
-  let demoActive    = false;
-  let demoRafId     = null;
-  let demoStartTime = 0;
-  const DEMO_DURATION = 6000; // ms
-
-  // Fases de la demo (t = 0..1):
-  // 0.00–0.15  → todos los cuadrados visibles, pausa introductoria
-  // 0.15–0.45  → los cuadrados a² y b² "pulsan" (escala) y muestran sus valores
-  // 0.45–0.72  → los cuadrados cateto se desvanecen, la hipotenusa recibe su color
-  // 0.72–0.90  → hipotenusa glows, muestra "a² + b² = c²" interno
-  // 0.90–1.00  → fade de vuelta al estado normal
-
-  function toggleDemo() {
-    if (demoActive) {
-      stopDemo();
-    } else {
-      startDemo();
-    }
-  }
-
-  function startDemo() {
-    // Fijar triángulo 3-4-5 para la demo
-    setPresetVertices(3, 4, 5);
-
-    demoActive    = true;
-    demoStartTime = performance.now();
-
-    document.getElementById('demoStrip').classList.add('show');
-    document.getElementById('btnDemo').classList.add('active');
-    document.getElementById('btnDemo').textContent = '■ Detener demo';
-
-    if (demoRafId) cancelAnimationFrame(demoRafId);
-    demoRafId = requestAnimationFrame(demoLoop);
-  }
-
-  function stopDemo() {
-    demoActive = false;
-    if (demoRafId) { cancelAnimationFrame(demoRafId); demoRafId = null; }
-    document.getElementById('demoStrip').classList.remove('show');
-    document.getElementById('btnDemo').classList.remove('active');
-    document.getElementById('btnDemo').textContent = '▶ Demostración Visual';
-    requestAnimationFrame(render);
-  }
-
-  function demoLoop(timestamp) {
-    if (!demoActive) return;
-    const elapsed = timestamp - demoStartTime;
-    const rawT    = elapsed / DEMO_DURATION;
-
-    render(timestamp, rawT);
-
-    if (rawT >= 1.0) {
-      stopDemo();
-    } else {
-      demoRafId = requestAnimationFrame(demoLoop);
-    }
-  }
-
-  function easeInOut(t) {
-    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-  }
-
-  // ============================================================
-  // SECCIÓN: Inicialización y resize
-  // ============================================================
-  function getLogicalSize() {
-    const dpr = window.devicePixelRatio || 1;
-    return { w: canvas.width / dpr, h: canvas.height / dpr };
-  }
-
-  function resizeCanvas() {
-    const wrapper = canvas.parentElement;
-    const dpr = window.devicePixelRatio || 1;
-    const w = wrapper.clientWidth;
-    const h = wrapper.clientHeight;
-    canvas.width  = w * dpr;
-    canvas.height = h * dpr;
-    canvas.style.width  = w + 'px';
-    canvas.style.height = h + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  function initCanvas() {
-    resizeCanvas();
-    setPresetVertices(3, 4, 5);
-    requestAnimationFrame(render);
-  }
-
-  window.addEventListener('resize', () => {
-    resizeCanvas();
-    requestAnimationFrame(render);
-  });
-
-  // ============================================================
-  // SECCIÓN: Presets de triángulos
-  // ============================================================
-  // Pixels por "unidad" de medida del triángulo (base al 100% de zoom)
-  function getPxPerUnit() {
-    const { w, h } = getLogicalSize();
-    return Math.min(w, h) / 14;
-  }
-
-  function setPresetVertices(a, b) {
-    const { w, h } = getLogicalSize();
-    // Las medidas son invariantes al zoom; aplicamos el zoom visual a las posiciones.
-    const scale = getPxPerUnit() * zoomLevel;
-    const cx = w * 0.38;
-    const cy = h * 0.62;
-    vertexC = { x: cx,             y: cy            };
-    vertexA = { x: cx,             y: cy - a * scale };
-    vertexB = { x: cx + b * scale, y: cy            };
-  }
-
-  function applyPreset(a, b) {
-    if (demoActive) stopDemo();
-    setPresetVertices(a, b);
-    syncMeasureInputs();
-    requestAnimationFrame(render);
-  }
-
-  function applyIsosceles() {
-    if (demoActive) stopDemo();
-    const { w, h } = getLogicalSize();
-    const side = 5 * getPxPerUnit() * zoomLevel;
-    const cx = w * 0.38;
-    const cy = h * 0.62;
-    vertexC = { x: cx,         y: cy        };
-    vertexA = { x: cx,         y: cy - side  };
-    vertexB = { x: cx + side,  y: cy        };
-    syncMeasureInputs();
-    requestAnimationFrame(render);
-  }
-
-  // ============================================================
-  // SECCIÓN: Barra de medidas exactas
-  // ============================================================
-
-  // Actualiza los inputs de la barra de medidas con los valores actuales del canvas
-  function syncMeasureInputs() {
-    const { a, b } = getSideLengths();
-    const inA = document.getElementById('inputA');
-    const inB = document.getElementById('inputB');
-    if (document.activeElement !== inA) inA.value = parseFloat(a.toFixed(2));
-    if (document.activeElement !== inB) inB.value = parseFloat(b.toFixed(2));
-  }
-
-  // Llamado cuando el usuario escribe directamente en los inputs de medida
-  function onMeasureInput() {
-    const a = parseFloat(document.getElementById('inputA').value);
-    const b = parseFloat(document.getElementById('inputB').value);
-    if (!isNaN(a) && !isNaN(b) && a > 0 && b > 0) {
-      if (demoActive) stopDemo();
-      setPresetVertices(a, b);
-      requestAnimationFrame(render);
-    }
-  }
-
-  // Carga el triángulo del Reto 3 (a=6, b=8) en el canvas
-  function loadChallenge3Canvas() {
-    if (demoActive) stopDemo();
-    setPresetVertices(6, 8);
-    syncMeasureInputs();
-    requestAnimationFrame(render);
-    // Scroll suave al canvas
-    document.getElementById('mainCanvas').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  // ============================================================
-  // SECCIÓN: Cálculo de medidas del triángulo
-  // ============================================================
-  function getSideLengths() {
-    // Los lados se reportan en "unidades" invariantes al zoom:
-    // el zoom es solo una transformación visual y no debe alterar las medidas.
-    const ppu = getPxPerUnit() * zoomLevel;
-    const a = Math.hypot(vertexA.x - vertexC.x, vertexA.y - vertexC.y) / ppu;
-    const b = Math.hypot(vertexB.x - vertexC.x, vertexB.y - vertexC.y) / ppu;
-    const c = Math.hypot(vertexA.x - vertexB.x, vertexA.y - vertexB.y) / ppu;
-    return { a, b, c };
-  }
-
-  // ============================================================
-  // SECCIÓN: Cuadrícula de fondo
-  // ============================================================
-  function drawGrid() {
-    const { w, h } = getLogicalSize();
-    const step = 20;
-    ctx.strokeStyle = C_GRID;
-    ctx.lineWidth   = 0.8;
-    for (let x = 0; x < w; x += step) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-    }
-    for (let y = 0; y < h; y += step) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-    }
-  }
-
-  // ============================================================
-  // SECCIÓN: Geometría de cuadrados
-  // ============================================================
-  function squareCorners(P1, P2, P3) {
-    // Devuelve los 4 vértices del cuadrado sobre P1-P2, al exterior de P3
-    const dx  = P2.x - P1.x;
-    const dy  = P2.y - P1.y;
-    const len = Math.hypot(dx, dy);
-    if (len < 1) return null;
-
-    const nx = -dy / len;
-    const ny =  dx / len;
-
-    const mid1 = { x: (P1.x + P2.x) / 2 + nx * len * 0.5,
-                    y: (P1.y + P2.y) / 2 + ny * len * 0.5 };
-    const mid2 = { x: (P1.x + P2.x) / 2 - nx * len * 0.5,
-                    y: (P1.y + P2.y) / 2 - ny * len * 0.5 };
-
-    const d1 = Math.hypot(mid1.x - P3.x, mid1.y - P3.y);
-    const d2 = Math.hypot(mid2.x - P3.x, mid2.y - P3.y);
-    const s  = (d1 > d2) ? 1 : -1;
-
-    const Q1 = { x: P1.x + nx * s * len, y: P1.y + ny * s * len };
-    const Q2 = { x: P2.x + nx * s * len, y: P2.y + ny * s * len };
-    return [P1, P2, Q2, Q1];   // winding: CCW or CW depending on side
-  }
-
-  function squareCenter(corners) {
-    return {
-      x: (corners[0].x + corners[1].x + corners[2].x + corners[3].x) / 4,
-      y: (corners[0].y + corners[1].y + corners[2].y + corners[3].y) / 4
-    };
-  }
-
-  // ============================================================
-  // SECCIÓN: Dibujo de un cuadrado con alpha y escala opcional
-  // ============================================================
-  function drawSquarePoly(corners, fillR, fillG, fillB, alpha, strokeColor, label, area, scaleFactor) {
-    if (!corners) return;
-    const cx = squareCenter(corners).x;
-    const cy = squareCenter(corners).y;
-
-    ctx.save();
-    if (scaleFactor && scaleFactor !== 1) {
-      ctx.translate(cx, cy);
-      ctx.scale(scaleFactor, scaleFactor);
-      ctx.translate(-cx, -cy);
-    }
-
-    ctx.beginPath();
-    corners.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.closePath();
-    ctx.fillStyle   = `rgba(${fillR},${fillG},${fillB},${alpha})`;
-    ctx.fill();
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth   = 1.8;
-    ctx.stroke();
-
-    if (label && area !== null) {
-      const len = Math.hypot(corners[1].x - corners[0].x, corners[1].y - corners[0].y);
-      const fontSize = Math.max(10, Math.min(17, len * 0.18));
-      ctx.fillStyle    = strokeColor;
-      ctx.font         = `700 ${fontSize}px Inter, system-ui`;
-      ctx.textAlign    = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(label + '² = ' + area.toFixed(2), cx, cy);
-    }
-    ctx.restore();
-  }
-
-  // ============================================================
-  // SECCIÓN: Dibujo del triángulo
-  // ============================================================
-  function drawTriangle(alpha) {
-    alpha = alpha ?? 1;
-    ctx.beginPath();
-    ctx.moveTo(vertexA.x, vertexA.y);
-    ctx.lineTo(vertexB.x, vertexB.y);
-    ctx.lineTo(vertexC.x, vertexC.y);
-    ctx.closePath();
-    ctx.fillStyle   = `rgba(27,42,90,${0.06 * alpha})`;
-    ctx.fill();
-    ctx.strokeStyle = `rgba(27,42,90,${alpha})`;
-    ctx.lineWidth   = 2.5;
-    ctx.stroke();
-  }
-
-  // ============================================================
-  // SECCIÓN: Marcador ángulo recto
-  // ============================================================
-  function drawRightAngleMark() {
-    const size = 12;
-    const dx1 = vertexA.x - vertexC.x, dy1 = vertexA.y - vertexC.y;
-    const dx2 = vertexB.x - vertexC.x, dy2 = vertexB.y - vertexC.y;
-    const l1 = Math.hypot(dx1, dy1), l2 = Math.hypot(dx2, dy2);
-    if (l1 < 1 || l2 < 1) return;
-    const u1x = dx1/l1*size, u1y = dy1/l1*size;
-    const u2x = dx2/l2*size, u2y = dy2/l2*size;
-    ctx.beginPath();
-    ctx.moveTo(vertexC.x + u1x, vertexC.y + u1y);
-    ctx.lineTo(vertexC.x + u1x + u2x, vertexC.y + u1y + u2y);
-    ctx.lineTo(vertexC.x + u2x, vertexC.y + u2y);
-    ctx.strokeStyle = C_BLUE;
-    ctx.lineWidth   = 1.5;
-    ctx.stroke();
-  }
-
-  // ============================================================
-  // SECCIÓN: Vértices arrastrables
-  // ============================================================
-  function drawVertex(v, label) {
-    ctx.beginPath();
-    ctx.arc(v.x, v.y, 8, 0, Math.PI * 2);
-    ctx.fillStyle   = C_CYAN;
-    ctx.fill();
-    ctx.strokeStyle = C_WHITE;
-    ctx.lineWidth   = 2.5;
-    ctx.stroke();
-    ctx.fillStyle    = C_BLUE;
-    ctx.font         = '700 12px Inter, system-ui';
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(label, v.x, v.y - 11);
-  }
-
-  // ============================================================
-  // SECCIÓN: Panel de fórmula en vivo
-  // ============================================================
-  function updateFormulaBar() {
-    const { a, b, c } = getSideLengths();
-    const a2 = a * a, b2 = b * b, c2 = c * c;
-    document.getElementById('formulaText').textContent =
-      `a² + b² = c²  →  ${a2.toFixed(2)} + ${b2.toFixed(2)} = ${c2.toFixed(2)}`;
-    const ok = Math.abs(a2 + b2 - c2) < 0.5;
-    const el = document.getElementById('formulaCheck');
-    el.textContent  = ok ? '✓' : '≈';
-    el.style.color  = ok ? C_CYAN : '#F59E0B';
-  }
-
-  // ============================================================
-  // SECCIÓN: Hover sobre cuadrados
-  // ============================================================
-  function pointInPoly(px, py, poly) {
-    if (!poly) return false;
-    let inside = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-      const xi = poly[i].x, yi = poly[i].y;
-      const xj = poly[j].x, yj = poly[j].y;
-      if (((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi))
-        inside = !inside;
-    }
-    return inside;
-  }
-
-  function getHoveredSquare(mx, my) {
-    const polyA = squareCorners(vertexA, vertexC, vertexB);
-    const polyB = squareCorners(vertexC, vertexB, vertexA);
-    const polyC = squareCorners(vertexA, vertexB, vertexC);
-    if (pointInPoly(mx, my, polyC)) return 'c';
-    if (pointInPoly(mx, my, polyA)) return 'a';
-    if (pointInPoly(mx, my, polyB)) return 'b';
-    return null;
-  }
-
-  // ============================================================
-  // SECCIÓN: Loop de renderizado principal
-  // ============================================================
-  function render(timestamp, demoT) {
-    const { w, h } = getLogicalSize();
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = C_WHITE;
-    ctx.fillRect(0, 0, w, h);
-    drawGrid();
-
-    const { a, b, c } = getSideLengths();
-    const cornersA = squareCorners(vertexA, vertexC, vertexB);  // cateto a
-    const cornersB = squareCorners(vertexC, vertexB, vertexA);  // cateto b
-    const cornersC = squareCorners(vertexA, vertexB, vertexC);  // hipotenusa c
-
-    if (demoActive && demoT !== undefined) {
-      renderDemo(demoT, w, h, a, b, c, cornersA, cornersB, cornersC);
-    } else {
-      // --- Render normal ---
-      const hA = hoveredSq === 'a', hB = hoveredSq === 'b', hC = hoveredSq === 'c';
-      drawSquarePoly(cornersA, 11,192,216, hA ? 0.46 : 0.28, C_CYAN, 'a', a*a, 1);
-      drawSquarePoly(cornersB, 11,192,216, hB ? 0.46 : 0.28, C_CYAN, 'b', b*b, 1);
-      drawSquarePoly(cornersC, 27,42,90,   hC ? 0.42 : 0.25, C_BLUE, 'c', c*c, 1);
-      drawTriangle();
-      drawRightAngleMark();
-      drawVertex(vertexA, 'A');
-      drawVertex(vertexB, 'B');
-      drawVertex(vertexC, 'C');
-      updateFormulaBar();
-    }
-  }
-
-  // ============================================================
-  // SECCIÓN: Renderizado de la demostración en 4 fases
-  // ============================================================
-  function renderDemo(rawT, w, h, a, b, c, cornersA, cornersB, cornersC) {
-    // --- FASE 0 (0..0.12): vista estática inicial ---
-    // --- FASE 1 (0.12..0.45): catetos pulsan con escala, + se forma entre ellos ---
-    // --- FASE 2 (0.45..0.75): catetos se desvanecen, hipotenusa brilla ---
-    // --- FASE 3 (0.75..0.90): fórmula grande centrada en la hipotenusa ---
-    // --- FASE 4 (0.90..1.00): fade out de la animación a normal ---
-
-    const t = rawT; // 0..1
-
-    // FASE 0: todo visible, static
-    if (t < 0.12) {
-      drawSquarePoly(cornersA, 11,192,216, 0.28, C_CYAN, 'a', a*a, 1);
-      drawSquarePoly(cornersB, 11,192,216, 0.28, C_CYAN, 'b', b*b, 1);
-      drawSquarePoly(cornersC, 27,42,90,   0.25, C_BLUE, 'c', c*c, 1);
-      drawTriangle();
-      drawRightAngleMark();
-      drawVertex(vertexA, 'A');
-      drawVertex(vertexB, 'B');
-      drawVertex(vertexC, 'C');
-      updateFormulaBar();
-      return;
-    }
-
-    // FASE 1: catetos pulsan (escala), hipotenusa normal
-    if (t < 0.45) {
-      const phase = (t - 0.12) / (0.45 - 0.12);  // 0..1
-      // Pulsación suave: escala va de 1 → 1.07 → 1 → 1.07 → 1
-      const pulse = 1 + 0.07 * Math.abs(Math.sin(phase * Math.PI * 3));
-
-      const alphaA = 0.28 + 0.35 * easeInOut(phase);
-      const alphaB = 0.28 + 0.35 * easeInOut(phase);
-
-      drawSquarePoly(cornersA, 11,192,216, alphaA, C_CYAN, 'a', a*a, pulse);
-      drawSquarePoly(cornersB, 11,192,216, alphaB, C_CYAN, 'b', b*b, pulse);
-      drawSquarePoly(cornersC, 27,42,90,   0.25,   C_BLUE, 'c', c*c, 1);
-      drawTriangle();
-      drawRightAngleMark();
-      drawVertex(vertexA, 'A');
-      drawVertex(vertexB, 'B');
-      drawVertex(vertexC, 'C');
-
-      // Signo "+" entre los cuadrados cateto
-      if (phase > 0.35) {
-        const phaseFade = (phase - 0.35) / 0.65;
-        const cA = cornersA ? squareCenter(cornersA) : null;
-        const cB = cornersB ? squareCenter(cornersB) : null;
-        if (cA && cB) {
-          const midX = (cA.x + cB.x) / 2;
-          const midY = (cA.y + cB.y) / 2;
-          ctx.globalAlpha = easeInOut(phaseFade);
-          ctx.fillStyle    = C_BLUE;
-          ctx.font         = '700 22px Inter, system-ui';
-          ctx.textAlign    = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('+', midX, midY);
-          ctx.globalAlpha = 1;
-        }
-      }
-      updateFormulaBar();
-      return;
-    }
-
-    // FASE 2: catetos se desvanecen → hipotenusa brilla
-    if (t < 0.75) {
-      const phase = (t - 0.45) / (0.75 - 0.45);  // 0..1
-      const fadeOut = 1 - easeInOut(phase);
-      const fadeIn  = easeInOut(phase);
-      const hypGlow = 0.25 + 0.55 * fadeIn;
-
-      drawSquarePoly(cornersA, 11,192,216, 0.63 * fadeOut, C_CYAN, 'a', a*a, 1);
-      drawSquarePoly(cornersB, 11,192,216, 0.63 * fadeOut, C_CYAN, 'b', b*b, 1);
-      drawSquarePoly(cornersC, 27,42,90,   hypGlow, C_BLUE, 'c', c*c, 1);
-      drawTriangle(Math.max(0.2, 1 - phase * 0.5));
-      drawRightAngleMark();
-      drawVertex(vertexA, 'A');
-      drawVertex(vertexB, 'B');
-      drawVertex(vertexC, 'C');
-
-      // Flecha / texto de suma apareciendo
-      if (phase > 0.5) {
-        const p2 = (phase - 0.5) / 0.5;
-        const cC = cornersC ? squareCenter(cornersC) : null;
-        if (cC) {
-          ctx.globalAlpha  = easeInOut(p2);
-          ctx.fillStyle    = C_WHITE;
-          ctx.font         = '700 13px Inter, system-ui';
-          ctx.textAlign    = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('a² + b²', cC.x, cC.y);
-          ctx.globalAlpha  = 1;
-        }
-      }
-      updateFormulaBar();
-      return;
-    }
-
-    // FASE 3: fórmula grande — hipotenusa glows
-    if (t < 0.90) {
-      const phase = (t - 0.75) / (0.90 - 0.75);  // 0..1
-      const glow  = 0.80 + 0.12 * Math.sin(phase * Math.PI * 4);
-
-      // Solo hipotenusa visible
-      drawSquarePoly(cornersC, 27,42,90, glow, C_BLUE, null, null, 1);
-      drawTriangle(0.35);
-      drawRightAngleMark();
-      drawVertex(vertexA, 'A');
-      drawVertex(vertexB, 'B');
-      drawVertex(vertexC, 'C');
-
-      // Fórmula grande centrada
-      const { w: lw, h: lh } = getLogicalSize();
-      const textX = lw * 0.38;
-      const textY = lh * 0.30;
-
-      ctx.globalAlpha  = easeInOut(phase);
-      ctx.fillStyle    = C_BLUE;
-      ctx.font         = `700 ${Math.round(Math.min(lw, lh) * 0.055)}px Inter, system-ui`;
-      ctx.textAlign    = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('a² + b² = c²', textX, textY);
-
-      ctx.font         = '600 14px Inter, system-ui';
-      ctx.fillStyle    = C_CYAN;
-      const { a: sa, b: sb, c: sc } = getSideLengths();
-      ctx.fillText(`${(sa*sa).toFixed(2)} + ${(sb*sb).toFixed(2)} = ${(sc*sc).toFixed(2)}`, textX, textY + Math.round(Math.min(lw, lh) * 0.07));
-      ctx.globalAlpha  = 1;
-
-      // Checkmark grande
-      const cC = cornersC ? squareCenter(cornersC) : null;
-      if (cC) {
-        ctx.fillStyle    = C_WHITE;
-        ctx.font         = '700 20px Inter, system-ui';
-        ctx.textAlign    = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('✓ ' + (sc*sc).toFixed(2), cC.x, cC.y);
-      }
-
-      updateFormulaBar();
-      return;
-    }
-
-    // FASE 4: transición de vuelta al estado normal
-    {
-      const phase = (t - 0.90) / 0.10;
-      const fadeIn = easeInOut(phase);
-
-      drawSquarePoly(cornersA, 11,192,216, 0.28 * fadeIn, C_CYAN, 'a', a*a, 1);
-      drawSquarePoly(cornersB, 11,192,216, 0.28 * fadeIn, C_CYAN, 'b', b*b, 1);
-      drawSquarePoly(cornersC, 27,42,90,   0.25 + (0.55 - 0.25) * (1 - fadeIn), C_BLUE, 'c', c*c, 1);
-      drawTriangle(fadeIn);
-      drawRightAngleMark();
-      drawVertex(vertexA, 'A');
-      drawVertex(vertexB, 'B');
-      drawVertex(vertexC, 'C');
-      updateFormulaBar();
-    }
-  }
-
-  // ============================================================
-  // SECCIÓN: Mantener ángulo recto en C al arrastrar
-  // ============================================================
-  function constrainRightAngle(moved) {
-    if (moved === 'A') {
-      vertexC.x = vertexA.x;
-      vertexB.y = vertexC.y;
-    } else if (moved === 'B') {
-      vertexC.y = vertexB.y;
-      vertexA.x = vertexC.x;
-    }
-  }
-
-  // ============================================================
-  // SECCIÓN: Eventos de mouse y touch
-  // ============================================================
-  const HIT_R = 14;
-
-  function canvasCoords(clientX, clientY) {
-    const rect = canvas.getBoundingClientRect();
-    const dpr  = window.devicePixelRatio || 1;
-    return {
-      x: (clientX - rect.left) * (canvas.width  / rect.width)  / dpr,
-      y: (clientY - rect.top)  * (canvas.height / rect.height) / dpr
-    };
-  }
-
-  function hitTest(p) {
-    if (Math.hypot(p.x - vertexA.x, p.y - vertexA.y) <= HIT_R) return 'A';
-    if (Math.hypot(p.x - vertexB.x, p.y - vertexB.y) <= HIT_R) return 'B';
-    return null;
-  }
-
-  // Estado de paneo (mover el triángulo completo arrastrando el plano)
-  let panLast = null;
-
-  function translateVertices(dx, dy) {
-    vertexA.x += dx; vertexA.y += dy;
-    vertexB.x += dx; vertexB.y += dy;
-    vertexC.x += dx; vertexC.y += dy;
-  }
-
-  // Cursor por defecto cuando el puntero está sobre el plano: mano abierta
-  canvas.style.cursor = 'grab';
-
-  canvas.addEventListener('mousedown', e => {
-    if (demoActive) return;
-    const p = canvasCoords(e.clientX, e.clientY);
-    const hit = hitTest(p);
-    if (hit) {
-      dragging = hit;
-      canvas.style.cursor = 'grabbing';
-    } else {
-      // Iniciar paneo del plano completo
-      dragging = 'pan';
-      panLast = p;
-      canvas.style.cursor = 'grabbing';
-    }
-  });
-
-  canvas.addEventListener('mousemove', e => {
-    const p = canvasCoords(e.clientX, e.clientY);
-    if (dragging && !demoActive) {
-      if (dragging === 'A') { vertexA.x = p.x; vertexA.y = p.y; constrainRightAngle('A'); syncMeasureInputs(); }
-      else if (dragging === 'B') { vertexB.x = p.x; vertexB.y = p.y; constrainRightAngle('B'); syncMeasureInputs(); }
-      else if (dragging === 'pan' && panLast) {
-        translateVertices(p.x - panLast.x, p.y - panLast.y);
-        panLast = p;
-      }
-      requestAnimationFrame(render);
-    } else {
-      const prev = hoveredSq;
-      hoveredSq  = getHoveredSquare(p.x, p.y);
-      const over = hitTest(p);
-      // Mano por defecto sobre el plano; "agarrar" sobre un vértice; "pointer" sobre un cuadrado
-      canvas.style.cursor = over ? 'grab' : (hoveredSq ? 'pointer' : 'grab');
-      if (prev !== hoveredSq) requestAnimationFrame(render);
-    }
-  });
-
-  canvas.addEventListener('mouseup',   () => { dragging = null; panLast = null; canvas.style.cursor = 'grab'; });
-  canvas.addEventListener('mouseleave',() => { dragging = null; panLast = null; hoveredSq = null; canvas.style.cursor = 'grab'; requestAnimationFrame(render); });
-
-  // Soporte touch (incluye paneo con un dedo si no se toca un vértice)
-  canvas.addEventListener('touchstart', e => {
-    if (demoActive) return;
-    e.preventDefault();
-    const p = canvasCoords(e.touches[0].clientX, e.touches[0].clientY);
-    const hit = hitTest(p);
-    if (hit) { dragging = hit; }
-    else { dragging = 'pan'; panLast = p; }
-  }, { passive: false });
-
-  canvas.addEventListener('touchmove', e => {
-    if (!dragging || demoActive) return;
-    e.preventDefault();
-    const p = canvasCoords(e.touches[0].clientX, e.touches[0].clientY);
-    if (dragging === 'A') { vertexA.x = p.x; vertexA.y = p.y; constrainRightAngle('A'); syncMeasureInputs(); }
-    else if (dragging === 'B') { vertexB.x = p.x; vertexB.y = p.y; constrainRightAngle('B'); syncMeasureInputs(); }
-    else if (dragging === 'pan' && panLast) {
-      translateVertices(p.x - panLast.x, p.y - panLast.y);
-      panLast = p;
-    }
-    requestAnimationFrame(render);
-  }, { passive: false });
-
-  canvas.addEventListener('touchend', () => { dragging = null; panLast = null; });
-
-  // Fullscreen
-  function toggleFullscreen() {
-    const el = document.documentElement;
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
-    } else {
-      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-    }
-  }
-  document.addEventListener('fullscreenchange', () => {
-    const label = document.querySelector('#btnFullscreen .btn-fs-label');
-    if (label) label.textContent = document.fullscreenElement ? 'Salir de pantalla completa' : 'Pantalla completa';
-    // Reajustar canvas tras cambio de tamaño
-    setTimeout(() => { resizeCanvas(); requestAnimationFrame(render); }, 50);
-  });
-
-
-  // Zoom con rueda del mouse
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault();
-    const delta = e.deltaY < 0 ? 0.15 : -0.15;
-    changeZoom(delta);
-  }, { passive: false });
-
-  // ============================================================
-  // SECCIÓN: Retos y validación
-  // ============================================================
-  const CHALLENGE_CONFIG = {
-    1: { answer: 5,     tolerance: 0.1  },
-    2: { answer: 64,    tolerance: 0.1  },
-    3: { answer: 10,    tolerance: 0.1  },
-    4: { answer: 0.866, tolerance: 0.02 }
-  };
-
-  const SUCCESS_MESSAGES = [
-    '¡Excelente! Acabas de pensar como Pitágoras.',
-    '¡Lo lograste! Tu razonamiento geométrico está afilado.',
-    '¡Perfecto! Ese es el poder del teorema.',
-    '¡Brillante! Demostraste que la geometría es tu fortaleza.',
-    '¡Correcto! Sigues los pasos del gran matemático.'
+  /* vértices táctiles */
+  const verts = [
+    {x:x0, y:y0, role:'origin'},
+    {x:x1, y:y0, role:'rightBottom'},
+    {x:x0, y:y1, role:'leftTop'},
+    {x:x1, y:y1, role:'topRight'},
   ];
+  const vr = Math.max(8, Math.min(12, unit * 0.5));
+  verts.forEach(v => {
+    ctx.beginPath();
+    ctx.arc(v.x, v.y, vr, 0, Math.PI*2);
+    ctx.fillStyle   = v.role === 'origin' ? '#7f8c8d' : '#c0392b';
+    ctx.fill();
+    ctx.lineWidth   = 2;
+    ctx.strokeStyle = '#fff';
+    ctx.stroke();
+  });
+}
 
-  const HINTS = {
-    1: 'Recuerda: c² = a² + b². Calcula 9 + 16 y luego saca la raíz cuadrada del resultado.',
-    2: 'Usa la relación: si a² + b² = c², entonces el cateto faltante es c² − a². Resta 36 de 100.',
-    3: 'Los catetos son 8 y 6. Aplica c² = 8² + 6² y saca la raíz cuadrada del resultado.',
-    4: 'Si la hipotenusa es c y un cateto es c/2, el otro cateto x cumple x² = c² − (c/2)². Calcula x/c.'
-  };
+/* ============================================================
+   ACTUALIZACIÓN DE VALORES
+   ============================================================ */
+function update(opts = {}) {
+  const W = state.w, H = state.h;
+  const area  = W * H;
+  const perim = 2 * (W + H);
+  const ratio = perim === 0 ? 0 : area / perim;
 
-  const challengesDone = { 1: false, 2: false, 3: false, 4: false };
+  resArea.textContent  = area;
+  resPerim.textContent = perim;
+  resRatio.textContent = ratio.toFixed(2);
+  resAreaF.textContent  = `Área = ${W} × ${H} = ${area} u²`;
+  resPerimF.textContent = `P = 2(${W} + ${H}) = ${perim} u`;
+  resRatioF.textContent = `${area} / ${perim} = ${ratio.toFixed(2)}`;
 
-  function checkChallenge(num) {
-    const input  = document.getElementById('ans' + num);
-    const fb     = document.getElementById('fb'  + num);
-    const card   = document.getElementById('card' + num);
-    const value  = parseFloat(input.value);
-    const config = CHALLENGE_CONFIG[num];
+  sliderW.value = W; sliderH.value = H;
+  valW.textContent = W; valH.textContent = H;
 
-    if (isNaN(value)) {
-      fb.className = 'challenge-feedback show fail';
-      fb.innerHTML = '<span class="feedback-icon">!</span> Por favor ingresa un número.';
-      return;
-    }
+  const norm = Math.min(1, ratio / 7.5);
+  if      (norm < 0.33) speedoText.textContent = 'Baja eficiencia espacial';
+  else if (norm < 0.66) speedoText.textContent = 'Eficiencia media';
+  else                  speedoText.textContent = 'Alta eficiencia espacial';
+  drawSpeedo(norm);
 
-    if (Math.abs(value - config.answer) <= config.tolerance) {
-      const msg = SUCCESS_MESSAGES[Math.floor(Math.random() * SUCCESS_MESSAGES.length)];
-      fb.className = 'challenge-feedback show ok';
-      fb.innerHTML = `<span class="feedback-icon" style="color:var(--cyan)">✓</span> ${msg}`;
-      card.classList.remove('incorrect');
-      card.classList.add('correct');
-      challengesDone[num] = true;
-      if (Object.values(challengesDone).every(Boolean))
-        document.getElementById('completionBanner').classList.add('show');
-    } else {
-      fb.className = 'challenge-feedback show fail';
-      fb.innerHTML = `<span class="feedback-icon">✗</span> Casi. Pista: ${HINTS[num]}`;
-      card.classList.remove('correct');
-      card.classList.add('incorrect');
-    }
+  if (opts.savePoint !== false) {
+    state.points.push({p:perim, a:area, w:W, h:H, ratio});
+    if (state.points.length > 60) state.points.shift();
+    drawChart1();
+    drawChart2();
   }
 
-  // Enter en inputs
-  document.querySelectorAll('.challenge-input-row input').forEach((inp, i) =>
-    inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkChallenge(i + 1); })
-  );
+  detectDiscoveries(W, H, area, perim);
+  draw();
+}
 
-  // ============================================================
-  // SECCIÓN: Arranque
-  // ============================================================
-  window.addEventListener('load', initCanvas);
-  </script>
-  </body>
-  </html>
+/* ============================================================
+   VELOCÍMETRO (usa getBoundingClientRect — DPR ya aplicado)
+   ============================================================ */
+function drawSpeedo(norm) {
+  if (norm === undefined) {
+    const a = state.w * state.h;
+    const p = 2 * (state.w + state.h);
+    norm = Math.min(1, (p === 0 ? 0 : a / p) / 7.5);
+  }
+  const rect = speedoCv.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  if (w === 0 || h === 0) return;
+
+  sctx.clearRect(0, 0, w, h);
+  sctx.fillStyle = '#fff';
+  sctx.fillRect(0, 0, w, h);
+
+  const cx = w / 2;
+  const cy = h - 8;
+  const r  = Math.min(w / 2 - 10, h - 16);
+
+  const zones = [
+    {a0: Math.PI,               a1: Math.PI + Math.PI/3,   color:'#e74c3c'},
+    {a0: Math.PI + Math.PI/3,   a1: Math.PI + 2*Math.PI/3, color:'#f1c40f'},
+    {a0: Math.PI + 2*Math.PI/3, a1: 2*Math.PI,             color:'#27ae60'},
+  ];
+  sctx.lineWidth = Math.max(8, r * 0.18);
+  zones.forEach(z => {
+    sctx.beginPath();
+    sctx.arc(cx, cy, r, z.a0, z.a1);
+    sctx.strokeStyle = z.color;
+    sctx.stroke();
+  });
+
+  /* aguja */
+  const ang = Math.PI + norm * Math.PI;
+  sctx.strokeStyle = '#15375a';
+  sctx.lineWidth   = Math.max(2, r * 0.04);
+  sctx.beginPath();
+  sctx.moveTo(cx, cy);
+  sctx.lineTo(cx + Math.cos(ang)*r*.82, cy + Math.sin(ang)*r*.82);
+  sctx.stroke();
+  sctx.beginPath();
+  sctx.arc(cx, cy, Math.max(4, r * 0.08), 0, Math.PI*2);
+  sctx.fillStyle = '#15375a';
+  sctx.fill();
+}
+
+/* ============================================================
+   GRÁFICAS
+   ============================================================ */
+function drawAxes(c, ctxC, xLabel, yLabel, xMax, yMax) {
+  const rect = c.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  if (w === 0 || h === 0) return null;
+  ctxC.clearRect(0, 0, w, h);
+  ctxC.fillStyle = '#fff';
+  ctxC.fillRect(0, 0, w, h);
+
+  /* pad.t = 26 deja espacio suficiente para el .chart-title HTML que flota arriba */
+  const pad = {l:32, r:8, t:26, b:22};
+  ctxC.strokeStyle = '#90a4ae';
+  ctxC.lineWidth   = 1;
+  ctxC.beginPath();
+  ctxC.moveTo(pad.l, pad.t);
+  ctxC.lineTo(pad.l, h - pad.b);
+  ctxC.lineTo(w - pad.r, h - pad.b);
+  ctxC.stroke();
+
+  ctxC.strokeStyle = '#eef2f5';
+  ctxC.fillStyle   = '#90a4ae';
+  ctxC.font = '9px Segoe UI';
+  const steps = 4;
+  ctxC.textAlign = 'right';
+  for (let i = 1; i <= steps; i++) {
+    const y = h - pad.b - (h - pad.b - pad.t) * i / steps;
+    ctxC.beginPath(); ctxC.moveTo(pad.l, y); ctxC.lineTo(w - pad.r, y); ctxC.stroke();
+    ctxC.fillText((yMax * i / steps | 0), pad.l - 3, y + 3);
+  }
+  ctxC.textAlign = 'center';
+  for (let i = 1; i <= steps; i++) {
+    const x = pad.l + (w - pad.l - pad.r) * i / steps;
+    ctxC.beginPath(); ctxC.moveTo(x, pad.t); ctxC.lineTo(x, h - pad.b); ctxC.stroke();
+    ctxC.fillText((xMax * i / steps).toFixed(1), x, h - pad.b + 12);
+  }
+
+  /* Etiqueta eje X al pie de la gráfica */
+  ctxC.fillStyle = '#1f4e79';
+  ctxC.font = 'bold 10px Segoe UI';
+  ctxC.textAlign = 'right';
+  ctxC.fillText(xLabel, w - pad.r, h - 4);
+  /* La etiqueta del eje Y ("Área") ya la muestra el div .chart-title sobre el canvas,
+     por lo que NO se dibuja aquí para evitar el solapamiento. */
+
+  return {w, h, pad};
+}
+
+function drawChart1() {
+  if (state.points.length === 0) { drawAxes(chart1, ctx1, 'Perímetro', 'Área', 120, 900); return; }
+  const maxP = Math.max(120, ...state.points.map(p => p.p)) * 1.1;
+  const maxA = Math.max(50,  ...state.points.map(p => p.a)) * 1.1;
+  const r = drawAxes(chart1, ctx1, 'Perímetro', 'Área', maxP, maxA);
+  if (!r) return;
+  const {w, h, pad} = r;
+  const cx = p => pad.l + (w - pad.l - pad.r) * (p / maxP);
+  const cy = a => h - pad.b - (h - pad.b - pad.t) * (a / maxA);
+  state.points.forEach((pt, i) => {
+    ctx1.beginPath();
+    ctx1.arc(cx(pt.p), cy(pt.a), 3.5, 0, Math.PI*2);
+    ctx1.fillStyle = i === state.points.length - 1 ? '#c0392b' : 'rgba(46,134,171,.7)';
+    ctx1.fill();
+  });
+}
+
+function drawChart2() {
+  if (state.points.length === 0) { drawAxes(chart2, ctx2, 'Ancho/Alto', 'Área', 5, 900); return; }
+  const ratios = state.points.map(p => p.w / p.h);
+  const maxR = Math.max(5, ...ratios);
+  const maxA = Math.max(50, ...state.points.map(p => p.a));
+  const r = drawAxes(chart2, ctx2, 'Ancho/Alto', 'Área', maxR, maxA);
+  if (!r) return;
+  const {w, h, pad} = r;
+  const cx = v => pad.l + (w - pad.l - pad.r) * Math.min(1, v / maxR);
+  const cy = a => h - pad.b - (h - pad.b - pad.t) * (a / maxA);
+
+  /* línea cuadrado */
+  ctx2.strokeStyle = '#f1c40f';
+  ctx2.setLineDash([4, 3]);
+  ctx2.beginPath();
+  const xCuad = cx(1);
+  ctx2.moveTo(xCuad, pad.t); ctx2.lineTo(xCuad, h - pad.b);
+  ctx2.stroke();
+  ctx2.setLineDash([]);
+
+  state.points.forEach((pt, i) => {
+    ctx2.beginPath();
+    ctx2.arc(cx(pt.w / pt.h), cy(pt.a), 3.5, 0, Math.PI*2);
+    ctx2.fillStyle = i === state.points.length - 1 ? '#c0392b' : 'rgba(243,156,18,.8)';
+    ctx2.fill();
+  });
+}
+
+/* ============================================================
+   DESCUBRIMIENTOS
+   ============================================================ */
+function showDiscovery(text) {
+  discoveryBox.textContent = text;
+  discoveryBox.classList.remove('hidden');
+  clearTimeout(showDiscovery._t);
+  showDiscovery._t = setTimeout(() => discoveryBox.classList.add('hidden'), 5000);
+}
+
+function detectDiscoveries(W, H, area, perim) {
+  if (W === H && !state.discoveries.square) {
+    state.discoveries.square = true;
+    showDiscovery('🏆 ¡Descubrimiento! El cuadrado maximiza el área para un perímetro fijo.');
+    return;
+  }
+  const sameArea = state.points.slice(0, -1).find(p => p.a === area && p.p !== perim);
+  if (sameArea && !state.discoveries.sameArea) {
+    state.discoveries.sameArea = true;
+    showDiscovery(`✨ ¡Excelente! Dos rectángulos con la misma área (${area} u²) y distinto perímetro.`);
+    return;
+  }
+  if (state.points.length >= 2) {
+    const prev = state.points[state.points.length - 2];
+    if (perim > prev.p && area < prev.a && !state.discoveries.moreP_lessA) {
+      state.discoveries.moreP_lessA = true;
+      showDiscovery('🔍 El perímetro aumentó pero el área DISMINUYÓ. ¡Mayor perímetro ≠ mayor área!');
+    }
+  }
+}
+
+/* ============================================================
+   SLIDERS Y CHECKBOX
+   ============================================================ */
+function applyFixedPerimeter(changed) {
+  if (!state.fixedPerimeter) return;
+  const sum = state.pFixed / 2;
+  const MIN = 1, MAX = 30;
+  const lo = Math.max(MIN, sum - MAX);
+  const hi = Math.min(MAX, sum - MIN);
+  if (changed === 'w') {
+    state.w = Math.max(lo, Math.min(hi, state.w));
+    state.h = sum - state.w;
+  } else {
+    state.h = Math.max(lo, Math.min(hi, state.h));
+    state.w = sum - state.h;
+  }
+  state.w = Math.round(state.w);
+  state.h = Math.round(state.h);
+}
+
+sliderW.addEventListener('input', e => {
+  state.w = parseInt(e.target.value);
+  if (state.fixedPerimeter) applyFixedPerimeter('w');
+  update();
+});
+sliderH.addEventListener('input', e => {
+  state.h = parseInt(e.target.value);
+  if (state.fixedPerimeter) applyFixedPerimeter('h');
+  update();
+});
+
+chkFix.addEventListener('change', e => {
+  state.fixedPerimeter = e.target.checked;
+  fixpInput.classList.toggle('hidden', !state.fixedPerimeter);
+  if (state.fixedPerimeter) {
+    state.pFixed = 2 * (state.w + state.h);
+    inpFixp.value = state.pFixed;
+    hintText.innerHTML = `🔒 Perímetro fijado en <b>${state.pFixed} u</b>. Mueve un slider y observa cómo se ajusta el otro.`;
+  } else {
+    hintText.innerHTML = 'Mueve los sliders o arrastra los vértices rojos. Activa <b>Fijar perímetro</b> para explorar áreas con el mismo contorno.';
+  }
+});
+inpFixp.addEventListener('change', e => {
+  let v = parseInt(e.target.value);
+  if (isNaN(v) || v < 4) v = 4;
+  if (v > 120) v = 120;
+  if (v % 2 !== 0) v++;
+  state.pFixed = v; e.target.value = v;
+  applyFixedPerimeter('w');
+  update();
+});
+
+$('btn-random').addEventListener('click', () => {
+  state.w = 2 + Math.floor(Math.random() * 20);
+  state.h = 2 + Math.floor(Math.random() * 20);
+  if (state.fixedPerimeter) applyFixedPerimeter('w');
+  update();
+});
+$('btn-reset').addEventListener('click', () => {
+  state.w = 8; state.h = 5;
+  state.fixedPerimeter = false;
+  chkFix.checked = false;
+  fixpInput.classList.add('hidden');
+  update();
+});
+
+/* ============================================================
+   ARRASTRE DE VÉRTICES
+   ============================================================ */
+let dragging = null;
+function getMouseUnit(evt) {
+  const r = canvas.getBoundingClientRect();
+  const x = (evt.touches ? evt.touches[0].clientX : evt.clientX) - r.left;
+  const y = (evt.touches ? evt.touches[0].clientY : evt.clientY) - r.top;
+  const {unit, ox, oy} = getViewport();
+  return {ux:(x-ox)/unit, uy:(oy-y)/unit, px:x, py:y};
+}
+function hitVertex(px, py) {
+  const {unit, ox, oy} = getViewport();
+  const vr = Math.max(14, Math.min(20, unit * 0.7));
+  const verts = {
+    rightBottom:{x:ox + state.w*unit, y:oy},
+    leftTop:    {x:ox,                y:oy - state.h*unit},
+    topRight:   {x:ox + state.w*unit, y:oy - state.h*unit},
+  };
+  for (const k of Object.keys(verts)) {
+    if (Math.hypot(px - verts[k].x, py - verts[k].y) < vr) return k;
+  }
+  return null;
+}
+canvas.addEventListener('mousedown', e => { const {px,py}=getMouseUnit(e); dragging=hitVertex(px,py); });
+canvas.addEventListener('touchstart', e => {
+  const {px,py} = getMouseUnit(e);
+  dragging = hitVertex(px,py);
+  if (dragging) e.preventDefault();
+}, {passive:false});
+function onMove(e) {
+  if (!dragging) return;
+  const {ux,uy} = getMouseUnit(e);
+  let nw = state.w, nh = state.h;
+  if (dragging === 'rightBottom') nw = Math.round(ux);
+  if (dragging === 'leftTop')     nh = Math.round(uy);
+  if (dragging === 'topRight')    { nw = Math.round(ux); nh = Math.round(uy); }
+  state.w = Math.max(1, Math.min(30, nw));
+  state.h = Math.max(1, Math.min(30, nh));
+  if (state.fixedPerimeter) {
+    if (dragging === 'leftTop') applyFixedPerimeter('h'); else applyFixedPerimeter('w');
+  }
+  update();
+  e.preventDefault?.();
+}
+window.addEventListener('mousemove', onMove);
+window.addEventListener('touchmove',  onMove, {passive:false});
+window.addEventListener('mouseup',    () => dragging = null);
+window.addEventListener('touchend',   () => dragging = null);
+
+canvas.addEventListener('keydown', e => {
+  let h = false;
+  if (e.key==='ArrowRight'){state.w=Math.min(30,state.w+1);h=true;}
+  if (e.key==='ArrowLeft') {state.w=Math.max(1, state.w-1);h=true;}
+  if (e.key==='ArrowUp')   {state.h=Math.min(30,state.h+1);h=true;}
+  if (e.key==='ArrowDown') {state.h=Math.max(1, state.h-1);h=true;}
+  if (h) {
+    const changed = (e.key.includes('Up')||e.key.includes('Down')) ? 'h' : 'w';
+    if (state.fixedPerimeter) applyFixedPerimeter(changed);
+    e.preventDefault();
+    update();
+  }
+});
+
+/* ============================================================
+   GRÁFICAS — acciones
+   ============================================================ */
+$('btn-clear-charts').addEventListener('click', () => {
+  state.points = [];
+  state.discoveries = {square:false, sameArea:false, moreP_lessA:false};
+  drawChart1(); drawChart2();
+});
+$('btn-save-point').addEventListener('click', () => { update(); });
+
+/* ============================================================
+   RETOS
+   ============================================================ */
+const challenges = [
+  {
+    title:'Reto 1 · Tu primer rectángulo',
+    desc:'Construye un rectángulo cuya área sea exactamente 12 u². Usa los sliders o arrastra los vértices.',
+    check:()=> state.points.some(p=>p.a===12),
+    successMsg:'¡Muy bien! Lograste un rectángulo de área 12 u² (por ejemplo 3×4, 2×6 o 1×12).',
+    failMsg:'Todavía no. Ajusta el ancho y el alto hasta que su producto sea 12. Pista: 3 × 4 = 12.',
+  },
+  {
+    title:'Reto 2 · Misma área, perímetros distintos',
+    desc:'Encuentra DOS rectángulos con la MISMA área pero distinto perímetro.',
+    check:()=>{
+      const byA={};
+      for(const p of state.points){byA[p.a]=byA[p.a]||new Set();byA[p.a].add(p.p);}
+      return Object.values(byA).some(s=>s.size>=2);
+    },
+    successMsg:'¡Excelente! Encontraste rectángulos con misma área y diferente perímetro.',
+    failMsg:'Sigue intentando. Por ejemplo: 2×12 (P=28, A=24) y 3×8 (P=22, A=24).',
+  },
+  {
+    title:'Reto 3 · Maximiza el área',
+    desc:'Encuentra el rectángulo que MAXIMIZA el área para perímetro = 40.',
+    check:()=> state.points.some(p=>p.p===40 && p.w===10 && p.h===10),
+    successMsg:'🏆 ¡Perfecto! 10×10 = 100 u² es el área máxima para P=40. El cuadrado siempre maximiza.',
+    failMsg:'Casi. Para un perímetro fijo, el cuadrado da el área máxima. Si P=40, ¿cuáles son los lados?',
+  },
+];
+
+function loadChallenge() {
+  const c = challenges[state.challenge];
+  $('ch-title').textContent   = c.title;
+  $('ch-desc').textContent    = c.desc;
+  $('ch-attempts').textContent = `Intentos: ${state.attempts[state.challenge]}`;
+  $('ch-success').textContent  = `Éxitos: ${state.successes[state.challenge]}`;
+  $('ch-feedback').className  = 'feedback';
+  $('ch-feedback').textContent = '';
+}
+$('btn-check').addEventListener('click', () => {
+  state.attempts[state.challenge]++;
+  const c = challenges[state.challenge];
+  const fb = $('ch-feedback');
+  if (c.check()) {
+    state.successes[state.challenge]++;
+    fb.textContent = '✅ ' + c.successMsg;
+    fb.className   = 'feedback ok';
+  } else {
+    fb.textContent = '❌ ' + c.failMsg;
+    fb.className   = 'feedback fail';
+  }
+  $('ch-attempts').textContent = `Intentos: ${state.attempts[state.challenge]}`;
+  $('ch-success').textContent  = `Éxitos: ${state.successes[state.challenge]}`;
+});
+$('btn-next').addEventListener('click', () => {
+  state.challenge = (state.challenge + 1) % challenges.length;
+  loadChallenge();
+});
+
+/* ============================================================
+   PANTALLA COMPLETA
+   ============================================================ */
+$('btn-fullscreen').addEventListener('click', () => {
+  const el = document.documentElement;
+  if (!document.fullscreenElement) {
+    (el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);
+  } else {
+    (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document);
+  }
+});
+function updateFsIcon() {
+  const isFs = !!document.fullscreenElement;
+  $('fs-expand').style.display = isFs ? 'none'  : '';
+  $('fs-shrink').style.display = isFs ? ''      : 'none';
+}
+document.addEventListener('fullscreenchange',       updateFsIcon);
+document.addEventListener('webkitfullscreenchange', updateFsIcon);
+
+/* ============================================================
+   INICIO
+   ============================================================ */
+window.addEventListener('load', () => {
+  resizeAll();
+  loadChallenge();
+  update({savePoint:false});
+  /* Segundo redimensionado tras el primer paint para capturar alturas reales */
+  requestAnimationFrame(() => { resizeAll(); update({savePoint:false}); });
+});
+</script>
+</body>
+</html>
