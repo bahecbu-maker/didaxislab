@@ -6,6 +6,59 @@
 <title>Laboratorio Interactivo: Área vs Perímetro — Didaxis Lab</title>
 <meta name="description" content="Simulador interactivo de área y perímetro: manipula, mide y descubre por qué un mayor perímetro no siempre implica mayor área. Incluye preguntas tipo ICFES con retroalimentación y guía docente alineada a los DBA de Colombia.">
 
+  <!-- ============ METADATOS · editar por recurso ============ -->
+  <link rel="canonical" href="https://didaxislab.com/recursos/area-vs-perimetro/">
+  <meta name="author" content="Héctor Enrique Banquez Buendía">
+  <meta name="keywords" content="área, perímetro, optimización, pensamiento variacional, geometría, medición, simulador, recurso interactivo, Saber 11, ICFES, DBA, matemáticas, Colombia">
+
+  <!-- Open Graph · vista previa al compartir -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Didaxis Lab">
+  <meta property="og:locale" content="es_CO">
+  <meta property="og:title" content="Laboratorio Interactivo: Área vs Perímetro">
+  <meta property="og:description" content="Manipula, mide y descubre por qué un mayor perímetro no siempre implica mayor área. Simulador interactivo con preguntas tipo Saber 11.">
+  <meta property="og:url" content="https://didaxislab.com/recursos/area-vs-perimetro/">
+  <meta property="og:image" content="https://didaxislab.com/recursos/area-vs-perimetro/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Didaxis Lab — Laboratorio Interactivo: Área vs Perímetro">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio Interactivo: Área vs Perímetro">
+  <meta name="twitter:description" content="Manipula, mide y descubre por qué un mayor perímetro no siempre implica mayor área.">
+  <meta name="twitter:image" content="https://didaxislab.com/recursos/area-vs-perimetro/og.png">
+
+  <!-- Datos estructurados · recurso educativo -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    "name": "Laboratorio Interactivo: Área vs Perímetro",
+    "description": "Simulador interactivo de área y perímetro: el estudiante manipula un rectángulo, mide y descubre que un mayor perímetro no siempre implica mayor área. Incluye preguntas tipo ICFES Saber 11 con retroalimentación y guía docente.",
+    "url": "https://didaxislab.com/recursos/area-vs-perimetro/",
+    "inLanguage": "es",
+    "learningResourceType": "Simulación interactiva",
+    "interactivityType": "active",
+    "educationalLevel": "Educación Básica y Media (3.° a 11.°)",
+    "educationalUse": ["instruction", "assessment"],
+    "teaches": "Relación entre área y perímetro; optimización del área con perímetro fijo; argumentación con contraejemplos.",
+    "keywords": "área, perímetro, optimización, pensamiento variacional, Saber 11, ICFES, DBA",
+    "isAccessibleForFree": true,
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "creativeWorkStatus": "Published",
+    "datePublished": "2026-06-24",
+    "version": "1.0",
+    "author": {
+      "@type": "Person",
+      "name": "Héctor Enrique Banquez Buendía",
+      "identifier": "https://orcid.org/0009-0007-6705-0407",
+      "url": "https://orcid.org/0009-0007-6705-0407"
+    },
+    "publisher": { "@type": "Organization", "name": "Didaxis Lab", "url": "https://didaxislab.com" }
+  }
+  </script>
+
 <style>
   :root{
     --navy:#1B2A5A;
@@ -190,6 +243,26 @@
     border-radius:10px;padding:11px 18px;text-decoration:none;white-space:nowrap;transition:background .15s;}
   .guide-btn:hover{background:var(--navy-dark);}
   @media (max-width:560px){.guide-btn{width:100%;text-align:center;}}
+  /* ---------- Temas (palabras clave visibles) ---------- */
+  .topics{margin-top:12px;font-size:13.5px;color:var(--muted);}
+  .topics span{font-weight:700;color:var(--navy);}
+
+  /* ---------- Autoría y cómo citar ---------- */
+  .meta-block{border-top:1px solid var(--line);padding-top:24px;}
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px 22px;margin-bottom:20px;}
+  .meta-item{display:flex;flex-direction:column;gap:2px;}
+  .meta-k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .meta-v{font-size:14.5px;color:var(--ink);}
+  .meta-v a{color:var(--navy);font-weight:600;text-decoration:none;border-bottom:1px solid var(--cyan);}
+  .meta-v a:hover{color:var(--cyan);}
+  .cite{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);}
+  .cite-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
+  .cite-label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);}
+  .cite-copy{font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--navy);background:#fff;
+    border:1px solid var(--line);border-radius:8px;padding:6px 12px;white-space:nowrap;transition:.15s;}
+  .cite-copy:hover{background:var(--cyan-soft);border-color:var(--cyan);}
+  .cite-copy.done{background:var(--ok-soft);border-color:#BCE7D2;color:#16623F;}
+  .cite-text{font-size:13.5px;line-height:1.6;color:var(--ink);font-family:ui-monospace,Menlo,Consolas,monospace;}
 </style>
 </head>
 <body>
@@ -219,6 +292,7 @@
       </div>
       <h1 class="resource-title">Laboratorio Interactivo: Área vs Perímetro</h1>
       <p class="resource-lead">Manipula, mide y descubre: no siempre un mayor perímetro implica mayor área. Un laboratorio para construir la idea por exploración, no por definición.</p>
+      <p class="topics"><span>Temas:</span> área · perímetro · optimización · pensamiento variacional · Saber 11</p>
     </section>
 
     <!-- ===================== SIMULADOR ===================== -->
@@ -241,7 +315,7 @@
     <!-- ===================== PREGUNTAS ICFES (CARRUSEL) ===================== -->
     <section class="quiz-section">
       <div class="section-head"><h2>Pon a prueba lo que descubriste</h2></div>
-      <p class="section-sub">Tres preguntas tipo ICFES Saber 11, una por competencia. Elige una opción y recibe retroalimentación inmediata, incluso de por qué fallan los distractores.</p>
+      <p class="section-sub">Tres preguntas tipo ICFES Saber 11, una por competencia. Elige una opción y recibe retroalimentación inmediata, incluso de por qué fallan los distractores. Las tres integran estándares de 3.° a 11.°; el detalle por grado y DBA está en la guía docente.</p>
 
       <div class="quiz-nav">
         <button class="nav-btn" id="qPrev" type="button" aria-label="Pregunta anterior">← Anterior</button>
@@ -274,6 +348,23 @@
       </div>
     </section>
 
+
+    <!-- ===================== AUTORÍA Y CÓMO CITAR · editar por recurso ===================== -->
+    <section class="meta-block">
+      <div class="meta-grid">
+        <div class="meta-item"><span class="meta-k">Autor</span><span class="meta-v">Héctor Enrique Banquez Buendía</span></div>
+        <div class="meta-item"><span class="meta-k">ORCID</span><span class="meta-v"><a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">0009-0007-6705-0407</a></span></div>
+        <div class="meta-item"><span class="meta-k">Licencia</span><span class="meta-v"><a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">CC BY 4.0</a></span></div>
+        <div class="meta-item"><span class="meta-k">Publicado</span><span class="meta-v">Junio de 2026 · v1.0</span></div>
+      </div>
+      <div class="cite">
+        <div class="cite-head">
+          <span class="cite-label">Cómo citar este recurso</span>
+          <button class="cite-copy" id="citeBtn" type="button">Copiar cita</button>
+        </div>
+        <p class="cite-text" id="citeText">Banquez Buendía, H. E. (2026). <i>Laboratorio Interactivo: Área vs Perímetro</i> [Simulación interactiva]. Didaxis Lab. https://didaxislab.com/recursos/area-vs-perimetro/</p>
+      </div>
+    </section>
 
   </main>
 
@@ -352,8 +443,7 @@
     }).join('');
     card.innerHTML =
       '<div class="qc-inner">'
-      + '<div class="qc-top"><span class="qc-badge">Pregunta '+(qi+1)+' · '+q.comp+'</span>'
-      + '<span class="qc-badge dba">'+q.dba+'</span></div>'
+      + '<div class="qc-top"><span class="qc-badge">Pregunta '+(qi+1)+' · '+q.comp+'</span></div>'
       + '<div class="qc-context">'+q.context+'</div>'
       + '<div class="qc-stem">'+q.stem+'</div>'
       + '<div class="opts">'+opts+'</div>'
@@ -447,6 +537,23 @@
         try { document.execCommand('copy'); btn.textContent = '¡Copiado!'; } catch(err){}
         sel.removeAllRanges();
         setTimeout(function(){ btn.textContent = 'Copiar código'; }, 1800);
+      });
+    });
+  })();
+  /* ====================== COPIAR CITA ====================== */
+  (function(){
+    var btn=document.getElementById('citeBtn'), txt=document.getElementById('citeText');
+    if(!btn||!txt) return;
+    btn.addEventListener('click', function(){
+      var s=(txt.innerText||txt.textContent).trim();
+      navigator.clipboard.writeText(s).then(function(){
+        btn.textContent='¡Copiada!'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent='Copiar cita'; btn.classList.remove('done'); },1800);
+      }).catch(function(){
+        var r=document.createRange(); r.selectNode(txt);
+        var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        try{document.execCommand('copy'); btn.textContent='¡Copiada!';}catch(e){}
+        sel.removeAllRanges(); setTimeout(function(){ btn.textContent='Copiar cita'; },1800);
       });
     });
   })();
