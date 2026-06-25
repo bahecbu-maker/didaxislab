@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fracciones Vivas | Didaxis Lab</title>
+  <!-- MathJax v3 vía CDN (único recurso externo) -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+      startup: { typeset: false }
+    };
+  </script>
+  <script id="mathjax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    /* ============================================================
+       VARIABLES & RESET
+    ============================================================ */
+    :root {
+      --white:   #FFFFFF;
+      --blue:    #1B2A5A;
+      --cyan:    #0BC0D8;
+      --cyan-dk: #099BB0;
+      --bg:      #F4F6FA;
+      --border:  #E0E4EC;
+      --text2:   #2C3E50;
+      --ok:      #10B981;
+      --err:     #EF4444;
+      --amber:   #F59E0B;
+      --radius-card: 12px;
+      --radius-btn:  8px;
+      --shadow-card: 0 4px 12px rgba(27,42,90,.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter','Segoe UI',system-ui,sans-serif;
+      background: var(--bg);
+      color: var(--blue);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+    }
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    #site-header {
+      background: var(--white);
+      border-bottom: 2px solid var(--border);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(27,42,90,.06);
+      flex-shrink: 0;
+    }
+    #logo-wrap {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    #logo-img {
+      height: 44px;
+      width: auto;
+      display: block;
+    }
+    #logo-fallback {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 14px;
+      border: 2px dashed var(--cyan);
+      border-radius: 8px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    #header-title { flex: 1; }
+    #header-title h1 { font-size: 20px; font-weight: 800; letter-spacing: -.5px; line-height: 1.1; }
+    #header-title p  { font-size: 11px; font-weight: 500; color: var(--text2); margin-top: 1px; }
+    #progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    #progress-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+    #progress-pips {
+      display: flex;
+      gap: 6px;
+    }
+    .pip {
+      width: 28px;
+      height: 12px;
+      border-radius: 6px;
+      background: var(--border);
+      transition: background .4s;
+    }
+    .pip.done { background: var(--ok); }
+
+    /* ============================================================
+       MAIN GRID
+    ============================================================ */
+    #main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(220px,25%) 1fr minmax(260px,28%);
+      gap: 16px;
+      padding: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      #main { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       CARDS & BUTTONS
+    ============================================================ */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .btn-primary {
+      background: var(--cyan);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-btn);
+      padding: 9px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--cyan-dk); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-secondary {
+      background: var(--white);
+      color: var(--blue);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-btn);
+      padding: 7px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); background: #F0FAFB; }
+    .type-btn {
+      background: var(--white);
+      color: var(--blue);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-btn);
+      padding: 7px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .type-btn.active { background: var(--cyan); color: var(--white); border-color: var(--cyan); }
+    .type-btn:hover:not(.active) { border-color: var(--cyan); color: var(--cyan); }
+    .op-btn {
+      background: var(--white);
+      color: var(--blue);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-btn);
+      padding: 5px 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: inherit;
+      font-size: 11px;
+      flex: 1;
+    }
+    .op-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
+    .op-btn:hover:not(.active) { border-color: var(--blue); color: var(--blue); }
+
+    /* ============================================================
+       SLIDERS
+    ============================================================ */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      background: var(--cyan);
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      cursor: pointer;
+      transition: background .2s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { background: var(--cyan-dk); }
+    input[type=range]::-moz-range-thumb {
+      width: 20px; height: 20px;
+      background: var(--cyan);
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      cursor: pointer;
+    }
+    .slider-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .slider-label { font-size: 13px; font-weight: 600; color: var(--text2); }
+    .slider-val {
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--white);
+      min-width: 34px;
+      text-align: center;
+    }
+    .slider-minmax {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       TOGGLE SWITCH
+    ============================================================ */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .toggle-track {
+      width: 36px; height: 20px;
+      border-radius: 10px;
+      background: var(--border);
+      position: relative;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .toggle-track.on { background: var(--cyan); }
+    .toggle-thumb {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--white);
+      transition: left .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle-track.on .toggle-thumb { left: 18px; }
+    .toggle-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+
+    /* ============================================================
+       FRACTION DISPLAY (NUMERIC)
+    ============================================================ */
+    #numeric-col {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .frac-big {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .frac-big .frac-num {
+      padding-bottom: 3px;
+      min-width: 40px;
+      text-align: center;
+    }
+    .frac-big .frac-den {
+      padding-top: 3px;
+      min-width: 40px;
+      text-align: center;
+    }
+    .frac-badges {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .badge {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+    }
+    .badge-cyan {
+      background: rgba(11,192,216,.1);
+      border-color: rgba(11,192,216,.4);
+      color: var(--blue);
+    }
+    #op-result-box {
+      margin-top: 14px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue);
+      display: none;
+    }
+
+    /* ============================================================
+       NUMBER LINE
+    ============================================================ */
+    #nl-svg {
+      display: block;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .nl-dot { transition: cx .4s cubic-bezier(.34,1.56,.64,1); }
+
+    /* ============================================================
+       CHALLENGE PANEL
+    ============================================================ */
+    #challenge-panel { display: flex; flex-direction: column; gap: 10px; }
+    .challenge-header {
+      background: var(--blue);
+      color: var(--white);
+      border-radius: 12px 12px 0 0;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .challenge-header h2 { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; }
+    .challenge-count-badge {
+      background: rgba(11,192,216,.25);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .challenge-card {
+      background: var(--white);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .challenge-card-header {
+      background: var(--blue);
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .3s;
+    }
+    .challenge-card-header.done { background: var(--ok); }
+    .challenge-num {
+      background: rgba(255,255,255,.2);
+      color: var(--white);
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .challenge-card-title { color: var(--white); font-weight: 700; font-size: 13px; }
+    .challenge-body { padding: 14px; }
+    .challenge-desc { color: var(--text2); font-size: 13px; line-height: 1.5; margin-bottom: 10px; }
+    .challenge-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue);
+      outline: none;
+      font-family: inherit;
+      margin-bottom: 10px;
+    }
+    .challenge-input:focus { border-color: var(--cyan); }
+    .challenge-btns { display: flex; gap: 8px; }
+    .feedback-box {
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      display: none;
+    }
+    .feedback-box.ok  { background: rgba(16,185,129,.12); border: 1px solid var(--ok);  color: var(--ok); }
+    .feedback-box.err { background: rgba(239, 68, 68,.12); border: 1px solid var(--err); color: var(--err); }
+    .hint-box {
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: rgba(11,192,216,.08);
+      border: 1px solid rgba(11,192,216,.35);
+      color: var(--blue);
+      font-size: 12px;
+      line-height: 1.5;
+      display: none;
+    }
+    #all-done-box {
+      background: rgba(16,185,129,.1);
+      border: 2px solid var(--ok);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      display: none;
+    }
+    #all-done-box .trophy { font-size: 30px; margin-bottom: 8px; }
+    #all-done-box .title { font-weight: 800; color: var(--ok); font-size: 16px; margin-bottom: 4px; }
+    #all-done-box .sub { font-size: 13px; color: var(--text2); }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes shake {
+      0%,100%{ transform:translateX(0); }
+      15%{ transform:translateX(-7px); }
+      30%{ transform:translateX(7px); }
+      45%{ transform:translateX(-5px); }
+      60%{ transform:translateX(5px); }
+      75%{ transform:translateX(-3px); }
+      90%{ transform:translateX(3px); }
+    }
+    @keyframes popin {
+      0%  { transform:scale(.5); opacity:0; }
+      60% { transform:scale(1.15); opacity:1; }
+      100%{ transform:scale(1); opacity:1; }
+    }
+    @keyframes slidein {
+      from{ opacity:0; transform:translateY(-6px); }
+      to  { opacity:1; transform:translateY(0); }
+    }
+    .anim-shake  { animation: shake .5s ease-out; }
+    .anim-popin  { animation: popin .4s ease-out forwards; }
+    .anim-slidein{ animation: slidein .25s ease-out; }
+
+    /* SVG transitions */
+    svg path, svg rect, svg circle { transition: fill .3s ease-out; }
+
+    /* ============================================================
+       SECOND FRACTION SECTION
+    ============================================================ */
+    #frac2-section { display: none; }
+    #frac2-section.visible { display: block; }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--blue);
+      color: rgba(255,255,255,.85);
+      text-align: center;
+      padding: 10px 24px;
+      font-size: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       GRAPHIC VIEW
+    ============================================================ */
+    #graphic-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .frac-graphic-label {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    #op-symbol {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--cyan);
+      padding: 8px;
+      display: none;
+    }
+    #graphic2-wrap { display: none; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+============================================================ -->
+<header id="site-header">
+  <!-- ============================================================== -->
+  <!-- LOGO_DIDAXIS_AQUÍ                                                -->
+  <!-- INSTRUCCIONES PARA EL USUARIO:                                   -->
+  <!-- Reemplaza el src del <img> de abajo con la ruta o URL de tu      -->
+  <!-- archivo PNG/SVG. Mantén el alt y las dimensiones recomendadas.   -->
+  <!-- Si subes el archivo junto al HTML usa: src="logo-didaxis.svg"   -->
+  <!-- ============================================================== -->
+  <div id="logo-wrap">
+    <img src="logo-didaxis.svg"
+         alt="Didaxis Lab"
+         id="logo-img"
+         style="height:48px;width:auto;"
+         onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+    <div id="logo-fallback">Logo Didaxis Lab</div>
+  </div>
+
+  <div id="header-title">
+    <h1>Fracciones Vivas</h1>
+    <p>Didaxis Lab &middot; Simulador Interactivo</p>
+  </div>
+
+  <div id="progress-wrap">
+    <span id="progress-label">Retos: 0/4</span>
+    <div id="progress-pips">
+      <div class="pip" id="pip-0"></div>
+      <div class="pip" id="pip-1"></div>
+      <div class="pip" id="pip-2"></div>
+      <div class="pip" id="pip-3"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     MAIN 3-COLUMN LAYOUT
+============================================================ -->
+<main id="main">
+
+  <!-- ==================== LEFT: Control Panel ==================== -->
+  <div id="left-col">
+
+    <!-- View selector -->
+    <div class="card">
+      <div class="card-title">Representación</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="type-btn active" data-view="pizza" onclick="setView('pizza',this)">🍕 Pizza</button>
+        <button class="type-btn"        data-view="bar"   onclick="setView('bar',this)">▭ Barra</button>
+        <button class="type-btn"        data-view="set"   onclick="setView('set',this)">● Conjunto</button>
+      </div>
+    </div>
+
+    <!-- Fraction 1 -->
+    <div class="card">
+      <div class="card-title">Fracción 1</div>
+
+      <div class="slider-row" style="margin-bottom:4px">
+        <span class="slider-label">Denominador</span>
+        <span class="slider-val" style="background:var(--blue)" id="den1-val">4</span>
+      </div>
+      <input type="range" id="den1-slider" min="2" max="12" value="4"
+             oninput="onDen1(+this.value)"
+             aria-label="Denominador de la primera fracción">
+      <div class="slider-minmax"><span>2</span><span>12</span></div>
+
+      <div class="slider-row" style="margin:14px 0 4px">
+        <span class="slider-label">Numerador</span>
+        <span class="slider-val" style="background:var(--cyan)" id="num1-val">3</span>
+      </div>
+      <input type="range" id="num1-slider" min="0" max="4" value="3"
+             oninput="onNum1(+this.value)"
+             aria-label="Numerador de la primera fracción">
+      <div class="slider-minmax" id="num1-minmax"><span>0</span><span id="num1-max-lbl">4</span></div>
+
+      <div class="toggle-row" onclick="toggleSimplified()">
+        <div class="toggle-track" id="simp-track"><div class="toggle-thumb"></div></div>
+        <span class="toggle-label">Mostrar fracción simplificada</span>
+      </div>
+    </div>
+
+    <!-- Second fraction -->
+    <div class="card">
+      <button class="btn-primary" id="add-frac2-btn" style="width:100%"
+              onclick="showFrac2()">+ Agregar segunda fracción</button>
+
+      <div id="frac2-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="card-title" style="margin-bottom:0">Fracción 2</div>
+          <button onclick="hideFrac2()" style="background:none;border:none;color:var(--err);cursor:pointer;font-weight:700;font-size:13px;">✕ Quitar</button>
+        </div>
+
+        <div class="slider-row" style="margin-bottom:4px">
+          <span class="slider-label">Denominador</span>
+          <span class="slider-val" style="background:var(--amber)" id="den2-val">2</span>
+        </div>
+        <input type="range" id="den2-slider" min="2" max="12" value="2"
+               oninput="onDen2(+this.value)"
+               aria-label="Denominador de la segunda fracción">
+        <div class="slider-minmax"><span>2</span><span>12</span></div>
+
+        <div class="slider-row" style="margin:14px 0 4px">
+          <span class="slider-label">Numerador</span>
+          <span class="slider-val" style="background:var(--amber)" id="num2-val">1</span>
+        </div>
+        <input type="range" id="num2-slider" min="0" max="2" value="1"
+               oninput="onNum2(+this.value)"
+               aria-label="Numerador de la segunda fracción">
+        <div class="slider-minmax"><span>0</span><span id="num2-max-lbl">2</span></div>
+
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="card-title" style="margin-bottom:8px">Operación:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;">
+            <button class="op-btn active" data-op="compare"    onclick="setOp('compare',this)">Comparar</button>
+            <button class="op-btn"        data-op="add"        onclick="setOp('add',this)">Sumar</button>
+            <button class="op-btn"        data-op="subtract"   onclick="setOp('subtract',this)">Restar</button>
+            <button class="op-btn"        data-op="multiply"   onclick="setOp('multiply',this)">Multiplicar</button>
+            <button class="op-btn"        data-op="equivalents" onclick="setOp('equivalents',this)">Equivalentes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CENTER: Visual Canvas ==================== -->
+  <div id="center-col">
+
+    <!-- Graphic view -->
+    <div class="card" style="text-align:center">
+      <div class="card-title" style="text-align:left">Vista Gráfica</div>
+      <div id="graphic-center">
+        <div>
+          <div id="svg1-wrap"></div>
+          <div class="frac-graphic-label" id="g1-lbl" style="color:var(--blue)">3/4</div>
+        </div>
+        <div id="op-symbol">+</div>
+        <div id="graphic2-wrap">
+          <div id="svg2-wrap"></div>
+          <div class="frac-graphic-label" id="g2-lbl" style="color:var(--amber)">1/2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Numeric view -->
+    <div class="card">
+      <div class="card-title">Vista Numérica</div>
+      <div id="numeric-col">
+        <!-- Frac 1 -->
+        <div id="frac1-display">
+          <div class="frac-big" style="color:var(--blue)">
+            <span class="frac-num" id="num1-big" style="border-bottom:3px solid var(--blue)">3</span>
+            <span class="frac-den" id="den1-big">4</span>
+          </div>
+          <div class="frac-badges">
+            <span class="badge" id="dec1-badge">0.75</span>
+            <span class="badge" id="pct1-badge">75.0%</span>
+            <span class="badge badge-cyan" id="simp1-badge" style="display:none"></span>
+          </div>
+        </div>
+
+        <!-- Frac 2 (hidden until 2nd frac activated) -->
+        <div id="frac2-display" style="display:none">
+          <div style="font-size:28px;font-weight:800;color:var(--cyan);padding:8px">=</div>
+          <div class="frac-big" style="color:var(--amber)">
+            <span class="frac-num" id="num2-big" style="border-bottom:3px solid var(--amber)">1</span>
+            <span class="frac-den" id="den2-big">2</span>
+          </div>
+          <div class="frac-badges">
+            <span class="badge" id="dec2-badge">0.5</span>
+          </div>
+        </div>
+      </div>
+      <!-- Operation result -->
+      <div id="op-result-box"></div>
+    </div>
+
+    <!-- Number line -->
+    <div class="card">
+      <div class="card-title">Recta Numérica</div>
+      <div style="overflow-x:auto">
+        <svg id="nl-svg" viewBox="0 0 500 80" height="80" aria-label="Recta numérica"></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== RIGHT: Challenges ==================== -->
+  <div id="challenge-panel">
+    <div class="challenge-header">
+      <h2>🎯 Panel de Retos</h2>
+      <span class="challenge-count-badge" id="ch-count">0/4</span>
+    </div>
+
+    <!-- Reto 1 -->
+    <div class="challenge-card" id="ch-card-0">
+      <div class="challenge-card-header" id="ch-head-0">
+        <div class="challenge-num" id="ch-num-0">1</div>
+        <span class="challenge-card-title">Construcción</span>
+      </div>
+      <div class="challenge-body">
+        <p class="challenge-desc">Usando la pizza, representa la fracción 3/8. ¡Mueve los sliders hasta lograrlo!</p>
+        <div class="feedback-box" id="ch-fb-0"></div>
+        <div class="hint-box"     id="ch-hint-0">El número de abajo (denominador) indica en cuántas partes iguales dividimos la pizza.</div>
+        <div class="challenge-btns">
+          <button class="btn-primary" style="flex:1" onclick="checkChallenge(0)">Comprobar</button>
+          <button class="btn-secondary" id="ch-hint-btn-0" onclick="showHint(0)">💡 Pista</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reto 2 -->
+    <div class="challenge-card" id="ch-card-1">
+      <div class="challenge-card-header" id="ch-head-1">
+        <div class="challenge-num" id="ch-num-1">2</div>
+        <span class="challenge-card-title">Equivalencia</span>
+      </div>
+      <div class="challenge-body">
+        <p class="challenge-desc">Encuentra una fracción equivalente a 1/2 cuyo denominador sea mayor que 6.</p>
+        <div class="feedback-box" id="ch-fb-1"></div>
+        <div class="hint-box"     id="ch-hint-1">Multiplica numerador y denominador por el mismo número.</div>
+        <div class="challenge-btns">
+          <button class="btn-primary" style="flex:1" onclick="checkChallenge(1)">Comprobar</button>
+          <button class="btn-secondary" id="ch-hint-btn-1" onclick="showHint(1)">💡 Pista</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reto 3 -->
+    <div class="challenge-card" id="ch-card-2">
+      <div class="challenge-card-header" id="ch-head-2">
+        <div class="challenge-num" id="ch-num-2">3</div>
+        <span class="challenge-card-title">Comparación</span>
+      </div>
+      <div class="challenge-body">
+        <p class="challenge-desc">Activa la segunda fracción. Logra que 5/6 sea mayor que la fracción que elijas con denominador 4.</p>
+        <div class="feedback-box" id="ch-fb-2"></div>
+        <div class="hint-box"     id="ch-hint-2">Cualquier fracción con denominador 4 menor que 0.833 funciona. Prueba con 3/4.</div>
+        <div class="challenge-btns">
+          <button class="btn-primary" style="flex:1" onclick="checkChallenge(2)">Comprobar</button>
+          <button class="btn-secondary" id="ch-hint-btn-2" onclick="showHint(2)">💡 Pista</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reto 4 -->
+    <div class="challenge-card" id="ch-card-3">
+      <div class="challenge-card-header" id="ch-head-3">
+        <div class="challenge-num" id="ch-num-3">4</div>
+        <span class="challenge-card-title">Operación</span>
+      </div>
+      <div class="challenge-body">
+        <p class="challenge-desc">Suma 1/3 + 1/6 usando el modo SUMAR. Observa la recta numérica: ¿la suma es mayor o menor que 1/2? Escribe el resultado simplificado (forma a/b):</p>
+        <input type="text" class="challenge-input" id="ch-input-3"
+               placeholder="Ej: 1/2" aria-label="Respuesta del reto 4"
+               onkeydown="if(event.key==='Enter')checkChallenge(3)">
+        <div class="feedback-box" id="ch-fb-3"></div>
+        <div class="hint-box"     id="ch-hint-3">Necesitas un denominador común. El mínimo común múltiplo de 3 y 6 es 6.</div>
+        <div class="challenge-btns">
+          <button class="btn-primary" style="flex:1" onclick="checkChallenge(3)">Comprobar</button>
+          <button class="btn-secondary" id="ch-hint-btn-3" onclick="showHint(3)">💡 Pista</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- All done -->
+    <div id="all-done-box">
+      <div class="trophy">🏆</div>
+      <div class="title">¡Completaste todos los retos!</div>
+      <div class="sub">Excelente dominio de las fracciones.</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+  <span>&copy; Didaxis Lab &middot; Alineado con DBA&nbsp;3 Grado&nbsp;3° y DBA&nbsp;1 Grado&nbsp;4°</span>
+  <span style="opacity:.5">&middot;</span>
+  <span style="opacity:.8">Estándares NCTM equivalentes (Grades&nbsp;3–7)</span>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT — todo embebido
+============================================================ -->
+<script>
+/* ──────────────────────────────────────────────────────────────
+   STATE
+────────────────────────────────────────────────────────────── */
+const state = {
+  num1: 3, den1: 4,
+  num2: 1, den2: 2,
+  showSecond: false,
+  view: 'pizza',
+  op: 'compare',
+  showSimplified: false,
+};
+const completed = [false, false, false, false];
+const hintUsed  = [false, false, false, false];
+
+const MOTIVATIONAL = ['¡Lo lograste!', '¡Excelente!', '¡Sigues avanzando!'];
+const CYAN  = '#0BC0D8';
+const BLUE  = '#1B2A5A';
+const GRAY  = '#E0E4EC';
+const AMBER = '#F59E0B';
+
+/* ──────────────────────────────────────────────────────────────
+   MATH UTILITIES
+────────────────────────────────────────────────────────────── */
+function gcd(a, b) { a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
+function lcm(a, b) { return a*b/gcd(a,b); }
+function simplify(n, d) { if(n===0) return {n:0,d:1}; const g=gcd(Math.abs(n),Math.abs(d)); return {n:n/g,d:d/g}; }
+function toDecimal(n,d) { let s=(n/d).toFixed(4); return s.replace(/\.?0+$/,''); }
+function toPercent(n,d) { return ((n/d)*100).toFixed(1)+'%'; }
+function areEquiv(n1,d1,n2,d2) { const s1=simplify(n1,d1),s2=simplify(n2,d2); return s1.n===s2.n&&s1.d===s2.d; }
+function parseFrac(s) {
+  const p=s.trim().split('/');
+  if(p.length!==2) return null;
+  const n=parseInt(p[0]),d=parseInt(p[1]);
+  if(isNaN(n)||isNaN(d)||d===0) return null;
+  return {n,d};
+}
+function addFrac(n1,d1,n2,d2) { const l=lcm(d1,d2); return simplify(n1*(l/d1)+n2*(l/d2),l); }
+function subFrac(n1,d1,n2,d2) { const l=lcm(d1,d2); return simplify(n1*(l/d1)-n2*(l/d2),l); }
+function mulFrac(n1,d1,n2,d2) { return simplify(n1*n2,d1*d2); }
+
+/* ──────────────────────────────────────────────────────────────
+   SVG GENERATORS
+────────────────────────────────────────────────────────────── */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs={}) {
+  const e = document.createElementNS(NS, tag);
+  for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+  return e;
+}
+
+function polarXY(cx,cy,r,deg) {
+  const rad=(deg-90)*Math.PI/180;
+  return {x:cx+r*Math.cos(rad), y:cy+r*Math.sin(rad)};
+}
+function sectorPath(cx,cy,r,a0,a1) {
+  const s=polarXY(cx,cy,r,a1), e=polarXY(cx,cy,r,a0);
+  const large=a1-a0<=180?0:1;
+  return `M${cx} ${cy} L${s.x} ${s.y} A${r} ${r} 0 ${large} 0 ${e.x} ${e.y}Z`;
+}
+
+function makePizza(num, den, color=CYAN, size=170) {
+  const cx=size/2, cy=size/2, r=size/2-8;
+  const svg = el('svg',{width:size,height:size,viewBox:`0 0 ${size} ${size}`,'aria-label':`Pizza ${num}/${den}`});
+  const angle=360/den;
+  if(den===1){
+    svg.appendChild(el('circle',{cx,cy,r,fill:num>=1?color:GRAY,stroke:BLUE,'stroke-width':2}));
+  } else {
+    for(let i=0;i<den;i++){
+      const p=el('path',{d:sectorPath(cx,cy,r,i*angle,(i+1)*angle),fill:i<num?color:GRAY,stroke:BLUE,'stroke-width':1.5});
+      svg.appendChild(p);
+    }
+  }
+  svg.appendChild(el('circle',{cx,cy,r,fill:'none',stroke:BLUE,'stroke-width':2}));
+  return svg;
+}
+
+function makeBar(num, den, color=CYAN, W=280, H=64) {
+  const svg = el('svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`,'aria-label':`Barra ${num}/${den}`});
+  const sw=W/den;
+  for(let i=0;i<den;i++){
+    svg.appendChild(el('rect',{x:i*sw+1,y:4,width:sw-2,height:H-8,rx:4,fill:i<num?color:GRAY,stroke:BLUE,'stroke-width':1.5}));
+  }
+  return svg;
+}
+
+function makeSet(num, den, color=CYAN, size=170) {
+  const total=den;
+  const cols=Math.ceil(Math.sqrt(total)), rows=Math.ceil(total/cols);
+  const r=Math.min(size/(cols*2+1), size/(rows*2+1), 18);
+  const sx=(size-r*2)/Math.max(cols-1,1), sy=(size-r*2)/Math.max(rows-1,1);
+  const ox=(size-(cols-1)*sx-r*2)/2+r, oy=(size-(rows-1)*sy-r*2)/2+r;
+  const svg=el('svg',{width:size,height:size,viewBox:`0 0 ${size} ${size}`,'aria-label':`Conjunto ${num}/${den}`});
+  for(let i=0;i<total;i++){
+    const col=i%cols, row=Math.floor(i/cols);
+    svg.appendChild(el('circle',{cx:ox+col*sx, cy:oy+row*sy, r:r-2, fill:i<num?color:GRAY,stroke:BLUE,'stroke-width':1.5}));
+  }
+  return svg;
+}
+
+function makeGraphic(num, den, color, view) {
+  if(view==='pizza') return makePizza(num,den,color);
+  if(view==='bar')   return makeBar(num,den,color);
+  return makeSet(num,den,color);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   NUMBER LINE
+────────────────────────────────────────────────────────────── */
+function drawNumberLine() {
+  const {num1,den1,num2,den2,showSecond} = state;
+  const svg = document.getElementById('nl-svg');
+  svg.innerHTML='';
+  const W=500, H=80, pL=28, pR=28, lineY=50;
+  const lineW=W-pL-pR;
+  const val1=num1/den1;
+  const val2=showSecond?num2/den2:0;
+  const maxV=Math.max(val1,val2)>1?2:1;
+  const toX=v=>pL+(v/maxV)*lineW;
+
+  // Main line
+  const line=el('line',{x1:pL,y1:lineY,x2:W-pR,y2:lineY,stroke:BLUE,'stroke-width':2});
+  svg.appendChild(line);
+  // Arrow
+  const arr=el('polygon',{points:`${W-pR},${lineY} ${W-pR-8},${lineY-4} ${W-pR-8},${lineY+4}`,fill:BLUE});
+  svg.appendChild(arr);
+
+  // Ticks
+  const ticks=new Set([0,1,...(maxV===2?[2]:[])]);
+  for(let i=0;i<=den1*maxV;i++) ticks.add(i/den1);
+  if(showSecond) for(let i=0;i<=den2*maxV;i++) ticks.add(i/den2);
+  [...ticks].sort((a,b)=>a-b).filter(t=>t>=0&&t<=maxV).forEach(t=>{
+    const x=toX(t), major=Number.isInteger(t);
+    svg.appendChild(el('line',{x1:x,y1:lineY-(major?8:4),x2:x,y2:lineY+(major?8:4),stroke:major?BLUE:GRAY,'stroke-width':major?2:1}));
+    if(major){
+      const txt=el('text',{x,y:lineY+20,'text-anchor':'middle','font-size':11,fill:BLUE,'font-weight':600});
+      txt.textContent=t;
+      svg.appendChild(txt);
+    }
+  });
+
+  // Dot 2
+  if(showSecond){
+    const x2=toX(val2);
+    svg.appendChild(el('circle',{cx:x2,cy:lineY,r:8,fill:AMBER,stroke:BLUE,'stroke-width':2,'class':'nl-dot'}));
+    const lb2=el('text',{x:x2,y:lineY-16,'text-anchor':'middle','font-size':10,fill:AMBER,'font-weight':700});
+    lb2.textContent=`${num2}/${den2}`;
+    svg.appendChild(lb2);
+  }
+  // Dot 1
+  const x1=toX(val1);
+  svg.appendChild(el('circle',{cx:x1,cy:lineY,r:10,fill:CYAN,stroke:BLUE,'stroke-width':2,'class':'nl-dot'}));
+  const lb1=el('text',{x:x1,y:lineY-18,'text-anchor':'middle','font-size':10,fill:BLUE,'font-weight':700});
+  lb1.textContent=`${num1}/${den1}`;
+  svg.appendChild(lb1);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   OPERATION RESULT
+────────────────────────────────────────────────────────────── */
+function updateOpResult() {
+  const box = document.getElementById('op-result-box');
+  if(!state.showSecond){ box.style.display='none'; return; }
+  box.style.display='block';
+  const {num1,den1,num2,den2,op} = state;
+
+  if(op==='compare'){
+    const v1=num1/den1, v2=num2/den2;
+    const sym = v1>v2?'>' : v1<v2?'<':'=';
+    const col = v1>v2?'var(--ok)' : v1<v2?'var(--err)':'var(--cyan)';
+    box.innerHTML=`<span style="color:var(--blue)">${num1}/${den1}</span>
+      <span style="font-size:22px;font-weight:900;color:${col};margin:0 10px">${sym}</span>
+      <span style="color:var(--amber)">${num2}/${den2}</span>`;
+    typeset(box);
+    return;
+  }
+  if(op==='equivalents'){
+    const eq=areEquiv(num1,den1,num2,den2);
+    box.innerHTML=`<span style="font-weight:800;color:${eq?'var(--ok)':'var(--err)'};">${eq?'✅ Son equivalentes':'❌ No son equivalentes'}</span>`;
+    return;
+  }
+  let res,sym;
+  if(op==='add')      { res=addFrac(num1,den1,num2,den2); sym='+'; }
+  else if(op==='subtract'){ res=subFrac(num1,den1,num2,den2); sym='−'; }
+  else                { res=mulFrac(num1,den1,num2,den2); sym='×'; }
+  box.innerHTML=`${num1}/${den1} ${sym} ${num2}/${den2} = <span style="color:var(--cyan);font-size:18px;">${res.n}/${res.d}</span>${res.n<0?' <span style="color:var(--err);font-size:11px">⚠️ negativo</span>':''}`;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   MATHJAX HELPER
+────────────────────────────────────────────────────────────── */
+function typeset(el) {
+  if(window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise([el]).catch(()=>{});
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RENDER
+────────────────────────────────────────────────────────────── */
+function render() {
+  const {num1,den1,num2,den2,showSecond,view,op,showSimplified} = state;
+
+  /* Sliders */
+  document.getElementById('den1-val').textContent = den1;
+  document.getElementById('num1-val').textContent = num1;
+  document.getElementById('num1-max-lbl').textContent = den1;
+  document.getElementById('den1-slider').value = den1;
+  document.getElementById('num1-slider').max = den1;
+  document.getElementById('num1-slider').value = num1;
+
+  if(showSecond){
+    document.getElementById('den2-val').textContent = den2;
+    document.getElementById('num2-val').textContent = num2;
+    document.getElementById('num2-max-lbl').textContent = den2;
+    document.getElementById('den2-slider').value = den2;
+    document.getElementById('num2-slider').max = den2;
+    document.getElementById('num2-slider').value = num2;
+  }
+
+  /* Graphic view */
+  const w1=document.getElementById('svg1-wrap');
+  w1.innerHTML=''; w1.appendChild(makeGraphic(num1,den1,CYAN,view));
+  document.getElementById('g1-lbl').textContent=`${num1}/${den1}`;
+
+  if(showSecond){
+    document.getElementById('op-symbol').style.display='block';
+    document.getElementById('graphic2-wrap').style.display='block';
+    const opSyms={compare:'⟺',add:'+',subtract:'−',multiply:'×',equivalents:'≡'};
+    document.getElementById('op-symbol').textContent=opSyms[op]||'+';
+    const w2=document.getElementById('svg2-wrap');
+    w2.innerHTML=''; w2.appendChild(makeGraphic(num2,den2,AMBER,view));
+    document.getElementById('g2-lbl').textContent=`${num2}/${den2}`;
+    document.getElementById('frac2-display').style.display='flex';
+  } else {
+    document.getElementById('op-symbol').style.display='none';
+    document.getElementById('graphic2-wrap').style.display='none';
+    document.getElementById('frac2-display').style.display='none';
+  }
+
+  /* Numeric big display */
+  document.getElementById('num1-big').textContent = num1;
+  document.getElementById('den1-big').textContent = den1;
+  document.getElementById('dec1-badge').textContent = toDecimal(num1,den1);
+  document.getElementById('pct1-badge').textContent = toPercent(num1,den1);
+
+  const simpBadge = document.getElementById('simp1-badge');
+  if(showSimplified){
+    const s=simplify(num1,den1);
+    if(s.n===num1&&s.d===den1){ simpBadge.style.display='none'; }
+    else { simpBadge.style.display='inline-block'; simpBadge.textContent=`= ${s.n}/${s.d}`; }
+  } else { simpBadge.style.display='none'; }
+
+  if(showSecond){
+    document.getElementById('num2-big').textContent = num2;
+    document.getElementById('den2-big').textContent = den2;
+    document.getElementById('dec2-badge').textContent = toDecimal(num2,den2);
+  }
+
+  /* Number line */
+  drawNumberLine();
+
+  /* Operation result */
+  updateOpResult();
+}
+
+/* ──────────────────────────────────────────────────────────────
+   EVENT HANDLERS
+────────────────────────────────────────────────────────────── */
+function onDen1(v){ state.den1=v; if(state.num1>v) state.num1=v; render(); }
+function onNum1(v){ state.num1=v; render(); }
+function onDen2(v){ state.den2=v; if(state.num2>v) state.num2=v; render(); }
+function onNum2(v){ state.num2=v; render(); }
+
+function setView(v, btn) {
+  state.view=v;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function setOp(op, btn) {
+  state.op=op;
+  document.querySelectorAll('.op-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function toggleSimplified() {
+  state.showSimplified=!state.showSimplified;
+  document.getElementById('simp-track').classList.toggle('on', state.showSimplified);
+  render();
+}
+
+function showFrac2() {
+  state.showSecond=true;
+  document.getElementById('add-frac2-btn').style.display='none';
+  document.getElementById('frac2-section').classList.add('visible');
+  render();
+}
+
+function hideFrac2() {
+  state.showSecond=false;
+  document.getElementById('add-frac2-btn').style.display='block';
+  document.getElementById('frac2-section').classList.remove('visible');
+  render();
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SOUND
+────────────────────────────────────────────────────────────── */
+function playBeep() {
+  try {
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880,ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1300,ctx.currentTime+.12);
+    gain.gain.setValueAtTime(.28,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.45);
+    osc.start(); osc.stop(ctx.currentTime+.45);
+  } catch(e){}
+}
+
+/* ──────────────────────────────────────────────────────────────
+   CHALLENGES
+────────────────────────────────────────────────────────────── */
+const CHECKS = [
+  // 0 — Construcción: num1=3, den1=8
+  () => state.num1===3 && state.den1===8,
+  // 1 — Equivalente a 1/2, den>6
+  () => Math.abs(state.num1/state.den1-0.5)<.0001 && state.den1>6,
+  // 2 — showSecond, frac1=5/6, den2=4, 5/6 > frac2
+  () => state.showSecond && state.num1===5 && state.den1===6 && state.den2===4 && (5/6)>(state.num2/state.den2),
+  // 3 — answer equiv to 1/2
+  () => {
+    const inp=document.getElementById('ch-input-3').value;
+    const p=parseFrac(inp);
+    return p && areEquiv(p.n,p.d,1,2);
+  }
+];
+
+function showHint(i) {
+  hintUsed[i]=true;
+  const h=document.getElementById(`ch-hint-${i}`);
+  h.style.display='block'; h.classList.add('anim-slidein');
+  document.getElementById(`ch-hint-btn-${i}`).style.display='none';
+}
+
+function checkChallenge(i) {
+  if(completed[i]) return;
+  const ok = CHECKS[i]();
+  const fb = document.getElementById(`ch-fb-${i}`);
+  fb.style.display='flex'; fb.classList.add('anim-slidein');
+
+  if(ok){
+    completed[i]=true;
+    fb.className='feedback-box ok anim-slidein';
+    const msg = MOTIVATIONAL[Math.floor(Math.random()*MOTIVATIONAL.length)];
+    fb.innerHTML=`<span class="anim-popin">✅</span>${msg}`;
+    document.getElementById(`ch-head-${i}`).classList.add('done');
+    document.getElementById(`ch-num-${i}`).textContent='✓';
+    playBeep();
+    updateProgress();
+  } else {
+    fb.className='feedback-box err anim-slidein';
+    fb.innerHTML=`<span>❌</span>Casi. Revisa la pista e inténtalo otra vez.`;
+    const card=document.getElementById(`ch-card-${i}`);
+    card.classList.remove('anim-shake');
+    void card.offsetWidth;
+    card.classList.add('anim-shake');
+    setTimeout(()=>card.classList.remove('anim-shake'),600);
+  }
+}
+
+function updateProgress() {
+  const count = completed.filter(Boolean).length;
+  document.getElementById('progress-label').textContent=`Retos: ${count}/4`;
+  document.getElementById('ch-count').textContent=`${count}/4`;
+  completed.forEach((c,i)=>document.getElementById(`pip-${i}`).classList.toggle('done',c));
+  if(count===4){
+    const box=document.getElementById('all-done-box');
+    box.style.display='block'; box.classList.add('anim-slidein');
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   INIT
+────────────────────────────────────────────────────────────── */
+render();
+</script>
+</body>
+</html>
