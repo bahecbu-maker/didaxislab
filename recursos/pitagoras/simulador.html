@@ -426,21 +426,33 @@
 
         main {
           flex-direction: column;
-          height: auto;
+          height: auto;           /* sin altura fija; el contenido la dicta */
           min-height: 0;
           padding: 10px;
           padding-bottom: 20px;
         }
 
-        /* El header pasa a altura automática; no podemos restar 64 px fijos */
-        .canvas-area { flex: none; height: 58vh; min-height: 340px; }
-        .canvas-wrapper { min-height: 270px; }
+        /* canvas-area también crece según su contenido:
+           el canvas-wrapper tiene min-height propio, así que hay espacio garantizado */
+        .canvas-area {
+          flex: none;
+          height: auto;           /* ← quitamos el 58vh que causaba el desbordamiento */
+          min-height: 0;
+        }
+        .canvas-wrapper {
+          /* el canvas ocupa este espacio mínimo; las barras de control/fórmula/medidas
+             se apilan encima y debajo sin salirse de la caja */
+          height: 55vw;
+          min-height: 260px;
+          max-height: 480px;
+        }
 
         .challenges-panel {
           flex: none;
           padding-left: 0;
           padding-bottom: 16px;
-          margin-top: 12px;
+          /* separación clara entre el área de canvas y los retos */
+          margin-top: 8px;
           max-height: none;
           overflow-y: visible;
         }
@@ -451,10 +463,9 @@
         .controls-bar .btn { font-size: 0.72rem; padding: 6px 10px; }
         .measure-bar { padding: 8px 10px; gap: 8px; }
         .measure-bar input[type="number"] { width: 58px; }
-        .measure-bar .measure-hint { flex-basis: 100%; margin-left: 0; margin-top: 2px; }
         .formula-bar { padding: 9px 14px; font-size: 0.88rem; }
 
-        /* Títulos de retos: sin mayúsculas + tracking agresivo en panel estrecho */
+        /* Títulos de retos: sin mayúsculas + tracking ajustado */
         .challenge-card h3 {
           font-size: 0.78rem;
           letter-spacing: 0.02em;
