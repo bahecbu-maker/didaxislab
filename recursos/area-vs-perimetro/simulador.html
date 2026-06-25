@@ -36,7 +36,7 @@
 
   html,body{
     margin:0;padding:0;
-    height:100%;
+    min-height:100vh;
     font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
     color:var(--text);
     background:var(--bg);
@@ -46,8 +46,8 @@
   /* ===== layout principal ===== */
   .app{
     width:100%;
-    max-width:1200px;
-    height:700px;
+    height:100vh;
+    height:100dvh;       /* móviles con barras de UI dinámicas */
     margin:0 auto;
     background:var(--bg);
     display:grid;
@@ -65,6 +65,7 @@
     padding:0 18px;
     border-bottom:1px solid #E6E9EF;
     z-index:5;
+    flex-shrink:0;
   }
   .brand{
     display:flex;align-items:center;gap:10px;
@@ -100,6 +101,7 @@
     gap:10px;
     padding:10px;
     overflow:hidden;
+    flex:1;
   }
 
   .panel{
@@ -188,6 +190,7 @@
   /* ===== panel central ===== */
   .center{
     position:relative;display:flex;flex-direction:column;gap:8px;padding:8px;
+    min-height:0;
   }
   .canvas-wrap{
     flex:1;
@@ -196,7 +199,7 @@
     border:1px solid var(--soft-2);
     overflow:hidden;
     position:relative;
-    min-height:0;
+    min-height:200px;
   }
   #canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none;}
   #canvas:active{cursor:grabbing;}
@@ -218,6 +221,7 @@
   .charts-row{
     display:grid;grid-template-columns:1fr 1fr auto;gap:8px;
     height:130px;
+    flex-shrink:0;
   }
   .chart-box{
     background:#fff;border-radius:10px;border:1px solid var(--soft-2);
@@ -339,6 +343,7 @@
     font-size:11px;
     display:flex;align-items:center;justify-content:center;
     border-top:1px solid var(--soft-2);
+    flex-shrink:0;
   }
   footer b{color:var(--primary);}
 
@@ -360,11 +365,100 @@
   body.high-contrast .btn{background:#000;color:#ffeb3b;border:2px solid #ffeb3b;}
   body.high-contrast .btn:hover{background:#ffeb3b;color:#000;}
 
-  /* responsividad básica */
+  /* ===== RESPONSIVIDAD ===== */
+
+  /* Tablets y pantallas medianas (1100px y menores): apilar verticalmente */
   @media (max-width:1100px){
-    .app{height:auto;grid-template-rows:54px auto auto;}
-    main{grid-template-columns:1fr;}
-    .canvas-wrap{height:340px;}
+    .app{
+      height:auto;
+      min-height:100vh;
+      min-height:100dvh;
+      overflow-y:auto;
+      grid-template-rows:54px auto 28px;
+    }
+    main{
+      grid-template-columns:1fr;
+      grid-auto-rows:auto;
+      overflow:visible;
+    }
+    .panel{overflow:visible;max-height:none;}
+    .center{min-height:520px;}
+    .canvas-wrap{min-height:340px;}
+    .charts-row{height:140px;}
+  }
+
+  /* Tablets pequeñas (768px y menores) */
+  @media (max-width:768px){
+    header{padding:0 12px;}
+    .brand{font-size:13px;}
+    .brand small{display:none;}
+
+    main{gap:8px;padding:8px;}
+
+    .center{min-height:480px;}
+    .canvas-wrap{min-height:300px;}
+
+    .charts-row{
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:auto auto;
+      height:auto;
+    }
+    .chart-box{min-height:110px;}
+    .chart-actions{
+      flex-direction:row;
+      grid-column:1 / -1;
+      justify-content:flex-end;
+    }
+    .chart-actions .btn{width:auto;}
+
+    .result-card .value{font-size:18px;}
+    .result-card .label{font-size:9px;}
+
+    .btn-header{padding:5px 10px;font-size:11px;}
+  }
+
+  /* Móviles (480px y menores) */
+  @media (max-width:480px){
+    header{padding:0 8px;}
+    .brand{font-size:12px;gap:6px;}
+    .brand .logo{width:28px;height:28px;}
+    .btn-header{padding:4px 8px;font-size:10px;}
+
+    main{gap:6px;padding:6px;}
+
+    .panel{padding:10px 12px;}
+    .center{gap:6px;padding:6px;min-height:440px;}
+    .canvas-wrap{min-height:260px;}
+
+    .charts-row{
+      grid-template-columns:1fr;
+      grid-template-rows:auto;
+    }
+    .chart-box{min-height:120px;}
+    .chart-title{font-size:9px;}
+
+    .result-card{padding:6px 8px;}
+    .result-card .value{font-size:16px;}
+    .result-card .label{font-size:8px;}
+    .result-card .formula{font-size:10px;}
+
+    .challenge{padding:6px 8px;font-size:11px;}
+    .challenge .title{font-size:11px;}
+    .challenge .desc{font-size:10.5px;}
+
+    .control label{font-size:11px;}
+    .btn{padding:6px 8px;font-size:11px;}
+    .btn.small{padding:5px 6px;font-size:10px;}
+
+    .panel h3{font-size:12px;}
+  }
+
+  /* Pantalla completa: la app ocupa toda la ventana */
+  :fullscreen .app,
+  :-webkit-full-screen .app,
+  :-moz-full-screen .app{
+    height:100vh;
+    max-height:100vh;
   }
 </style>
 </head>
@@ -416,8 +510,8 @@
 
       <h3 style="margin-top:6px;">🎯 Retos</h3>
       <div class="challenge" id="challenge-card">
-        <div class="title" id="ch-title">Reto 1</div>
-        <div class="desc" id="ch-desc">Construye dos rectángulos diferentes con perímetro = 24 y encuentra cuál tiene mayor área.</div>
+        <div class="title" id="ch-title">Reto 1 · Tu primer rectángulo</div>
+        <div class="desc" id="ch-desc">Construye un rectángulo cuya área sea exactamente 12 u². Usa los sliders o arrastra los vértices.</div>
         <div class="stats">
           <span id="ch-attempts">Intentos: 0</span>
           <span id="ch-success">Éxitos: 0</span>
@@ -431,7 +525,7 @@
     </aside>
 
     <!-- ===== PANEL CENTRAL ===== -->
-    <section class="center" aria-label="Visualización geométrica">
+    <section class="center" id="center">
       <div class="canvas-wrap">
         <canvas id="canvas" tabindex="0" aria-label="Rectángulo interactivo sobre cuadrícula cartesiana"></canvas>
         <div id="discovery" class="discovery hidden"></div>
@@ -563,6 +657,7 @@ function resizeAll(){
   drawSpeedo();
 }
 window.addEventListener('resize', resizeAll);
+window.addEventListener('orientationchange', resizeAll);
 
 /* ============================================================
    DIBUJO DEL RECTÁNGULO
@@ -913,17 +1008,21 @@ function detectDiscoveries(W,H,area,perim){
    ============================================================ */
 function applyFixedPerimeter(changed){
   if (!state.fixedPerimeter) return;
-  const P = state.pFixed;
-  // P = 2(W+H) → W+H = P/2
-  const sum = P/2;
-  if (changed==='w'){
-    state.h = Math.max(1, Math.min(30, sum - state.w));
+  const sum = state.pFixed / 2;            // W + H = P/2
+  const MIN = 1, MAX = 30;
+  // El lado que cambia se recorta para que el otro quede en [MIN, MAX]
+  const lo = Math.max(MIN, sum - MAX);
+  const hi = Math.min(MAX, sum - MIN);
+  if (changed === 'w'){
+    state.w = Math.max(lo, Math.min(hi, state.w));
+    state.h = sum - state.w;
   } else {
-    state.w = Math.max(1, Math.min(30, sum - state.h));
+    state.h = Math.max(lo, Math.min(hi, state.h));
+    state.w = sum - state.h;
   }
-  // ajustar también si el sum es demasiado pequeño/grande
-  if (state.w<1){state.w=1;state.h=Math.max(1,sum-1);}
-  if (state.h<1){state.h=1;state.w=Math.max(1,sum-1);}
+  // Redondeo defensivo (sum puede no ser entero si P es impar; se fuerza par al editar)
+  state.w = Math.round(state.w);
+  state.h = Math.round(state.h);
 }
 
 sliderW.addEventListener('input',e=>{
@@ -1062,16 +1161,13 @@ btnSave.addEventListener('click',()=>{
    ============================================================ */
 const challenges = [
   {
-    title:'Reto 1 · Mismo perímetro, áreas distintas',
-    desc:'Construye DOS rectángulos diferentes con perímetro = 24 y encuentra cuál tiene mayor área.',
+    title:'Reto 1 · Tu primer rectángulo',
+    desc:'Construye un rectángulo cuya área sea exactamente 12 u². Usa los sliders o arrastra los vértices.',
     check:()=>{
-      // verifica si hay al menos 2 puntos con p=24 y dimensiones distintas
-      const eligibles = state.points.filter(p=>p.p===24);
-      const unique = new Set(eligibles.map(p=>`${p.w}x${p.h}`));
-      return unique.size>=2;
+      return state.points.some(p=>p.a===12);
     },
-    successMsg:'¡Lo lograste! Mismo perímetro (24), áreas diferentes. El cuadrado 6×6 da el área máxima: 36 u².',
-    failMsg:'Aún no. Necesitas al menos dos rectángulos con perímetro exacto de 24 unidades.',
+    successMsg:'¡Muy bien! Lograste un rectángulo de área 12 u² (por ejemplo 3×4, 2×6 o 1×12).',
+    failMsg:'Todavía no. Ajusta el ancho y el alto hasta que su producto sea 12. Pista: 3 × 4 = 12.',
   },
   {
     title:'Reto 2 · Misma área, perímetros distintos',
