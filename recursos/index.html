@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recursos — Didaxis Lab</title>
+<meta name="description" content="Todos los laboratorios interactivos de Didaxis Lab: simuladores abiertos de matemáticas con preguntas tipo Saber 11 y guía docente. Fracciones, área y perímetro, teorema de Pitágoras.">
+
+<link rel="canonical" href="https://didaxislab.com/recursos/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="author" content="Héctor Enrique Banquez Buendía">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Didaxis Lab">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Recursos — Didaxis Lab">
+<meta property="og:description" content="Todos los laboratorios interactivos de matemáticas: abiertos, gratuitos y listos para tu clase.">
+<meta property="og:url" content="https://didaxislab.com/recursos/">
+<meta property="og:image" content="https://didaxislab.com/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Recursos — Didaxis Lab">
+<meta name="twitter:description" content="Todos los laboratorios interactivos de matemáticas: abiertos, gratuitos y listos para tu clase.">
+<meta name="twitter:image" content="https://didaxislab.com/og-home.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Recursos de Didaxis Lab",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "url": "https://didaxislab.com/recursos/fracciones-vivas/", "name": "Fracciones Vivas" },
+    { "@type": "ListItem", "position": 2, "url": "https://didaxislab.com/recursos/area-vs-perimetro/", "name": "Laboratorio Interactivo: Área vs Perímetro" },
+    { "@type": "ListItem", "position": 3, "url": "https://didaxislab.com/recursos/pitagoras/", "name": "Pitágoras Interactivo" }
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --navy:#1B2A5A; --navy-dark:#0F1C3F; --cyan:#0BC0D8; --cyan-soft:#E2F7FA;
+    --ink:#1B2A5A; --muted:#5B6B82; --line:#E6E9EF; --bg:#FAFBFC; --panel:#FFFFFF;
+    --grid:rgba(11,192,216,0.06); --radius:16px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --shadow-lg:0 12px 40px rgba(22,36,58,.12); --maxw:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--navy);text-decoration:none;}
+  h1,h2,h3{letter-spacing:-.02em;color:var(--navy);}
+
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:30;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .nav{display:flex;align-items:center;gap:24px;}
+  .nav a{font-size:14.5px;font-weight:600;color:var(--muted);}
+  .nav a:hover{color:var(--navy);}
+  .nav .nav-cta{color:#fff;background:var(--navy);padding:8px 15px;border-radius:9px;}
+  .nav .nav-cta:hover{background:var(--navy-dark);color:#fff;}
+
+  .page-head{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:28px 28px;}
+  .page-head-inner{max-width:var(--maxw);margin:0 auto;padding:54px 22px 44px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .page-head h1{font-size:clamp(32px,5vw,46px);line-height:1.08;font-weight:800;}
+  .page-head p{margin-top:14px;font-size:clamp(16px,2.2vw,18px);color:var(--muted);max-width:60ch;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:48px 22px 64px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  @media (max-width:860px){ .grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:580px){ .grid{grid-template-columns:1fr;} }
+  .card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s,border-color .18s;}
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:#D4DAE6;}
+  .cover{height:140px;background:var(--cyan-soft);display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);}
+  .cover svg{width:96px;height:96px;}
+  .card-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1;}
+  .chip{align-self:flex-start;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--navy);margin-bottom:11px;}
+  .card-body h2{font-size:20px;font-weight:800;line-height:1.2;}
+  .card-body p{margin-top:8px;color:var(--muted);font-size:14.5px;flex:1;}
+  .card-foot{margin-top:16px;display:flex;align-items:center;justify-content:space-between;}
+  .card-grades{font-size:12.5px;font-weight:600;color:var(--muted);background:#EEF1F6;padding:4px 10px;border-radius:7px;}
+  .card-open{font-size:14.5px;font-weight:700;color:var(--navy);display:inline-flex;align-items:center;gap:5px;}
+  .card:hover .card-open{color:var(--cyan);}
+  .catalog-note{margin-top:26px;font-size:14px;color:var(--muted);text-align:center;}
+
+  footer{border-top:1px solid var(--line);background:var(--panel);}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:30px 22px;display:flex;
+    align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);}
+  .foot-inner .row{display:flex;align-items:center;gap:9px;}
+  .foot-inner .logo-mark{width:24px;height:24px;}
+  .foot-inner .name{font-weight:800;font-size:15px;color:var(--navy);}
+
+  a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="Didaxis Lab — inicio">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </a>
+      <nav class="nav">
+        <a href="/">Inicio</a>
+        <a href="/#por-que">Por qué</a>
+        <a href="/#proyecto">El proyecto</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-head">
+    <div class="page-head-inner">
+      <span class="eyebrow">Didaxis Lab</span>
+      <h1>Recursos</h1>
+      <p>Todos los laboratorios interactivos: simuladores abiertos de matemáticas, cada uno con preguntas tipo Saber 11 y guía docente descargable.</p>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <div class="grid">
+
+      <a class="card" href="/recursos/fracciones-vivas/">
+        <div class="cover">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g transform="translate(50,50)">
+              <path d="M0 0 L0 -38 A38 38 0 0 1 38 0 Z" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="3"/>
+              <path d="M0 0 L38 0 A38 38 0 0 1 0 38 Z" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="3"/>
+              <path d="M0 0 L0 38 A38 38 0 0 1 -38 0 Z" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="3"/>
+              <path d="M0 0 L-38 0 A38 38 0 0 1 0 -38 Z" fill="#FFFFFF" stroke="#1B2A5A" stroke-width="3"/>
+            </g>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento numérico</span>
+          <h2>Fracciones Vivas</h2>
+          <p>Manipula pizzas, barras, conjuntos y la recta numérica sincronizados en tiempo real para entender qué es —de verdad— una fracción.</p>
+          <div class="card-foot">
+            <span class="card-grades">3.° a 7.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card" href="/recursos/area-vs-perimetro/">
+        <div class="cover">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g transform="translate(20,22)">
+              <g stroke="#9FD9E4" stroke-width="2">
+                <line x1="0" y1="14" x2="56" y2="14"/><line x1="0" y1="28" x2="56" y2="28"/><line x1="0" y1="42" x2="56" y2="42"/>
+                <line x1="14" y1="0" x2="14" y2="56"/><line x1="28" y1="0" x2="28" y2="56"/><line x1="42" y1="0" x2="42" y2="56"/>
+              </g>
+              <rect x="0" y="0" width="56" height="56" fill="none" stroke="#1B2A5A" stroke-width="3.5"/>
+              <rect x="0" y="0" width="28" height="42" fill="none" stroke="#0996AA" stroke-width="4"/>
+            </g>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="chip">Geometría y medición</span>
+          <h2>Área vs Perímetro</h2>
+          <p>Manipula un rectángulo y descubre por exploración por qué un mayor perímetro no siempre implica mayor área.</p>
+          <div class="card-foot">
+            <span class="card-grades">3.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="card" href="/recursos/pitagoras/">
+        <div class="cover">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <polygon points="30,72 30,28 72,72" fill="#D6EEF3" stroke="#1B2A5A" stroke-width="3.5"/>
+            <rect x="30" y="58" width="14" height="14" fill="none" stroke="#0996AA" stroke-width="3"/>
+            <rect x="14" y="28" width="16" height="44" fill="#0BC0D8" opacity="0.55" stroke="#1B2A5A" stroke-width="2.5"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="chip">Geometría y medición</span>
+          <h2>Pitágoras Interactivo</h2>
+          <p>Arrastra los vértices de un triángulo rectángulo y descubre, por equivalencia entre áreas, por qué a² + b² = c².</p>
+          <div class="card-foot">
+            <span class="card-grades">7.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+    <p class="catalog-note">Más laboratorios en camino.</p>
+  </main>
+
+  <footer>
+    <div class="foot-inner">
+      <div class="row">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </div>
+      <span>© 2026 Didaxis Lab · Héctor Banquez · CC BY 4.0</span>
+    </div>
+  </footer>
+
+</body>
+</html>
