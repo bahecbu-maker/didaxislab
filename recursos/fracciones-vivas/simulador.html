@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fracciones Vivas | Didaxis Lab</title>
-  <!-- MathJax v3 vía CDN (único recurso externo) -->
   <script>
     window.MathJax = {
       tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
@@ -33,6 +32,9 @@
       --shadow-card: 0 4px 12px rgba(27,42,90,.08);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+    }
     body {
       font-family: 'Inter','Segoe UI',system-ui,sans-serif;
       background: var(--bg);
@@ -42,65 +44,107 @@
       flex-direction: column;
       font-size: 14px;
     }
+
     /* ============================================================
-       HEADER
+       HEADER  — matches post template style
     ============================================================ */
     #site-header {
       background: var(--white);
-      border-bottom: 2px solid var(--border);
-      padding: 0 24px;
-      height: 64px;
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      height: 52px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      box-shadow: 0 2px 8px rgba(27,42,90,.06);
+      gap: 12px;
+      box-shadow: 0 1px 4px rgba(27,42,90,.06);
       flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 30;
     }
-    #logo-wrap {
+    /* Brand group: logo + name */
+    .header-brand {
       display: flex;
       align-items: center;
+      gap: 8px;
+      text-decoration: none;
       flex-shrink: 0;
     }
-    #logo-img {
-      height: 44px;
-      width: auto;
-      display: block;
+    .header-brand .logo-mark {
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
     }
-    #logo-fallback {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      height: 44px;
-      padding: 0 14px;
-      border: 2px dashed var(--cyan);
-      border-radius: 8px;
+    .header-brand .brand-name {
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -.02em;
       color: var(--blue);
-      font-size: 12px;
-      font-weight: 700;
       white-space: nowrap;
     }
-    #header-title { flex: 1; }
-    #header-title h1 { font-size: 20px; font-weight: 800; letter-spacing: -.5px; line-height: 1.1; }
-    #header-title p  { font-size: 11px; font-weight: 500; color: var(--text2); margin-top: 1px; }
+    /* Separator */
+    .header-sep {
+      width: 1px;
+      height: 22px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    /* Subtitle */
+    .header-subtitle {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+    /* Progress (right side, before fullscreen) */
     #progress-wrap {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-shrink: 0;
+      margin-left: auto;
     }
-    #progress-label { font-size: 12px; font-weight: 600; color: var(--text2); }
-    #progress-pips {
-      display: flex;
-      gap: 6px;
-    }
+    #progress-label { font-size: 12px; font-weight: 600; color: var(--text2); white-space: nowrap; }
+    #progress-pips  { display: flex; gap: 5px; }
     .pip {
-      width: 28px;
-      height: 12px;
-      border-radius: 6px;
+      width: 24px; height: 10px;
+      border-radius: 5px;
       background: var(--border);
       transition: background .4s;
     }
     .pip.done { background: var(--ok); }
+    /* Fullscreen button */
+    #btn-fullscreen {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue);
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-btn);
+      padding: 6px 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color .15s, background .15s;
+      flex-shrink: 0;
+    }
+    #btn-fullscreen:hover { border-color: var(--cyan); background: #F0FAFB; }
+    #btn-fullscreen svg  { flex-shrink: 0; }
+
+    @media (max-width: 600px) {
+      .header-subtitle { display: none; }
+      .header-sep      { display: none; }
+      #progress-label  { display: none; }
+      #btn-fullscreen span { display: none; }
+      #btn-fullscreen { padding: 6px 9px; }
+    }
 
     /* ============================================================
        MAIN GRID
@@ -108,13 +152,31 @@
     #main {
       flex: 1;
       display: grid;
-      grid-template-columns: minmax(220px,25%) 1fr minmax(260px,28%);
-      gap: 16px;
-      padding: 16px;
+      grid-template-columns: minmax(210px,22%) 1fr minmax(250px,27%);
+      gap: 14px;
+      padding: 14px;
       align-items: start;
     }
-    @media (max-width: 900px) {
-      #main { grid-template-columns: 1fr; }
+    /* Tablet: 2 columns */
+    @media (max-width: 960px) {
+      #main {
+        grid-template-columns: minmax(200px,38%) 1fr;
+        grid-template-rows: auto auto;
+      }
+      #challenge-panel {
+        grid-column: 1 / -1;
+      }
+    }
+    /* Mobile: 1 column */
+    @media (max-width: 600px) {
+      #main {
+        grid-template-columns: 1fr;
+        padding: 10px;
+        gap: 10px;
+      }
+      #challenge-panel {
+        grid-column: 1;
+      }
     }
 
     /* ============================================================
@@ -425,10 +487,9 @@
       margin-bottom: 10px;
       font-size: 13px;
       font-weight: 600;
-      display: flex;
+      display: none;
       align-items: center;
       gap: 6px;
-      display: none;
     }
     .feedback-box.ok  { background: rgba(16,185,129,.12); border: 1px solid var(--ok);  color: var(--ok); }
     .feedback-box.err { background: rgba(239, 68, 68,.12); border: 1px solid var(--err); color: var(--err); }
@@ -480,7 +541,6 @@
     .anim-popin  { animation: popin .4s ease-out forwards; }
     .anim-slidein{ animation: slidein .25s ease-out; }
 
-    /* SVG transitions */
     svg path, svg rect, svg circle { transition: fill .3s ease-out; }
 
     /* ============================================================
@@ -529,40 +589,52 @@
     }
     #graphic2-wrap { display: none; }
 
+    /* Responsive graphic sizes */
+    @media (max-width: 600px) {
+      .frac-big { font-size: 40px; }
+      .card { padding: 12px; }
+    }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+    /* Fullscreen mode tweaks */
+    :fullscreen #site-header,
+    :-webkit-full-screen #site-header,
+    :-moz-full-screen #site-header {
+      position: relative;
+    }
   </style>
 </head>
 <body>
 
 <!-- ============================================================
-     HEADER
+     HEADER — Didaxis Lab brand style
 ============================================================ -->
 <header id="site-header">
-  <!-- ============================================================== -->
-  <!-- LOGO_DIDAXIS_AQUÍ                                                -->
-  <!-- INSTRUCCIONES PARA EL USUARIO:                                   -->
-  <!-- Reemplaza el src del <img> de abajo con la ruta o URL de tu      -->
-  <!-- archivo PNG/SVG. Mantén el alt y las dimensiones recomendadas.   -->
-  <!-- Si subes el archivo junto al HTML usa: src="logo-didaxis.svg"   -->
-  <!-- ============================================================== -->
-  <div id="logo-wrap">
-    <img src="logo-didaxis.svg"
-         alt="Didaxis Lab"
-         id="logo-img"
-         style="height:48px;width:auto;"
-         onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
-    <div id="logo-fallback">Logo Didaxis Lab</div>
-  </div>
+  <!-- Brand: logo + name -->
+  <a class="header-brand" href="/" aria-label="Didaxis Lab — inicio">
+    <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+      <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="20" cy="20" r="15" fill="#0BC0D8"/>
+      <circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+      <circle cx="80" cy="80" r="15" fill="#0BC0D8"/>
+      <circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+    </svg>
+    <span class="brand-name">Didaxis Lab</span>
+  </a>
 
-  <div id="header-title">
-    <h1>Fracciones Vivas</h1>
-    <p>Didaxis Lab &middot; Simulador Interactivo</p>
-  </div>
+  <!-- Separator -->
+  <div class="header-sep" aria-hidden="true"></div>
 
+  <!-- Subtitle -->
+  <span class="header-subtitle">Fracciones Vivas</span>
+
+  <!-- Progress -->
   <div id="progress-wrap">
     <span id="progress-label">Retos: 0/4</span>
     <div id="progress-pips">
@@ -572,6 +644,19 @@
       <div class="pip" id="pip-3"></div>
     </div>
   </div>
+
+  <!-- Fullscreen button -->
+  <button id="btn-fullscreen" type="button" onclick="toggleFullscreen()" aria-label="Pantalla completa">
+    <svg id="fs-icon-expand" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+      <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+    </svg>
+    <svg id="fs-icon-shrink" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+      <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/>
+      <line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>
+    </svg>
+    <span>Pantalla completa</span>
+  </button>
 </header>
 
 <!-- ============================================================
@@ -592,20 +677,12 @@
       </div>
     </div>
 
-    <!-- Fraction 1 -->
+    <!-- Fraction 1 — Numerador arriba, Denominador abajo -->
     <div class="card">
       <div class="card-title">Fracción 1</div>
 
+      <!-- NUMERADOR (arriba) -->
       <div class="slider-row" style="margin-bottom:4px">
-        <span class="slider-label">Denominador</span>
-        <span class="slider-val" style="background:var(--blue)" id="den1-val">4</span>
-      </div>
-      <input type="range" id="den1-slider" min="2" max="12" value="4"
-             oninput="onDen1(+this.value)"
-             aria-label="Denominador de la primera fracción">
-      <div class="slider-minmax"><span>2</span><span>12</span></div>
-
-      <div class="slider-row" style="margin:14px 0 4px">
         <span class="slider-label">Numerador</span>
         <span class="slider-val" style="background:var(--cyan)" id="num1-val">3</span>
       </div>
@@ -613,6 +690,16 @@
              oninput="onNum1(+this.value)"
              aria-label="Numerador de la primera fracción">
       <div class="slider-minmax" id="num1-minmax"><span>0</span><span id="num1-max-lbl">4</span></div>
+
+      <!-- DENOMINADOR (abajo) -->
+      <div class="slider-row" style="margin:14px 0 4px">
+        <span class="slider-label">Denominador</span>
+        <span class="slider-val" style="background:var(--blue)" id="den1-val">4</span>
+      </div>
+      <input type="range" id="den1-slider" min="2" max="12" value="4"
+             oninput="onDen1(+this.value)"
+             aria-label="Denominador de la primera fracción">
+      <div class="slider-minmax"><span>2</span><span>12</span></div>
 
       <div class="toggle-row" onclick="toggleSimplified()">
         <div class="toggle-track" id="simp-track"><div class="toggle-thumb"></div></div>
@@ -631,16 +718,8 @@
           <button onclick="hideFrac2()" style="background:none;border:none;color:var(--err);cursor:pointer;font-weight:700;font-size:13px;">✕ Quitar</button>
         </div>
 
+        <!-- Numerador 2 (arriba) -->
         <div class="slider-row" style="margin-bottom:4px">
-          <span class="slider-label">Denominador</span>
-          <span class="slider-val" style="background:var(--amber)" id="den2-val">2</span>
-        </div>
-        <input type="range" id="den2-slider" min="2" max="12" value="2"
-               oninput="onDen2(+this.value)"
-               aria-label="Denominador de la segunda fracción">
-        <div class="slider-minmax"><span>2</span><span>12</span></div>
-
-        <div class="slider-row" style="margin:14px 0 4px">
           <span class="slider-label">Numerador</span>
           <span class="slider-val" style="background:var(--amber)" id="num2-val">1</span>
         </div>
@@ -649,13 +728,23 @@
                aria-label="Numerador de la segunda fracción">
         <div class="slider-minmax"><span>0</span><span id="num2-max-lbl">2</span></div>
 
+        <!-- Denominador 2 (abajo) -->
+        <div class="slider-row" style="margin:14px 0 4px">
+          <span class="slider-label">Denominador</span>
+          <span class="slider-val" style="background:var(--amber)" id="den2-val">2</span>
+        </div>
+        <input type="range" id="den2-slider" min="2" max="12" value="2"
+               oninput="onDen2(+this.value)"
+               aria-label="Denominador de la segunda fracción">
+        <div class="slider-minmax"><span>2</span><span>12</span></div>
+
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
           <div class="card-title" style="margin-bottom:8px">Operación:</div>
           <div style="display:flex;flex-wrap:wrap;gap:4px;">
-            <button class="op-btn active" data-op="compare"    onclick="setOp('compare',this)">Comparar</button>
-            <button class="op-btn"        data-op="add"        onclick="setOp('add',this)">Sumar</button>
-            <button class="op-btn"        data-op="subtract"   onclick="setOp('subtract',this)">Restar</button>
-            <button class="op-btn"        data-op="multiply"   onclick="setOp('multiply',this)">Multiplicar</button>
+            <button class="op-btn active" data-op="compare"     onclick="setOp('compare',this)">Comparar</button>
+            <button class="op-btn"        data-op="add"         onclick="setOp('add',this)">Sumar</button>
+            <button class="op-btn"        data-op="subtract"    onclick="setOp('subtract',this)">Restar</button>
+            <button class="op-btn"        data-op="multiply"    onclick="setOp('multiply',this)">Multiplicar</button>
             <button class="op-btn"        data-op="equivalents" onclick="setOp('equivalents',this)">Equivalentes</button>
           </div>
         </div>
@@ -699,7 +788,7 @@
           </div>
         </div>
 
-        <!-- Frac 2 (hidden until 2nd frac activated) -->
+        <!-- Frac 2 -->
         <div id="frac2-display" style="display:none">
           <div style="font-size:28px;font-weight:800;color:var(--cyan);padding:8px">=</div>
           <div class="frac-big" style="color:var(--amber)">
@@ -711,7 +800,6 @@
           </div>
         </div>
       </div>
-      <!-- Operation result -->
       <div id="op-result-box"></div>
     </div>
 
@@ -822,9 +910,31 @@
 </footer>
 
 <!-- ============================================================
-     JAVASCRIPT — todo embebido
+     JAVASCRIPT
 ============================================================ -->
 <script>
+/* ──────────────────────────────────────────────────────────────
+   FULLSCREEN
+────────────────────────────────────────────────────────────── */
+function toggleFullscreen() {
+  const el = document.documentElement;
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+  if (!isFs) {
+    (el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen).call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen).call(document);
+  }
+}
+function updateFsIcon() {
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+  document.getElementById('fs-icon-expand').style.display = isFs ? 'none'  : 'block';
+  document.getElementById('fs-icon-shrink').style.display = isFs ? 'block' : 'none';
+  document.querySelector('#btn-fullscreen span').textContent = isFs ? 'Salir' : 'Pantalla completa';
+}
+document.addEventListener('fullscreenchange',       updateFsIcon);
+document.addEventListener('webkitfullscreenchange', updateFsIcon);
+document.addEventListener('mozfullscreenchange',    updateFsIcon);
+
 /* ──────────────────────────────────────────────────────────────
    STATE
 ────────────────────────────────────────────────────────────── */
@@ -874,7 +984,6 @@ function el(tag, attrs={}) {
   for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
   return e;
 }
-
 function polarXY(cx,cy,r,deg) {
   const rad=(deg-90)*Math.PI/180;
   return {x:cx+r*Math.cos(rad), y:cy+r*Math.sin(rad)};
@@ -885,8 +994,14 @@ function sectorPath(cx,cy,r,a0,a1) {
   return `M${cx} ${cy} L${s.x} ${s.y} A${r} ${r} 0 ${large} 0 ${e.x} ${e.y}Z`;
 }
 
-function makePizza(num, den, color=CYAN, size=170) {
-  const cx=size/2, cy=size/2, r=size/2-8;
+function responsiveSize() {
+  const w = document.getElementById('center-col')?.offsetWidth || 400;
+  return Math.min(160, Math.max(100, w * 0.38));
+}
+
+function makePizza(num, den, color=CYAN, size) {
+  size = size || responsiveSize();
+  const cx=size/2, cy=size/2, r=size/2-6;
   const svg = el('svg',{width:size,height:size,viewBox:`0 0 ${size} ${size}`,'aria-label':`Pizza ${num}/${den}`});
   const angle=360/den;
   if(den===1){
@@ -901,7 +1016,8 @@ function makePizza(num, den, color=CYAN, size=170) {
   return svg;
 }
 
-function makeBar(num, den, color=CYAN, W=280, H=64) {
+function makeBar(num, den, color=CYAN, W, H=56) {
+  W = W || Math.min(280, (document.getElementById('center-col')?.offsetWidth || 320) * 0.7);
   const svg = el('svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`,'aria-label':`Barra ${num}/${den}`});
   const sw=W/den;
   for(let i=0;i<den;i++){
@@ -910,7 +1026,8 @@ function makeBar(num, den, color=CYAN, W=280, H=64) {
   return svg;
 }
 
-function makeSet(num, den, color=CYAN, size=170) {
+function makeSet(num, den, color=CYAN, size) {
+  size = size || responsiveSize();
   const total=den;
   const cols=Math.ceil(Math.sqrt(total)), rows=Math.ceil(total/cols);
   const r=Math.min(size/(cols*2+1), size/(rows*2+1), 18);
@@ -944,14 +1061,11 @@ function drawNumberLine() {
   const maxV=Math.max(val1,val2)>1?2:1;
   const toX=v=>pL+(v/maxV)*lineW;
 
-  // Main line
   const line=el('line',{x1:pL,y1:lineY,x2:W-pR,y2:lineY,stroke:BLUE,'stroke-width':2});
   svg.appendChild(line);
-  // Arrow
   const arr=el('polygon',{points:`${W-pR},${lineY} ${W-pR-8},${lineY-4} ${W-pR-8},${lineY+4}`,fill:BLUE});
   svg.appendChild(arr);
 
-  // Ticks
   const ticks=new Set([0,1,...(maxV===2?[2]:[])]);
   for(let i=0;i<=den1*maxV;i++) ticks.add(i/den1);
   if(showSecond) for(let i=0;i<=den2*maxV;i++) ticks.add(i/den2);
@@ -965,7 +1079,6 @@ function drawNumberLine() {
     }
   });
 
-  // Dot 2
   if(showSecond){
     const x2=toX(val2);
     svg.appendChild(el('circle',{cx:x2,cy:lineY,r:8,fill:AMBER,stroke:BLUE,'stroke-width':2,'class':'nl-dot'}));
@@ -973,7 +1086,6 @@ function drawNumberLine() {
     lb2.textContent=`${num2}/${den2}`;
     svg.appendChild(lb2);
   }
-  // Dot 1
   const x1=toX(val1);
   svg.appendChild(el('circle',{cx:x1,cy:lineY,r:10,fill:CYAN,stroke:BLUE,'stroke-width':2,'class':'nl-dot'}));
   const lb1=el('text',{x:x1,y:lineY-18,'text-anchor':'middle','font-size':10,fill:BLUE,'font-weight':700});
@@ -1006,9 +1118,9 @@ function updateOpResult() {
     return;
   }
   let res,sym;
-  if(op==='add')      { res=addFrac(num1,den1,num2,den2); sym='+'; }
+  if(op==='add')          { res=addFrac(num1,den1,num2,den2); sym='+'; }
   else if(op==='subtract'){ res=subFrac(num1,den1,num2,den2); sym='−'; }
-  else                { res=mulFrac(num1,den1,num2,den2); sym='×'; }
+  else                    { res=mulFrac(num1,den1,num2,den2); sym='×'; }
   box.innerHTML=`${num1}/${den1} ${sym} ${num2}/${den2} = <span style="color:var(--cyan);font-size:18px;">${res.n}/${res.d}</span>${res.n<0?' <span style="color:var(--err);font-size:11px">⚠️ negativo</span>':''}`;
 }
 
@@ -1083,10 +1195,7 @@ function render() {
     document.getElementById('dec2-badge').textContent = toDecimal(num2,den2);
   }
 
-  /* Number line */
   drawNumberLine();
-
-  /* Operation result */
   updateOpResult();
 }
 
@@ -1152,13 +1261,9 @@ function playBeep() {
    CHALLENGES
 ────────────────────────────────────────────────────────────── */
 const CHECKS = [
-  // 0 — Construcción: num1=3, den1=8
   () => state.num1===3 && state.den1===8,
-  // 1 — Equivalente a 1/2, den>6
   () => Math.abs(state.num1/state.den1-0.5)<.0001 && state.den1>6,
-  // 2 — showSecond, frac1=5/6, den2=4, 5/6 > frac2
   () => state.showSecond && state.num1===5 && state.den1===6 && state.den2===4 && (5/6)>(state.num2/state.den2),
-  // 3 — answer equiv to 1/2
   () => {
     const inp=document.getElementById('ch-input-3').value;
     const p=parseFrac(inp);
@@ -1209,6 +1314,15 @@ function updateProgress() {
     box.style.display='block'; box.classList.add('anim-slidein');
   }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE REDRAW on resize
+────────────────────────────────────────────────────────────── */
+let _resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(render, 120);
+});
 
 /* ──────────────────────────────────────────────────────────────
    INIT
