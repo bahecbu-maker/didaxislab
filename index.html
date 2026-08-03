@@ -170,12 +170,65 @@
   @media (max-width:560px){.games-go{width:100%;text-align:center;}}
 
   /* ---- Juegos: portada oscura para distinguirlos de los laboratorios ---- */
-  .cover-dark{background:#07081A;border-bottom-color:#141A33;padding:0;}
-  .cover-dark svg{width:100%;height:100%;display:block;}
-  .chip-game{background:#EDE7FF;color:#4B2E9C;}
-  .card-game:hover .card-open{color:#7B5CFF;}
-  .note-link{font-weight:700;color:var(--navy);}
-  .note-link:hover{color:var(--cyan);}
+
+  /* ---------- Juegos: una sola banda, con las tres portadas en abanico ---------- */
+  .games-wrap{padding:10px 0 40px;}
+  .games-band{position:relative;overflow:hidden;border-radius:var(--radius);
+    background:linear-gradient(135deg,#15234A 0%,#1B2A5A 52%,#122048 100%);
+    display:grid;grid-template-columns:1.02fr .98fr;gap:26px;align-items:center;
+    padding:38px 8px 38px 38px;box-shadow:var(--shadow-lg);}
+  /* Retícula tenue, la misma del encabezado de las páginas interiores */
+  .games-band::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(11,192,216,.07) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(11,192,216,.07) 1px,transparent 1px);
+    background-size:30px 30px;
+    -webkit-mask-image:radial-gradient(ellipse at 30% 50%,#000 10%,transparent 72%);
+            mask-image:radial-gradient(ellipse at 30% 50%,#000 10%,transparent 72%);}
+  .games-copy{position:relative;z-index:2;max-width:52ch;}
+  .games-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:#8FD9E8;margin-bottom:12px;}
+  .games-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .games-band h2{color:#fff;font-size:clamp(24px,3.4vw,33px);line-height:1.14;font-weight:800;}
+  .games-band > .games-copy > p{margin-top:12px;color:rgba(223,233,247,.80);font-size:15.5px;}
+  .games-topics{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .games-topics li{font-size:12.5px;font-weight:600;color:#DDF4F9;
+    background:rgba(11,192,216,.16);border:1px solid rgba(11,192,216,.34);
+    padding:5px 12px;border-radius:999px;}
+  .games-btn{display:inline-flex;align-items:center;gap:9px;margin-top:24px;
+    background:var(--cyan);color:#08243C;font-weight:800;font-size:15.5px;
+    padding:13px 22px;border-radius:11px;transition:.18s;}
+  .games-btn:hover{background:#3ED6E8;color:#08243C;transform:translateY(-2px);}
+  .games-btn svg{width:16px;height:16px;}
+  .games-note{margin-top:14px;font-size:12.5px;color:rgba(200,215,235,.55);}
+
+  /* Abanico: tres portadas superpuestas que se abren al pasar el cursor */
+  .games-fan{position:relative;z-index:1;height:250px;min-width:0;}
+  .fan-card{position:absolute;top:50%;left:6%;width:76%;aspect-ratio:16/9;
+    border-radius:13px;overflow:hidden;display:block;
+    border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 34px rgba(4,10,26,.5);
+    transition:transform .38s cubic-bezier(.22,1,.36,1);}
+  .fan-card svg{width:100%;height:100%;display:block;}
+  .fan-1{transform:translateY(-50%) rotate(-4deg);z-index:3;}
+  .fan-2{transform:translate(9%,-56%) rotate(4.5deg);z-index:2;}
+  .fan-3{transform:translate(17%,-62%) rotate(12deg);z-index:1;}
+  .games-band:hover .fan-1{transform:translate(-3%,-46%) rotate(-8deg);}
+  .games-band:hover .fan-2{transform:translate(11%,-58%) rotate(5deg);}
+  .games-band:hover .fan-3{transform:translate(24%,-68%) rotate(16deg);}
+
+  @media (max-width:900px){
+    .games-band{grid-template-columns:1fr;padding:32px 24px 26px;gap:6px;}
+    .games-copy{max-width:none;}
+    .games-fan{height:210px;margin-top:14px;}
+    .fan-card{width:64%;left:2%;}
+  }
+  @media (max-width:560px){
+    .games-fan{height:170px;}
+    .fan-card{width:72%;}
+    .games-btn{width:100%;justify-content:center;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .fan-card{transition:none;} .games-btn:hover{transform:none;}
+  }
 </style>
 </head>
 <body>
@@ -359,50 +412,51 @@
   </section>
 
   <!-- ================= JUEGOS ================= -->
-  <section id="juegos" class="catalog games-section">
+  <section id="juegos" class="games-wrap">
     <div class="wrap">
-      <div class="sec-head">
-        <h2>Juegos matemáticos</h2>
-        <p>Tres juegos donde no se avanza sin calcular: la operación no está encima del juego, es la mecánica misma.</p>
-      </div>
-      <div class="grid">
+      <div class="games-band">
 
-        <a class="card card-game" href="/juegos/">
-          <div class="cover cover-dark"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
-        <defs><radialGradient id="cvC" cx="50%" cy="42%" r="72%">
-          <stop offset="0" stop-color="#171C3E"/><stop offset="1" stop-color="#07081A"/></radialGradient></defs>
-        <rect width="320" height="140" fill="url(#cvC)"/>
-        <g fill="#DCE9FF"><circle cx="34" cy="26" r="1.5" opacity=".8"/><circle cx="92" cy="16" r="1.1" opacity=".6"/>
-          <circle cx="252" cy="30" r="1.6" opacity=".75"/><circle cx="296" cy="60" r="1.2" opacity=".55"/>
-          <circle cx="62" cy="112" r="1.3" opacity=".6"/><circle cx="200" cy="18" r="1" opacity=".5"/>
-          <circle cx="140" cy="120" r="1.2" opacity=".5"/></g>
-        <rect x="-4" y="58" width="328" height="42" rx="10" fill="#1A1E36" stroke="rgba(140,170,220,.28)"/>
-        <line x1="0" y1="79" x2="320" y2="79" stroke="#F72585" stroke-width="2.6"
-              stroke-dasharray="15 13" opacity=".6"/>
-        <g transform="translate(96,79)">
-          <circle r="25" fill="#2B0F47" stroke="#B478FF" stroke-width="3"/>
-          <text y="9" text-anchor="middle" font-family="system-ui,sans-serif" font-size="26"
-                font-weight="800" fill="#fff">−7</text></g>
-        <g transform="translate(224,102)">
-          <ellipse cy="2" rx="30" ry="11" fill="#212545" stroke="#0BC0D8" stroke-width="1.6"/>
-          <path d="M-6 0 L6 0 L4 -34 L-4 -34 Z" fill="#2C3156"/>
-          <path d="M0 -60 L11 -36 L4 -36 L4 -30 L-4 -30 L-4 -36 L-11 -36 Z" fill="#0BC0D8"/>
-          <rect x="-25" y="-88" width="50" height="24" rx="7" fill="#060814" stroke="#0BC0D8" stroke-width="1.8"/>
-          <text y="-70" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17"
-                font-weight="800" fill="#fff">+7</text></g></svg></div>
-          <div class="card-body">
-            <span class="chip chip-game">Números enteros</span>
-            <h3>Guardianes del Cero</h3>
-            <p>Los invasores son números negativos y cada torre suma una cantidad fija. Solo caen cuando su valor llega exactamente a cero.</p>
-            <div class="card-foot">
-              <span class="card-grades">7.° en adelante</span>
-              <span class="card-open">Abrir juego →</span>
-            </div>
-          </div>
-        </a>
+        <div class="games-copy">
+          <span class="games-eyebrow">Juegos matemáticos</span>
+          <h2>La operación no va encima del juego. Es el juego.</h2>
+          <p>Para neutralizar a un invasor hay que hallar su opuesto. Para defender la aldea,
+             evaluar una función. Para cruzar el portal, deducir el número a partir de pistas
+             que por separado no bastan.</p>
+          <ul class="games-topics">
+            <li>Números enteros</li>
+            <li>Funciones</li>
+            <li>Deducción numérica</li>
+          </ul>
+          <a class="games-btn" href="/juegos/">
+            Ver los juegos
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <p class="games-note">Tres títulos · Se abren en el navegador · Funcionan sin conexión</p>
+        </div>
 
-        <a class="card card-game" href="/juegos/">
-          <div class="cover cover-dark"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <div class="games-fan" aria-hidden="true">
+          <span class="fan-card fan-3"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <defs><radialGradient id="cvS" cx="50%" cy="45%" r="70%">
+          <stop offset="0" stop-color="#1B0E44"/><stop offset="1" stop-color="#0A0620"/></radialGradient></defs>
+        <rect width="320" height="140" fill="url(#cvS)"/>
+        <g stroke="#35E0F0" stroke-width=".7" opacity=".22">
+          <path d="M0 28h320M0 56h320M0 84h320M0 112h320"/>
+          <path d="M32 0v140M96 0v140M160 0v140M224 0v140M288 0v140"/></g>
+        <circle cx="160" cy="66" r="46" fill="#7B2FF7" opacity=".22"/>
+        <g font-family="system-ui,sans-serif" font-size="13" font-weight="700" text-anchor="middle">
+          <g opacity=".2" fill="#CFE3F2">
+            <rect x="30" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="45" y="66">7</text>
+            <rect x="70" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="85" y="66">13</text>
+            <rect x="220" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="235" y="66">9</text>
+            <rect x="260" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="275" y="66">5</text>
+            <rect x="110" y="90" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="125" y="110">18</text>
+            <rect x="180" y="90" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="195" y="110">30</text></g>
+          <rect x="140" y="42" width="40" height="40" rx="9" fill="#FF4D9D"/>
+          <text x="160" y="69" font-size="19" fill="#fff">24</text></g>
+        <g font-family="ui-monospace,monospace" font-size="9" fill="#8FD9E8" opacity=".85">
+          <text x="160" y="24" text-anchor="middle">ES PAR · MÚLTIPLO DE 3 · &gt; 10</text></g></svg></span>
+          <span class="fan-card fan-2"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
         <defs><linearGradient id="cvL" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#0B1430"/><stop offset=".6" stop-color="#132238"/>
           <stop offset="1" stop-color="#1C2E2A"/></linearGradient></defs>
@@ -425,52 +479,32 @@
         <rect x="212" y="96" width="108" height="5" fill="#3D2A1B" opacity=".9"/>
         <g fill="#6E7480"><ellipse cx="120" cy="122" rx="26" ry="9"/>
           <circle cx="142" cy="115" r="7"/><path d="M146 108 L152 112 L146 116Z"/>
-          <circle cx="147" cy="114" r="1.6" fill="#FFCF5C"/></g></svg></div>
-          <div class="card-body">
-            <span class="chip chip-game">Funciones</span>
-            <h3>Guardianes del Claro</h3>
-            <p>Cada noche baja una criatura distinta. Hay que identificarla por sus rastros y evaluar su función en la noche de hoy.</p>
-            <div class="card-foot">
-              <span class="card-grades">9.° a 11.°</span>
-              <span class="card-open">Abrir juego →</span>
-            </div>
-          </div>
-        </a>
-
-        <a class="card card-game" href="/juegos/">
-          <div class="cover cover-dark"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
-        <defs><radialGradient id="cvS" cx="50%" cy="45%" r="70%">
-          <stop offset="0" stop-color="#1B0E44"/><stop offset="1" stop-color="#0A0620"/></radialGradient></defs>
-        <rect width="320" height="140" fill="url(#cvS)"/>
-        <g stroke="#35E0F0" stroke-width=".7" opacity=".22">
-          <path d="M0 28h320M0 56h320M0 84h320M0 112h320"/>
-          <path d="M32 0v140M96 0v140M160 0v140M224 0v140M288 0v140"/></g>
-        <circle cx="160" cy="66" r="46" fill="#7B2FF7" opacity=".22"/>
-        <g font-family="system-ui,sans-serif" font-size="13" font-weight="700" text-anchor="middle">
-          <g opacity=".2" fill="#CFE3F2">
-            <rect x="30" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="45" y="66">7</text>
-            <rect x="70" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="85" y="66">13</text>
-            <rect x="220" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="235" y="66">9</text>
-            <rect x="260" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="275" y="66">5</text>
-            <rect x="110" y="90" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="125" y="110">18</text>
-            <rect x="180" y="90" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="195" y="110">30</text></g>
-          <rect x="140" y="42" width="40" height="40" rx="9" fill="#FF4D9D"/>
-          <text x="160" y="69" font-size="19" fill="#fff">24</text></g>
-        <g font-family="ui-monospace,monospace" font-size="9" fill="#8FD9E8" opacity=".85">
-          <text x="160" y="24" text-anchor="middle">ES PAR · MÚLTIPLO DE 3 · &gt; 10</text></g></svg></div>
-          <div class="card-body">
-            <span class="chip chip-game">Deducción numérica</span>
-            <h3>Misión Número Secreto</h3>
-            <p>Cada personaje suelta una pista sobre su número. Ninguna basta por sí sola; cruzadas dejan un único candidato.</p>
-            <div class="card-foot">
-              <span class="card-grades">5.° a 8.°</span>
-              <span class="card-open">Abrir juego →</span>
-            </div>
-          </div>
-        </a>
+          <circle cx="147" cy="114" r="1.6" fill="#FFCF5C"/></g></svg></span>
+          <span class="fan-card fan-1"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <defs><radialGradient id="cvC" cx="50%" cy="42%" r="72%">
+          <stop offset="0" stop-color="#171C3E"/><stop offset="1" stop-color="#07081A"/></radialGradient></defs>
+        <rect width="320" height="140" fill="url(#cvC)"/>
+        <g fill="#DCE9FF"><circle cx="34" cy="26" r="1.5" opacity=".8"/><circle cx="92" cy="16" r="1.1" opacity=".6"/>
+          <circle cx="252" cy="30" r="1.6" opacity=".75"/><circle cx="296" cy="60" r="1.2" opacity=".55"/>
+          <circle cx="62" cy="112" r="1.3" opacity=".6"/><circle cx="200" cy="18" r="1" opacity=".5"/>
+          <circle cx="140" cy="120" r="1.2" opacity=".5"/></g>
+        <rect x="-4" y="58" width="328" height="42" rx="10" fill="#1A1E36" stroke="rgba(140,170,220,.28)"/>
+        <line x1="0" y1="79" x2="320" y2="79" stroke="#F72585" stroke-width="2.6"
+              stroke-dasharray="15 13" opacity=".6"/>
+        <g transform="translate(96,79)">
+          <circle r="25" fill="#2B0F47" stroke="#B478FF" stroke-width="3"/>
+          <text y="9" text-anchor="middle" font-family="system-ui,sans-serif" font-size="26"
+                font-weight="800" fill="#fff">−7</text></g>
+        <g transform="translate(224,102)">
+          <ellipse cy="2" rx="30" ry="11" fill="#212545" stroke="#0BC0D8" stroke-width="1.6"/>
+          <path d="M-6 0 L6 0 L4 -34 L-4 -34 Z" fill="#2C3156"/>
+          <path d="M0 -60 L11 -36 L4 -36 L4 -30 L-4 -30 L-4 -36 L-11 -36 Z" fill="#0BC0D8"/>
+          <rect x="-25" y="-88" width="50" height="24" rx="7" fill="#060814" stroke="#0BC0D8" stroke-width="1.8"/>
+          <text y="-70" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17"
+                font-weight="800" fill="#fff">+7</text></g></svg></span>
+        </div>
 
       </div>
-      <p class="catalog-note"><a class="note-link" href="/juegos/">Ver los tres juegos con vista previa en movimiento →</a></p>
     </div>
   </section>
   <!-- ================= POR QUÉ ================= -->
