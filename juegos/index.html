@@ -116,6 +116,39 @@
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto;} .btn:hover{transform:none;}
   }
+
+  /* ── Par de acciones: jugar (principal) e incrustar (secundaria) ── */
+  .acciones{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:22px;}
+  .acciones .btn{margin-top:0;}
+  .btn-ghost{display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+    font-family:inherit;font-size:14.5px;font-weight:700;color:var(--navy);
+    background:#fff;border:1px solid var(--line);padding:12px 18px;border-radius:11px;
+    transition:.18s;}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-soft);}
+  .btn-ghost svg{width:16px;height:16px;}
+
+  /* ── Ventana con el código ── */
+  #dlg-incrustar{width:min(560px,92vw);border:1px solid var(--line);border-radius:var(--radius);
+    padding:28px 28px 24px;box-shadow:var(--shadow-lg);color:var(--ink);background:var(--panel);}
+  #dlg-incrustar::backdrop{background:rgba(15,28,63,.42);backdrop-filter:blur(3px);}
+  #dlg-incrustar h3{font-size:21px;font-weight:800;padding-right:28px;}
+  .dlg-intro{margin-top:10px;color:var(--muted);font-size:14.5px;}
+  .dlg-lbl{display:block;margin-top:18px;margin-bottom:7px;font-size:11.5px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  #dlg-codigo{width:100%;font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;
+    font-size:12.5px;line-height:1.55;color:#22314F;background:#F4F7FA;
+    border:1px solid var(--line);border-radius:10px;padding:12px 14px;resize:vertical;}
+  #dlg-codigo:focus{outline:2px solid var(--cyan);outline-offset:1px;}
+  .dlg-tip{margin-top:10px;font-size:13px;color:var(--muted);}
+  .dlg-tip code,.dlg-tip em{font-family:ui-monospace,Consolas,monospace;font-style:normal;
+    background:#EEF2F7;padding:1px 5px;border-radius:4px;font-size:12px;}
+  .dlg-acciones{display:flex;gap:10px;align-items:center;margin-top:20px;}
+  .dlg-acciones .btn{margin-top:0;}
+  .dlg-acciones form{display:contents;}
+  .dlg-cerrar-x{position:absolute;top:14px;right:14px;}
+  .dlg-cerrar-x button{cursor:pointer;border:0;background:transparent;color:var(--muted);
+    font-size:17px;line-height:1;padding:6px;border-radius:8px;}
+  .dlg-cerrar-x button:hover{color:var(--navy);background:#EEF2F7;}
 </style>
 </head>
 <body>
@@ -176,10 +209,16 @@
         <div><dt>Nivel</dt><dd>7.° en adelante</dd></div>
         <div><dt>Al terminar</dt><dd>Informe por tipo de operación, descargable en CSV</dd></div>
       </dl>
-      <a class="btn" href="guardianes-del-cero.html">
-        Jugar
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
+      <div class="acciones">
+        <a class="btn" href="guardianes-del-cero.html">
+          Jugar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <button class="btn-ghost" type="button" data-incrustar="guardianes-del-cero.html" data-nombre="Guardianes del Cero">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+          Incrustar
+        </button>
+      </div>
     </div>
   </article>
 
@@ -201,10 +240,16 @@
         <div><dt>Nivel</dt><dd>9.° a 11.°</dd></div>
         <div><dt>Al terminar</dt><dd>Registro noche a noche que separa el error de cálculo del error de identificación</dd></div>
       </dl>
-      <a class="btn" href="guardianes-del-claro.html">
-        Jugar
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
+      <div class="acciones">
+        <a class="btn" href="guardianes-del-claro.html">
+          Jugar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <button class="btn-ghost" type="button" data-incrustar="guardianes-del-claro.html" data-nombre="Guardianes del Claro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+          Incrustar
+        </button>
+      </div>
     </div>
   </article>
 
@@ -226,14 +271,37 @@
         <div><dt>Nivel</dt><dd>5.° a 8.°</dd></div>
         <div><dt>Formato</dt><dd>Se juega en vertical desde el celular</dd></div>
       </dl>
-      <a class="btn" href="mision-numero-secreto.html">
-        Jugar
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
+      <div class="acciones">
+        <a class="btn" href="mision-numero-secreto.html">
+          Jugar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <button class="btn-ghost" type="button" data-incrustar="mision-numero-secreto.html" data-nombre="Misión Número Secreto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+          Incrustar
+        </button>
+      </div>
     </div>
   </article>
 
 </main>
+
+<dialog id="dlg-incrustar" aria-labelledby="dlg-titulo">
+  <form method="dialog" class="dlg-cerrar-x"><button aria-label="Cerrar">✕</button></form>
+  <h3 id="dlg-titulo">Incrustar <span id="dlg-nombre"></span></h3>
+  <p class="dlg-intro">Copia este código y pégalo como <strong>HTML</strong> en Moodle, Google Sites,
+     WordPress o tu plataforma. El juego se carga desde didaxislab.com, así que si se corrige algo
+     tus estudiantes lo reciben sin que tengas que volver a pegar nada.</p>
+  <label class="dlg-lbl" for="dlg-codigo">Código</label>
+  <textarea id="dlg-codigo" rows="5" readonly spellcheck="false"></textarea>
+  <p class="dlg-tip">Ajusta <code>height</code> si lo quieres más alto o más bajo. En Moodle usa el
+     botón <em>&lt;/&gt;</em> del editor para pegar en modo código.</p>
+  <div class="dlg-acciones">
+    <button type="button" id="dlg-copiar" class="btn">Copiar código</button>
+    <form method="dialog"><button type="submit" class="btn-ghost">Cerrar</button></form>
+  </div>
+</dialog>
+
 
 <section class="aula">
   <div class="aula-inner">
@@ -276,5 +344,52 @@
   </div>
 </footer>
 
+
+<script>
+/* Ventana de incrustado: arma el <iframe> con la dirección absoluta real,
+   así el código sirve igual en el sitio publicado que en pruebas locales. */
+(function(){
+  const dlg    = document.getElementById('dlg-incrustar');
+  const salida = document.getElementById('dlg-codigo');
+  const nombre = document.getElementById('dlg-nombre');
+  const copiar = document.getElementById('dlg-copiar');
+  if(!dlg) return;
+
+  const fragmento = (url, titulo) =>
+`<iframe src="${url}"
+        title="${titulo} — Didaxis Lab"
+        width="100%" height="640"
+        style="border:0;border-radius:12px"
+        allowfullscreen loading="lazy"></iframe>`;
+
+  document.querySelectorAll('[data-incrustar]').forEach(b => {
+    b.addEventListener('click', () => {
+      const url = new URL(b.dataset.incrustar, location.href).href;
+      nombre.textContent = b.dataset.nombre;
+      salida.value = fragmento(url, b.dataset.nombre);
+      copiar.textContent = 'Copiar código';
+      copiar.disabled = false;
+      dlg.showModal();
+      salida.scrollTop = 0;
+    });
+  });
+
+  copiar.addEventListener('click', async () => {
+    salida.select();
+    try{
+      await navigator.clipboard.writeText(salida.value);
+      copiar.textContent = 'Copiado ✓';
+    }catch(e){
+      // Sin permiso de portapapeles: queda seleccionado para copiar a mano
+      copiar.textContent = 'Copia el texto seleccionado';
+    }
+    copiar.disabled = true;
+    setTimeout(() => { copiar.textContent = 'Copiar código'; copiar.disabled = false; }, 2600);
+  });
+
+  // Cerrar al pulsar fuera de la ventana
+  dlg.addEventListener('click', e => { if(e.target === dlg) dlg.close(); });
+})();
+</script>
 </body>
 </html>
