@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardianes del Claro — vista en miniatura</title>
+<style>
+  html,body{margin:0;height:100%;background:#0A1410;overflow:hidden}
+  #mini{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="mini" aria-label="La aldea defendiéndose de las criaturas del bosque"></canvas>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   GUARDIANES DEL CLARO — miniatura en bucle
+   Vista cercana de la empalizada al anochecer: los arqueros disparan a las
+   criaturas que bajan del bosque y estas huyen al recibir los impactos.
+   Se busca transmitir el mundo del juego —hoguera, empalizada, bosque de
+   noche— sin ningún dato ni operación en pantalla.
+   ═══════════════════════════════════════════════════════════════════════ */
+const W = 960, H = 600;
+const cv = document.getElementById('mini');
+const ctx = cv.getContext('2d');
+const lento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function ajustar(){
+  const d = Math.min(2, devicePixelRatio || 1);
+  const r = cv.getBoundingClientRect();
+  cv.width  = Math.max(1, Math.round(r.width  * d));
+  cv.height = Math.max(1, Math.round(r.height * d));
+  const e = Math.max(r.width / W, r.height / H) * d;
+  ctx.setTransform(e, 0, 0, e, (cv.width - W*e)/2, (cv.height - H*e)/2);
+}
+addEventListener('resize', ajustar);
+
+const R = (a,b) => a + Math.random()*(b-a);
+const SUELO = 452;                     // línea del terreno
+const CERCA_X = 706;                   // dónde empieza la empalizada
+
+/* ── Decorado fijo ─────────────────────────────────────────────────── */
+const estrellas = Array.from({length:90}, () => ({
+  x:R(0,W), y:R(0,300), r:R(.5,1.6), a:R(.25,.9), f:R(0,6.28)
+}));
+const luciernagas = Array.from({length:16}, () => ({
+  x:R(40,660), y:R(300,440), f:R(0,6.28), rx:R(18,44), ry:R(10,26), v:R(.35,.8)
+}));
+const hierbas = Array.from({length:70}, () => ({
+  x:R(-10,CERCA_X+30), y:R(SUELO-6, H), h:R(7,17), f:R(0,6.28)
+}));
+// Dos filas de pinos con parallax: la lejana más pequeña y desvaída
+function filaPinos(n, base, altoMin, altoMax, semilla){
+  const a=[]; let x=-40;
+  for(let i=0;i<n;i++){
+    a.push({x, alto:R(altoMin,altoMax), ancho:R(30,58), base});
+    x += R(34,64);
+  }
+  return a;
+}
+const pinosLejos = filaPinos(26, 396, 76, 128);
+const pinosCerca = filaPinos(20, 438, 108, 176);
+
+/* ── Criaturas ─────────────────────────────────────────────────────── */
+const ESPECIES = {
+  lobo:   {cuerpo:'#6E7480', oscuro:'#454A55', alto:44, largo:96,  vel:66, cola:'recta'},
+  jabali: {cuerpo:'#4A3B30', oscuro:'#2E241C', alto:50, largo:92,  vel:56, cola:'corta'},
+  zorro:  {cuerpo:'#C9691F', oscuro:'#8A3F0C', alto:36, largo:80,  vel:78, cola:'tupida'},
+};
+const CLAVES = Object.keys(ESPECIES);
+
+let reloj = 0, bichos = [], flechas = [], chispas = [], relojSpawn = .3;
+
+function nuevoBicho(){
+  const clave = CLAVES[Math.floor(Math.random()*CLAVES.length)];
+  const d = ESPECIES[clave];
+  bichos.push({
+    clave, d, x:-110, y:SUELO - R(0,26), esc:R(.88,1.12),
+    vel:d.vel*R(.9,1.1), estado:'avanza', vida:Math.round(R(4,6)),
+    meta:R(500,610), f:R(0,6.28), golpe:0
+  });
+}
+
+function dispararFlecha(obj){
+  const x0 = CERCA_X + R(14,150), y0 = SUELO - R(104,136);
+  flechas.push({x:x0, y:y0, x0, y0, obj, t:0, dur:.52,
+                x1:obj.x + obj.d.largo*.3*obj.esc, y1:obj.y - obj.d.alto*.5*obj.esc});
+}
+
+/* ── Actualización ─────────────────────────────────────────────────── */
+let relojArquero = .8;
+function actualizar(dt){
+  reloj += dt;
+
+  relojSpawn -= dt;
+  if(relojSpawn <= 0 && bichos.length < 3){
+    nuevoBicho(); relojSpawn = R(2.4, 3.8);
+  }
+
+  relojArquero -= dt;
+  if(relojArquero <= 0){
+    const obj = bichos.find(b => b.estado === 'avanza' && b.x > 285);
+    if(obj){ dispararFlecha(obj); relojArquero = R(.55,.9); }
+    else relojArquero = .3;
+  }
+
+  for(const b of bichos){
+    b.golpe = Math.max(0, b.golpe - dt*4);
+    if(b.estado === 'avanza'){
+      b.x += b.vel*dt;
+      if(b.x > b.meta) b.estado = 'acecha';
+    } else if(b.estado === 'acecha'){
+      b.x += Math.sin(reloj*1.4 + b.f)*14*dt;      // ronda sin acercarse más
+    } else {
+      b.x -= b.vel*1.5*dt;                          // huye
+    }
+  }
+  bichos = bichos.filter(b => b.x > -190);
+
+  for(const f of flechas){
+    f.t += dt;
+    if(f.t >= f.dur){
+      f.fin = true;
+      const b = f.obj;
+      if(b && b.estado !== 'huye'){
+        b.golpe = 1; b.vida -= 1;
+        for(let k=0;k<10;k++){
+          const a=R(0,6.283), v=R(40,150);
+          chispas.push({x:f.x1, y:f.y1, vx:Math.cos(a)*v, vy:Math.sin(a)*v,
+                        vida:.8, color:'#E0B256', r:R(1.5,3)});
+        }
+        if(b.vida <= 0) b.estado = 'huye';
+      }
+    }
+  }
+  flechas = flechas.filter(f => !f.fin);
+
+  for(const c of chispas){ c.x+=c.vx*dt; c.y+=c.vy*dt; c.vy+=180*dt; c.vida-=dt*1.6; }
+  chispas = chispas.filter(c => c.vida>0);
+}
+
+/* ── Dibujo del decorado ───────────────────────────────────────────── */
+function cielo(){
+  const g = ctx.createLinearGradient(0,0,0,SUELO);
+  g.addColorStop(0,'#0B1430'); g.addColorStop(.55,'#122238'); g.addColorStop(1,'#1B2E2A');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,SUELO);
+
+  for(const e of estrellas){
+    ctx.globalAlpha = e.a*(.55+Math.sin(reloj*1.2+e.f)*.45);
+    ctx.fillStyle='#DCE9FF';
+    ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,6.283); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  // Luna con halo
+  const lg = ctx.createRadialGradient(178,110,6,178,110,120);
+  lg.addColorStop(0,'rgba(226,238,255,.30)'); lg.addColorStop(1,'rgba(226,238,255,0)');
+  ctx.fillStyle=lg; ctx.beginPath(); ctx.arc(178,110,120,0,6.283); ctx.fill();
+  ctx.fillStyle='#E9F1FF'; ctx.beginPath(); ctx.arc(178,110,32,0,6.283); ctx.fill();
+  ctx.fillStyle='rgba(180,198,225,.5)';
+  ctx.beginPath(); ctx.arc(168,102,7,0,6.283); ctx.fill();
+  ctx.beginPath(); ctx.arc(188,120,5,0,6.283); ctx.fill();
+}
+
+function pino(p, color){
+  ctx.fillStyle=color;
+  const capas = 3;
+  for(let i=0;i<capas;i++){
+    const k = 1 - i*0.24;
+    const cima = p.base - p.alto + i*(p.alto*0.24);
+    ctx.beginPath();
+    ctx.moveTo(p.x, cima);
+    ctx.lineTo(p.x + p.ancho*k*.5, cima + p.alto*.5);
+    ctx.lineTo(p.x - p.ancho*k*.5, cima + p.alto*.5);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.fillRect(p.x-3, p.base-p.alto*.16, 6, p.alto*.16);
+}
+function bosque(){
+  pinosLejos.forEach(p => pino(p,'#0E2119'));
+  pinosCerca.forEach(p => pino(p,'#081611'));
+}
+function suelo(){
+  const g = ctx.createLinearGradient(0,SUELO,0,H);
+  g.addColorStop(0,'#152A1F'); g.addColorStop(1,'#0A1610');
+  ctx.fillStyle=g; ctx.fillRect(0,SUELO,W,H-SUELO);
+  ctx.strokeStyle='rgba(120,170,130,.16)'; ctx.lineWidth=2; ctx.lineCap='round';
+  for(const h of hierbas){
+    const s = Math.sin(reloj*1.5+h.f)*4;
+    ctx.beginPath(); ctx.moveTo(h.x,h.y); ctx.lineTo(h.x+s,h.y-h.h); ctx.stroke();
+  }
+}
+
+function hoguera(){
+  const x=792, y=SUELO-14;
+  const par = .84 + Math.sin(reloj*7)*.1 + Math.sin(reloj*15)*.06;
+  const g = ctx.createRadialGradient(x,y-30,4,x,y-30,230*par);
+  g.addColorStop(0,'rgba(255,178,80,.34)'); g.addColorStop(1,'rgba(255,150,40,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y-30,230*par,0,6.283); ctx.fill();
+
+  ctx.strokeStyle='#4A3524'; ctx.lineWidth=8; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(x-22,y); ctx.lineTo(x+16,y-12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x+22,y); ctx.lineTo(x-16,y-12); ctx.stroke();
+
+  ctx.globalCompositeOperation='lighter';
+  [[26,52,'#FF6A1F',.7],[18,38,'#FFB339',.85],[10,24,'#FFF0BF',.95]].forEach(([w,h,c,a],i)=>{
+    const k = 1 + Math.sin(reloj*(6+i*2))*.16;
+    ctx.fillStyle=c; ctx.globalAlpha=a;
+    ctx.beginPath();
+    ctx.moveTo(x, y-14-h*k);
+    ctx.quadraticCurveTo(x+w*.5, y-14-h*.35, x+w*.34, y-12);
+    ctx.lineTo(x-w*.34, y-12);
+    ctx.quadraticCurveTo(x-w*.5, y-14-h*.35, x, y-14-h*k);
+    ctx.fill();
+  });
+  ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+}
+
+function empalizada(){
+  // Troncos verticales de alturas ligeramente distintas
+  for(let x=CERCA_X; x<W+30; x+=26){
+    const alto = 128 + Math.sin(x*.7)*10;
+    const y = SUELO - alto;
+    ctx.fillStyle='#5C4029';
+    ctx.beginPath(); ctx.roundRect(x, y, 20, alto, 3); ctx.fill();
+    ctx.fillStyle='#6E4E33';
+    ctx.beginPath(); ctx.roundRect(x+3, y+4, 8, alto-8, 3); ctx.fill();
+    ctx.fillStyle='#3D2A1B';                       // punta
+    ctx.beginPath();
+    ctx.moveTo(x-1, y+7); ctx.lineTo(x+10, y-9); ctx.lineTo(x+21, y+7);
+    ctx.closePath(); ctx.fill();
+  }
+  // Travesaños
+  ctx.fillStyle='rgba(58,40,25,.9)';
+  ctx.fillRect(CERCA_X, SUELO-96, W-CERCA_X+30, 9);
+  ctx.fillRect(CERCA_X, SUELO-44, W-CERCA_X+30, 9);
+}
+
+function arquero(x, y, fase){
+  const tensa = (Math.sin(reloj*2.2+fase)+1)/2;
+  ctx.save(); ctx.translate(x,y);
+  ctx.fillStyle='#22303F';
+  ctx.beginPath(); ctx.roundRect(-7,-26,14,26,5); ctx.fill();          // torso
+  ctx.beginPath(); ctx.arc(0,-33,7,0,6.283); ctx.fill();               // cabeza
+  ctx.fillStyle='#2E4256';
+  ctx.beginPath();                                                     // capucha
+  ctx.moveTo(-9,-33); ctx.quadraticCurveTo(0,-46,9,-33); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='#7A5A32'; ctx.lineWidth=3;                          // arco
+  ctx.beginPath(); ctx.arc(-13,-20,14,-1.1,1.1); ctx.stroke();
+  ctx.strokeStyle='rgba(230,220,190,.75)'; ctx.lineWidth=1.4;          // cuerda
+  ctx.beginPath();
+  ctx.moveTo(-13+14*Math.cos(-1.1), -20+14*Math.sin(-1.1));
+  ctx.lineTo(-13+6-tensa*7, -20);
+  ctx.lineTo(-13+14*Math.cos(1.1), -20+14*Math.sin(1.1));
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* ── Dibujo de las criaturas ───────────────────────────────────────── */
+function criatura(b){
+  const d = b.d, dir = b.estado==='huye' ? -1 : 1;
+  const anda = b.estado!=='acecha';
+  const paso = Math.sin(reloj*(anda?9:2.4)+b.f);
+  ctx.save();
+  ctx.translate(b.x, b.y);
+  ctx.scale(b.esc*dir, b.esc);
+
+  const L=d.largo, A=d.alto;
+  ctx.fillStyle = b.golpe>.2 ? '#FFF' : d.oscuro;
+
+  // Patas
+  ctx.lineWidth = A*.16; ctx.lineCap='round'; ctx.strokeStyle = ctx.fillStyle;
+  [[-L*.3,1],[-L*.22,-1],[L*.22,-1],[L*.3,1]].forEach(([px,s])=>{
+    ctx.beginPath();
+    ctx.moveTo(px,-A*.42);
+    ctx.lineTo(px + paso*s*A*.20, 0);
+    ctx.stroke();
+  });
+
+  // Cuerpo
+  ctx.fillStyle = b.golpe>.2 ? '#FFF' : d.cuerpo;
+  ctx.beginPath();
+  ctx.roundRect(-L*.42, -A, L*.84, A*.62, A*.28);
+  ctx.fill();
+
+  // Cabeza y hocico
+  ctx.beginPath(); ctx.arc(L*.42, -A*.86, A*.28, 0, 6.283); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(L*.52,-A*.94); ctx.lineTo(L*.72,-A*.80); ctx.lineTo(L*.52,-A*.68);
+  ctx.closePath(); ctx.fill();
+
+  // Orejas
+  ctx.beginPath();
+  ctx.moveTo(L*.34,-A*1.06); ctx.lineTo(L*.40,-A*1.34); ctx.lineTo(L*.48,-A*1.04);
+  ctx.closePath(); ctx.fill();
+
+  // Cola según especie
+  ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = d.cola==='tupida' ? A*.30 : A*.14;
+  const mov = Math.sin(reloj*4+b.f)*.35;
+  ctx.beginPath();
+  ctx.moveTo(-L*.42,-A*.80);
+  ctx.quadraticCurveTo(-L*.62,-A*(.96+mov*.2), -L*.72,-A*(.66+mov));
+  ctx.stroke();
+
+  // Ojo encendido: es lo que da presencia al bicho en la penumbra
+  ctx.fillStyle = b.golpe>.2 ? '#FFF' : '#FFCF5C';
+  ctx.beginPath(); ctx.arc(L*.48,-A*.90, A*.055, 0, 6.283); ctx.fill();
+  ctx.restore();
+}
+
+/* ── Composición ───────────────────────────────────────────────────── */
+function dibujar(){
+  cielo();
+  bosque();
+  suelo();
+
+  bichos.forEach(criatura);
+
+  hoguera();
+  empalizada();
+  arquero(CERCA_X+40, SUELO-96, 0);
+  arquero(CERCA_X+112, SUELO-96, 1.9);
+  arquero(CERCA_X+186, SUELO-96, 3.4);
+
+  // Flechas: trayectoria en arco desde la empalizada hasta el bicho
+  ctx.strokeStyle='#E6D8B4'; ctx.lineWidth=2.4; ctx.lineCap='round';
+  for(const f of flechas){
+    const k = f.t/f.dur;
+    const x = f.x0 + (f.x1-f.x0)*k;
+    const y = f.y0 + (f.y1-f.y0)*k - Math.sin(k*Math.PI)*46;
+    const kp = Math.max(0, k-.06);
+    const xp = f.x0 + (f.x1-f.x0)*kp;
+    const yp = f.y0 + (f.y1-f.y0)*kp - Math.sin(kp*Math.PI)*46;
+    f.x = x; f.y = y;
+    ctx.beginPath(); ctx.moveTo(xp,yp); ctx.lineTo(x,y); ctx.stroke();
+  }
+
+  for(const c of chispas){
+    ctx.globalAlpha=Math.max(0,c.vida); ctx.fillStyle=c.color;
+    ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,6.283); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  // Luciérnagas delante de todo, en el claro
+  for(const l of luciernagas){
+    const a = (Math.sin(reloj*l.v + l.f)+1)/2;
+    ctx.globalAlpha = .18 + a*.62;
+    ctx.fillStyle='#FFE59A';
+    ctx.shadowBlur=10; ctx.shadowColor='rgba(255,208,110,.9)';
+    ctx.beginPath();
+    ctx.arc(l.x + Math.cos(reloj*l.v*.7+l.f)*l.rx,
+            l.y + Math.sin(reloj*l.v+l.f)*l.ry, 2.6, 0, 6.283);
+    ctx.fill(); ctx.shadowBlur=0;
+  }
+  ctx.globalAlpha=1;
+
+  const v = ctx.createRadialGradient(W/2,H*.45,H*.42,W/2,H*.45,W*.80);
+  v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.45)');
+  ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
+}
+
+let previo = performance.now();
+function bucle(ahora){
+  const dt = Math.min(.05,(ahora-previo)/1000); previo = ahora;
+  actualizar(dt); dibujar();
+  requestAnimationFrame(bucle);
+}
+ajustar();
+nuevoBicho(); bichos[0].x = 240;
+if(lento){ actualizar(.016); dibujar(); }
+else requestAnimationFrame(bucle);
+</script>
+</body>
+</html>

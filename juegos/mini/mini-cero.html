@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardianes del Cero — vista en miniatura</title>
+<style>
+  /* Ocupa por completo el contenedor donde se inserte (portal o iframe). */
+  html,body{margin:0;height:100%;background:#07071A;overflow:hidden}
+  #mini{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="mini" aria-label="Torres neutralizando invasores negativos"></canvas>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   GUARDIANES DEL CERO — miniatura en bucle
+   Vista cercana de dos torres disparando a invasores negativos. Lo que se
+   quiere que se lea de un vistazo: cada impacto SUMA el valor de la torre
+   y el invasor cae justo cuando su número llega a cero.
+   Cada invasor recibe un valor múltiplo exacto del daño de su torre, así
+   que la cuenta siempre cierra en 0 y nunca se pasa.
+   ═══════════════════════════════════════════════════════════════════════ */
+const W = 960, H = 600;                     // lienzo virtual 16:10
+const cv = document.getElementById('mini');
+const ctx = cv.getContext('2d');
+const lento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function ajustar(){
+  const d = Math.min(2, devicePixelRatio || 1);
+  const r = cv.getBoundingClientRect();
+  cv.width  = Math.max(1, Math.round(r.width  * d));
+  cv.height = Math.max(1, Math.round(r.height * d));
+  // "cover": el lienzo virtual llena el contenedor sin deformarse
+  const e = Math.max(r.width / W, r.height / H) * d;
+  ctx.setTransform(e, 0, 0, e, (cv.width - W*e)/2, (cv.height - H*e)/2);
+}
+addEventListener('resize', ajustar);
+
+const R = (a,b) => a + Math.random()*(b-a);
+
+/* ── Escenario ─────────────────────────────────────────────────────── */
+const VIA_Y = 322, VIA_ALTO = 150;
+const estrellas = Array.from({length:110}, () => ({
+  x:R(0,W), y:R(0,H), r:R(.5,1.9), a:R(.2,.9), f:R(0,6.28)
+}));
+const nebulosas = [
+  {x:.18,y:.24,r:250,c:[114,9,183]},
+  {x:.72,y:.72,r:230,c:[11,192,216]},
+  {x:.52,y:.14,r:190,c:[247,37,133]},
+];
+
+/* ── Definición de las dos torres ──────────────────────────────────── */
+const TORRES = [
+  // Cada torre cubre su propia zona: la acción se reparte por el cuadro y se
+  // ve que el invasor cae al pasar junto a la torre que le corresponde.
+  { tipo:'frost',  x:250, baseY:214, sube:3,  alcance:300, color:'#a8dadc',
+    etiqueta:'❄+3', muzzle:-96,  placa:-140, cadencia:.62 },
+  { tipo:'vector', x:690, baseY:452, sube:10, alcance:310, color:'#f72585',
+    etiqueta:'+10', muzzle:-140, placa:-186, cadencia:.95 },
+];
+TORRES.forEach(t => t.reloj = R(0,.8));
+
+/* ── Dibujo de las torres (mismo lenguaje visual que el juego) ─────── */
+function poligono(s, rx, ry, rot=0){
+  ctx.beginPath();
+  for(let i=0;i<s;i++){
+    const a=(i/s)*Math.PI*2+rot, px=Math.cos(a)*rx, py=Math.sin(a)*ry;
+    i ? ctx.lineTo(px,py) : ctx.moveTo(px,py);
+  }
+  ctx.closePath();
+}
+function plataforma(lados, rx, ry, color, rot=0){
+  ctx.fillStyle='rgba(0,0,0,.45)';
+  ctx.beginPath(); ctx.ellipse(0,8,rx*1.08,ry*.9,0,0,6.283); ctx.fill();
+  for(let i=0;i<3;i++){
+    const k=1-i*.17;
+    ctx.save(); ctx.translate(0,-i*8);
+    poligono(lados, rx*k, ry*k, rot);
+    const g=ctx.createLinearGradient(0,-ry,0,ry);
+    g.addColorStop(0,'#2c3156'); g.addColorStop(1,'#101228');
+    ctx.fillStyle=g; ctx.fill();
+    ctx.lineWidth = i===2 ? 2 : 1;
+    ctx.strokeStyle = i===2 ? color+'aa' : 'rgba(255,255,255,.09)';
+    ctx.stroke(); ctx.restore();
+  }
+}
+function columna(y0,y1,w0,w1,fill){
+  ctx.beginPath();
+  ctx.moveTo(-w0,y0); ctx.lineTo(w0,y0); ctx.lineTo(w1,y1); ctx.lineTo(-w1,y1);
+  ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.45)'; ctx.lineWidth=2; ctx.stroke();
+}
+function placa(texto, color, y){
+  ctx.save(); ctx.translate(0,y);
+  ctx.font='900 34px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  const w=Math.max(64, ctx.measureText(texto).width+30), h=42;
+  ctx.beginPath();
+  ctx.moveTo(-w/2+11,-h/2); ctx.lineTo(w/2-11,-h/2); ctx.lineTo(w/2,0);
+  ctx.lineTo(w/2-11,h/2); ctx.lineTo(-w/2+11,h/2); ctx.lineTo(-w/2,0);
+  ctx.closePath();
+  ctx.fillStyle='rgba(6,8,20,.9)'; ctx.fill();
+  ctx.strokeStyle=color; ctx.lineWidth=2.5;
+  ctx.shadowBlur=14; ctx.shadowColor=color; ctx.stroke(); ctx.shadowBlur=0;
+  ctx.fillStyle='#fff'; ctx.fillText(texto,0,1);
+  ctx.restore();
+}
+function torreHielo(t){
+  plataforma(6,48,24,t.color);
+  ctx.save(); ctx.globalAlpha=.85; columna(-16,-74,14,9,'#1d3a45'); ctx.globalAlpha=1;
+  ctx.strokeStyle=t.color+'99'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(-6,-20); ctx.lineTo(2,-72); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(7,-20); ctx.lineTo(-1,-72); ctx.stroke();
+  ctx.restore();
+  ctx.save(); ctx.translate(0,-96); ctx.rotate(reloj*.7);
+  ctx.strokeStyle=t.color; ctx.lineWidth=3.5; ctx.lineCap='round';
+  ctx.shadowBlur=14; ctx.shadowColor=t.color;
+  for(let i=0;i<6;i++){
+    const a=(i/6)*Math.PI*2, cx=Math.cos(a), cy=Math.sin(a)*.55;
+    ctx.beginPath();
+    ctx.moveTo(0,0); ctx.lineTo(cx*26,cy*26);
+    ctx.moveTo(cx*17,cy*17); ctx.lineTo(cx*24-cy*8, cy*24+cx*8);
+    ctx.moveTo(cx*17,cy*17); ctx.lineTo(cx*24+cy*8, cy*24-cx*8);
+    ctx.stroke();
+  }
+  ctx.lineCap='butt'; ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.arc(0,0,6,0,6.283); ctx.fill();
+  ctx.shadowBlur=0; ctx.restore();
+}
+function torreVector(t){
+  plataforma(3,46,23,t.color,-Math.PI/2);
+  columna(-14,-128,9,5,'#2c1030');
+  ctx.strokeStyle=t.color+'66'; ctx.lineWidth=2;
+  for(let i=0;i<4;i++){
+    const y=-30-i*26, w=14-i*2.5;
+    ctx.beginPath(); ctx.moveTo(-w,y); ctx.lineTo(w,y); ctx.stroke();
+  }
+  const chispa = -20 - ((reloj*130) % 110);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2.5;
+  ctx.shadowBlur=12; ctx.shadowColor=t.color;
+  ctx.beginPath();
+  ctx.moveTo(-6,chispa); ctx.lineTo(4,chispa-9);
+  ctx.lineTo(-4,chispa-14); ctx.lineTo(6,chispa-24); ctx.stroke();
+  ctx.shadowBlur=24; ctx.fillStyle=t.color;
+  ctx.beginPath();
+  ctx.moveTo(0,-162); ctx.lineTo(19,-128); ctx.lineTo(7,-128);
+  ctx.lineTo(7,-118); ctx.lineTo(-7,-118); ctx.lineTo(-7,-128); ctx.lineTo(-19,-128);
+  ctx.closePath(); ctx.fill(); ctx.shadowBlur=0;
+}
+
+/* ── Estado ────────────────────────────────────────────────────────── */
+let reloj = 0, invasores = [], disparos = [], chispas = [], textos = [], relojSpawn = .4;
+
+function nuevoInvasor(){
+  // A cada invasor se le asigna una torre y un valor múltiplo exacto de su
+  // daño: así la resta siempre cierra en cero delante del espectador.
+  // Ligero sesgo hacia la torre de hielo: sus invasores caen en menos pasos y
+  // mantienen la mitad izquierda del cuadro siempre con algo ocurriendo.
+  const t = TORRES[Math.random() < .58 ? 0 : 1];
+  const pasos = t.sube === 3 ? [3,4][Math.floor(Math.random()*2)]
+                             : [2,3][Math.floor(Math.random()*2)];
+  const valor = -(t.sube * pasos);
+  invasores.push({
+    x:-70, y:VIA_Y, valor, inicial:valor, torre:t,
+    r:44, vel:R(60,72), golpe:0, muerto:false, f:R(0,6.28)
+  });
+}
+
+function dispararA(t, inv){
+  const mx = t.x, my = t.baseY + t.muzzle;
+  disparos.push({
+    x:mx, y:my, obj:inv, color:t.color, sube:t.sube,
+    hielo:t.tipo==='frost', vel:640, t:0
+  });
+}
+
+/* ── Actualización ─────────────────────────────────────────────────── */
+function actualizar(dt){
+  reloj += dt;
+
+  relojSpawn -= dt;
+  if(relojSpawn <= 0 && invasores.length < 4){
+    nuevoInvasor(); relojSpawn = R(1.5, 2.2);
+  }
+
+  for(const t of TORRES){
+    t.reloj -= dt;
+    if(t.reloj <= 0){
+      // Solo dispara al invasor que le corresponde y que ya está en cuadro
+      const obj = invasores.find(i => !i.muerto && i.torre === t && i.valor < 0 &&
+                                       Math.abs(i.x - t.x) < t.alcance);
+      if(obj){ dispararA(t, obj); t.reloj = t.cadencia; }
+      else t.reloj = .25;
+    }
+  }
+
+  for(const i of invasores){
+    if(i.muerto){ i.golpe += dt*3.2; continue; }
+    i.x += i.vel*dt;
+    i.golpe = Math.max(0, i.golpe - dt*4);
+  }
+  invasores = invasores.filter(i => i.x < W+90 && (!i.muerto || i.golpe < 1));
+
+  for(const p of disparos){
+    if(!p.obj || p.obj.muerto){ p.fin = true; continue; }
+    const dx = p.obj.x - p.x, dy = p.obj.y - p.y, d = Math.hypot(dx,dy);
+    if(d < 26){
+      p.fin = true;
+      const inv = p.obj;
+      inv.valor += p.sube;                     // ← la suma que hace el juego
+      inv.golpe = 1;
+      textos.push({x:inv.x, y:inv.y-58, txt:'+'+p.sube, color:p.color, vida:1});
+      for(let k=0;k<12;k++){
+        const a=R(0,6.283), v=R(60,220);
+        chispas.push({x:inv.x,y:inv.y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,
+                      vida:1, color:p.color, r:R(2,4)});
+      }
+      if(inv.valor >= 0){                      // llegó exactamente a cero
+        inv.muerto = true; inv.golpe = 0;
+        textos.push({x:inv.x, y:inv.y-92, txt:'0', color:'#06d6a0', vida:1.4, grande:true});
+        for(let k=0;k<28;k++){
+          const a=R(0,6.283), v=R(90,330);
+          chispas.push({x:inv.x,y:inv.y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,
+                        vida:1.1, color:'#06d6a0', r:R(2,5)});
+        }
+      }
+    } else {
+      p.x += dx/d*p.vel*dt; p.y += dy/d*p.vel*dt; p.t += dt;
+    }
+  }
+  disparos = disparos.filter(p => !p.fin);
+
+  for(const c of chispas){
+    c.x += c.vx*dt; c.y += c.vy*dt; c.vy += 120*dt; c.vida -= dt*1.5;
+  }
+  chispas = chispas.filter(c => c.vida > 0);
+
+  for(const t of textos){ t.y -= 42*dt; t.vida -= dt*.85; }
+  textos = textos.filter(t => t.vida > 0);
+}
+
+/* ── Dibujo ────────────────────────────────────────────────────────── */
+function fondo(){
+  const g = ctx.createRadialGradient(W*.5,H*.42,0,W*.5,H*.42,W*.8);
+  g.addColorStop(0,'#141838'); g.addColorStop(.55,'#0a0b20'); g.addColorStop(1,'#05050e');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+  ctx.globalCompositeOperation='screen';
+  for(const n of nebulosas){
+    const p=.5+Math.sin(reloj*.25+n.x*9)*.5;
+    const ng=ctx.createRadialGradient(n.x*W,n.y*H,0,n.x*W,n.y*H,n.r*(.9+p*.2));
+    ng.addColorStop(0,`rgba(${n.c[0]},${n.c[1]},${n.c[2]},${.08+p*.05})`);
+    ng.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=ng; ctx.beginPath();
+    ctx.arc(n.x*W,n.y*H,n.r*1.2,0,6.283); ctx.fill();
+  }
+  ctx.globalCompositeOperation='source-over';
+
+  for(const e of estrellas){
+    ctx.globalAlpha = e.a*(.6+Math.sin(reloj*1.4+e.f)*.4);
+    ctx.fillStyle='#e2f0ff';
+    ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,6.283); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+}
+
+function via(){
+  const y0 = VIA_Y - VIA_ALTO/2;
+  ctx.fillStyle='rgba(24,28,52,.94)';
+  ctx.beginPath(); ctx.roundRect(-20, y0, W+40, VIA_ALTO, 16); ctx.fill();
+  ctx.strokeStyle='rgba(140,170,220,.28)'; ctx.lineWidth=3; ctx.stroke();
+  ctx.strokeStyle='rgba(247,37,133,.55)'; ctx.lineWidth=4;
+  ctx.setLineDash([30,26]); ctx.lineDashOffset = -reloj*36;
+  ctx.beginPath(); ctx.moveTo(-20,VIA_Y); ctx.lineTo(W+20,VIA_Y); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function dibujarInvasor(i){
+  ctx.save(); ctx.translate(i.x, i.y);
+  if(i.muerto){ ctx.globalAlpha = 1-i.golpe; ctx.scale(1+i.golpe*.7, 1+i.golpe*.7); }
+
+  // Barra de vida: llena al aparecer, vacía cuando el valor llega a cero.
+  // valor e inicial son ambos negativos, así que su cociente es lo que le
+  // queda: −12/−12 = 1 al entrar, −3/−12 = 0.25 tras tres impactos de +3.
+  const vida = Math.max(0, Math.min(1, i.valor / i.inicial));
+  const bw = 108;
+  ctx.fillStyle='rgba(0,0,0,.66)'; ctx.fillRect(-bw/2,-90,bw,13);
+  ctx.fillStyle = vida > .6 ? '#06d6a0' : (vida > .3 ? '#ffb703' : '#f72585');
+  ctx.fillRect(-bw/2,-90,bw*vida,13);
+  ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1.6;
+  ctx.strokeRect(-bw/2,-90,bw,13);
+
+  // Cuerpo
+  const pulso = 1 + Math.sin(reloj*3+i.f)*.04 + i.golpe*.14;
+  ctx.save(); ctx.scale(pulso,pulso);
+  const g = ctx.createRadialGradient(-10,-10,4,0,0,i.r);
+  g.addColorStop(0,'#5a2a86'); g.addColorStop(.6,'#2b0f47'); g.addColorStop(1,'#12061f');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,i.r,0,6.283); ctx.fill();
+  ctx.strokeStyle = i.golpe>.1 ? '#fff' : 'rgba(190,120,255,.85)';
+  ctx.lineWidth = 4+i.golpe*4;
+  ctx.shadowBlur = 22; ctx.shadowColor='#9b4dff';
+  ctx.beginPath(); ctx.arc(0,0,i.r,0,6.283); ctx.stroke();
+  ctx.shadowBlur=0; ctx.restore();
+
+  // El número: es lo que hay que poder leer sin esfuerzo
+  const txt = String(i.valor);
+  ctx.font='900 56px system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  const tw = ctx.measureText(txt).width;
+  ctx.fillStyle='rgba(0,0,0,.5)';
+  ctx.beginPath(); ctx.roundRect(-tw/2-13,-26,tw+26,52,12); ctx.fill();
+  ctx.lineJoin='round'; ctx.strokeStyle='rgba(0,0,0,.9)'; ctx.lineWidth=7;
+  ctx.strokeText(txt,0,2);
+  ctx.fillStyle = i.valor === 0 ? '#06d6a0' : '#fff';
+  ctx.fillText(txt,0,2);
+  ctx.restore();
+}
+
+function dibujarTorre(t){
+  ctx.save();
+  ctx.strokeStyle = t.color+'1c'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(t.x, VIA_Y, t.alcance, t.alcance*.42, 0, 0, 6.283); ctx.stroke();
+  ctx.restore();
+  ctx.save(); ctx.translate(t.x, t.baseY); ctx.lineJoin='round';
+  if(t.tipo==='frost') torreHielo(t); else torreVector(t);
+  placa(t.etiqueta, t.color, t.placa);
+  ctx.restore();
+}
+
+function dibujar(){
+  fondo();
+  via();
+
+  // Torres por encima de la vía se dibujan antes que los invasores
+  const detras = TORRES.filter(t => t.baseY < VIA_Y);
+  const delante = TORRES.filter(t => t.baseY >= VIA_Y);
+  detras.forEach(dibujarTorre);
+  invasores.forEach(dibujarInvasor);
+  delante.forEach(dibujarTorre);
+
+  for(const p of disparos){
+    ctx.save();
+    ctx.shadowBlur=16; ctx.shadowColor=p.color; ctx.fillStyle=p.color;
+    if(p.hielo){
+      ctx.translate(p.x,p.y); ctx.rotate(reloj*7);
+      ctx.beginPath();
+      for(let k=0;k<6;k++){
+        const a=(k/6)*6.283, r=k%2?4:11;
+        k?ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r):ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);
+      }
+      ctx.closePath(); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(p.x,p.y,7,0,6.283); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  for(const c of chispas){
+    ctx.globalAlpha=Math.max(0,c.vida); ctx.fillStyle=c.color;
+    ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,6.283); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  for(const t of textos){
+    ctx.globalAlpha=Math.max(0,Math.min(1,t.vida));
+    ctx.font=`900 ${t.grande?64:38}px system-ui,sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.lineJoin='round'; ctx.strokeStyle='rgba(0,0,0,.85)'; ctx.lineWidth=6;
+    ctx.strokeText(t.txt,t.x,t.y);
+    ctx.fillStyle=t.color; ctx.fillText(t.txt,t.x,t.y);
+  }
+  ctx.globalAlpha=1;
+
+  // Viñeta para que el borde se funda con la página
+  const v = ctx.createRadialGradient(W/2,H*.45,H*.42,W/2,H*.45,W*.80);
+  v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,"rgba(0,0,0,.42)");
+  ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
+}
+
+/* ── Bucle ─────────────────────────────────────────────────────────── */
+let previo = performance.now();
+function bucle(ahora){
+  const dt = Math.min(.05, (ahora-previo)/1000); previo = ahora;
+  actualizar(dt); dibujar();
+  requestAnimationFrame(bucle);
+}
+ajustar();
+// Arranque con algo ya en pantalla, para que nunca se vea vacío
+nuevoInvasor(); invasores[0].x = 300;
+if(lento){ actualizar(.016); dibujar(); }
+else requestAnimationFrame(bucle);
+</script>
+</body>
+</html>
