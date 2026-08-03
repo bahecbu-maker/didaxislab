@@ -105,6 +105,20 @@
 
   a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none!important;}}
+
+  .bridge{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:34px;
+    background:linear-gradient(135deg,#15234A,#1B2A5A);border-radius:var(--radius);
+    padding:26px;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s;}
+  .bridge:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+  .bridge-ico{flex:0 0 auto;width:54px;height:54px;border-radius:13px;background:rgba(11,192,216,.18);
+    display:flex;align-items:center;justify-content:center;color:#0BC0D8;}
+  .bridge-ico svg{width:28px;height:28px;}
+  .bridge-text{flex:1;min-width:240px;}
+  .bridge-text h2{color:#fff;font-size:21px;font-weight:800;}
+  .bridge-text p{color:rgba(226,236,248,.78);font-size:14.5px;margin-top:5px;}
+  .bridge-go{flex:0 0 auto;color:#fff;font-weight:700;font-size:15px;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);padding:10px 18px;border-radius:10px;white-space:nowrap;}
+  .bridge:hover .bridge-go{background:rgba(11,192,216,.25);border-color:#0BC0D8;}
 </style>
 </head>
 <body>
@@ -122,9 +136,10 @@
       </a>
       <nav class="nav">
         <a href="/">Inicio</a>
+        <a href="/recursos/" aria-current="page">Recursos</a>
         <a href="/juegos/">Juegos</a>
         <a href="/#por-que">Por qué</a>
-        <a href="/#proyecto">El proyecto</a>
+        <a class="nav-cta" href="/#proyecto">El proyecto</a>
       </nav>
     </div>
   </header>
@@ -269,6 +284,22 @@
 
     </div>
     <p class="catalog-note">Más laboratorios en camino.</p>
+  
+    <a class="bridge" href="/juegos/">
+      <span class="bridge-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="2" y="6" width="20" height="12" rx="6"/>
+          <line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/>
+          <circle cx="16" cy="11" r="1.1" fill="currentColor" stroke="none"/>
+          <circle cx="18.5" cy="13.5" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <div class="bridge-text">
+        <h2>¿Y si además juegan?</h2>
+        <p>Tres juegos donde la operación es la mecánica: enteros, funciones y deducción numérica.</p>
+      </div>
+      <span class="bridge-go">Ver los juegos →</span>
+    </a>
   </main>
 
   <footer>
