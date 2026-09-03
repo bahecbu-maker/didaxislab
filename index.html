@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Didaxis Lab — Simuladores interactivos de matemáticas, abiertos</title>
+<meta name="description" content="Laboratorios de matemáticas interactivos, abiertos y gratuitos para profesores y estudiantes. Manipula, explora y aprende. Alineados a los DBA de Colombia y embebibles en cualquier plataforma.">
+
+<!-- ============ METADATOS ============ -->
+<link rel="canonical" href="https://didaxislab.com/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="author" content="Héctor Enrique Banquez Buendía">
+<meta name="keywords" content="simuladores de matemáticas, recursos educativos abiertos, fracciones, área, perímetro, teorema de Pitágoras, Saber 11, ICFES, DBA, Moodle, matemáticas, Colombia">
+<meta name="theme-color" content="#1B2A5A">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Didaxis Lab">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Didaxis Lab — Simuladores interactivos de matemáticas">
+<meta property="og:description" content="Matemática que se manipula: simuladores interactivos, abiertos y gratuitos, listos para tu clase.">
+<meta property="og:url" content="https://didaxislab.com/">
+<meta property="og:image" content="https://didaxislab.com/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Didaxis Lab — Simuladores interactivos de matemáticas">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Didaxis Lab — Simuladores interactivos de matemáticas">
+<meta name="twitter:description" content="Matemática que se manipula: simuladores interactivos, abiertos y gratuitos, listos para tu clase.">
+<meta name="twitter:image" content="https://didaxislab.com/og-home.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://didaxislab.com/#website",
+      "name": "Didaxis Lab",
+      "url": "https://didaxislab.com/",
+      "description": "Simuladores interactivos de matemáticas, abiertos y gratuitos para profesores y estudiantes.",
+      "inLanguage": "es-CO",
+      "publisher": { "@id": "https://didaxislab.com/#autor" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://didaxislab.com/#autor",
+      "name": "Héctor Enrique Banquez Buendía",
+      "alternateName": "Héctor Banquez",
+      "jobTitle": "Docente de matemáticas e investigador en educación matemática",
+      "identifier": "https://orcid.org/0009-0007-6705-0407",
+      "sameAs": ["https://orcid.org/0009-0007-6705-0407"]
+    },
+    {
+      "@type": "Collection",
+      "@id": "https://didaxislab.com/#coleccion",
+      "name": "Laboratorios interactivos de Didaxis Lab",
+      "description": "Colección de simuladores de matemáticas de archivo único, con guía docente y evaluación formativa, alineados a los Derechos Básicos de Aprendizaje de Colombia.",
+      "url": "https://didaxislab.com/#recursos",
+      "inLanguage": "es-CO",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "isAccessibleForFree": true,
+      "creator": { "@id": "https://didaxislab.com/#autor" },
+      "hasPart": [
+        {
+          "@type": "LearningResource",
+          "name": "Fracciones Vivas",
+          "url": "https://didaxislab.com/recursos/fracciones-vivas/",
+          "description": "Cuatro representaciones sincronizadas de una misma fracción: región circular, barra, conjunto discreto y recta numérica.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 3.º a 7.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Interpretar la fracción como relación parte-todo, como cociente y como punto de la recta numérica.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento numérico: fracciones y equivalencias" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Área vs Perímetro",
+          "url": "https://didaxislab.com/recursos/area-vs-perimetro/",
+          "description": "Deformación de un rectángulo con perímetro constante para constatar que el área varía de forma independiente.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 3.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Describir y argumentar relaciones entre el perímetro y el área de una figura cuando se fija una de las dos medidas.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento métrico: relación entre perímetro y área" },
+            { "@type": "AlignmentObject", "alignmentType": "assesses", "educationalFramework": "Saber 11 (ICFES)", "targetName": "Competencia de argumentación" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Pitágoras Interactivo",
+          "url": "https://didaxislab.com/recursos/pitagoras/",
+          "description": "Equivalencia entre las áreas de los cuadrados construidos sobre los lados de un triángulo rectángulo, con ruptura de la hipótesis del ángulo recto.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 7.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Reconocer y justificar la relación entre las medidas de los lados de un triángulo rectángulo por equivalencia de áreas.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento métrico-espacial: teorema de Pitágoras" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Función Cuadrática",
+          "url": "https://didaxislab.com/recursos/funcion-cuadratica/",
+          "description": "Efecto de los parámetros a, b y c sobre la parábola, el vértice, las raíces y el eje de simetría.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 9.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Identificar y analizar la relación entre los parámetros de una función cuadrática y su representación gráfica.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento variacional: función cuadrática" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Círculo Unitario y Ondas",
+          "url": "https://didaxislab.com/recursos/circulo-ondas/",
+          "description": "Tránsito del movimiento circular a la función periódica: cómo el giro genera el seno, el coseno y la tangente.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 10.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Comprender las razones trigonométricas a partir del círculo unitario y modelar fenómenos periódicos.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento variacional: funciones trigonométricas" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Azar y Probabilidad",
+          "url": "https://didaxislab.com/recursos/azar-probabilidad/",
+          "description": "Contraste entre probabilidad teórica y frecuencia relativa en series largas, con monedas, dados, árboles y ruletas.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 6.º a 10.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Comparar la probabilidad teórica con la frecuencia relativa observada y reconocer la ley de los grandes números.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento aleatorio: probabilidad teórica y frecuencial" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --navy:#1B2A5A; --navy-dark:#0F1C3F; --cyan:#0BC0D8; --cyan-soft:#E2F7FA;
+    --cyan-deep:#0996AA; --amber:#C77B12; --amber-soft:#FBF1DF;
+    --ink:#1B2A5A; --muted:#5B6B82; --line:#E6E9EF; --bg:#FAFBFC; --panel:#FFFFFF;
+    --grid:rgba(11,192,216,0.06); --radius:16px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --shadow-lg:0 12px 40px rgba(22,36,58,.12); --maxw:1080px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--navy);text-decoration:none;}
+  h1,h2,h3{letter-spacing:-.02em;color:var(--navy);}
+  section{scroll-margin-top:78px;}
+
+  /* ---------- Topbar ---------- */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:30;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .nav{display:flex;align-items:center;gap:22px;}
+  .nav a{font-size:14.5px;font-weight:600;color:var(--muted);}
+  .nav a:hover{color:var(--navy);}
+  .nav .nav-cta{color:#fff;background:var(--navy);padding:8px 15px;border-radius:9px;}
+  .nav .nav-cta:hover{background:var(--navy-dark);color:#fff;}
+  @media (max-width:760px){ .nav a:not(.nav-cta){display:none;} }
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;overflow:hidden;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:28px 28px;}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;padding:70px 22px 56px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .hero h1{font-size:clamp(38px,6.4vw,62px);line-height:1.06;font-weight:800;max-width:16ch;}
+  .hero .lead{margin-top:20px;font-size:clamp(17px,2.4vw,20px);color:var(--muted);max-width:58ch;}
+  .hero-cta{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15.5px;font-weight:700;padding:13px 22px;border-radius:11px;transition:.18s;}
+  .btn-primary{color:#fff;background:var(--navy);}
+  .btn-primary:hover{background:var(--navy-dark);transform:translateY(-1px);}
+  .btn-ghost{color:var(--navy);background:var(--panel);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+
+  /* ---------- Cifras ---------- */
+  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel);}
+  .stats-inner{max-width:var(--maxw);margin:0 auto;padding:20px 22px;display:grid;
+    grid-template-columns:repeat(5,1fr);gap:14px;}
+  .stat{display:flex;flex-direction:column;gap:1px;}
+  .stat b{font-size:23px;font-weight:800;line-height:1.1;color:var(--navy);font-variant-numeric:tabular-nums;}
+  .stat span{font-size:12.5px;color:var(--muted);line-height:1.35;}
+  @media (max-width:760px){ .stats-inner{grid-template-columns:repeat(3,1fr);gap:16px 12px;} .stat:last-child{grid-column:span 3;} }
+  @media (max-width:420px){ .stats-inner{grid-template-columns:repeat(2,1fr);} .stat:last-child{grid-column:span 2;} }
+
+  /* ---------- Secciones ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:60px 22px;}
+  .sec-head{margin-bottom:24px;}
+  .sec-head h2{font-size:clamp(26px,3.6vw,34px);font-weight:800;}
+  .sec-head p{margin-top:10px;color:var(--muted);font-size:16px;max-width:64ch;}
+
+  /* ---------- Filtros ---------- */
+  .filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px 8px;margin-bottom:22px;
+    padding-bottom:18px;border-bottom:1px solid var(--line);}
+  .fgroup{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+  .filters .flabel{font-size:13px;font-weight:700;color:var(--muted);margin-right:2px;}
+  .fbtn{font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);background:var(--panel);
+    border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;transition:.16s;}
+  .fbtn:hover{border-color:var(--cyan);color:var(--navy);}
+  .fbtn[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .fsep{width:1px;height:22px;background:var(--line);margin:0 6px;}
+  .fcount{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  @media (max-width:720px){ .filters{gap:12px 8px;} .fgroup{width:100%;}
+    .fcount{margin-left:0;width:100%;} .fsep{display:none;} }
+
+  /* ---------- Catálogo ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:600px){ .grid{grid-template-columns:1fr;} }
+  .card{position:relative;display:flex;flex-direction:column;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+    transition:box-shadow .18s,border-color .18s;}
+  .card:hover{box-shadow:var(--shadow-lg);border-color:#D4DAE6;}
+  .card[hidden]{display:none;}
+
+  /* La portada es interactiva: queda por encima del enlace extendido */
+  .cover{position:relative;z-index:2;height:158px;background:#F4FAFB;
+    border-bottom:1px solid var(--line);cursor:ew-resize;touch-action:pan-y;
+    display:block;overflow:hidden;}
+  .cover[data-preview="azar"]{cursor:pointer;}
+  .cover svg{display:block;width:100%;height:100%;}
+  .cover:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px;}
+  .hint{position:absolute;right:9px;top:9px;font-size:10.5px;font-weight:700;letter-spacing:.03em;
+    color:var(--navy);background:rgba(255,255,255,.86);border:1px solid var(--line);
+    border-radius:999px;padding:3px 9px;pointer-events:none;transition:opacity .3s;}
+  .cover[data-touched="1"] .hint{opacity:0;}
+
+  .card-body{padding:17px 20px 20px;display:flex;flex-direction:column;flex:1;}
+  .chip{align-self:flex-start;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--navy);margin-bottom:10px;}
+  .card-body h3{font-size:20px;font-weight:800;line-height:1.2;}
+  .card-link{color:var(--navy);}
+  .card-link::after{content:"";position:absolute;inset:0;z-index:1;}
+  .card:hover .card-link{color:var(--cyan-deep);}
+  .card-body p{margin-top:8px;color:var(--muted);font-size:14.5px;flex:1;}
+  .card-foot{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .card-grades{font-size:12.5px;font-weight:600;color:var(--muted);background:#EEF1F6;padding:4px 10px;border-radius:7px;}
+  .card-open{font-size:14.5px;font-weight:700;color:var(--navy);display:inline-flex;align-items:center;gap:5px;}
+  .card:hover .card-open{color:var(--cyan-deep);}
+  .catalog-note{margin-top:24px;font-size:14px;color:var(--muted);text-align:center;}
+  .empty{display:none;padding:40px 4px;text-align:center;color:var(--muted);font-size:15px;}
+  .empty.on{display:block;}
+
+  /* ---------- Features ---------- */
+  .features{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px 34px;}
+  @media (max-width:820px){ .feat-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:540px){ .feat-grid{grid-template-columns:1fr;} }
+  .feat{display:flex;gap:14px;align-items:flex-start;}
+  .feat-ico{flex:0 0 auto;width:42px;height:42px;border-radius:11px;background:var(--cyan-soft);
+    display:flex;align-items:center;justify-content:center;color:var(--navy);}
+  .feat-ico svg{width:22px;height:22px;}
+  .feat h3{font-size:16.5px;font-weight:700;margin-bottom:3px;}
+  .feat p{font-size:14px;color:var(--muted);}
+
+  /* ---------- Incrustar ---------- */
+  .embed{display:grid;grid-template-columns:1fr 1.15fr;gap:34px;align-items:start;}
+  @media (max-width:820px){ .embed{grid-template-columns:1fr;gap:22px;} }
+  .embed-copy p{color:var(--muted);font-size:15.5px;margin-top:10px;}
+  .embed-steps{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:11px;counter-reset:s;}
+  .embed-steps li{position:relative;padding-left:32px;font-size:14.5px;color:var(--ink);counter-increment:s;}
+  .embed-steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:21px;height:21px;
+    border-radius:50%;background:var(--cyan-soft);color:var(--navy);font-size:11.5px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;}
+  .codebox{background:var(--navy-dark);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);}
+  .codebox-top{display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.1);}
+  .codebox-top select{flex:1;min-width:0;font:inherit;font-size:13.5px;font-weight:600;color:#DCE9F7;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;
+    padding:7px 9px;cursor:pointer;}
+  .codebox-top select option{color:#12203f;}
+  .copybtn{font:inherit;font-size:13px;font-weight:700;color:#08243C;background:var(--cyan);
+    border:0;border-radius:8px;padding:8px 13px;cursor:pointer;transition:.16s;white-space:nowrap;}
+  .copybtn:hover{background:#3ED6E8;}
+  .copybtn.done{background:#8FE6C0;}
+  .codebox pre{margin:0;padding:15px 14px 17px;overflow-x:auto;}
+  .codebox code{font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#BFE9F2;white-space:pre;}
+  .embed-note{margin-top:12px;font-size:13px;color:var(--muted);}
+
+  /* ---------- Capa académica ---------- */
+  .academic{background:var(--panel);border-top:1px solid var(--line);}
+  .acad-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:34px;align-items:start;}
+  @media (max-width:860px){ .acad-grid{grid-template-columns:1fr;gap:26px;} }
+  .acad-copy p{font-size:16px;color:var(--muted);margin-top:11px;max-width:60ch;}
+  .acad-list{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:2px;}
+  .acad-list a{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:12px 4px;border-bottom:1px solid var(--line);font-size:15px;font-weight:600;color:var(--navy);}
+  .acad-list a:first-child{border-top:1px solid var(--line);}
+  .acad-list a:hover{color:var(--cyan-deep);}
+  .acad-list .meta{font-size:12.5px;font-weight:600;color:var(--muted);}
+  .citebox{background:var(--amber-soft);border:1px solid #EFDCBC;border-radius:14px;padding:18px 18px 16px;}
+  .citebox h3{font-size:15px;font-weight:800;margin-bottom:4px;}
+  .citebox .cite-sub{font-size:13px;color:var(--muted);margin-bottom:13px;}
+  .citebox blockquote{font-family:var(--mono);font-size:12.5px;line-height:1.75;color:#4A3A20;
+    background:rgba(255,255,255,.7);border-radius:9px;padding:13px 13px;margin-bottom:13px;
+    word-break:break-word;}
+  .citebox .copybtn{background:var(--amber);color:#fff;}
+  .citebox .copybtn:hover{background:#A96409;}
+  .citebox .copybtn.done{background:#6F8F4F;}
+  .doi-note{margin-top:11px;font-size:12px;color:#8A7247;}
+
+  /* ---------- Proyecto ---------- */
+  .about{max-width:740px;}
+  .about p{font-size:16.5px;color:var(--ink);margin-bottom:14px;}
+  .about .muted{color:var(--muted);font-size:15px;}
+  .about a{color:var(--navy);font-weight:600;border-bottom:1px solid var(--cyan);}
+  .thesis{margin:26px 0 22px;padding:18px 0 18px 22px;border-left:3px solid var(--cyan);
+    font-size:19px;line-height:1.45;font-weight:600;color:var(--navy);max-width:46ch;}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);background:var(--panel);}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:34px 22px;display:flex;
+    align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .foot-brand{display:flex;flex-direction:column;gap:8px;max-width:320px;}
+  .foot-brand .row{display:flex;align-items:center;gap:9px;}
+  .foot-brand .logo-mark{width:26px;height:26px;}
+  .foot-brand .name{font-weight:800;font-size:17px;color:var(--navy);}
+  .foot-brand small{color:var(--muted);font-size:13px;line-height:1.5;}
+  .foot-links{display:flex;gap:44px;flex-wrap:wrap;}
+  .foot-col h4{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .foot-col a{display:block;font-size:14px;color:var(--ink);margin-bottom:7px;}
+  .foot-col a:hover{color:var(--cyan-deep);}
+  .foot-bottom{border-top:1px solid var(--line);}
+  .foot-bottom div{max-width:var(--maxw);margin:0 auto;padding:16px 22px;display:flex;justify-content:space-between;
+    gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);}
+
+  a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+
+  /* ---------- Juegos ---------- */
+  .games-wrap{padding:10px 0 46px;}
+  .games-band{position:relative;overflow:hidden;border-radius:var(--radius);
+    background:linear-gradient(135deg,#15234A 0%,#1B2A5A 52%,#122048 100%);
+    display:grid;grid-template-columns:1.02fr .98fr;gap:26px;align-items:center;
+    padding:38px 8px 38px 38px;box-shadow:var(--shadow-lg);}
+  .games-band::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(11,192,216,.07) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(11,192,216,.07) 1px,transparent 1px);
+    background-size:30px 30px;
+    -webkit-mask-image:radial-gradient(ellipse at 30% 50%,#000 10%,transparent 72%);
+            mask-image:radial-gradient(ellipse at 30% 50%,#000 10%,transparent 72%);}
+  .games-copy{position:relative;z-index:2;max-width:52ch;}
+  .games-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:#8FD9E8;margin-bottom:12px;}
+  .games-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .games-band h2{color:#fff;font-size:clamp(24px,3.4vw,33px);line-height:1.14;font-weight:800;}
+  .games-band > .games-copy > p{margin-top:12px;color:rgba(223,233,247,.80);font-size:15.5px;}
+  .games-topics{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .games-topics li{font-size:12.5px;font-weight:600;color:#DDF4F9;
+    background:rgba(11,192,216,.16);border:1px solid rgba(11,192,216,.34);
+    padding:5px 12px;border-radius:999px;}
+  .games-btn{display:inline-flex;align-items:center;gap:9px;margin-top:24px;
+    background:var(--cyan);color:#08243C;font-weight:800;font-size:15.5px;
+    padding:13px 22px;border-radius:11px;transition:.18s;}
+  .games-btn:hover{background:#3ED6E8;color:#08243C;transform:translateY(-2px);}
+  .games-btn svg{width:16px;height:16px;}
+  .games-note{margin-top:14px;font-size:12.5px;color:rgba(200,215,235,.55);}
+
+  .games-fan{position:relative;z-index:1;height:250px;min-width:0;}
+  .fan-card{position:absolute;top:50%;left:6%;width:76%;aspect-ratio:16/9;
+    border-radius:13px;overflow:hidden;display:block;
+    border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 34px rgba(4,10,26,.5);
+    transition:transform .38s cubic-bezier(.22,1,.36,1);}
+  .fan-card svg{width:100%;height:100%;display:block;}
+  .fan-1{transform:translateY(-50%) rotate(-4deg);z-index:3;}
+  .fan-2{transform:translate(9%,-56%) rotate(4.5deg);z-index:2;}
+  .fan-3{transform:translate(17%,-62%) rotate(12deg);z-index:1;}
+  .games-band:hover .fan-1{transform:translate(-3%,-46%) rotate(-8deg);}
+  .games-band:hover .fan-2{transform:translate(11%,-58%) rotate(5deg);}
+  .games-band:hover .fan-3{transform:translate(24%,-68%) rotate(16deg);}
+
+  @media (max-width:900px){
+    .games-band{grid-template-columns:1fr;padding:32px 24px 26px;gap:6px;}
+    .games-copy{max-width:none;}
+    .games-fan{height:210px;margin-top:14px;}
+    .fan-card{width:64%;left:2%;}
+  }
+  @media (max-width:560px){
+    .games-fan{height:170px;}
+    .fan-card{width:72%;}
+    .games-btn{width:100%;justify-content:center;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none!important;}
+    .fan-card{transition:none;} .games-btn:hover{transform:none;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= TOPBAR ================= -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="Didaxis Lab — inicio">
+        <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </a>
+      <nav class="nav">
+        <a href="#recursos">Recursos</a>
+        <a href="/juegos/">Juegos</a>
+        <a href="#por-que">Por qué</a>
+        <a href="#fundamentacion">Fundamentación</a>
+        <a class="nav-cta" href="#recursos">Explorar</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow">Recursos educativos abiertos</span>
+      <h1>Matemática que se manipula.</h1>
+      <p class="lead">Simuladores interactivos de matemáticas — abiertos, gratuitos y sin registro.
+         Pensados para que profesores y estudiantes exploren, midan y descubran.
+         Listos para incrustar en Moodle o cualquier plataforma.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#recursos">Ver los recursos →</a>
+        <a class="btn btn-ghost" href="#por-que">Cómo funciona</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CIFRAS ================= -->
+  <section class="stats" aria-label="El proyecto en cifras">
+    <div class="stats-inner">
+      <div class="stat"><b data-count="6">6</b><span>laboratorios<br>publicados</span></div>
+      <div class="stat"><b data-count="3">3</b><span>juegos<br>matemáticos</span></div>
+      <div class="stat"><b data-count="5">5</b><span>pensamientos<br>matemáticos</span></div>
+      <div class="stat"><b>3.º&nbsp;a&nbsp;11.º</b><span>cobertura<br>por grados</span></div>
+      <div class="stat"><b data-count="0">0</b><span>cuentas, cobros o<br>datos personales</span></div>
+    </div>
+  </section>
+
+  <!-- ================= CATÁLOGO ================= -->
+  <section id="recursos" class="wrap">
+    <div class="sec-head">
+      <h2>Laboratorios interactivos</h2>
+      <p>Cada uno trae el simulador, preguntas tipo Saber 11 con retroalimentación y una guía docente
+         descargable. Las portadas de abajo funcionan: arrástralas para ver de qué se trata antes de entrar.</p>
+    </div>
+
+    <div class="filters" role="group" aria-label="Filtrar laboratorios">
+      <div class="fgroup">
+        <span class="flabel">Pensamiento</span>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="todos" aria-pressed="true">Todos</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="numerico" aria-pressed="false">Numérico</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="metrico" aria-pressed="false">Métrico</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="variacional" aria-pressed="false">Variacional</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="aleatorio" aria-pressed="false">Aleatorio</button>
+      </div>
+      <span class="fsep" aria-hidden="true"></span>
+      <div class="fgroup">
+        <span class="flabel">Grados</span>
+        <button class="fbtn" type="button" data-filter="grado" data-value="todos" aria-pressed="true">Todos</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="3" aria-pressed="false">3.º a 5.º</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="6" aria-pressed="false">6.º a 9.º</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="10" aria-pressed="false">10.º y 11.º</button>
+      </div>
+      <span class="fcount" id="fcount" role="status" aria-live="polite">6 de 6 laboratorios</span>
+    </div>
+
+    <div class="grid" id="grid">
+
+      <!-- Fracciones Vivas -->
+      <article class="card" data-pensamiento="numerico" data-min="3" data-max="7">
+        <div class="cover" data-preview="fracciones" tabindex="0" role="slider"
+             aria-label="Vista previa de Fracciones Vivas: cambia el numerador"
+             aria-valuemin="0" aria-valuemax="8" aria-valuenow="5" aria-valuetext="cinco octavos">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g class="pv-pie" transform="translate(56,80)"></g>
+            <circle cx="56" cy="80" r="41" fill="none" stroke="#1B2A5A" stroke-width="2.4"/>
+            <g font-family="inherit" text-anchor="middle" fill="#1B2A5A" font-weight="800">
+              <text class="pv-num" x="132" y="72" font-size="27">5</text>
+              <text class="pv-den" x="132" y="110" font-size="27">8</text>
+            </g>
+            <line x1="116" y1="80" x2="148" y2="80" stroke="#1B2A5A" stroke-width="2.6" stroke-linecap="round"/>
+            <g class="pv-bar" transform="translate(172,46)"></g>
+            <line x1="172" y1="112" x2="284" y2="112" stroke="#9FD9E4" stroke-width="2"/>
+            <g class="pv-ticks"></g>
+            <circle class="pv-dot" cx="242" cy="112" r="5.5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <g font-size="9.5" fill="#5B6B82" font-family="inherit">
+              <text x="172" y="130" text-anchor="middle">0</text>
+              <text x="284" y="130" text-anchor="middle">1</text>
+            </g>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento numérico</span>
+          <h3><a class="card-link" href="/recursos/fracciones-vivas/">Fracciones Vivas</a></h3>
+          <p>Manipula pizzas, barras, conjuntos y la recta numérica sincronizados en tiempo real para
+             entender qué es —de verdad— una fracción.</p>
+          <div class="card-foot">
+            <span class="card-grades">3.° a 7.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Área vs Perímetro -->
+      <article class="card" data-pensamiento="metrico" data-min="3" data-max="11">
+        <div class="cover" data-preview="area" tabindex="0" role="slider"
+             aria-label="Vista previa de Área vs Perímetro: deforma el rectángulo manteniendo el perímetro"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1">
+              <path d="M0 30h180M0 55h180M0 80h180M0 105h180M0 130h180"/>
+              <path d="M30 0v158M55 0v158M80 0v158M105 0v158M130 0v158M155 0v158"/>
+            </g>
+            <rect class="pv-rect" x="60" y="48" width="62" height="62" rx="2"
+                  fill="rgba(11,192,216,.22)" stroke="#1B2A5A" stroke-width="3"/>
+            <g font-family="inherit" font-size="10" fill="#5B6B82" text-anchor="middle">
+              <text class="pv-wlab" x="91" y="126">10</text>
+              <text class="pv-hlab" x="48" y="82">10</text>
+            </g>
+            <line x1="192" y1="22" x2="192" y2="136" stroke="#E6E9EF" stroke-width="1.5"/>
+            <g font-family="inherit">
+              <text x="208" y="46" font-size="10.5" fill="#5B6B82" font-weight="700">Perímetro</text>
+              <text x="208" y="72" font-size="25" fill="#5B6B82" font-weight="800">40</text>
+              <rect x="248" y="54" width="34" height="17" rx="8.5" fill="#EEF1F6"/>
+              <text x="265" y="66" font-size="9.5" fill="#5B6B82" font-weight="700" text-anchor="middle">fijo</text>
+              <text x="208" y="102" font-size="10.5" fill="#0996AA" font-weight="700">Área</text>
+              <text class="pv-area" x="208" y="128" font-size="25" fill="#0996AA" font-weight="800">100</text>
+            </g>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Geometría y medición</span>
+          <h3><a class="card-link" href="/recursos/area-vs-perimetro/">Área vs Perímetro</a></h3>
+          <p>Manipula un rectángulo y descubre por exploración por qué un mayor perímetro no siempre
+             implica mayor área.</p>
+          <div class="card-foot">
+            <span class="card-grades">3.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Pitágoras Interactivo -->
+      <article class="card" data-pensamiento="metrico" data-min="7" data-max="11">
+        <div class="cover" data-preview="pitagoras" tabindex="0" role="slider"
+             aria-label="Vista previa de Pitágoras Interactivo: cambia la forma del triángulo"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <path class="pv-tri" d="M20 130 L20 74 L86 130 Z" fill="#D6EEF3" stroke="#1B2A5A" stroke-width="2.6" stroke-linejoin="round"/>
+            <path class="pv-sq" d="M20 118 h12 v12 h-12 Z" fill="none" stroke="#0996AA" stroke-width="2"/>
+            <g font-family="inherit" font-size="10.5" font-weight="700">
+              <text class="pv-la" x="12" y="102" fill="#0996AA" text-anchor="end">a</text>
+              <text x="53" y="146" fill="#1B2A5A" text-anchor="middle">b</text>
+              <text class="pv-lc" x="60" y="92" fill="#C77B12" text-anchor="middle">c</text>
+            </g>
+            <g font-family="inherit" font-size="9.5" fill="#5B6B82" font-weight="700">
+              <text x="118" y="50">a² + b²</text>
+              <text x="118" y="106">c²</text>
+            </g>
+            <rect class="pv-a2" x="118" y="56" width="40" height="20" rx="3" fill="#0BC0D8"/>
+            <rect class="pv-b2" x="158" y="56" width="60" height="20" rx="3" fill="#1B2A5A" opacity=".78"/>
+            <rect class="pv-c2" x="118" y="112" width="100" height="20" rx="3" fill="#C77B12" opacity=".85"/>
+            <text class="pv-eq" x="118" y="148" font-family="inherit" font-size="11" fill="#1B2A5A" font-weight="700">36,0 + 36,0 = 72,0</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Geometría y medición</span>
+          <h3><a class="card-link" href="/recursos/pitagoras/">Pitágoras Interactivo</a></h3>
+          <p>Arrastra los vértices de un triángulo rectángulo y descubre, por equivalencia entre áreas,
+             por qué a² + b² = c².</p>
+          <div class="card-foot">
+            <span class="card-grades">7.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Función Cuadrática -->
+      <article class="card" data-pensamiento="variacional" data-min="9" data-max="11">
+        <div class="cover" data-preview="cuadratica" tabindex="0" role="slider"
+             aria-label="Vista previa de Función Cuadrática: cambia el parámetro a"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="72">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <defs><clipPath id="pvqClip"><rect x="8" y="6" width="284" height="118"/></clipPath></defs>
+            <g stroke="#DCEDF1" stroke-width="1">
+              <path d="M8 30h284M8 104h284M104 6v118M196 6v118"/>
+            </g>
+            <g stroke="#9FD9E4" stroke-width="2"><line x1="8" y1="72" x2="292" y2="72"/><line x1="150" y1="6" x2="150" y2="124"/></g>
+            <g clip-path="url(#pvqClip)">
+              <path class="pv-par" d="" fill="none" stroke="#1B2A5A" stroke-width="3.4" stroke-linecap="round"/>
+            </g>
+            <circle cx="150" cy="72" r="5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <text class="pv-alab" x="14" y="148" font-family="inherit" font-size="13" font-weight="800"
+                  fill="#1B2A5A">y = 1,20 x²</text>
+            <text class="pv-aconc" x="286" y="148" font-family="inherit" font-size="10.5" font-weight="700"
+                  fill="#5B6B82" text-anchor="end">abre hacia arriba</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento variacional</span>
+          <h3><a class="card-link" href="/recursos/funcion-cuadratica/">Función Cuadrática</a></h3>
+          <p>Mueve los parámetros a, b y c y observa en tiempo real cómo cambian la parábola, el vértice,
+             las raíces y el eje de simetría.</p>
+          <div class="card-foot">
+            <span class="card-grades">9.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Círculo Unitario y Ondas -->
+      <article class="card" data-pensamiento="variacional" data-min="10" data-max="11">
+        <div class="cover" data-preview="circulo" tabindex="0" role="slider"
+             aria-label="Vista previa de Círculo Unitario y Ondas: gira el ángulo"
+             aria-valuemin="0" aria-valuemax="360" aria-valuenow="60">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1.6"><line x1="8" y1="79" x2="292" y2="79"/><line x1="58" y1="24" x2="58" y2="134"/></g>
+            <circle cx="58" cy="79" r="44" fill="none" stroke="#1B2A5A" stroke-width="2.4"/>
+            <line class="pv-rad" x1="58" y1="79" x2="102" y2="79" stroke="#1B2A5A" stroke-width="2.4"/>
+            <line class="pv-drop" x1="102" y1="79" x2="102" y2="79" stroke="#0996AA" stroke-width="1.8" stroke-dasharray="3 3"/>
+            <line class="pv-link" x1="102" y1="79" x2="118" y2="79" stroke="#0BC0D8" stroke-width="1.4" stroke-dasharray="2 4" opacity=".8"/>
+            <circle class="pv-pt" cx="102" cy="79" r="5.5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <path class="pv-wave" d="" fill="none" stroke="#0BC0D8" stroke-width="3" stroke-linecap="round"/>
+            <circle class="pv-wpt" cx="118" cy="79" r="4.5" fill="#1B2A5A"/>
+            <text class="pv-sin" x="292" y="146" font-family="inherit" font-size="11.5" font-weight="700"
+                  fill="#1B2A5A" text-anchor="end">sen θ = 0,00</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Trigonometría</span>
+          <h3><a class="card-link" href="/recursos/circulo-ondas/">Círculo Unitario y Ondas</a></h3>
+          <p>Manipula el ángulo sobre el círculo unitario y observa cómo nacen el seno, el coseno y la
+             tangente: del giro al ritmo de una onda.</p>
+          <div class="card-foot">
+            <span class="card-grades">10.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Azar y Probabilidad -->
+      <article class="card" data-pensamiento="aleatorio" data-min="6" data-max="10">
+        <div class="cover" data-preview="azar" tabindex="0" role="button"
+             aria-label="Vista previa de Azar y Probabilidad: lanza monedas y observa la convergencia">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1"><path d="M22 34h266M22 106h266"/></g>
+            <line x1="22" y1="70" x2="288" y2="70" stroke="#C77B12" stroke-width="1.6" stroke-dasharray="5 4"/>
+            <text x="288" y="50" font-family="inherit" font-size="9.5" fill="#C77B12"
+                  font-weight="700" text-anchor="end">p = 0,5</text>
+            <polyline class="pv-line" points="" fill="none" stroke="#0BC0D8" stroke-width="2.4"
+                      stroke-linejoin="round" stroke-linecap="round"/>
+            <line x1="22" y1="126" x2="288" y2="126" stroke="#9FD9E4" stroke-width="2"/>
+            <g font-family="inherit" font-size="10.5" font-weight="700" fill="#1B2A5A">
+              <text class="pv-n" x="22" y="146">n = 0</text>
+              <text class="pv-f" x="288" y="146" text-anchor="end">frecuencia = —</text>
+            </g>
+          </svg>
+          <span class="hint">Toca para lanzar</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento aleatorio</span>
+          <h3><a class="card-link" href="/recursos/azar-probabilidad/">Azar y Probabilidad</a></h3>
+          <p>Contrasta la probabilidad teórica y la frecuencial con monedas, dados, árboles y ruletas,
+             y descubre la Ley de los Grandes Números.</p>
+          <div class="card-foot">
+            <span class="card-grades">6.° a 10.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+    <p class="empty" id="empty">Ningún laboratorio coincide con esos filtros todavía. Prueba con otra
+       combinación o mira el catálogo completo.</p>
+    <p class="catalog-note">Más laboratorios en camino.</p>
+  </section>
+
+  <!-- ================= JUEGOS ================= -->
+  <section id="juegos" class="games-wrap">
+    <div class="wrap">
+      <div class="games-band">
+
+        <div class="games-copy">
+          <span class="games-eyebrow">Juegos matemáticos</span>
+          <h2>La operación no va encima del juego. Es el juego.</h2>
+          <p>Para neutralizar a un invasor hay que hallar su opuesto. Para defender la aldea,
+             evaluar una función. Para cruzar el portal, deducir el número a partir de pistas
+             que por separado no bastan.</p>
+          <ul class="games-topics">
+            <li>Números enteros</li>
+            <li>Funciones</li>
+            <li>Deducción numérica</li>
+          </ul>
+          <a class="games-btn" href="/juegos/">
+            Ver los juegos
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <p class="games-note">Tres títulos · Se abren en el navegador · Funcionan sin conexión</p>
+        </div>
+
+        <div class="games-fan" aria-hidden="true">
+          <span class="fan-card fan-3"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <defs><radialGradient id="cvS" cx="50%" cy="45%" r="70%">
+          <stop offset="0" stop-color="#1B0E44"/><stop offset="1" stop-color="#0A0620"/></radialGradient></defs>
+        <rect width="320" height="140" fill="url(#cvS)"/>
+        <g stroke="#35E0F0" stroke-width=".7" opacity=".22">
+          <path d="M0 28h320M0 56h320M0 84h320M0 112h320"/>
+          <path d="M32 0v140M96 0v140M160 0v140M224 0v140M288 0v140"/></g>
+        <circle cx="160" cy="66" r="46" fill="#7B2FF7" opacity=".22"/>
+        <g font-family="system-ui,sans-serif" font-size="13" font-weight="700" text-anchor="middle">
+          <g opacity=".2" fill="#CFE3F2">
+            <rect x="30" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="45" y="66">7</text>
+            <rect x="70" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="85" y="66">13</text>
+            <rect x="220" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="235" y="66">9</text>
+            <rect x="260" y="46" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="275" y="66">5</text>
+            <rect x="110" y="90" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="125" y="110">18</text>
+            <rect x="180" y="90" width="30" height="30" rx="6" fill="#fff" opacity=".07"/><text x="195" y="110">30</text></g>
+          <rect x="140" y="42" width="40" height="40" rx="9" fill="#FF4D9D"/>
+          <text x="160" y="69" font-size="19" fill="#fff">24</text></g>
+        <g font-family="ui-monospace,monospace" font-size="9" fill="#8FD9E8" opacity=".85">
+          <text x="160" y="24" text-anchor="middle">ES PAR · MÚLTIPLO DE 3 · &gt; 10</text></g></svg></span>
+          <span class="fan-card fan-2"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <defs><linearGradient id="cvL" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#0B1430"/><stop offset=".6" stop-color="#132238"/>
+          <stop offset="1" stop-color="#1C2E2A"/></linearGradient></defs>
+        <rect width="320" height="140" fill="url(#cvL)"/>
+        <circle cx="58" cy="34" r="14" fill="#E9F1FF"/><circle cx="53" cy="30" r="3.4" fill="#B7C6E1" opacity=".55"/>
+        <g fill="#DCE9FF"><circle cx="132" cy="20" r="1.3" opacity=".7"/><circle cx="212" cy="34" r="1.1" opacity=".6"/>
+          <circle cx="268" cy="18" r="1.5" opacity=".75"/><circle cx="176" cy="46" r="1" opacity=".5"/></g>
+        <path d="M0 104 L18 62 L36 104 L54 68 L74 104 L96 58 L120 104 L142 74 L164 104 L188 60
+                 L214 104 L238 72 L262 104 L286 66 L310 104 L320 84 L320 140 L0 140Z" fill="#0E2119"/>
+        <path d="M0 118 L26 88 L52 120 L78 92 L108 122 L138 86 L168 122 L198 96 L228 122
+                 L256 90 L286 122 L320 98 L320 140 L0 140Z" fill="#081611"/>
+        <g transform="translate(250,0)">
+          <circle cx="-14" cy="118" r="34" fill="#FFB339" opacity=".16"/>
+          <path d="M-14 122 q-9-16 0-26 q9 10 0 26Z" fill="#FFB339"/>
+          <path d="M-14 122 q-5-10 0-16 q5 6 0 16Z" fill="#FFF0BF"/></g>
+        <g fill="#5C4029">
+          <rect x="212" y="76" width="13" height="60" rx="2"/><rect x="230" y="70" width="13" height="66" rx="2"/>
+          <rect x="248" y="78" width="13" height="58" rx="2"/><rect x="266" y="72" width="13" height="64" rx="2"/>
+          <rect x="284" y="76" width="13" height="60" rx="2"/><rect x="302" y="70" width="13" height="66" rx="2"/></g>
+        <rect x="212" y="96" width="108" height="5" fill="#3D2A1B" opacity=".9"/>
+        <g fill="#6E7480"><ellipse cx="120" cy="122" rx="26" ry="9"/>
+          <circle cx="142" cy="115" r="7"/><path d="M146 108 L152 112 L146 116Z"/>
+          <circle cx="147" cy="114" r="1.6" fill="#FFCF5C"/></g></svg></span>
+          <span class="fan-card fan-1"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <defs><radialGradient id="cvC" cx="50%" cy="42%" r="72%">
+          <stop offset="0" stop-color="#171C3E"/><stop offset="1" stop-color="#07081A"/></radialGradient></defs>
+        <rect width="320" height="140" fill="url(#cvC)"/>
+        <g fill="#DCE9FF"><circle cx="34" cy="26" r="1.5" opacity=".8"/><circle cx="92" cy="16" r="1.1" opacity=".6"/>
+          <circle cx="252" cy="30" r="1.6" opacity=".75"/><circle cx="296" cy="60" r="1.2" opacity=".55"/>
+          <circle cx="62" cy="112" r="1.3" opacity=".6"/><circle cx="200" cy="18" r="1" opacity=".5"/>
+          <circle cx="140" cy="120" r="1.2" opacity=".5"/></g>
+        <rect x="-4" y="58" width="328" height="42" rx="10" fill="#1A1E36" stroke="rgba(140,170,220,.28)"/>
+        <line x1="0" y1="79" x2="320" y2="79" stroke="#F72585" stroke-width="2.6"
+              stroke-dasharray="15 13" opacity=".6"/>
+        <g transform="translate(96,79)">
+          <circle r="25" fill="#2B0F47" stroke="#B478FF" stroke-width="3"/>
+          <text y="9" text-anchor="middle" font-family="system-ui,sans-serif" font-size="26"
+                font-weight="800" fill="#fff">−7</text></g>
+        <g transform="translate(224,102)">
+          <ellipse cy="2" rx="30" ry="11" fill="#212545" stroke="#0BC0D8" stroke-width="1.6"/>
+          <path d="M-6 0 L6 0 L4 -34 L-4 -34 Z" fill="#2C3156"/>
+          <path d="M0 -60 L11 -36 L4 -36 L4 -30 L-4 -30 L-4 -36 L-11 -36 Z" fill="#0BC0D8"/>
+          <rect x="-25" y="-88" width="50" height="24" rx="7" fill="#060814" stroke="#0BC0D8" stroke-width="1.8"/>
+          <text y="-70" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17"
+                font-weight="800" fill="#fff">+7</text></g></svg></span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= POR QUÉ ================= -->
+  <section id="por-que" class="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Pensados para el aula</h2>
+        <p>Cada recurso está hecho para entrar a clase sin fricción: en el navegador, sin cuentas y con todo lo que el docente necesita.</p>
+      </div>
+      <div class="feat-grid">
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0"/></svg></span>
+          <div><h3>Acceso abierto</h3><p>Sin registro ni cuentas. El estudiante entra y empieza a usarlo de inmediato.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v10M8 9l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span>
+          <div><h3>Funcionan sin internet</h3><p>Un archivo, cero dependencias. Descárgalo y llévalo en USB a una sede sin conexión.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg></span>
+          <div><h3>Listos para incrustar</h3><p>Pégalos en Moodle, Google Sites o tu plataforma con un código de iframe.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span>
+          <div><h3>Alineados a estándares</h3><p>Construidos sobre los DBA de Colombia y las competencias de la prueba Saber 11.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M19 3v18"/></svg></span>
+          <div><h3>Con guía docente</h3><p>Secuencia didáctica, preguntas con retroalimentación y errores frecuentes, en PDF.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15 9.5a3 3 0 1 0 0 5"/></svg></span>
+          <div><h3>Licencia abierta</h3><p>Bajo CC BY 4.0: úsalos, adáptalos y compártelos citando la fuente.</p></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INCRUSTAR ================= -->
+  <section id="incrustar" class="wrap">
+    <div class="embed">
+      <div class="embed-copy">
+        <div class="sec-head" style="margin-bottom:0">
+          <h2>Llévalo a tu plataforma</h2>
+        </div>
+        <p>Elige un laboratorio, copia el código y pégalo en tu aula virtual. El recurso queda dentro de
+           tu unidad, junto a la tarea y al foro, sin sacar al estudiante de la plataforma.</p>
+        <ol class="embed-steps">
+          <li>En Moodle, agrega una etiqueta o una página y abre el editor en modo HTML.</li>
+          <li>Pega el código de abajo y guarda.</li>
+          <li>Descarga la guía docente desde la página del recurso y adjúntala a la unidad.</li>
+        </ol>
+      </div>
+      <div>
+        <div class="codebox">
+          <div class="codebox-top">
+            <label class="sr-only" for="embedSel">Laboratorio para incrustar</label>
+            <select id="embedSel">
+              <option value="fracciones-vivas">Fracciones Vivas</option>
+              <option value="area-vs-perimetro" selected>Área vs Perímetro</option>
+              <option value="pitagoras">Pitágoras Interactivo</option>
+              <option value="funcion-cuadratica">Función Cuadrática</option>
+              <option value="circulo-ondas">Círculo Unitario y Ondas</option>
+              <option value="azar-probabilidad">Azar y Probabilidad</option>
+            </select>
+            <button class="copybtn" type="button" data-copy="embedCode">Copiar código</button>
+          </div>
+          <pre><code id="embedCode"></code></pre>
+        </div>
+        <p class="embed-note">Ancho flexible y alto fijo. Si tu plataforma bloquea los iframes,
+           enlaza directamente al recurso o sube el archivo HTML a tu servidor.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FUNDAMENTACIÓN ================= -->
+  <section id="fundamentacion" class="academic">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Fundamentación y uso académico</h2>
+        <p>Didaxis Lab no es una colección de actividades sueltas. Cada decisión de diseño —qué se
+           manipula, cómo se redacta la retroalimentación, por qué el archivo pesa lo que pesa— está
+           documentada y es discutible.</p>
+      </div>
+
+      <div class="acad-grid">
+        <div class="acad-copy">
+          <ul class="acad-list">
+            <li><a href="/fundamentacion/didaxis-lab-fundamentacion.pdf">
+              Documento de fundamentación del proyecto
+              <span class="meta">PDF</span></a></li>
+            <li><a href="/fundamentacion/marco-de-calidad.pdf">
+              Marco de calidad de los recursos
+              <span class="meta">PDF</span></a></li>
+            <li><a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">
+              Perfil ORCID del autor
+              <span class="meta">0009-0007-6705-0407</span></a></li>
+            <li><a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">
+              Licencia Creative Commons Atribución 4.0
+              <span class="meta">CC BY 4.0</span></a></li>
+          </ul>
+          <p>Los recursos pueden usarse, adaptarse y redistribuirse en cualquier institución, incluso con
+             fines comerciales, citando la fuente. Las adaptaciones a otros currículos hispanohablantes y
+             la investigación empírica sobre su efecto —incluidos resultados desfavorables— son
+             especialmente bienvenidas.</p>
+        </div>
+
+        <aside class="citebox">
+          <h3>Cómo citar el proyecto</h3>
+          <p class="cite-sub">Formato APA 7.ª edición</p>
+          <blockquote id="citaApa">Banquez Buendía, H. E. (2026). <em>Didaxis Lab: laboratorios interactivos de matemáticas</em> [Recurso educativo abierto]. https://didaxislab.com</blockquote>
+          <button class="copybtn" type="button" data-copy="citaApa">Copiar la cita</button>
+          <p class="doi-note">Para citar un laboratorio en concreto, reemplaza el título por el del
+             recurso y usa su dirección propia.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EL PROYECTO ================= -->
+  <section id="proyecto" class="wrap">
+    <div class="sec-head"><h2>El proyecto</h2></div>
+    <div class="about">
+      <p>Didaxis Lab es una iniciativa de recursos educativos abiertos creada por <strong>Héctor Banquez</strong>, docente de matemáticas e investigador en educación matemática. Nace para llevar al aula hispanohablante una matemática que se explora y se manipula, en lugar de memorizarse.</p>
+      <p class="thesis">La inteligencia artificial da fluidez. La comprensión exige sostener el porqué.</p>
+      <p>Cada laboratorio se diseña con intención didáctica: parte de un fenómeno que el estudiante descubre por sí mismo, se alinea a los estándares colombianos y llega acompañado de evaluación formativa y guía para el docente. Todo es abierto y gratuito.</p>
+      <p class="muted">Autoría: Héctor Enrique Banquez Buendía · <a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">ORCID 0009-0007-6705-0407</a> · Licencia <a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <div class="foot-inner">
+      <div class="foot-brand">
+        <div class="row">
+          <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true">
+            <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+            <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+            <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+            <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+          </svg>
+          <span class="name">Didaxis Lab</span>
+        </div>
+        <small>Simuladores interactivos de matemáticas, abiertos para toda el aula.</small>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h4>Recursos</h4>
+          <a href="/recursos/fracciones-vivas/">Fracciones Vivas</a>
+          <a href="/recursos/area-vs-perimetro/">Área vs Perímetro</a>
+          <a href="/recursos/pitagoras/">Pitágoras Interactivo</a>
+          <a href="/recursos/funcion-cuadratica/">Función Cuadrática</a>
+        </div>
+        <div class="foot-col">
+          <h4>Juegos</h4>
+          <a href="/juegos/">Guardianes del Cero</a>
+          <a href="/juegos/">Guardianes del Claro</a>
+          <a href="/juegos/">Misión Número Secreto</a>
+        </div>
+        <div class="foot-col">
+          <h4>Proyecto</h4>
+          <a href="#por-que">Por qué Didaxis Lab</a>
+          <a href="#fundamentacion">Fundamentación</a>
+          <a href="#incrustar">Llévalo a tu plataforma</a>
+          <a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">ORCID del autor</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>
+        <span>© 2026 Didaxis Lab · Héctor Banquez</span>
+        <span>Contenido bajo licencia CC BY 4.0</span>
+      </div>
+    </div>
+  </footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function q(root, sel) { return root.querySelector(sel); }
+  function n1(x) { return x.toFixed(1).replace(".", ","); }
+  function n2(x) { return x.toFixed(2).replace(".", ","); }
+  function mk(tag, attrs) {
+    var el = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) { el.setAttribute(k, attrs[k]); }
+    return el;
+  }
+  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+
+  /* ---------------------------------------------------------------
+     Vistas previas manipulables. Cada fábrica devuelve { set(t) }
+     con t entre 0 y 1, o { pulse() } cuando la acción es un toque.
+  --------------------------------------------------------------- */
+
+  function pvFracciones(root) {
+    var pie = q(root, ".pv-pie"), bar = q(root, ".pv-bar"), ticks = q(root, ".pv-ticks");
+    var dot = q(root, ".pv-dot"), tNum = q(root, ".pv-num");
+    var D = 8, R = 41, BW = 112, CW = BW / D;
+    var i, seg, x;
+
+    for (i = 0; i < D; i++) {
+      seg = mk("path", { "stroke": "#1B2A5A", "stroke-width": "1.6", "fill": "#FFFFFF" });
+      var a0 = -Math.PI / 2 + (i * 2 * Math.PI / D);
+      var a1 = -Math.PI / 2 + ((i + 1) * 2 * Math.PI / D);
+      seg.setAttribute("d", "M0 0 L" + (R * Math.cos(a0)).toFixed(2) + " " + (R * Math.sin(a0)).toFixed(2) +
+        " A" + R + " " + R + " 0 0 1 " + (R * Math.cos(a1)).toFixed(2) + " " + (R * Math.sin(a1)).toFixed(2) + " Z");
+      pie.appendChild(seg);
+
+      bar.appendChild(mk("rect", {
+        x: (i * CW).toFixed(2), y: 0, width: (CW - 1.5).toFixed(2), height: 26, rx: 2,
+        fill: "#FFFFFF", stroke: "#1B2A5A", "stroke-width": "1.6"
+      }));
+    }
+    for (i = 0; i <= D; i++) {
+      x = 172 + i * (BW / D);
+      ticks.appendChild(mk("line", {
+        x1: x.toFixed(2), y1: 106, x2: x.toFixed(2), y2: 118,
+        stroke: "#9FD9E4", "stroke-width": i === 0 || i === D ? 2.4 : 1.4
+      }));
+    }
+    var segs = pie.childNodes, cells = bar.childNodes;
+    var words = ["cero", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho"];
+
+    return { rest: 0.63, set: function (t) {
+      var k = Math.round(clamp(t, 0, 1) * D);
+      for (var j = 0; j < D; j++) {
+        var on = j < k;
+        segs[j].setAttribute("fill", on ? "#0BC0D8" : "#FFFFFF");
+        cells[j].setAttribute("fill", on ? "#0BC0D8" : "#FFFFFF");
+      }
+      tNum.textContent = String(k);
+      dot.setAttribute("cx", (172 + k * (BW / D)).toFixed(2));
+      root.setAttribute("aria-valuenow", String(k));
+      root.setAttribute("aria-valuetext", words[k] + " octavos");
+    } };
+  }
+
+  function pvArea(root) {
+    var rect = q(root, ".pv-rect"), area = q(root, ".pv-area");
+    var wl = q(root, ".pv-wlab"), hl = q(root, ".pv-hlab");
+    var U = 5.9, CX = 92, CY = 76;
+    return { rest: 0.80, set: function (t) {
+      var w = 3 + clamp(t, 0, 1) * 14, h = 20 - w;
+      var W = w * U, H = h * U;
+      rect.setAttribute("x", (CX - W / 2).toFixed(2));
+      rect.setAttribute("y", (CY - H / 2).toFixed(2));
+      rect.setAttribute("width", W.toFixed(2));
+      rect.setAttribute("height", H.toFixed(2));
+      wl.setAttribute("x", CX); wl.setAttribute("y", (CY + H / 2 + 13).toFixed(2));
+      wl.textContent = n1(w);
+      hl.setAttribute("x", (CX - W / 2 - 11).toFixed(2)); hl.setAttribute("y", (CY + 4).toFixed(2));
+      hl.textContent = n1(h);
+      area.textContent = n1(w * h);
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "área " + n1(w * h) + ", perímetro 40");
+    } };
+  }
+
+  function pvPitagoras(root) {
+    var tri = q(root, ".pv-tri"), sq = q(root, ".pv-sq"), eq = q(root, ".pv-eq");
+    var a2 = q(root, ".pv-a2"), b2 = q(root, ".pv-b2"), c2r = q(root, ".pv-c2");
+    var la = q(root, ".pv-la"), lc = q(root, ".pv-lc");
+    var B = 6, S = 11.2, X0 = 22, Y0 = 134, SC = 1.42, BX = 118;
+    return { rest: 0.62, set: function (t) {
+      var a = 2.6 + clamp(t, 0, 1) * 5.6;
+      var ax = X0, ay = Y0 - a * S, bx = X0 + B * S;
+      tri.setAttribute("d", "M" + X0 + " " + Y0 + " L" + ax + " " + ay.toFixed(2) + " L" + bx + " " + Y0 + " Z");
+      sq.setAttribute("d", "M" + X0 + " " + (Y0 - 11) + " h11 v11 h-11 Z");
+      la.setAttribute("y", (Y0 - a * S / 2 + 4).toFixed(2));
+      lc.setAttribute("x", ((ax + bx) / 2 + 6).toFixed(2));
+      lc.setAttribute("y", ((ay + Y0) / 2 - 4).toFixed(2));
+      var A2 = a * a, B2 = B * B, C2 = A2 + B2;
+      a2.setAttribute("width", (A2 * SC).toFixed(2));
+      b2.setAttribute("x", (BX + A2 * SC).toFixed(2));
+      b2.setAttribute("width", (B2 * SC).toFixed(2));
+      c2r.setAttribute("width", (C2 * SC).toFixed(2));
+      eq.textContent = n1(A2) + " + " + n1(B2) + " = " + n1(C2);
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "cateto a igual a " + n1(a) + ", " + n1(A2) + " más " + n1(B2) + " igual " + n1(C2));
+    } };
+  }
+
+  function pvCuadratica(root) {
+    var par = q(root, ".pv-par"), lab = q(root, ".pv-alab"), conc = q(root, ".pv-aconc");
+    var OX = 150, OY = 72, SX = 47, SY = 24;
+    return { rest: 0.80, set: function (t) {
+      var a = -1.9 + clamp(t, 0, 1) * 3.8;
+      var d = "", x, px, py, first = true;
+      for (x = -3.1; x <= 3.11; x += 0.1) {
+        px = OX + x * SX; py = OY - a * x * x * SY;
+        if (py < -120 || py > 260) { first = true; continue; }
+        d += (first ? "M" : "L") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+        first = false;
+      }
+      var down = a < -0.02, flat = Math.abs(a) <= 0.02;
+      par.setAttribute("d", d);
+      par.setAttribute("stroke", down ? "#C77B12" : "#1B2A5A");
+      lab.textContent = "y = " + n2(a) + " x²";
+      lab.setAttribute("fill", down ? "#C77B12" : "#1B2A5A");
+      conc.textContent = flat ? "sin curvatura" : (down ? "abre hacia abajo" : "abre hacia arriba");
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "a igual a " + n2(a) + ", " + conc.textContent);
+    } };
+  }
+
+  function pvCirculo(root) {
+    var rad = q(root, ".pv-rad"), pt = q(root, ".pv-pt"), drop = q(root, ".pv-drop");
+    var link = q(root, ".pv-link"), wave = q(root, ".pv-wave"), wpt = q(root, ".pv-wpt");
+    var lab = q(root, ".pv-sin");
+    var CX = 58, CY = 79, R = 44, X0 = 118, X1 = 288, AMP = 40;
+    return { rest: 0.72, set: function (t) {
+      var th = clamp(t, 0, 1) * Math.PI * 2;
+      var px = CX + R * Math.cos(th), py = CY - R * Math.sin(th);
+      rad.setAttribute("x2", px.toFixed(2)); rad.setAttribute("y2", py.toFixed(2));
+      pt.setAttribute("cx", px.toFixed(2)); pt.setAttribute("cy", py.toFixed(2));
+      drop.setAttribute("x1", px.toFixed(2)); drop.setAttribute("y1", py.toFixed(2));
+      drop.setAttribute("x2", px.toFixed(2)); drop.setAttribute("y2", CY);
+      var d = "", k, ang, wx, wy;
+      for (k = 0; k <= 90; k++) {
+        ang = th * (k / 90);
+        wx = X0 + (ang / (Math.PI * 2)) * (X1 - X0);
+        wy = CY - AMP * Math.sin(ang);
+        d += (k === 0 ? "M" : "L") + wx.toFixed(1) + " " + wy.toFixed(1) + " ";
+      }
+      wave.setAttribute("d", d);
+      var ex = X0 + (th / (Math.PI * 2)) * (X1 - X0), ey = CY - AMP * Math.sin(th);
+      wpt.setAttribute("cx", ex.toFixed(2)); wpt.setAttribute("cy", ey.toFixed(2));
+      link.setAttribute("x1", px.toFixed(2)); link.setAttribute("y1", py.toFixed(2));
+      link.setAttribute("x2", ex.toFixed(2)); link.setAttribute("y2", ey.toFixed(2));
+      lab.textContent = "sen θ = " + n2(Math.sin(th));
+      root.setAttribute("aria-valuenow", Math.round(th * 180 / Math.PI));
+      root.setAttribute("aria-valuetext", Math.round(th * 180 / Math.PI) + " grados, seno " + n2(Math.sin(th)));
+    } };
+  }
+
+  function pvAzar(root) {
+    var line = q(root, ".pv-line"), tn = q(root, ".pv-n"), tf = q(root, ".pv-f");
+    var X0 = 22, X1 = 288, Y0 = 106, Y1 = 34, MAX = 300;
+    var n = 0, caras = 0, hist = [], timer = null;
+
+    /* La gráfica siempre ocupa todo el ancho: al crecer n, la serie se
+       comprime en lugar de avanzar. Así la convergencia se ve desde el inicio. */
+    function render() {
+      var pts = [], i, span = Math.max(hist.length, 1);
+      for (i = 0; i < hist.length; i++) {
+        pts.push((X0 + ((i + 1) / span) * (X1 - X0)).toFixed(1) + "," +
+                 (Y0 - hist[i] * (Y0 - Y1)).toFixed(1));
+      }
+      line.setAttribute("points", pts.join(" "));
+      tn.textContent = "n = " + n;
+      tf.textContent = n ? "frecuencia = " + n2(caras / n) : "frecuencia = —";
+      root.setAttribute("aria-label", "Azar y Probabilidad: " + n + " lanzamientos, frecuencia relativa " +
+        (n ? n2(caras / n) : "sin datos") + ". Activa para lanzar más monedas.");
+    }
+    function step() {
+      if (n >= MAX) { stop(); return; }
+      n++; if (Math.random() < 0.5) { caras++; }
+      hist.push(caras / n);
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function run(count) {
+      stop();
+      if (n >= MAX) { n = 0; caras = 0; hist = []; }
+      var left = count;
+      if (reduce) { while (left-- > 0) { step(); } render(); return; }
+      timer = setInterval(function () {
+        step(); render();
+        if (--left <= 0) { stop(); }
+      }, 24);
+    }
+    /* Semilla silenciosa: la tarjeta nunca se ve vacía, ni siquiera sin animación. */
+    var seed = 45;
+    while (seed-- > 0) { step(); }
+    render();
+    return { pulse: function () { run(80); }, tap: true };
+  }
+
+  var FACTORIES = {
+    fracciones: pvFracciones, area: pvArea, pitagoras: pvPitagoras,
+    cuadratica: pvCuadratica, circulo: pvCirculo, azar: pvAzar
+  };
+
+  /* ---------- Conexión con el puntero, el teclado y el viewport ---------- */
+
+  var instances = [];
+
+  Array.prototype.forEach.call(document.querySelectorAll(".cover[data-preview]"), function (cover) {
+    var factory = FACTORIES[cover.getAttribute("data-preview")];
+    if (!factory) { return; }
+    var api = factory(cover);
+    var REST = typeof api.rest === "number" ? api.rest : 0.5;
+    var state = { cover: cover, api: api, t: REST, played: false, raf: 0 };
+    instances.push(state);
+
+    function apply(t) {
+      state.t = clamp(t, 0, 1);
+      if (api.set) { api.set(state.t); }
+    }
+    function touched() { cover.setAttribute("data-touched", "1"); }
+    function fromEvent(e) {
+      var r = cover.getBoundingClientRect();
+      if (!r.width) { return; }
+      apply((e.clientX - r.left) / r.width);
+    }
+    function cancelDemo() { if (state.raf) { cancelAnimationFrame(state.raf); state.raf = 0; } }
+
+    if (api.tap) {
+      cover.addEventListener("pointerdown", function () { touched(); cancelDemo(); api.pulse(); });
+      cover.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+          e.preventDefault(); touched(); cancelDemo(); api.pulse();
+        }
+      });
+    } else {
+      apply(REST);
+      var dragging = false;
+      cover.addEventListener("pointerdown", function (e) {
+        dragging = true; touched(); cancelDemo();
+        if (cover.setPointerCapture) { try { cover.setPointerCapture(e.pointerId); } catch (err) {} }
+        fromEvent(e); e.preventDefault();
+      });
+      cover.addEventListener("pointermove", function (e) {
+        if (dragging || e.pointerType === "mouse") { touched(); cancelDemo(); fromEvent(e); }
+      });
+      cover.addEventListener("pointerup", function () { dragging = false; });
+      cover.addEventListener("pointercancel", function () { dragging = false; });
+      cover.addEventListener("keydown", function (e) {
+        var d = 0;
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") { d = 0.06; }
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { d = -0.06; }
+        if (e.key === "Home") { apply(0); touched(); cancelDemo(); e.preventDefault(); return; }
+        if (e.key === "End") { apply(1); touched(); cancelDemo(); e.preventDefault(); return; }
+        if (d) { touched(); cancelDemo(); apply(state.t + d); e.preventDefault(); }
+      });
+    }
+
+    state.demo = function () {
+      if (state.played) { return; }
+      state.played = true;
+      if (api.tap) { api.pulse(); return; }
+      if (reduce) { apply(REST); return; }
+      var start = 0, DUR = 2600;
+      function frame(ts) {
+        if (!start) { start = ts; }
+        var p = (ts - start) / DUR;
+        if (p >= 1) { apply(REST); state.raf = 0; return; }
+        var e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        var sw = Math.sin(e * Math.PI * 2);
+        apply(REST + (sw > 0 ? sw * (1 - REST) : sw * REST) * 0.92);
+        state.raf = requestAnimationFrame(frame);
+      }
+      state.raf = requestAnimationFrame(frame);
+    };
+  });
+
+  /* Un único momento de movimiento no solicitado: la demostración al entrar en pantalla. */
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) { return; }
+        instances.forEach(function (s) { if (s.cover === en.target) { s.demo(); } });
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.55 });
+    instances.forEach(function (s) { io.observe(s.cover); });
+  } else {
+    instances.forEach(function (s) { s.demo(); });
+  }
+
+  /* ---------------------------- Filtros ---------------------------- */
+
+  var cards = Array.prototype.slice.call(document.querySelectorAll("#grid .card"));
+  var fbtns = Array.prototype.slice.call(document.querySelectorAll(".fbtn"));
+  var fcount = document.getElementById("fcount");
+  var empty = document.getElementById("empty");
+  var sel = { pensamiento: "todos", grado: "todos" };
+
+  function applyFilters() {
+    var shown = 0;
+    cards.forEach(function (card) {
+      var okP = sel.pensamiento === "todos" || card.getAttribute("data-pensamiento") === sel.pensamiento;
+      var okG = true;
+      if (sel.grado !== "todos") {
+        var lo = parseInt(card.getAttribute("data-min"), 10);
+        var hi = parseInt(card.getAttribute("data-max"), 10);
+        var band = sel.grado === "3" ? [3, 5] : (sel.grado === "6" ? [6, 9] : [10, 11]);
+        okG = lo <= band[1] && hi >= band[0];
+      }
+      var ok = okP && okG;
+      card.hidden = !ok;
+      if (ok) { shown++; }
+    });
+    fcount.textContent = shown + " de " + cards.length + " laboratorios";
+    empty.className = shown ? "empty" : "empty on";
+  }
+
+  fbtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var group = btn.getAttribute("data-filter");
+      sel[group] = btn.getAttribute("data-value");
+      fbtns.forEach(function (o) {
+        if (o.getAttribute("data-filter") === group) {
+          o.setAttribute("aria-pressed", o === btn ? "true" : "false");
+        }
+      });
+      applyFilters();
+    });
+  });
+  applyFilters();
+
+  /* -------------------------- Cifras animadas -------------------------- */
+
+  var counters = Array.prototype.slice.call(document.querySelectorAll(".stat b[data-count]"));
+  function runCounters() {
+    counters.forEach(function (el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (reduce || target === 0) { el.textContent = String(target); return; }
+      var i = 0;
+      var id = setInterval(function () {
+        i++; el.textContent = String(i);
+        if (i >= target) { clearInterval(id); }
+      }, 120);
+    });
+  }
+  if ("IntersectionObserver" in window && counters.length) {
+    var io2 = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { runCounters(); io2.disconnect(); }
+    }, { threshold: 0.6 });
+    io2.observe(counters[0].closest(".stats"));
+  }
+
+  /* --------------------- Código para incrustar --------------------- */
+
+  var embedSel = document.getElementById("embedSel");
+  var embedCode = document.getElementById("embedCode");
+  function updateEmbed() {
+    embedCode.textContent =
+      '<iframe src="https://didaxislab.com/recursos/' + embedSel.value + '/"\n' +
+      '        width="100%" height="720" style="border:0;border-radius:12px"\n' +
+      '        loading="lazy" allowfullscreen\n' +
+      '        title="' + embedSel.options[embedSel.selectedIndex].text + ' — Didaxis Lab">\n' +
+      '</iframe>';
+  }
+  if (embedSel && embedCode) {
+    embedSel.addEventListener("change", updateEmbed);
+    updateEmbed();
+  }
+
+  /* ------------------------- Botones de copiar ------------------------- */
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"), function (btn) {
+    var original = btn.textContent;
+    btn.addEventListener("click", function () {
+      var src = document.getElementById(btn.getAttribute("data-copy"));
+      if (!src) { return; }
+      var text = (src.innerText || src.textContent || "").trim();
+      function done(ok) {
+        btn.textContent = ok ? "Copiado" : "No se pudo copiar";
+        btn.className = ok ? "copybtn done" : "copybtn";
+        setTimeout(function () { btn.textContent = original; btn.className = "copybtn"; }, 2200);
+      }
+      /* Método antiguo: sirve cuando el navegador deniega el portapapeles
+         (contextos sin HTTPS, iframes sin permiso, navegadores viejos). */
+      function legacy() {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.setAttribute("readonly", "");
+        ta.style.position = "absolute"; ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select(); ta.setSelectionRange(0, text.length);
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        document.body.removeChild(ta);
+        done(ok);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, legacy);
+      } else {
+        legacy();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
