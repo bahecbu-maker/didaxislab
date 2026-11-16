@@ -1,1 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratorio de Azar y Probabilidad: Explora la Ley de los Grandes Números — Didaxis Lab</title>
+<meta name="description" content="Simulador interactivo de probabilidad (v2.0): contrasta probabilidad teórica y frecuencial con monedas, dados, matriz 6×6, árboles con y sin reemplazo y cajas ocultas. Incluye 6 retos tipo ICFES Saber y guía docente alineada a los DBA de Colombia.">
 
+  <!-- ============ METADATOS · editar por recurso ============ -->
+  <link rel="canonical" href="https://didaxislab.com/recursos/azar-probabilidad/">
+  <meta name="author" content="Héctor Enrique Banquez Buendía">
+  <meta name="keywords" content="probabilidad, azar, ley de los grandes números, probabilidad teórica, probabilidad frecuencial, falacia del jugador, principio multiplicativo, árbol de probabilidades, ruleta, espacio muestral, simulador, recurso interactivo, Saber 11, ICFES, DBA, matemáticas, Colombia">
+
+  <!-- Metadatos académicos y de citación (Zenodo / Google Scholar / Zotero) -->
+  <meta name="DC.identifier" content="https://doi.org/10.5281/zenodo.24281001">
+  <meta name="citation_title" content="Laboratorio de Azar y Probabilidad: Explora la Ley de los Grandes Números (v2.0)">
+  <meta name="citation_author" content="Banquez Buendía, Héctor Enrique">
+  <meta name="citation_publication_date" content="2026/11">
+  <meta name="citation_doi" content="10.5281/zenodo.24281001">
+  <meta name="citation_public_url" content="https://didaxislab.com/recursos/azar-probabilidad/">
+
+  <!-- Open Graph · vista previa al compartir -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Didaxis Lab">
+  <meta property="og:locale" content="es_CO">
+  <meta property="og:title" content="Laboratorio de Azar y Probabilidad: Explora la Ley de los Grandes Números — Didaxis Lab">
+  <meta property="og:description" content="Un laboratorio interactivo en 4 estaciones para explorar el azar con monedas, dados, árboles con y sin reemplazo y cajas ocultas en tiempo real.">
+  <meta property="og:url" content="https://didaxislab.com/recursos/azar-probabilidad/">
+  <meta property="og:image" content="https://didaxislab.com/recursos/azar-probabilidad/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Didaxis Lab — Laboratorio de Azar y Probabilidad: Explora la Ley de los Grandes Números">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Laboratorio de Azar y Probabilidad: Explora la Ley de los Grandes Números — Didaxis Lab">
+  <meta name="twitter:description" content="Un laboratorio interactivo para descubrir el azar con monedas, dados, árboles y ruletas — contrasta probabilidad teórica y frecuencial en tiempo real.">
+  <meta name="twitter:image" content="https://didaxislab.com/recursos/azar-probabilidad/og.png">
+
+  <!-- Datos estructurados · recurso educativo con DOI Zenodo -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    "name": "Laboratorio de Azar y Probabilidad: Explora la Ley de los Grandes Números",
+    "description": "Un laboratorio interactivo en cuatro estaciones para contrastar probabilidad teórica y frecuencial con monedas, dados (matriz 6×6), rachas, árboles con y sin reemplazo y aparatos de probabilidad oculta. Incluye 6 preguntas tipo ICFES Saber con retroalimentación diagnóstica y guía docente alineada a los DBA del MEN Colombia.",
+    "url": "https://didaxislab.com/recursos/azar-probabilidad/",
+    "identifier": "https://doi.org/10.5281/zenodo.24281001",
+    "sameAs": "https://doi.org/10.5281/zenodo.24281001",
+    "inLanguage": "es",
+    "learningResourceType": "Simulación interactiva",
+    "interactivityType": "active",
+    "educationalLevel": "Educación Básica Secundaria y Media (6.° a 10.°)",
+    "educationalUse": ["instruction", "assessment"],
+    "teaches": "Probabilidad teórica y frecuencial; Ley de los Grandes Números; falacia del jugador; espacio muestral compuesto; principio multiplicativo con y sin reemplazo; inferencia frecuencial.",
+    "keywords": "probabilidad, azar, ley de los grandes números, principio multiplicativo, árbol de probabilidades, ruleta, Saber 11, ICFES, DBA",
+    "isAccessibleForFree": true,
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "creativeWorkStatus": "Published",
+    "datePublished": "2026-06-26",
+    "dateModified": "2026-11-15",
+    "version": "2.0",
+    "author": {
+      "@type": "Person",
+      "name": "Héctor Enrique Banquez Buendía",
+      "identifier": "https://orcid.org/0009-0007-6705-0407",
+      "url": "https://orcid.org/0009-0007-6705-0407"
+    },
+    "publisher": { "@type": "Organization", "name": "Didaxis Lab", "url": "https://didaxislab.com" }
+  }
+  </script>
+
+<style>
+  :root{
+    --navy:#1B2A5A;
+    --navy-dark:#0F1C3F;
+    --cyan:#0BC0D8;
+    --cyan-soft:#E2F7FA;
+    --ink:#1B2A5A;
+    --muted:#5B6B82;
+    --line:#E6E9EF;
+    --bg:#FAFBFC;
+    --panel:#FFFFFF;
+    --grid:rgba(11,192,216,0.06);
+    --ok:#1E9E6A;
+    --ok-soft:#E7F7EF;
+    --warn:#C0392B;
+    --warn-soft:#FCECEA;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --maxw:880px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--navy);}
+  h2,h3,h4{color:var(--navy);letter-spacing:-.01em;}
+
+  /* ---------- Barra de marca ---------- */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:20;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 20px;
+    display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .topbar a.back{font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;}
+  .topbar a.back:hover{color:var(--navy);}
+
+  /* ---------- Layout ---------- */
+  main{max-width:var(--maxw);margin:0 auto;padding:32px 20px 16px;}
+  section{margin-bottom:36px;}
+
+  /* ---------- Encabezado del recurso ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center;}
+  .chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;
+    background:#EEF1F6;color:var(--muted);}
+  .chip.topic{background:var(--cyan-soft);color:var(--navy);font-weight:700;}
+  .chip.status-ok{background:var(--ok-soft);color:#16623F;font-weight:700;}
+  .resource-title{font-size:clamp(30px,5.5vw,44px);font-weight:800;line-height:1.12;color:var(--navy);}
+  .resource-lead{margin-top:14px;font-size:clamp(16px,2.4vw,19px);color:var(--muted);max-width:62ch;}
+  .topics{margin-top:12px;font-size:13.5px;color:var(--muted);}
+  .topics span{font-weight:700;color:var(--navy);}
+
+  /* ---------- Info chips ---------- */
+  .info-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}
+  .info-chip{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:7px 12px;font-size:13px;text-decoration:none;transition:border-color .15s;}
+  a.info-chip:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+  .info-chip .ic-label{font-weight:700;color:var(--navy);}
+  .info-chip .ic-val{color:var(--muted);}
+  .info-chip .ic-mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--navy);font-weight:600;}
+
+  /* ---------- Escenario del simulador ---------- */
+  .stage-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:0 2px 10px;flex-wrap:wrap;}
+  .stage-label{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--navy);display:inline-flex;align-items:center;gap:8px;}
+  .stage-label::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .stage-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .stage-link{font-size:13.5px;font-weight:600;color:var(--navy);text-decoration:none;
+    display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;
+    border:1px solid transparent;transition:.15s;}
+  .stage-link:hover{background:var(--cyan-soft);border-color:var(--cyan);}
+  .stage-link.zenodo-dl{background:var(--panel);border-color:var(--line);box-shadow:0 1px 2px rgba(22,36,58,.04);}
+  .stage-link.zenodo-dl:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+  .stage-link svg{width:15px;height:15px;flex:0 0 auto;}
+  .stage{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    box-shadow:var(--shadow);background:var(--panel);}
+  .stage iframe{display:block;width:100%;height:740px;border:0;}
+
+  /* ---------- Compartir e incrustar (con selector minimalista de 2 modos) ---------- */
+  .share{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;box-shadow:var(--shadow);}
+  .share-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+  .share h2{font-size:20px;font-weight:800;}
+  .share-tabs{display:inline-flex;background:#F4F6F9;border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px;}
+  .share-tab{font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);background:transparent;
+    border:0;border-radius:7px;padding:5px 11px;cursor:pointer;transition:.15s;}
+  .share-tab.active{background:var(--panel);color:var(--navy);box-shadow:0 1px 3px rgba(22,36,58,.08);}
+  .share p{color:var(--muted);font-size:14.5px;margin-bottom:14px;max-width:64ch;}
+  .code-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;}
+  code.share-code-box{flex:1;min-width:240px;font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12.5px;line-height:1.5;color:#33415A;background:#F4F6F9;border:1px solid var(--line);
+    border-radius:10px;padding:11px 14px;overflow-x:auto;white-space:nowrap;display:flex;align-items:center;}
+  .btn-copy{font:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;color:#fff;
+    background:var(--navy);border:0;border-radius:10px;padding:0 20px;min-height:42px;transition:background .15s;}
+  .btn-copy:hover{background:var(--navy-dark);}
+  .btn-copy.done{background:var(--ok);}
+
+  /* ---------- Sección de preguntas (carrusel) ---------- */
+  .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+  .section-head h2{font-size:23px;font-weight:800;}
+  .btn-subtle-pdf{font:inherit;font-size:13px;font-weight:700;color:var(--navy);background:var(--panel);
+    border:1px solid var(--line);border-radius:9px;padding:6px 12px;cursor:pointer;text-decoration:none;
+    display:inline-flex;align-items:center;gap:6px;transition:.15s;}
+  .btn-subtle-pdf:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+  .btn-subtle-pdf svg{width:15px;height:15px;}
+  .section-sub{color:var(--muted);font-size:15px;margin-bottom:18px;max-width:64ch;}
+
+  .quiz-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+  .quiz-counter{display:flex;align-items:center;gap:10px;}
+  .quiz-counter .label{font-size:13px;font-weight:700;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:#CBD5E1;border:0;padding:0;cursor:pointer;transition:.2s;}
+  .dot.active{background:var(--cyan);transform:scale(1.25);}
+  .dot.solved{background:var(--ok);}
+  .nav-btn{font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--navy);
+    background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 14px;
+    display:inline-flex;align-items:center;gap:6px;transition:border-color .15s,background .15s;}
+  .nav-btn:hover:not(:disabled){border-color:var(--cyan);background:var(--cyan-soft);}
+  .nav-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .quiz-viewport{overflow:hidden;border-radius:var(--radius);}
+  .quiz-track{display:flex;transition:transform .35s cubic-bezier(.2,.7,.2,1);}
+  .quiz-card{flex:0 0 100%;min-width:0;}
+  .qc-inner{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+    box-shadow:var(--shadow);padding:24px;margin:2px;}
+  .qc-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;}
+  .qc-badge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    padding:4px 10px;border-radius:999px;background:var(--navy);color:#fff;}
+  .qc-badge.dba{background:var(--cyan-soft);color:var(--navy);}
+  .qc-evid{font-size:12.5px;font-weight:600;color:var(--muted);border:1px solid var(--line);
+    border-radius:999px;padding:3px 10px;}
+  .qc-context{font-size:14.5px;color:#2C3A4F;background:#F4F6F9;border-left:3px solid var(--cyan);
+    border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:14px;}
+  .qc-stem{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:14px;}
+  .opts{display:flex;flex-direction:column;gap:9px;}
+  .opt{font:inherit;text-align:left;cursor:pointer;width:100%;
+    border:1.5px solid var(--line);border-radius:11px;background:var(--panel);
+    padding:12px 14px;display:flex;gap:11px;align-items:flex-start;transition:.15s;color:#2C3A4F;}
+  .opt:hover:not(.locked){border-color:var(--cyan);background:var(--cyan-soft);}
+  .opt .key{flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:#EEF1F6;
+    color:var(--navy);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;}
+  .opt.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .opt.correct .key{background:var(--ok);color:#fff;}
+  .opt.wrong{border-color:var(--warn);background:var(--warn-soft);}
+  .opt.wrong .key{background:var(--warn);color:#fff;}
+  .opt.locked{cursor:default;}
+  .opt.dim{opacity:.55;}
+  .qc-feedback{margin-top:14px;border-radius:11px;padding:13px 15px;font-size:14px;line-height:1.55;display:none;}
+  .qc-feedback.show{display:block;}
+  .qc-feedback.good{background:var(--ok-soft);border:1px solid #BCE7D2;color:#16623F;}
+  .qc-feedback.bad{background:var(--warn-soft);border:1px solid #F3C7C1;color:#8A2B20;}
+  .qc-feedback .verdict{font-weight:800;display:block;margin-bottom:3px;}
+  .qc-retry{margin-top:10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+    background:none;border:0;color:var(--navy);text-decoration:underline;padding:0;}
+
+  /* ---------- Guía docente (PDF) ---------- */
+  .guide-card{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 24px;}
+  .guide-icon{flex:0 0 auto;width:46px;height:46px;border-radius:11px;background:var(--cyan-soft);
+    display:flex;align-items:center;justify-content:center;color:var(--navy);}
+  .guide-icon svg{width:24px;height:24px;}
+  .guide-text{flex:1;min-width:220px;}
+  .guide-text h2{font-size:20px;font-weight:800;margin-bottom:4px;}
+  .guide-text p{color:var(--muted);font-size:14.5px;}
+  .guide-btn{flex:0 0 auto;font-size:14px;font-weight:700;color:#fff;background:var(--navy);
+    border-radius:10px;padding:11px 18px;text-decoration:none;white-space:nowrap;transition:background .15s;}
+  .guide-btn:hover{background:var(--navy-dark);}
+
+  /* ---------- Autoría, DOI Zenodo y cómo citar ---------- */
+  .meta-block{border-top:1px solid var(--line);padding-top:24px;}
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px 20px;margin-bottom:20px;}
+  .meta-item{display:flex;flex-direction:column;gap:2px;}
+  .meta-k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .meta-v{font-size:14px;color:var(--ink);}
+  .meta-v a{color:var(--navy);font-weight:600;text-decoration:none;border-bottom:1px solid var(--cyan);}
+  .meta-v a:hover{color:var(--cyan);}
+  .cite{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);}
+  .cite-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+  .cite-label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);}
+  .cite-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .cite-copy{font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--navy);background:#fff;
+    border:1px solid var(--line);border-radius:8px;padding:6px 12px;white-space:nowrap;transition:.15s;}
+  .cite-copy:hover{background:var(--cyan-soft);border-color:var(--cyan);}
+  .cite-copy.done{background:var(--ok-soft);border-color:#BCE7D2;color:#16623F;}
+  .cite-text{font-size:13.5px;line-height:1.6;color:var(--ink);font-family:ui-monospace,Menlo,Consolas,monospace;}
+
+  /* ---------- Pie ---------- */
+  footer{border-top:1px solid var(--line);max-width:var(--maxw);margin:0 auto;padding:24px 20px 40px;
+    font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;}
+
+  a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
+
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none !important;}}
+  @media (max-width:700px){
+    .stage iframe{height:860px;}
+    .btn-copy{width:100%;padding:12px 0;}
+    .qc-inner{padding:18px;}
+  }
+  @media (max-width:560px){.guide-btn{width:100%;text-align:center;}}
+
+  /* Impresión limpia de las 6 preguntas tipo ICFES cuando el docente pulsa "Imprimir / PDF" */
+  @media print {
+    .topbar, .stage-wrap, .share, .guide, .quiz-nav, .btn-subtle-pdf, footer { display: none !important; }
+    body { background: #fff; }
+    main { max-width: 100%; padding: 0; }
+    .quiz-viewport { overflow: visible !important; }
+    .quiz-track { display: block !important; transform: none !important; }
+    .quiz-card { margin-bottom: 18px; page-break-inside: avoid; }
+    .qc-inner { box-shadow: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ====================== BARRA DE MARCA ====================== -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </a>
+      <a class="back" href="/recursos/">← Todos los recursos</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================== ENCABEZADO DEL RECURSO · editar por recurso ================== -->
+    <section class="resource-head">
+      <div class="chips">
+        <span class="chip topic">Pensamiento aleatorio y sistemas de datos</span>
+        <span class="chip">Grados 6.° a 10.° · DBA 12, 9, 11 y 10</span>
+        <span class="chip status-ok">Versión 2.0</span>
+      </div>
+      <h1 class="resource-title">Laboratorio de Azar y Probabilidad</h1>
+      <p class="resource-lead">Explora la Ley de los Grandes Números: contrasta probabilidad teórica y frecuencial con monedas, dados, árboles de dos etapas y ruletas interactivas.</p>
+      <p class="topics"><span>Temas:</span> probabilidad teórica · probabilidad frecuencial · Ley de los Grandes Números · falacia del jugador · principio multiplicativo · árbol con y sin reemplazo · Saber 11</p>
+
+      <div class="info-row">
+        <div class="info-chip">
+          <span class="ic-label">Tiempo sugerido:</span>
+          <span class="ic-val">60 – 90 min (Ciclo POE)</span>
+        </div>
+        <a class="info-chip" href="https://doi.org/10.5281/zenodo.24281001" target="_blank" rel="noopener" title="Ver registro oficial y métricas en Zenodo">
+          <span class="ic-label">DOI Zenodo:</span>
+          <span class="ic-mono">10.5281/zenodo.24281001</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===================== SIMULADOR ===================== -->
+    <section class="stage-wrap">
+      <div class="stage-bar">
+        <span class="stage-label">Simulador interactivo</span>
+        <div class="stage-actions">
+          <!-- EDITAR POR RECURSO: URL de descarga directa del archivo .html en Zenodo -->
+          <a class="stage-link zenodo-dl" href="https://zenodo.org/records/14892026/files/azar-y-probabilidad-v2.html?download=1" target="_blank" rel="noopener" title="Descargar el simulador autocontenido (.HTML) para usarlo sin conexión a internet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>Descargar para usar offline</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="stage">
+        <iframe src="./simulador.html" title="Laboratorio de Azar y Probabilidad: Simulador interactivo" loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <!-- ===================== COMPARTIR ESTE SIMULADOR (ENLACE ESTUDIANTE + IFRAME) ===================== -->
+    <section class="share">
+      <div class="share-top">
+        <h2>Compartir este simulador en tu clase</h2>
+        <div class="share-tabs" role="tablist" aria-label="Opciones para compartir el simulador">
+          <button type="button" class="share-tab active" id="tabShareLink" role="tab" aria-selected="true">Enlace para estudiantes</button>
+          <button type="button" class="share-tab" id="tabShareEmbed" role="tab" aria-selected="false">Incrustar en Moodle / Web</button>
+        </div>
+      </div>
+      <p id="shareDesc">Comparte este enlace directo por WhatsApp, Google Classroom o Moodle: tus estudiantes abrirán <b>únicamente el simulador</b> a pantalla completa, sin ver esta página ni la guía docente.</p>
+      <div class="code-row">
+        <code class="share-code-box" id="shareCodeBox">https://didaxislab.com/recursos/azar-probabilidad/simulador.html</code>
+        <button class="btn-copy" id="copyShareBtn" type="button">Copiar enlace</button>
+      </div>
+    </section>
+
+    <!-- ===================== PREGUNTAS ICFES · editar arreglo QUESTIONS en el script ===================== -->
+    <section class="quiz-section">
+      <div class="section-head">
+        <h2>Pon a prueba lo que descubriste</h2>
+        <button type="button" class="btn-subtle-pdf" id="btnPrintQuizPdf" title="Imprimir o guardar en PDF las 6 preguntas tipo ICFES">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Imprimir / PDF (6 preguntas)</span>
+        </button>
+      </div>
+      <p class="section-sub">Seis preguntas tipo ICFES Saber (dos por cada competencia), articuladas entre 6.° y 10.° grado. Elige una opción y recibe retroalimentación diagnóstica inmediata, incluyendo por qué fallan los distractores.</p>
+
+      <div class="quiz-nav">
+        <button class="nav-btn" id="qPrev" type="button" aria-label="Pregunta anterior">← Anterior</button>
+        <div class="quiz-counter">
+          <span class="label" id="qLabel">Pregunta 1 de 6</span>
+          <div class="dots" id="qDots"></div>
+        </div>
+        <button class="nav-btn" id="qNext" type="button" aria-label="Pregunta siguiente">Siguiente →</button>
+      </div>
+
+      <div class="quiz-viewport">
+        <div class="quiz-track" id="qTrack"><!-- tarjetas generadas por JS --></div>
+      </div>
+    </section>
+
+    <!-- ===================== GUÍA DOCENTE (PDF) ===================== -->
+    <section class="guide">
+      <div class="guide-card">
+        <span class="guide-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>
+            <path d="M9 13h6M9 17h6"/>
+          </svg>
+        </span>
+        <div class="guide-text">
+          <h2>Guía docente (PDF)</h2>
+          <p>Marco curricular completo (6.° a 10.°), secuencia didáctica en tres momentos (Ciclo POE) por las 4 estaciones, preguntas de orquestación, diagnóstico de sesgos heurísticos (Kahneman y Lecoutre), claves de los 6 retos y uso de la traza exportable.</p>
+        </div>
+        <a class="guide-btn" href="./guia-docente.pdf" target="_blank" rel="noopener">⬇ Descargar PDF</a>
+      </div>
+    </section>
+
+    <!-- ===================== AUTORÍA, DOI ZENODO Y CÓMO CITAR ===================== -->
+    <section class="meta-block">
+      <div class="meta-grid">
+        <div class="meta-item"><span class="meta-k">Autor</span><span class="meta-v">Héctor Enrique Banquez Buendía</span></div>
+        <div class="meta-item"><span class="meta-k">ORCID</span><span class="meta-v"><a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">0009-0007-6705-0407</a></span></div>
+        <div class="meta-item"><span class="meta-k">DOI (Zenodo)</span><span class="meta-v"><a href="https://doi.org/10.5281/zenodo.24281001" target="_blank" rel="noopener">10.5281/zenodo.24281001</a></span></div>
+        <div class="meta-item"><span class="meta-k">Licencia</span><span class="meta-v"><a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">CC BY 4.0</a></span></div>
+        <div class="meta-item"><span class="meta-k">Versión</span><span class="meta-v">Noviembre de 2026 · v2.0</span></div>
+      </div>
+      <div class="cite">
+        <div class="cite-head">
+          <span class="cite-label">Cómo citar este recurso (APA 7.ª ed.)</span>
+          <div class="cite-actions">
+            <button class="cite-copy" id="risBtn" type="button" title="Exportar referencia bibliográfica para Zotero o Mendeley">Descargar .RIS (Zotero)</button>
+            <button class="cite-copy" id="citeBtn" type="button">Copiar cita</button>
+          </div>
+        </div>
+        <p class="cite-text" id="citeText">Banquez Buendía, H. E. (2026). <i>Laboratorio de Azar y Probabilidad: Explora la Ley de los Grandes Números (v. 2.0)</i> [Simulación interactiva]. Didaxis Lab; Zenodo. https://doi.org/10.5281/zenodo.24281001</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>Didaxis Lab · Recursos educativos abiertos</span>
+    <span>CC BY 4.0 · Héctor Banquez</span>
+  </footer>
+
+<script>
+  /* ====================== 6 PREGUNTAS ICFES · editar por recurso ====================== */
+  var RESOURCE_RIS_META = {
+    title: "Laboratorio de Azar y Probabilidad: Explora la Ley de los Grandes Números (v. 2.0)",
+    doi: "10.5281/zenodo.24281001",
+    url: "https://doi.org/10.5281/zenodo.24281001",
+    filename: "didaxislab-azar-probabilidad-v2.ris",
+    keywords: ["Probabilidad", "Ley de los Grandes Números", "Educación Matemática", "Didaxis Lab"]
+  };
+  var QUESTIONS = [
+    {
+      comp: 'Interpretación y representación',
+      dba: 'DBA 12 · Grado 6.°',
+      evid: 'Frecuencia relativa vs. probabilidad teórica',
+      context: 'En la Estación 1 del Laboratorio de Azar, una estudiante lanzó un dado equilibrado de 6 caras 600 veces. La tabla de frecuencias absolutas fue: cara 1 → 98, cara 2 → 102, cara 3 → 95, cara 4 → 105, cara 5 → 100, cara 6 → 100.',
+      stem: 'A partir de la tabla, ¿cuál es la frecuencia relativa de obtener la cara «4» y cómo se compara con la probabilidad teórica?',
+      options: [
+        { k:'A', text:'0,105 — es mayor que la probabilidad teórica de 1/6 ≈ 0,167.', correct:false,
+          fb:'Dividiste 105 entre 1.000 en lugar de dividir entre el total real de lanzamientos (600). Recuerda identificar siempre el tamaño muestral efectivo n en el denominador.' },
+        { k:'B', text:'0,175 — es ligeramente mayor que la probabilidad teórica de 1/6 ≈ 0,167.', correct:true,
+          fb:'La frecuencia relativa es f = c/n = 105/600 = 0,175 (17,5 %), ligeramente superior a la probabilidad teórica P = 1/6 ≈ 0,167. Esto es coherente con la Ley de los Grandes Números: en series largas la frecuencia relativa se aproxima al valor teórico, manteniendo fluctuaciones muestrales naturales.' },
+        { k:'C', text:'105 — es la frecuencia absoluta, igual a la probabilidad teórica.', correct:false,
+          fb:'Confundiste la frecuencia absoluta (el conteo bruto de 105 ocurrencias) con la frecuencia relativa. Toda probabilidad o frecuencia relativa está acotada entre 0 y 1.' },
+        { k:'D', text:'0,167 — coincide exactamente con la probabilidad teórica porque ya se hicieron 600 lanzamientos.', correct:false,
+          fb:'Confundiste convergencia con igualdad exacta: 105/600 es 0,175, no 0,167. La estabilización estadística diluye las desviaciones relativas, pero no obliga a que las 6 caras empaten exactamente en 100.' }
+      ]
+    },
+    {
+      comp: 'Interpretación y representación',
+      dba: 'DBA 12 · Grado 8.°',
+      evid: 'Espacio muestral en tabla de doble entrada 6×6',
+      context: 'En la Estación 1 (modo «Suma de 2 Dados D6»), se observa la Tabla de Doble Entrada de 6 × 6 con los 36 pares ordenados (d1, d2) equiprobables que resultan al lanzar dos dados simultáneamente.',
+      stem: 'Con base en la estructura de la matriz 6 × 6, ¿por qué obtener una suma igual a 7 es seis veces más probable que obtener una suma igual a 2?',
+      options: [
+        { k:'A', text:'No es más probable: como existen 11 sumas posibles (de 2 a 12), cada suma tiene probabilidad 1/11 ≈ 0,091.', correct:false,
+          fb:'Incurriste en el sesgo de equiprobabilidad (Lecoutre, 1992): aunque hay 11 sumas posibles, no todas se forman con la misma cantidad de combinaciones de los dos dados.' },
+        { k:'B', text:'Porque de los 36 pares ordenados equiprobables, existen 6 pares en la diagonal principal que suman 7 (P = 6/36 = 1/6), mientras que solo un par [(1, 1)] suma 2 (P = 1/36).', correct:true,
+          fb:'Distingues con precisión entre eventos compuestos y resultados elementales: la suma 7 agrupa seis resultados distintos [(1,6), (2,5), (3,4), (4,3), (5,2), (6,1)], mientras que la suma 2 solo ocurre con (1,1).' },
+        { k:'C', text:'Porque el número 7 es impar y en el lanzamiento de dos dados los resultados impares tienen mayor probabilidad.', correct:false,
+          fb:'La suma 11 también es impar y solo cuenta con 2 pares favorables de 36 [(5,6) y (6,5)]. Lo que determina la probabilidad es el número de pares ordenados que componen la diagonal de cada suma.' },
+        { k:'D', text:'Porque sin importar el orden hay 3 parejas que suman 7 y 1 que suma 2, por lo que es solo el triple de probable.', correct:false,
+          fb:'Al lanzar dos dados físicos, los pares (1,6) y (6,1) son eventos elementales distintos; por eso el espacio muestral equiprobable tiene 6 × 6 = 36 pares ordenados.' }
+      ]
+    },
+    {
+      comp: 'Formulación y ejecución',
+      dba: 'DBA 9 · Grado 7.°',
+      evid: 'Principio multiplicativo en eventos independientes',
+      context: 'En el modo «Árbol de Probabilidades», Camila analiza un experimento de dos etapas independientes: primero lanza una moneda equilibrada (Cara o Sello) y luego lanza un dado equilibrado de 6 caras (numeradas del 1 al 6).',
+      stem: '¿Cuál es la probabilidad compuesta de obtener el resultado (Cara, 6)?',
+      options: [
+        { k:'A', text:'1/8', correct:false,
+          fb:'Ese valor resultaría si el segundo instrumento tuviera solo 4 resultados posibles (1/2 × 1/4 = 1/8). El dado tiene 6 caras equiprobables.' },
+        { k:'B', text:'2/12 = 1/6', correct:false,
+          fb:'Usaste el numerador 2 como si ambos resultados de la moneda fueran favorables. Solo una rama de la moneda (Cara) seguida de una rama del dado (6) cumple la condición.' },
+        { k:'C', text:'1/12', correct:true,
+          fb:'Por el principio multiplicativo para eventos independientes, P(Cara ∩ 6) = P(Cara) × P(6) = (1/2) × (1/6) = 1/12. El espacio muestral compuesto tiene 2 × 6 = 12 ramas equiprobables.' },
+        { k:'D', text:'7/12', correct:false,
+          fb:'Sumaste las probabilidades de las etapas (1/2 + 1/6 = 7/12) en lugar de multiplicarlas. La ocurrencia conjunta en etapas sucesivas se modela mediante el producto de probabilidades.' }
+      ]
+    },
+    {
+      comp: 'Formulación y ejecución',
+      dba: 'DBA 11 · Grado 9.°',
+      evid: 'Probabilidad condicional sin reemplazo',
+      context: 'En la Estación 3 del simulador, una urna contiene 3 esferas Rojas y 2 Azules (5 esferas en total). Se extraen dos esferas consecutivas SIN reemplazo (no se devuelve la primera esfera a la urna antes de sacar la segunda).',
+      stem: '¿Cuál es la probabilidad compuesta P(R → R) de extraer dos esferas Rojas seguidas?',
+      options: [
+        { k:'A', text:'P(R → R) = (3/5) × (3/5) = 9/25 = 0,360 (36,0 %).', correct:false,
+          fb:'Ese cálculo corresponde a una extracción CON reemplazo. Al no devolver la primera esfera Roja, el espacio muestral de la segunda etapa se reduce a 4 esferas.' },
+        { k:'B', text:'P(R → R) = (3/5) + (2/4) = 11/10 = 1,100.', correct:false,
+          fb:'Sumaste las probabilidades de las ramas en vez de multiplicarlas, obteniendo además un número mayor que 1 (imposible para cualquier probabilidad).' },
+        { k:'C', text:'P(R → R) = (3/5) × (2/4) = 6/20 = 3/10 = 0,300 (30,0 %).', correct:true,
+          fb:'En la primera extracción hay 3 Rojas entre 5 esferas (3/5); tras extraer una Roja sin devolverla, quedan 2 Rojas entre las 4 esferas restantes (2/4). Multiplicando ambas ramas se obtiene (3/5) × (2/4) = 6/20 = 0,300.' },
+        { k:'D', text:'P(R → R) = 1/4 = 0,250 (25,0 %), porque el diagrama de árbol tiene 4 hojas finales.', correct:false,
+          fb:'Asumiste que las cuatro hojas del árbol (R→R, R→A, A→R, A→A) son equiprobables, ignorando que en la urna inicial hay más esferas Rojas que Azules.' }
+      ]
+    },
+    {
+      comp: 'Argumentación',
+      dba: 'DBA 10 · Grado 10.°',
+      evid: 'Independencia estocástica vs. falacia del jugador',
+      context: 'En la Estación 2 («Memoria de la Moneda»), tras lanzar una moneda equilibrada acaban de salir cuatro Caras seguidas (C-C-C-C). Un estudiante afirma: «En el quinto lanzamiento es mucho más probable que salga Sello para compensar la racha y equilibrar el conteo».',
+      stem: '¿Por qué es inválida la afirmación del estudiante?',
+      options: [
+        { k:'A', text:'Es válida, porque la Ley de los Grandes Números obliga a la moneda a compensar inmediatamente las rachas largas.', correct:false,
+          fb:'Esa creencia se conoce como la falacia del jugador (Tversky y Kahneman, 1971). La Ley de los Grandes Números actúa por dilución relativa cuando n crece, nunca por compensación en el siguiente lanzamiento.' },
+        { k:'B', text:'Es inválida, porque cada lanzamiento es un ensayo estocásticamente independiente cuyo espacio muestral físico no se altera por los resultados pasados, manteniendo P(Sello) = 1/2 en el quinto tiro.', correct:true,
+          fb:'Explicitas la garantía matemática correcta: la independencia entre ensayos implica que la probabilidad condicional tras cualquier racha de k Caras es idéntica a la probabilidad simple P(Sello) = 1/2.' },
+        { k:'C', text:'Es inválida, porque cuando una moneda lleva cuatro Caras seguidas agarra inercia y es más probable que vuelva a salir Cara.', correct:false,
+          fb:'Incurres en el sesgo de la "racha caliente": una moneda simétrica carece de memoria física tanto para compensar hacia Sello como para favorecer la continuación de Caras.' },
+        { k:'D', text:'Es inválida, porque con una moneda equilibrada es matemáticamente imposible obtener cuatro Caras consecutivas.', correct:false,
+          fb:'Obtener cuatro Caras seguidas tiene probabilidad (1/2)⁴ = 1/16 = 0,0625 (6,25 %), por lo que ocurre con regularidad en cualquier serie moderadamente larga.' }
+      ]
+    },
+    {
+      comp: 'Argumentación',
+      dba: 'DBA 10 · Grado 10.°',
+      evid: 'Sensibilidad al tamaño de muestra e inferencia',
+      context: 'Dos estudiantes debaten sobre una moneda equilibrada usando el comparador muestral de la Estación 1: Andrés lanzó la moneda 10 veces y obtuvo 7 Caras (f = 0,700). Valentina la lanzó 1.000 veces y obtuvo 508 Caras (f = 0,508). Andrés afirma: «Mi resultado prueba que la moneda está cargada hacia Cara, porque obtuve 70 % de Caras».',
+      stem: '¿Cuál es la mejor refutación estadística al argumento de Andrés?',
+      options: [
+        { k:'A', text:'Andrés tiene razón, porque en sus 10 lanzamientos obtuvo más Caras que Sellos y eso basta para demostrar el sesgo.', correct:false,
+          fb:'Ignoraste el papel del tamaño muestral n (insensibilidad al tamaño de la muestra). En muestras pequeñas como n = 10, obtener 7 o más Caras ocurre con alta frecuencia incluso en monedas perfectamente equilibradas.' },
+        { k:'B', text:'Andrés está equivocado porque obtuvo un número impar de Caras (7), mientras que Valentina obtuvo un número par (508).', correct:false,
+          fb:'Que el conteo absoluto sea par o impar es irrelevante para evaluar la estabilidad de un estimador frecuencial.' },
+        { k:'C', text:'Andrés está equivocado porque en muestras pequeñas (n = 10) la variabilidad de la frecuencia relativa es alta; en cambio, la muestra grande de Valentina (n = 1.000) reduce la dispersión muestral y converge a 0,508, confirmando que la moneda es equilibrada.', correct:true,
+          fb:'Fundamentas correctamente el papel del tamaño muestral: a medida que n crece, la varianza de la frecuencia relativa f = c/n disminuye alrededor de la probabilidad teórica P = 0,500, haciendo mucho más confiable la estimación de Valentina.' },
+        { k:'D', text:'Andrés está equivocado porque cualquier experimento con menos de 1.000 lanzamientos carece por completo de validez matemática.', correct:false,
+          fb:'Estableces un umbral arbitrario absoluto: muestras menores sí aportan información, pero poseen un margen de variación muestral más amplio que debe tenerse en cuenta antes de inferir un sesgo.' }
+      ]
+    }
+  ];
+
+  var track = document.getElementById('qTrack');
+  var dotsWrap = document.getElementById('qDots');
+  var label = document.getElementById('qLabel');
+  var prevBtn = document.getElementById('qPrev');
+  var nextBtn = document.getElementById('qNext');
+  var current = 0;
+  var answered = QUESTIONS.map(function(){ return false; });
+
+  QUESTIONS.forEach(function(q, qi){
+    var card = document.createElement('div');
+    card.className = 'quiz-card';
+    var opts = q.options.map(function(o, oi){
+      return '<button class="opt" type="button" data-q="'+qi+'" data-o="'+oi+'">'
+           + '<span class="key">'+o.k+'</span><span>'+o.text+'</span></button>';
+    }).join('');
+    card.innerHTML =
+      '<div class="qc-inner">'
+      + '<div class="qc-top">'
+      + '<span class="qc-badge">Pregunta '+(qi+1)+' · '+q.comp+'</span>'
+      + '<span class="qc-badge dba">'+q.dba+'</span>'
+      + '<span class="qc-evid">'+q.evid+'</span>'
+      + '</div>'
+      + '<div class="qc-context">'+q.context+'</div>'
+      + '<div class="qc-stem">'+q.stem+'</div>'
+      + '<div class="opts">'+opts+'</div>'
+      + '<div class="qc-feedback" data-fb="'+qi+'"><span class="verdict"></span><span class="msg"></span>'
+      + '<button class="qc-retry" type="button" data-retry="'+qi+'">↺ Intentar de nuevo</button></div>'
+      + '</div>';
+    track.appendChild(card);
+
+    var dot = document.createElement('button');
+    dot.className = 'dot' + (qi===0 ? ' active' : '');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', 'Ir a la pregunta ' + (qi+1));
+    dot.addEventListener('click', function(){ goTo(qi); });
+    dotsWrap.appendChild(dot);
+  });
+
+  function goTo(i){
+    current = Math.max(0, Math.min(QUESTIONS.length-1, i));
+    track.style.transform = 'translateX(' + (-current*100) + '%)';
+    label.textContent = 'Pregunta ' + (current+1) + ' de ' + QUESTIONS.length;
+    prevBtn.disabled = (current===0);
+    nextBtn.disabled = (current===QUESTIONS.length-1);
+    Array.prototype.forEach.call(dotsWrap.children, function(d, di){
+      d.classList.toggle('active', di===current);
+    });
+  }
+  prevBtn.addEventListener('click', function(){ goTo(current-1); });
+  nextBtn.addEventListener('click', function(){ goTo(current+1); });
+
+  function reveal(qi, chosen){
+    var q = QUESTIONS[qi];
+    var card = track.children[qi];
+    var optEls = card.querySelectorAll('.opt');
+    optEls.forEach(function(el, oi){
+      el.classList.add('locked');
+      var o = q.options[oi];
+      if(o.correct) el.classList.add('correct');
+      else if(oi===chosen) el.classList.add('wrong');
+      else el.classList.add('dim');
+    });
+    var fb = card.querySelector('.qc-feedback');
+    var ok = q.options[chosen].correct;
+    fb.classList.remove('good','bad');
+    fb.classList.add('show', ok ? 'good' : 'bad');
+    fb.querySelector('.verdict').textContent = ok ? '✓ Respuesta correcta' : '✗ Opción ' + q.options[chosen].k + ' — revisa por qué';
+    fb.querySelector('.msg').textContent = q.options[chosen].fb;
+    answered[qi] = true;
+    if(ok && dotsWrap.children[qi]) dotsWrap.children[qi].classList.add('solved');
+  }
+
+  function resetQuestion(qi){
+    var card = track.children[qi];
+    card.querySelectorAll('.opt').forEach(function(el){
+      el.classList.remove('locked','correct','wrong','dim');
+    });
+    var fb = card.querySelector('.qc-feedback');
+    fb.classList.remove('show','good','bad');
+    answered[qi] = false;
+  }
+
+  track.addEventListener('click', function(e){
+    var opt = e.target.closest('.opt');
+    if(opt && !opt.classList.contains('locked')){
+      var qi = +opt.getAttribute('data-q');
+      var oi = +opt.getAttribute('data-o');
+      if(!answered[qi]) reveal(qi, oi);
+      return;
+    }
+    var retry = e.target.closest('.qc-retry');
+    if(retry){ resetQuestion(+retry.getAttribute('data-retry')); }
+  });
+
+  goTo(0);
+
+  /* ====================== IMPRIMIR / GUARDAR PDF DE LAS 6 PREGUNTAS ====================== */
+  document.getElementById('btnPrintQuizPdf').addEventListener('click', function(){
+    window.print();
+  });
+
+  /* ====================== COMPARTIR: ENLACE DIRECTO ESTUDIANTE VS. CÓDIGO IFRAME ====================== */
+  (function(){
+    var box = document.getElementById('shareCodeBox');
+    var btn = document.getElementById('copyShareBtn');
+    var desc = document.getElementById('shareDesc');
+    var tabLink = document.getElementById('tabShareLink');
+    var tabEmbed = document.getElementById('tabShareEmbed');
+
+    var baseUrl = (location.protocol === 'http:' || location.protocol === 'https:')
+      ? window.location.href.split('?')[0].split('#')[0].replace(/[^\/]*$/, '')
+      : 'https://didaxislab.com/recursos/azar-probabilidad/';
+    var studentUrl = baseUrl + 'simulador.html';
+    var iframeCode = '<iframe src="' + studentUrl + '" width="100%" height="740" '
+                   + 'style="border:1px solid #e6e9ef;border-radius:14px" '
+                   + 'loading="lazy" allowfullscreen></iframe>';
+
+    var mode = 'link'; // 'link' | 'embed'
+
+    function updateShareUI(){
+      var isLink = (mode === 'link');
+      tabLink.classList.toggle('active', isLink);
+      tabLink.setAttribute('aria-selected', isLink ? 'true' : 'false');
+      tabEmbed.classList.toggle('active', !isLink);
+      tabEmbed.setAttribute('aria-selected', !isLink ? 'true' : 'false');
+
+      if(isLink){
+        desc.innerHTML = 'Comparte este enlace directo por WhatsApp, Google Classroom o Moodle: tus estudiantes abrirán <b>únicamente el simulador</b> a pantalla completa, sin ver esta página ni la guía docente.';
+        box.textContent = studentUrl;
+        btn.textContent = 'Copiar enlace';
+      } else {
+        desc.innerHTML = 'Copia este código para incrustar <b>solo el simulador</b> dentro de un curso de Moodle, Google Sites o tu página institucional, sin que el estudiante necesite registrarse.';
+        box.textContent = iframeCode;
+        btn.textContent = 'Copiar código';
+      }
+    }
+
+    tabLink.addEventListener('click', function(){ mode = 'link'; updateShareUI(); });
+    tabEmbed.addEventListener('click', function(){ mode = 'embed'; updateShareUI(); });
+
+    btn.addEventListener('click', function(){
+      var targetText = mode === 'link' ? studentUrl : iframeCode;
+      var defaultLabel = mode === 'link' ? 'Copiar enlace' : 'Copiar código';
+      navigator.clipboard.writeText(targetText).then(function(){
+        btn.textContent = '¡Copiado!';
+        btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = defaultLabel; btn.classList.remove('done'); }, 1800);
+      }).catch(function(){
+        var r = document.createRange(); r.selectNode(box);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        try { document.execCommand('copy'); btn.textContent = '¡Copiado!'; } catch(err){}
+        sel.removeAllRanges();
+        setTimeout(function(){ btn.textContent = defaultLabel; }, 1800);
+      });
+    });
+
+    updateShareUI();
+  })();
+
+  /* ====================== COPIAR CITA APA 7 Y DESCARGAR .RIS (ZOTERO) ====================== */
+  (function(){
+    var btn = document.getElementById('citeBtn');
+    var txt = document.getElementById('citeText');
+    var risBtn = document.getElementById('risBtn');
+
+    if(btn && txt){
+      btn.addEventListener('click', function(){
+        var s = (txt.innerText || txt.textContent).trim();
+        navigator.clipboard.writeText(s).then(function(){
+          btn.textContent = '¡Copiada!'; btn.classList.add('done');
+          setTimeout(function(){ btn.textContent = 'Copiar cita'; btn.classList.remove('done'); }, 1800);
+        }).catch(function(){
+          var r = document.createRange(); r.selectNode(txt);
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          try{ document.execCommand('copy'); btn.textContent = '¡Copiada!'; }catch(e){}
+          sel.removeAllRanges(); setTimeout(function(){ btn.textContent = 'Copiar cita'; }, 1800);
+        });
+      });
+    }
+
+    if(risBtn){
+      risBtn.addEventListener('click', function(){
+        var kwLines = RESOURCE_RIS_META.keywords.map(function(k){ return 'KW  - ' + k; });
+        var risContent = [
+          'TY  - COMP',
+          'TI  - ' + RESOURCE_RIS_META.title,
+          'AU  - Banquez Buendía, Héctor Enrique',
+          'PY  - 2026',
+          'DA  - 2026/11/15',
+          'PB  - Didaxis Lab / Zenodo',
+          'ET  - 2.0',
+          'LA  - es',
+          'DO  - ' + RESOURCE_RIS_META.doi,
+          'UR  - ' + RESOURCE_RIS_META.url
+        ].concat(kwLines, ['ER  - ']).join('\r\n');
+        var blob = new Blob([risContent], { type: 'application/x-research-info-systems;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = RESOURCE_RIS_META.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
+  })();
+</script>
+</body>
+</html>
