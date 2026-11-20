@@ -1,0 +1,4196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:;">
+  <meta name="description" content="Laboratorio interactivo de la función cuadrática: arrastra el vértice, mueve a, b y c y modela el movimiento parabólico. Didaxis Lab.">
+  <!-- Sin DOI ni enlaces a Zenodo: el registro contiene la guía docente. La ficha completa
+ y la citación viven en la página del recurso. -->
+  <meta name="author" content="Héctor Enrique Banquez Buendía">
+  <meta name="dcterms.license" content="https://creativecommons.org/licenses/by/4.0/">
+  <meta name="citation_title" content="Laboratorio Interactivo: Función Cuadrática y Parábola (v2.0)">
+  <meta name="citation_author" content="Banquez Buendía, Héctor Enrique">
+  <meta name="citation_publication_date" content="2026/11">
+  <title>Función Cuadrática y Parábola — Didaxis Lab</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /**/
+    :root {
+      --ink-blue: #0B2A4A;        /* 14,5:1 sobre blanco — Texto y titulares */
+      --brand-cyan: #0BC0D8;      /* 6,6:1 con azul tinta — Rellenos y botones (siempre texto azul tinta) */
+      --cyan-tint: #E6F9FC;       /* Fondo suave de selección */
+      --teal-accent: #0A7C8C;     /* 4,9:1 sobre blanco — Enlaces, líneas de gráfico e indicador de foco */
+      --text-gray: #566579;       /* 5,9:1 sobre blanco — Etiquetas secundarias */
+      --border-gray: #7A879B;     /* 3,6:1 sobre blanco — Bordes de controles y líneas de diagramas */
+      --border-soft: #CBD5E1;     /* Divisor estructural suave */
+      --surface-bg: #F4F7FA;      /* Fondo general de aplicación */
+      --surface-card: #FFFFFF;    /* Superficie principal */
+      --surface-muted: #EEF2F6;   /* Superficie secundaria */
+      --ok-green: #047857;        /* 5,5:1 sobre blanco — Estado correcto */
+      --ok-bg: #ECFDF5;
+      --warn-red: #B91C1C;        /* 6,5:1 sobre blanco — Estado por revisar */
+      --warn-bg: #FEF2F2;
+      --param-a: #0A7C8C;         /* Parámetro a (apertura/concavidad) */
+      --param-b: #1D4ED8;         /* Parámetro b (inclinación en eje Y / lugar del vértice) */
+      --param-c: #6D28D9;         /* Parámetro c (corte eje Y) */
+      --amber-accent: #9A3412;    /* Proyectil y alertas físicas */
+
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+      --font-math: 'Cambria Math', 'STIX Two Math', Georgia, 'Times New Roman', serif;
+
+      --fs-body: 16px;
+      --fs-label: 13px;
+      --fs-small: 12px;
+      --fs-kpi: 22px;
+      --fs-h1: 18px;
+      --fs-h2: 16px;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 12px;
+    }
+
+    /* MODO PROYECCIÓN */
+    body.projection-mode {
+      --fs-body: 18px;
+      --fs-label: 15px;
+      --fs-small: 14px;
+      --fs-kpi: 26px;
+      --fs-h1: 21px;
+      --fs-h2: 18px;
+    }
+
+    /* MODO ALTO CONTRASTE WCAG AAA (7:1+) */
+    body.high-contrast {
+      --ink-blue: #FFFFFF;
+      --brand-cyan: #FFFF00;
+      --cyan-tint: #262600;
+      --teal-accent: #00FFFF;
+      --text-gray: #E2E8F0;
+      --border-gray: #FFFF00;
+      --border-soft: #94A3B8;
+      --surface-bg: #000000;
+      --surface-card: #050505;
+      --surface-muted: #141414;
+      --ok-green: #00FF7F;
+      --ok-bg: #002B15;
+      --warn-red: #FF6B6B;
+      --warn-bg: #330000;
+      --param-a: #00FFFF;
+      --param-b: #FFFF00;
+      --param-c: #FF80FF;
+      --amber-accent: #FFA500;
+    }
+
+    /* MODO PIZARRA (OCULTA EL GUION LATERAL PARA PROYECCIÓN O EXPLORACIÓN A ANCHO COMPLETO) */
+    body.board-mode main.lab-workspace {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.board-mode .col-script {
+      display: none !important;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: var(--font-sans);
+      font-size: var(--fs-body);
+      background: var(--surface-bg);
+      color: var(--ink-blue);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--teal-accent);
+      outline-offset: 2px;
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+
+    .math-var {
+      font-family: var(--font-math);
+      font-style: italic;
+    }
+
+    .svg-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      vertical-align: middle;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* CABECERA CANÓNICA— IDÉNTICA A AZAR Y CÍRCULO UNITARIO) */
+    header.lab-header {
+      background: var(--surface-card);
+      border-bottom: 1.5px solid var(--border-soft);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--ink-blue);
+      font-weight: 800;
+      font-size: var(--fs-h1);
+      min-height: 44px;
+      padding: 4px 6px;
+      border-radius: var(--radius-sm);
+    }
+    .brand-link svg.brand-logo { width: 34px; height: 34px; flex-shrink: 0; }
+    .header-sep { width: 1.5px; height: 28px; background: var(--border-soft); }
+    .title-block { display: flex; flex-direction: column; }
+    .lab-main-title {
+      font-size: var(--fs-h1);
+      font-weight: 800;
+      color: var(--ink-blue);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .status-pill {
+      font-size: var(--fs-small);
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--ok-bg);
+      color: var(--ok-green);
+      border: 1px solid var(--ok-green);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* BOTONES Y CONTROLES (44x44 PX MÍNIMO Y 8 PX DE SEPARACIÓN) */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: var(--fs-label);
+      font-weight: 700;
+      cursor: pointer;
+      border: 1.5px solid var(--border-gray);
+      background: var(--surface-card);
+      color: var(--ink-blue);
+      transition: background-color 0.15s, border-color 0.15s;
+      text-decoration: none;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--cyan-tint);
+      border-color: var(--teal-accent);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-cyan {
+      background: var(--brand-cyan);
+      color: #0B2A4A;
+      border-color: #0B2A4A;
+    }
+    .btn-cyan:hover:not(:disabled) {
+      background: #09B0C6;
+      border-color: #0B2A4A;
+    }
+    .btn.active-toggle {
+      background: var(--cyan-tint);
+      border-color: var(--ink-blue);
+      box-shadow: inset 0 0 0 1px var(--ink-blue);
+    }
+    @media (max-width: 1200px) { .btn-text-wide { display: none; } }
+
+    .badge-count {
+      background: var(--brand-cyan);
+      color: #0B2A4A;
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 999px;
+      border: 1px solid #0B2A4A;
+    }
+
+    /* CINTA DE PREGUNTA ORIENTADORA */
+    .guiding-banner {
+      background: #0B2A4A;
+      color: #FFFFFF;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .guiding-text {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: var(--fs-body);
+    }
+    .guiding-chip {
+      background: var(--brand-cyan);
+      color: #0B2A4A;
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      flex-shrink: 0;
+    }
+
+    /* DISPOSICIÓN EN DOS COLUMNAS PARA ESCRITORIO Y PROYECTOR */
+    main.lab-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.95fr);
+      gap: 16px;
+      padding: 14px 16px 24px;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+      align-items: start;
+    }
+
+    @media (max-width: 1040px) {
+      main.lab-workspace {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 10px 10px 84px;
+      }
+    }
+
+    .col-stage, .col-script {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    /* ORDEN EN TELÉFONO (360x640): ESCENARIO Y DESLIZADORES PRIMERO, KPI DEBAJO */
+    @media (max-width: 920px) {
+      /* Proyección y pizarra son controles del docente: no ocupan fila en el teléfono. */
+      .header-sep { display: none; }
+      header.lab-header {
+        padding: 6px 10px;
+        gap: 6px;
+      }
+      .guiding-banner {
+        padding: 6px 10px;
+        font-size: var(--fs-label);
+      }
+      .col-stage > .card {
+        order: 1;
+        padding: 10px;
+      }
+      .col-stage > .kpi-strip {
+        order: 2;
+      }
+      .col-stage > details.collapsible-panel {
+        order: 3;
+      }
+    }
+
+    .card {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .card-title {
+      font-size: var(--fs-h2);
+      font-weight: 800;
+      color: var(--ink-blue);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* PANEL DE MAGNITUDES EN TIEMPO REAL (.kpi-strip) */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+    }
+    .kpi-box {
+      background: var(--surface-muted);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .kpi-label {
+      font-size: var(--fs-label);
+      color: var(--text-gray);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .kpi-num {
+      font-size: var(--fs-kpi);
+      font-weight: 800;
+      color: var(--ink-blue);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .kpi-sub {
+      font-size: var(--fs-small);
+      color: var(--text-gray);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .mode-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    /* En celular vertical, la fila de presets desliza horizontalmente en una sola línea */
+    .presets-scroll-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+      scrollbar-width: thin;
+    }
+    .presets-scroll-row .btn {
+      min-height: 38px;
+      padding: 6px 10px;
+      flex-shrink: 0;
+    }
+
+    /* CINTA DE ECUACIÓN SIMBÓLICA ACTIVA SOBRE EL LIENZO */
+    .equation-live-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: var(--surface-muted);
+      border: 1.5px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      margin-bottom: 8px;
+    }
+    .eq-main-formula {
+      font-family: var(--font-math);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--ink-blue);
+    }
+    .eq-form-tag {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--cyan-tint);
+      color: var(--ink-blue);
+      border: 1px solid var(--teal-accent);
+      margin-right: 8px;
+    }
+
+    /* CONTENEDOR DEL LIENZO ÚNICO DE LA PARÁBOLA Y CONTEXTO FÍSICO */
+    .canvas-stage-wrap {
+      position: relative;
+      width: 100%;
+      height: 360px;
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+    @media (max-width: 768px) {
+      .canvas-stage-wrap {
+        height: 44vh;
+        min-height: 235px;
+        max-height: 320px;
+      }
+    }
+    #quadCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    #quadCanvas:active {
+      cursor: grabbing;
+    }
+
+    .canvas-zoom-Overlay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 5;
+    }
+    .btn-zoom-canvas {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-gray);
+      background: rgba(255, 255, 255, 0.94);
+      color: #0B2A4A;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-zoom-canvas:hover {
+      background: var(--cyan-tint);
+      border-color: var(--teal-accent);
+    }
+
+    .canvas-badge-top {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1.5px solid var(--param-c);
+      color: #0B2A4A;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-small);
+      font-weight: 800;
+      pointer-events: none;
+      display: none;
+      z-index: 5;
+    }
+    .canvas-badge-top.visible { display: block; }
+
+    .canvas-alert-bottom {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #FEF3C7;
+      border: 1.5px solid #D97706;
+      color: #78350F;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-small);
+      font-weight: 700;
+      text-align: center;
+      max-width: 92%;
+      display: none;
+      z-index: 6;
+    }
+    .canvas-alert-bottom.visible { display: block; }
+
+    .canvas-tooltip {
+      position: absolute;
+      background: #0B2A4A;
+      color: #FFFFFF;
+      font-size: var(--fs-small);
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 5px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.12s;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .keyboard-instruction {
+      font-size: var(--fs-label);
+      color: var(--text-gray);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* GRILLA SIMÉTRICA DE 3 DESLIZADORES (a, b, c) EN ESCRITORIO Y MÓVIL */
+    .sliders-3-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .slider-card {
+      background: var(--surface-muted);
+      border: 1.5px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      min-width: 0;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+      font-size: var(--fs-label);
+      font-weight: 800;
+    }
+    .slider-wrap {
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      background: #CBD5E1;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--brand-cyan);
+      border: 3px solid #0B2A4A;
+      cursor: grab;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--brand-cyan);
+      border: 3px solid #0B2A4A;
+      cursor: grab;
+    }
+    #slB::-webkit-slider-thumb { background: #60A5FA; }
+    #slC::-webkit-slider-thumb { background: #C084FC; }
+
+    .slider-sub-range {
+      font-size: 11px;
+      color: var(--text-gray);
+      text-align: center;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* PANEL PLEGABLE DE CONTROLES SECUNDARIOS (REGISTROS DE DUVAL Y ACCESIBILIDAD) */
+    details.secondary-drawer {
+      background: var(--surface-muted);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      margin-top: 10px;
+    }
+    details.secondary-drawer > summary {
+      min-height: 44px;
+      padding: 8px 12px;
+      font-size: var(--fs-label);
+      font-weight: 800;
+      color: var(--ink-blue);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      list-style: none;
+    }
+    details.secondary-drawer > summary::-webkit-details-marker { display: none; }
+    .drawer-body-grid {
+      padding: 10px 12px;
+      border-top: 1px solid var(--border-soft);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .duval-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .duval-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: var(--fs-small);
+    }
+    .duval-tag {
+      font-weight: 800;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      min-width: 78px;
+    }
+    .duval-expr {
+      font-family: var(--font-math);
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ink-blue);
+      flex: 1;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    /* DESPLEGABLES ACCESIBLES (<details class="collapsible-panel">) */
+    details.collapsible-panel {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    details.collapsible-panel > summary {
+      min-height: 48px;
+      padding: 10px 14px;
+      font-size: var(--fs-body);
+      font-weight: 800;
+      color: var(--ink-blue);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--surface-muted);
+      list-style: none;
+    }
+    details.collapsible-panel > summary::-webkit-details-marker { display: none; }
+    .collapsible-body {
+      padding: 14px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    /* TABLA DE DATOS EQUIVALENTE (x, f(x)) CON RESALTADO DE VÉRTICE Y PROYECCIÓN */
+    .data-table-wrap { overflow-x: auto; }
+    table.equiv-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--fs-label);
+      text-align: center;
+    }
+    table.equiv-table th, table.equiv-table td {
+      padding: 8px 8px;
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+    }
+    table.equiv-table th {
+      background: var(--surface-muted);
+      color: var(--ink-blue);
+      font-weight: 800;
+      cursor: default;
+    }
+    table.equiv-table td:hover, table.equiv-table td:focus-visible {
+      background: var(--cyan-tint);
+      font-weight: 800;
+    }
+    table.equiv-table td.vertex-col {
+      background: var(--cyan-tint);
+      border-left: 2px solid var(--teal-accent);
+      border-right: 2px solid var(--teal-accent);
+      font-weight: 900;
+      color: var(--ink-blue);
+    }
+
+    /* COLUMNA DERECHA: GUION EN 3 MOMENTOS (POE + EXPLORACIÓN/MISIONES + RETOS ADAPTATIVOS) */
+    .moment-stepper {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .moment-tab {
+      min-height: 48px;
+      padding: 8px 6px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-gray);
+      background: var(--surface-card);
+      color: var(--ink-blue);
+      font-family: var(--font-sans);
+      font-size: var(--fs-label);
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.25;
+    }
+    .moment-tab span.m-step {
+      display: block;
+      font-size: var(--fs-small);
+      color: var(--text-gray);
+      text-transform: uppercase;
+    }
+    .moment-tab.active {
+      background: var(--brand-cyan);
+      color: #0B2A4A;
+      border-color: #0B2A4A;
+      box-shadow: inset 0 0 0 1px #0B2A4A;
+    }
+    .moment-tab.active span.m-step { color: #0B2A4A; }
+
+
+    .option-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .opt-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 44px;
+      padding: 10px 12px;
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: var(--fs-body);
+      color: var(--ink-blue);
+      line-height: 1.4;
+    }
+    .opt-card:hover {
+      background: var(--cyan-tint);
+      border-color: var(--teal-accent);
+    }
+    .opt-card input[type=radio] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--ink-blue);
+      flex-shrink: 0;
+    }
+
+    textarea.justif-input, input.text-field, input.num-field, select.select-field {
+      padding: 8px 10px;
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: var(--fs-body);
+      color: var(--ink-blue);
+      background: var(--surface-card);
+      min-height: 42px;
+    }
+    textarea.justif-input {
+      width: 100%;
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .ctrl-box {
+      background: var(--surface-muted);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* CAJAS DE ESTADO Y RETROALIMENTACIÓN DIAGNÓSTICA DE 3 NIVELES */
+    .status-box {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-label);
+      line-height: 1.5;
+      display: none;
+    }
+    .status-box.visible { display: block; }
+    .status-box.state-ok {
+      background: var(--ok-bg);
+      border: 1.5px solid var(--ok-green);
+      color: var(--ink-blue);
+    }
+    .status-box.state-review {
+      background: var(--warn-bg);
+      border: 1.5px solid var(--warn-red);
+      color: var(--ink-blue);
+    }
+    .status-box.state-info {
+      background: var(--surface-muted);
+      border: 1.5px solid var(--teal-accent);
+      color: var(--ink-blue);
+    }
+    .status-lead {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .status-box.state-ok .status-lead { color: var(--ok-green); }
+    .status-box.state-review .status-lead { color: var(--warn-red); }
+    .status-box.state-info .status-lead { color: var(--teal-accent); }
+
+    /* TARJETAS DE LOS 5 RETOS SECUENCIALES Y ADAPTATIVOS */
+    .reto-progress-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .reto-seg {
+      height: 6px;
+      border-radius: 999px;
+      background: var(--border-soft);
+      transition: background-color 0.2s;
+    }
+    .reto-seg.done { background: var(--ok-green); }
+
+    .reto-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .reto-card {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      transition: border-color 0.2s, opacity 0.2s;
+    }
+    .reto-card.locked {
+      opacity: 0.55;
+      background: var(--surface-muted);
+    }
+    .reto-card.solved {
+      border-color: var(--ok-green);
+    }
+    .reto-card.adaptive-card {
+      border-left: 4px solid var(--param-c);
+    }
+    .reto-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .reto-title {
+      font-size: var(--fs-label);
+      font-weight: 800;
+      color: var(--ink-blue);
+    }
+    .tries-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--surface-muted);
+      color: var(--text-gray);
+      border: 1px solid var(--border-soft);
+    }
+    .reto-inputs-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    /* PIE DE ATRIBUCIÓN: UNA SOLA LÍNEA. LA FICHA COMPLETA VIVE EN LA PÁGINA DEL RECURSO. */
+    /* Aviso de la compuerta POE, igual que en los otros laboratorios */
+    .gate-banner {
+      background: var(--surface-muted);
+      border-left: 4px solid var(--teal-accent);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-label);
+      color: var(--ink-blue);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .gate-banner .svg-icon { flex-shrink: 0; margin-top: 1px; }
+
+    /* ============================================================
+       NÚCLEO · Pestañas de teléfono, reinicio, modo docente y fichas
+       Esta sección es idéntica en todos los recursos del catálogo.
+       ============================================================ */
+
+    /* Pestañas de teléfono. Aparecen cuando las dos columnas se apilan: sin
+       ellas, el paso Predice queda muy por debajo de los controles que bloquea
+       y el ciclo POE se lee al revés. */
+    .mobile-tabs { display: none; }
+    @media (max-width: 1040px) {
+      .mobile-tabs {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        gap: 6px;
+        padding: 6px 10px;
+        background: var(--surface-card);
+        border-bottom: 1.5px solid var(--border-soft);
+      }
+      body.mtab-retos .col-stage { display: none; }
+      body.mtab-sim .col-script { display: none; }
+    }
+    .mobile-tabs button {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 44px;
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: var(--fs-label);
+      font-weight: 800;
+      color: var(--text-gray);
+      background: var(--surface-muted);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+    }
+    .mobile-tabs button .svg-icon { width: 16px; height: 16px; }
+    .mobile-tabs button.active {
+      color: var(--ink-blue);
+      background: var(--brand-cyan);
+      border-color: var(--ink-blue);
+    }
+    .mobile-tabs button:focus-visible { outline: 3px solid var(--teal-accent); outline-offset: 2px; }
+    .mtab-pill {
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: var(--surface-card);
+      color: var(--ink-blue);
+      border: 1px solid var(--border-soft);
+    }
+    .mobile-tabs button.active .mtab-pill { border-color: var(--ink-blue); }
+
+    /* Reinicio del progreso: la otra mitad de guardarlo. Discreto. */
+    .reset-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      margin-top: 12px;
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: var(--fs-small);
+      font-weight: 700;
+      color: var(--text-gray);
+      background: transparent;
+      border: 1px dashed var(--border-soft);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .reset-progress .svg-icon { width: 14px; height: 14px; }
+    .reset-progress:hover,
+    .reset-progress.armed {
+      color: var(--warn-red);
+      border-color: var(--warn-red);
+      background: var(--warn-bg);
+    }
+    .reset-progress.armed { border-style: solid; }
+    .reset-progress:focus-visible { outline: 3px solid var(--teal-accent); outline-offset: 2px; }
+
+    /* Modo docente. No es la pantalla del estudiante: se abre con Alt+D y aquí
+       sí caben el código DBA y la ficha curricular, porque el archivo viaja por
+       USB sin la página que los contiene. No tiene pestaña de respuestas. */
+    .teacher-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 42, 74, 0.68);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1100;
+    }
+    .teacher-overlay[hidden] { display: none; }
+    .teacher-panel {
+      background: var(--surface-card);
+      border-radius: var(--radius-lg);
+      width: min(760px, 100%);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .teacher-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      background: var(--ink-blue);
+    }
+    .teacher-head h2 { margin: 0; font-size: var(--fs-h2); color: var(--surface-card); }
+    .teacher-head-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .teacher-head .btn {
+      min-height: 36px;
+      padding: 6px 10px;
+      font-size: var(--fs-small);
+      background: transparent;
+      color: var(--surface-card);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+    .teacher-head .btn:hover { background: rgba(255, 255, 255, 0.12); }
+    .teacher-head .btn.active-toggle {
+      background: var(--brand-cyan);
+      color: var(--ink-blue);
+      border-color: var(--brand-cyan);
+    }
+    .teacher-head .btn:focus-visible { outline: 3px solid var(--brand-cyan); outline-offset: 2px; }
+    .teacher-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 8px 12px 0;
+      background: var(--surface-muted);
+      flex-wrap: wrap;
+    }
+    .teacher-tabs [role="tab"] {
+      font-family: inherit;
+      font-size: var(--fs-label);
+      font-weight: 700;
+      color: var(--text-gray);
+      background: transparent;
+      border: 0;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      padding: 9px 12px;
+      min-height: 40px;
+      cursor: pointer;
+    }
+    .teacher-tabs [role="tab"][aria-selected="true"] { background: var(--surface-card); color: var(--ink-blue); }
+    .teacher-tabs [role="tab"]:focus-visible { outline: 3px solid var(--teal-accent); outline-offset: -3px; }
+    .teacher-body { padding: 14px 18px 18px; overflow-y: auto; }
+    .teacher-body h3 { margin: 2px 0 8px; color: var(--ink-blue); font-size: var(--fs-h2); }
+    .teacher-body p { font-size: var(--fs-label); line-height: 1.55; margin-bottom: 8px; }
+    .teacher-note { color: var(--text-gray); font-size: var(--fs-small); }
+    .print-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .err-row {
+      display: flex;
+      gap: 10px;
+      padding: 9px 0;
+      border-top: 1px solid var(--border-soft);
+      font-size: var(--fs-label);
+    }
+    .err-row:first-child { border-top: 0; }
+    .err-k { flex: 0 0 116px; font-weight: 800; color: var(--ink-blue); }
+    .err-v { flex: 1; min-width: 0; }
+    .err-tag {
+      display: inline-block;
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 999px;
+      margin-bottom: 3px;
+    }
+    .err-tag.ok { background: var(--ok-bg); color: var(--ok-green); }
+    .err-tag.no { background: var(--warn-bg); color: var(--warn-red); }
+    .err-tag.na { background: var(--surface-muted); color: var(--text-gray); }
+    .code-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+    .code-out, .verify-out { display: block; margin-top: 8px; font-size: var(--fs-label); line-height: 1.5; }
+    .code-value {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--ink-blue);
+      background: var(--cyan-tint);
+      border: 1.5px solid var(--brand-cyan);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .completion-code {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1.5px dashed var(--brand-cyan);
+      border-radius: var(--radius-md);
+      background: var(--cyan-tint);
+    }
+    .completion-code > strong { font-size: var(--fs-label); color: var(--ink-blue); }
+
+    /* Fichas imprimibles: invisibles en pantalla, cada una se imprime sola */
+    .print-sheet { display: none; }
+    @media print {
+      body.printing > *:not(.print-sheet) { display: none !important; }
+      body.printing .print-sheet { display: none !important; }
+      body.print-taller  #sheetTaller,
+      body.print-ticket  #sheetTicket,
+      body.print-rubrica #sheetRubrica { display: block !important; }
+      .print-sheet { color: #000; font-size: 11pt; }
+      .ps-head { border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 6px; }
+      .ps-brand { font-size: 9pt; font-weight: 800; letter-spacing: .12em; }
+      .ps-head h1 { font-size: 15pt; margin: 2px 0 4px; }
+      .ps-meta { font-size: 10pt; }
+      .ps-list { margin: 0 0 8px 18px; }
+      .ps-list li { margin-bottom: 6px; line-height: 1.4; }
+      .ps-space { border-bottom: 1px solid #999; height: 34px; margin-top: 5px; }
+      .ps-space.tall { height: 64px; }
+      .ps-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+      .ps-table th, .ps-table td { border: 1px solid #000; padding: 5px; text-align: left; vertical-align: top; }
+      .ps-self { margin: 10px 0; font-size: 10pt; }
+      .ps-foot { margin-top: 12px; font-size: 8.5pt; border-top: 1px solid #999; padding-top: 5px; }
+    }
+
+    footer.identity-footer {
+      background: var(--surface-card);
+      border-top: 1.5px solid var(--border-soft);
+      padding: 10px 16px 16px;
+      font-size: var(--fs-small);
+      color: var(--text-gray);
+      text-align: center;
+    }
+    footer.identity-footer a { color: var(--teal-accent); }
+
+    /* BARRA DE ACCIÓN FIJA EN EL BORDE INFERIOR PARA TELÉFONO */
+    .mobile-bottom-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface-card);
+      border-top: 2px solid var(--ink-blue);
+      padding: 8px 10px;
+      z-index: 90;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 -2px 10px rgba(11, 42, 74, 0.12);
+    }
+    @media (max-width: 1040px) {
+      .mobile-bottom-bar { display: flex; }
+    }
+
+    /* MODALES (TRAZA EXPORTABLE Y PERFIL DE PROGRESO / DESCRIPCIÓN) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 42, 74, 0.68);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-window {
+      background: var(--surface-card);
+      border: 2px solid var(--ink-blue);
+      border-radius: var(--radius-lg);
+      max-width: 860px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-head {
+      background: #0B2A4A;
+      color: #FFFFFF;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .modal-head h2 { font-size: var(--fs-h1); font-weight: 800; }
+    .modal-body {
+      padding: 18px;
+      overflow-y: auto;
+      font-size: var(--fs-body);
+      color: var(--ink-blue);
+    }
+    .modal-foot {
+      padding: 12px 18px;
+      background: var(--surface-muted);
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    pre.trace-output {
+      background: var(--surface-muted);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--ink-blue);
+      white-space: pre-wrap;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    @media print {
+      header.lab-header, .guiding-banner, .mobile-bottom-bar, .mobile-tabs,
+      .reset-progress, .modal-foot { display: none !important; }
+      html, body { background: #FFFFFF !important; }
+      /* Al imprimir no hay pestañas: las dos columnas salen siempre. */
+      .col-stage, .col-script { display: flex !important; }
+      .modal-overlay.open { position: static !important; background: none !important; padding: 0 !important; }
+      .modal-window { max-width: 100% !important; max-height: none !important; border: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====: ENCABEZADO CANÓNICO UNIFICADO DE DIDAXIS LAB =====-->
+  <header class="lab-header">
+    <div class="brand-group">
+      <a class="brand-link" href="https://www.didaxislab.com" target="_blank" rel="noopener noreferrer">
+        <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Logo Didaxis Lab">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#0B2A4A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#0B2A4A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="3"/>
+          <circle cx="80" cy="20" r="15" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="3"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="3"/>
+          <circle cx="20" cy="80" r="15" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="3"/>
+        </svg>
+        <span>Didaxis Lab</span>
+      </a>
+      <div class="header-sep" aria-hidden="true"></div>
+      <div class="title-block">
+        <h1 class="lab-main-title">
+          <span>Función Cuadrática y Parábola</span>
+        </h1>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <button type="button" class="btn teacher-entry" data-action="teacher-open"
+              aria-haspopup="dialog" title="Panel para docentes (Alt+D)">
+        <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>
+        <span>Modo docente</span>
+      </button>
+      <button type="button" class="btn btn-cyan" id="btnOpenTrace">
+        <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Traza</span>
+        <span class="badge-count tabular-nums" id="traceBadgeCount">1</span>
+      </button>
+      <button type="button" class="btn" id="btnFullscreen" style="display:none;" aria-label="Pantalla completa" title="Pantalla completa">
+        <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        <span id="fullscreenText" class="btn-text-wide">Pantalla completa</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== PREGUNTA ORIENTADORA =====-->
+  <div class="guiding-banner" role="region" aria-label="Pregunta orientadora del laboratorio">
+    <div class="guiding-text">
+      <span class="guiding-chip">Pregunta</span>
+      <strong>¿Qué le hace cada parámetro a la parábola?</strong>
+    </div>
+  </div>
+
+  <!-- ===== PESTAÑAS DE TELÉFONO: SOLO CUANDO LAS DOS COLUMNAS SE APILAN =====-->
+  <nav class="mobile-tabs" aria-label="Vistas del laboratorio">
+    <button type="button" data-action="mobile-tab" data-view="sim" class="active" aria-pressed="true">
+      <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18"/></svg>
+      Simulador
+    </button>
+    <button type="button" data-action="mobile-tab" data-view="retos" aria-pressed="false">
+      <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Retos
+      <span class="mtab-pill tabular-nums" id="mtabRetosPill">Predice</span>
+    </button>
+  </nav>
+
+  <!-- ===== ESPACIO DE TRABAJO EN DOS COLUMNAS =====-->
+  <main class="lab-workspace">
+
+    <!-- ===== COLUMNA IZQUIERDA: MAGNITUDES, LIENZO ÚNICO DE LA PARÁBOLA, DESLIZADORES Y TABLA =====-->
+    <section class="col-stage" id="colStage" aria-label="Escenario manipulable de la función cuadrática">
+
+      <!--: PANEL DE MAGNITUDES CON COMA DECIMAL Y RESPETO AL MODO EXPLORACIÓN -->
+      <div class="kpi-strip" aria-live="polite">
+        <div class="kpi-box">
+          <span class="kpi-label">Concavidad (<span class="math-var">a</span>)</span>
+          <span class="kpi-num tabular-nums" id="kpiConcav" style="color:var(--param-a);">Abre arriba</span>
+          <span class="kpi-sub tabular-nums" id="kpiParamASub">a = 1,0 · Mínimo en V</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Vértice <span class="math-var">V</span>(<span class="math-var">h</span>; <span class="math-var">k</span>)</span>
+          <span class="kpi-num tabular-nums" id="kpiVertex">V(0,00; 0,00)</span>
+          <span class="kpi-sub tabular-nums" id="kpiAxisSym">Eje: x = 0,00</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Discriminante Δ</span>
+          <span class="kpi-num tabular-nums" id="kpiDisc" style="color:var(--param-b);">Δ = 0,00</span>
+          <span class="kpi-sub tabular-nums" id="kpiRootsCount">1 raíz real doble</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Raíces</span>
+          <span class="kpi-num tabular-nums" id="kpiRoots" style="color:var(--param-c);">x = 0,00</span>
+          <span class="kpi-sub tabular-nums" id="kpiYInt">Corte Y: 0,00</span>
+        </div>
+      </div>
+
+      <!--Y 4: ESCENARIO MANIPULABLE EN UN ÚNICO LIENZO AMPLIO -->
+      <div class="card">
+        <!-- FILA HORIZONTAL DESLIZABLE DE ESCENARIOS PRECONFIGURADOS -->
+        <div class="presets-scroll-row" role="group" aria-label="Funciones cuadráticas preconfiguradas">
+          <button type="button" class="btn active-toggle" data-preset="1,0,0" title="f(x) = x²">x²</button>
+          <button type="button" class="btn" data-preset="-1,0,4" title="f(x) = −x² + 4">Puente</button>
+          <button type="button" class="btn" data-preset="1,-4,3" title="f(x) = x² − 4x + 3">Dos raíces</button>
+          <button type="button" class="btn" data-preset="1,2,5" title="f(x) = x² + 2x + 5">Sin raíces</button>
+          <button type="button" class="btn" data-preset="-1,6,0" title="f(x) = −x² + 6x">Proyectil</button>
+          <button type="button" class="btn" id="btnResetQuad">Reiniciar</button>
+          <button type="button" class="btn" id="btnUndoQuad" disabled>Deshacer</button>
+        </div>
+
+        <!-- BARRA DE EXPRESIÓN SIMBÓLICA Y CONMUTADORES CONTEXTUALES -->
+        <div class="equation-live-bar">
+          <div class="eq-main-formula tabular-nums" id="liveEquationBanner">
+            <span class="eq-form-tag" id="liveFormTag">General</span>
+            <span id="liveFormulaSpan">f(x) = 1,0x² + 0,0x + 0,0</span>
+          </div>
+          <div class="mode-group" role="group" aria-label="Modos de vista sobre el lienzo">
+            <button type="button" class="btn" id="btnPhysMode" aria-pressed="false" title="Superponer el lanzamiento de un proyectil con sus vectores de velocidad, la altura máxima y el alcance">
+              <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span>Contexto Físico</span>
+            </button>
+            <button type="button" class="btn" id="btnPlayProj" style="display:none;" title="Pausar o reanudar el movimiento del proyectil">
+              <span id="playProjText">Pausar proyectil</span>
+            </button>
+            <button type="button" class="btn" id="btnBlindMode" aria-pressed="false" title="Ocultar vértice, discriminante y raíces para conjeturarlos tú">
+              <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span id="blindModeText">Ocultar valores</span>
+            </button>
+            <button type="button" class="btn active-toggle" id="btnToggleLocus" aria-pressed="true" title="Mostrar la curva que describe el vértice al variar b">
+              <span>Rastro del vértice (b)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- LIENZO ÚNICO DE LA PARÁBOLA Y DEL MOVIMIENTO PARABÓLICO -->
+        <div class="canvas-stage-wrap" id="canvasStageWrap" tabindex="0" role="img" aria-label="Plano cartesiano interactivo de la función cuadrática">
+          <canvas id="quadCanvas"></canvas>
+
+          <div class="canvas-badge-top visible tabular-nums" id="locusBadgeOverlay">
+            El vértice recorre y = 0,00 − 1,00x²
+          </div>
+
+          <div class="canvas-zoom-Overlay">
+            <button type="button" class="btn-zoom-canvas" id="btnZoomIn" aria-label="Acercar gráfica" title="Acercar (+)">+</button>
+            <button type="button" class="btn-zoom-canvas" id="btnZoomOut" aria-label="Alejar gráfica" title="Alejar (−)">−</button>
+            <button type="button" class="btn-zoom-canvas" id="btnZoomHome" aria-label="Restaurar vista centrada" title="Centrar ejes" style="font-size:13px;">1:1</button>
+          </div>
+
+          <div class="canvas-alert-bottom" id="canvasAlertBanner" role="status"></div>
+          <div class="canvas-tooltip tabular-nums" id="canvasTooltip" aria-hidden="true"></div>
+        </div>
+
+        <div class="keyboard-instruction">
+          <span>
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Arrastra el <strong>vértice</strong> o el <strong>corte Y</strong> sobre la gráfica, o usa los deslizadores.
+          </span>
+          <button type="button" class="btn" id="btnRevealConjecture" style="display:none;min-height:34px;padding:4px 10px;">
+            Revelar valores
+          </button>
+        </div>
+
+        <!-- LOS 3 DESLIZADORES SIMÉTRICOS (a, b, c) EN UNA FILA COMPACTA -->
+        <div class="sliders-3-grid">
+          <div class="slider-card">
+            <div class="slider-header">
+              <label for="slA" style="color:var(--param-a);"><span class="math-var">a</span></label>
+              <span class="tabular-nums" id="valA" style="color:var(--param-a);">1,0</span>
+            </div>
+            <div class="slider-wrap">
+              <input type="range" id="slA" min="-5" max="5" step="0.1" value="1">
+            </div>
+            <div class="slider-sub-range">Concavidad</div>
+          </div>
+
+          <div class="slider-card">
+            <div class="slider-header">
+              <label for="slB" style="color:var(--param-b);"><span class="math-var">b</span></label>
+              <span class="tabular-nums" id="valB" style="color:var(--param-b);">0,0</span>
+            </div>
+            <div class="slider-wrap">
+              <input type="range" id="slB" min="-10" max="10" step="0.5" value="0">
+            </div>
+            <div class="slider-sub-range">Pendiente en x = 0</div>
+          </div>
+
+          <div class="slider-card">
+            <div class="slider-header">
+              <label for="slC" style="color:var(--param-c);"><span class="math-var">c</span></label>
+              <span class="tabular-nums" id="valC" style="color:var(--param-c);">0,0</span>
+            </div>
+            <div class="slider-wrap">
+              <input type="range" id="slC" min="-10" max="10" step="0.5" value="0">
+            </div>
+            <div class="slider-sub-range">Corte en Y</div>
+          </div>
+        </div>
+
+        <!-- PANEL PLEGABLE DE CONTROLES SECUNDARIOS: 3 REGISTROS DE DUVAL Y ACCESIBILIDAD (SONIFICACIÓN / ALTO CONTRASTE) -->
+        <details class="secondary-drawer" id="quadSecondaryDrawer">
+          <summary>
+            <span>Más opciones</span>
+            <span style="color:var(--teal-accent);">▼</span>
+          </summary>
+          <div class="drawer-body-grid">
+            <div>
+              <div class="slider-header">
+                <span>Las tres formas de la misma parábola</span>
+              </div>
+              <div class="duval-list">
+                <div class="duval-row">
+                  <span class="duval-tag">1. General</span>
+                  <span class="duval-expr tabular-nums" id="regGeneralExpr">f(x) = 1,00x² + 0,00x + 0,00</span>
+                  <button type="button" class="btn" data-ring="general" style="min-height:32px;padding:2px 8px;" title="Resaltar el corte Y en la gráfica">↷ Corte Y</button>
+                </div>
+                <div class="duval-row">
+                  <span class="duval-tag">2. Canónica</span>
+                  <span class="duval-expr tabular-nums" id="regCanonicaExpr">f(x) = 1,00(x − 0,00)² + 0,00</span>
+                  <button type="button" class="btn" data-ring="canonica" style="min-height:32px;padding:2px 8px;" title="Resaltar el vértice en la gráfica">↷ Vértice</button>
+                </div>
+                <div class="duval-row">
+                  <span class="duval-tag">3. Factorizada</span>
+                  <span class="duval-expr tabular-nums" id="regFactorExpr">f(x) = 1,00(x − 0,00)²</span>
+                  <button type="button" class="btn" data-ring="factorizada" id="btnRingRoots" style="min-height:32px;padding:2px 8px;" title="Resaltar las raíces en la gráfica">↷ Raíces</button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="slider-header">
+                <span>Accesibilidad</span>
+              </div>
+              <div class="btn-row" style="margin-top:6px;">
+                <button type="button" class="btn" id="btnSonify" aria-pressed="false" style="flex:1;">
+                  <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  <span id="sonifyBtnText">Escuchar</span>
+                </button>
+                <button type="button" class="btn" id="btnOpenDescModal" style="flex:1;">
+                  <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  <span>Descripción textual</span>
+                </button>
+              </div>
+              <div class="btn-row" style="margin-top:8px;">
+                <button type="button" class="btn" id="btnHighContrast" aria-pressed="false" style="flex:1;">
+                  <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"/></svg>
+                  <span id="hcBtnText">Alto contraste</span>
+                </button>
+                <button type="button" class="btn" id="btnOpenProgressModal" style="flex:1;">
+                  <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  <span>Mi progreso</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- TABLA DE DATOS EQUIVALENTE (ACCESIBILIDAD Y CONVERSIÓN TABULAR ↔ GRÁFICA) -->
+      <details class="collapsible-panel" open>
+        <summary>
+          <span>
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+            Tabla de valores
+          </span>
+          <span style="font-size:var(--fs-label);color:var(--teal-accent);">▼</span>
+        </summary>
+        <div class="collapsible-body">
+          <div class="data-table-wrap">
+            <table class="equiv-table tabular-nums" id="equivTable" aria-label="Tabla de valores de x y f(x) centrada alrededor de cero">
+              <tbody>
+                <tr id="tableRowX">
+                  <th scope="row">Abscisa x</th>
+                  <td tabindex="0" data-x="-3">−3</td>
+                  <td tabindex="0" data-x="-2">−2</td>
+                  <td tabindex="0" data-x="-1">−1</td>
+                  <td tabindex="0" data-x="0">0</td>
+                  <td tabindex="0" data-x="1">1</td>
+                  <td tabindex="0" data-x="2">2</td>
+                  <td tabindex="0" data-x="3">3</td>
+                </tr>
+                <tr id="tableRowY">
+                  <th scope="row">Ordenada f(x)</th>
+                  <td tabindex="0" data-x="-3">9,00</td>
+                  <td tabindex="0" data-x="-2">4,00</td>
+                  <td tabindex="0" data-x="-1">1,00</td>
+                  <td tabindex="0" data-x="0">0,00</td>
+                  <td tabindex="0" data-x="1">1,00</td>
+                  <td tabindex="0" data-x="2">4,00</td>
+                  <td tabindex="0" data-x="3">9,00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!--: SÍNTESIS CONCEPTUAL E INSTITUCIONALIZACIÓN -->
+      <details class="collapsible-panel">
+        <summary>
+          <span>
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Qué deberías poder explicar al final
+          </span>
+          <span style="font-size:var(--fs-label);color:var(--teal-accent);">▼</span>
+        </summary>
+        <div class="collapsible-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;font-size:var(--fs-label);">
+            <div class="ctrl-box">
+              <strong>1. Qué hace cada parámetro</strong>
+              <p style="margin-top:4px;">
+                El coeficiente <strong>a</strong> controla la concavidad y apertura; <strong>c</strong> es el corte con el eje Y pues al sustituir <span class="math-var">x</span> = 0 se anulan <span class="math-var">ax</span>² y <span class="math-var">bx</span>. Al variar <strong>b</strong>, el vértice <span class="math-var">h = −b</span>/(2<span class="math-var">a</span>) no se mueve en línea recta, sino sobre la parábola invertida <span class="math-var">y = c − ax</span>².
+              </p>
+            </div>
+            <div class="ctrl-box">
+              <strong>2. Tres formas, una misma parábola</strong>
+              <p style="margin-top:4px;">
+                La forma <strong>General</strong> (<span class="math-var">ax²+bx+c</span>) transparenta el intercepto <span class="math-var">f</span>(0) = <span class="math-var">c</span>; la <strong>Canónica</strong> (<span class="math-var">a(x−h)²+k</span>) exhibe directamente el vértice (<span class="math-var">h, k</span>); y la <strong>Factorizada</strong> (<span class="math-var">a(x−r₁)(x−r₂)</span>) explicita las raíces cuando Δ ≥ 0.
+              </p>
+            </div>
+            <div class="ctrl-box">
+              <strong>3. El discriminante decide las raíces</strong>
+              <p style="margin-top:4px;">
+                El signo de <strong>Δ = b² − 4ac</strong> determina si existen dos raíces reales (Δ &gt; 0), una raíz doble de tangencia (Δ = 0) o ninguna (Δ &lt; 0). En balística (<span class="math-var">a</span> &lt; 0), el vértice representa la altura máxima donde la velocidad vertical se anula (<span class="math-var">v_y</span> = 0).
+              </p>
+            </div>
+          </div>
+        </div>
+      </details>
+
+    </section>
+
+    <!-- ===== COLUMNA DERECHA: GUION EN 3 MOMENTOS (CICLO POE, MISIONES Y RETOS ADAPTATIVOS) =====-->
+    <aside class="col-script" id="colScript" aria-label="Guion estructurado de la actividad">
+
+      <div class="moment-stepper" role="tablist" aria-label="Momentos de la secuencia didáctica">
+        <button type="button" class="moment-tab active" data-moment="1" role="tab" aria-selected="true" id="tabMoment1">
+          <span class="m-step">Paso 1</span>Predice
+        </button>
+        <button type="button" class="moment-tab" data-moment="2" role="tab" aria-selected="false" id="tabMoment2">
+          <span class="m-step">Paso 2</span>Explora
+        </button>
+        <button type="button" class="moment-tab" data-moment="3" role="tab" aria-selected="false" id="tabMoment3">
+          <span class="m-step">Paso 3</span>Retos <span id="tabRetosCount">0/5</span>
+        </button>
+      </div>
+
+      <!-- ===== PANEL MOMENTO 1: COMPROMISO DE ANTICIPACIÓN (CICLO POE) =====-->
+      <div class="card" id="panelMoment1" role="tabpanel" aria-labelledby="tabMoment1">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Predice antes de explorar</span>
+          </h2>
+        </div>
+
+        <div class="gate-banner" id="poeGateNotice">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div>
+            El rastro del vértice se habilita cuando registres tu predicción: es justo lo que esta pregunta te pide anticipar.
+          </div>
+        </div>
+
+        <p style="font-size:var(--fs-body);margin-bottom:8px;">
+          En <span class="math-var">f</span>(<span class="math-var">x</span>) = <span class="math-var">x</span>² + <span class="math-var">bx</span> + 2, con <strong>a = 1</strong> y <strong>c = 2</strong> fijos, mueves solo el deslizador <strong>b</strong> de −10 a +10. ¿Qué recorrido describe el <strong>vértice</strong> en el plano?
+        </p>
+
+        <div class="option-stack" role="radiogroup" aria-label="Opciones de anticipación sobre el movimiento del vértice">
+          <label class="opt-card">
+            <input type="radio" name="poeQuadOpt" value="horizontal">
+            <span><strong>A.</strong> Se desplaza en horizontal sobre la recta <em>y</em> = 2, sin cambiar de altura.</span>
+          </label>
+          <label class="opt-card">
+            <input type="radio" name="poeQuadOpt" value="vertical">
+            <span><strong>B.</strong> Solo sube y baja sobre el eje Y.</span>
+          </label>
+          <label class="opt-card">
+            <input type="radio" name="poeQuadOpt" value="parabola_inv">
+            <span><strong>C.</strong> Se mueve a la vez en <em>x</em> y en <em>y</em>, trazando la parábola invertida <em>y</em> = 2 − <em>x</em>².</span>
+          </label>
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label for="poeJustifInput" style="display:block;font-size:var(--fs-label);font-weight:700;margin-bottom:4px;">
+            ¿Por qué? Queda registrado en tu traza.
+          </label>
+          <textarea id="poeJustifInput" class="justif-input" placeholder="Escribe por qué crees que pasa eso..."></textarea>
+        </div>
+
+        <button type="button" class="btn btn-cyan" id="btnSubmitPoe" style="width:100%;">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          <span>Registrar mi predicción</span>
+        </button>
+
+        <div class="status-box" id="poeResultBox" aria-live="polite"></div>
+      </div>
+
+      <!-- ===== PANEL MOMENTO 2: SIGNIFICADO DE PARÁMETROS Y MISIONES DE CONSTRUCCIÓN INVERSA =====-->
+      <div class="card" id="panelMoment2" role="tabpanel" aria-labelledby="tabMoment2" style="display:none;">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span>Explora y construye</span>
+          </h2>
+        </div>
+
+        <div class="ctrl-box" style="margin-bottom:10px;">
+          <strong style="display:block;margin-bottom:6px;">Con los valores de ahora:</strong>
+          <ul style="padding-left:18px;font-size:var(--fs-label);display:flex;flex-direction:column;gap:4px;" id="dynamicParamExplainList">
+            <li id="expLineA"><strong>Parámetro a:</strong> Controla la apertura y concavidad.</li>
+            <li id="expLineB"><strong>Parámetro b:</strong> Determina la inclinación al cruzar el eje Y y ubica la abscisa del vértice en h = −b/(2a).</li>
+            <li id="expLineC"><strong>Parámetro c:</strong> Es el valor f(0) = c donde la parábola corta al eje vertical Y.</li>
+          </ul>
+        </div>
+
+        <div class="ctrl-box" style="border:1.5px solid var(--teal-accent);background:var(--surface-card);">
+          <div class="slider-header">
+            <strong style="color:var(--teal-accent);">Construye la parábola objetivo</strong>
+            <span class="tabular-nums" id="missionMatchBadge" style="font-weight:800;">Selecciona una misión</span>
+          </div>
+          <p id="missionDescText" style="font-size:var(--fs-label);margin:6px 0;">
+            Elige una misión y superpón tu parábola sobre la curva verde.
+          </p>
+          <div class="btn-row">
+            <button type="button" class="btn" data-qmission="0">1 · Vértice (2; −1)</button>
+            <button type="button" class="btn" data-qmission="1">2 · Arco de puente</button>
+            <button type="button" class="btn" data-qmission="2">3 · Tangente (Δ = 0)</button>
+            <button type="button" class="btn" data-qmission="-1">Ocultar</button>
+          </div>
+          <div class="status-box" id="missionFeedbackBox"></div>
+        </div>
+      </div>
+
+      <!-- ===== PANEL MOMENTO 3: 5 RETOS PROGRESIVOS CON ANDAMIAJE DE 3 NIVELES Y MOTOR ADAPTATIVO =====-->
+      <div class="card" id="panelMoment3" role="tabpanel" aria-labelledby="tabMoment3" style="display:none;">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span>Retos</span>
+          </h2>
+          <span class="status-pill tabular-nums" id="retosProgressText">0 / 5</span>
+        </div>
+
+        <div class="reto-progress-strip" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" id="retoProgressBar">
+          <div class="reto-seg" data-rseg="1"></div>
+          <div class="reto-seg" data-rseg="2"></div>
+          <div class="reto-seg" data-rseg="3"></div>
+          <div class="reto-seg" data-rseg="4"></div>
+          <div class="reto-seg" data-rseg="5"></div>
+        </div>
+
+        <div class="reto-stack" id="retosListContainer">
+
+          <!-- RETO 1: CONCAVIDAD -->
+          <div class="reto-card" id="retoCard1">
+            <div class="reto-head-row">
+              <span class="reto-title">Reto 1 · Concavidad</span>
+              <span class="tries-pill tabular-nums" id="triesBadge1">0 intentos</span>
+            </div>
+            <p style="font-size:var(--fs-label);color:var(--text-gray);">
+              Mueve <strong>a</strong> hasta que la parábola abra hacia abajo (∩). ¿Qué condición cumple <em>a</em>?
+            </p>
+            <div class="reto-inputs-row">
+              <label for="r1Select" style="font-size:var(--fs-label);font-weight:700;">Condición:</label>
+              <select id="r1Select" class="select-field" style="flex:1;">
+                <option value="">— Selecciona —</option>
+                <option value="a>0">a &gt; 0 (positivo)</option>
+                <option value="a<0">a &lt; 0 (negativo)</option>
+                <option value="a=0">a = 0 (nulo)</option>
+                <option value="a=1">a = 1</option>
+              </select>
+              <button type="button" class="btn btn-cyan" id="btnCheckR1">Comprobar</button>
+            </div>
+            <div class="status-box" id="fbBox1" role="status"></div>
+          </div>
+
+          <!-- RETO 2: VÉRTICE -->
+          <div class="reto-card locked" id="retoCard2" aria-disabled="true">
+            <div class="reto-head-row">
+              <span class="reto-title">Reto 2 · Vértice</span>
+              <span class="tries-pill tabular-nums" id="triesBadge2">Bloqueado</span>
+            </div>
+            <p style="font-size:var(--fs-label);color:var(--text-gray);">
+              Lleva el vértice a <strong>V(2; −3)</strong> con <strong>a &gt; 0</strong>, y escribe los valores que usaste.
+            </p>
+            <div class="reto-inputs-row">
+              <label style="font-size:var(--fs-small);font-weight:700;">a = <input type="number" id="r2A" class="num-field tabular-nums" step="0.1" style="width:68px;" placeholder="a"></label>
+              <label style="font-size:var(--fs-small);font-weight:700;">b = <input type="number" id="r2B" class="num-field tabular-nums" step="0.5" style="width:68px;" placeholder="b"></label>
+              <label style="font-size:var(--fs-small);font-weight:700;">c = <input type="number" id="r2C" class="num-field tabular-nums" step="0.5" style="width:68px;" placeholder="c"></label>
+              <button type="button" class="btn btn-cyan" id="btnCheckR2">Comprobar</button>
+            </div>
+            <div class="status-box" id="fbBox2" role="status"></div>
+          </div>
+
+          <!-- RETO 3: INTERCEPTO CON SUSTITUCIÓN -->
+          <div class="reto-card locked" id="retoCard3" aria-disabled="true">
+            <div class="reto-head-row">
+              <span class="reto-title">Reto 3 · Corte con el eje Y</span>
+              <span class="tries-pill tabular-nums" id="triesBadge3">Bloqueado</span>
+            </div>
+            <p style="font-size:var(--fs-label);color:var(--text-gray);">
+              Con <strong>a = 1, b = 0 y c = 5</strong>, ¿cuánto vale <strong>f(0)</strong>? Escribe también la sustitución.
+            </p>
+            <div class="reto-inputs-row">
+              <button type="button" class="btn" id="btnLoadR3Preset" style="min-height:36px;padding:4px 10px;">Cargar (1; 0; 5)</button>
+              <label style="font-size:var(--fs-small);font-weight:700;">f(0) = <input type="number" id="r3Y" class="num-field tabular-nums" step="0.1" style="width:74px;" placeholder="Valor"></label>
+            </div>
+            <div class="reto-inputs-row">
+              <input type="text" id="r3Sustit" class="text-field" style="flex:1;font-size:var(--fs-label);" placeholder="Sustitución: ej. 1·0² + 0·0 + 5 = 5">
+              <button type="button" class="btn btn-cyan" id="btnCheckR3">Comprobar</button>
+            </div>
+            <div class="status-box" id="fbBox3" role="status"></div>
+          </div>
+
+          <!-- RETO 4: DISCRIMINANTE -->
+          <div class="reto-card locked" id="retoCard4" aria-disabled="true">
+            <div class="reto-head-row">
+              <span class="reto-title">Reto 4 · Discriminante</span>
+              <span class="tries-pill tabular-nums" id="triesBadge4">Bloqueado</span>
+            </div>
+            <p style="font-size:var(--fs-label);color:var(--text-gray);">
+              ¿Cuántas raíces reales tiene <strong>f(x) = x² + 2x + 5</strong>? Puedes cargarla con el botón «Sin raíces».
+            </p>
+            <div class="reto-inputs-row">
+              <select id="r4Select" class="select-field" style="flex:1;">
+                <option value="">— Selecciona —</option>
+                <option value="0">0 raíces reales (Δ &lt; 0)</option>
+                <option value="1">1 raíz real doble (Δ = 0)</option>
+                <option value="2">2 raíces reales distintas (Δ &gt; 0)</option>
+              </select>
+              <button type="button" class="btn btn-cyan" id="btnCheckR4">Comprobar</button>
+            </div>
+            <div class="status-box" id="fbBox4" role="status"></div>
+          </div>
+
+          <!-- RETO 5: PROYECTIL EN CONTEXTO FÍSICO -->
+          <div class="reto-card locked" id="retoCard5" aria-disabled="true">
+            <div class="reto-head-row">
+              <span class="reto-title">Reto 5 · Proyectil</span>
+              <span class="tries-pill tabular-nums" id="triesBadge5">Bloqueado</span>
+            </div>
+            <p style="font-size:var(--fs-label);color:var(--text-gray);">
+              Un proyectil sale de (0; 0), sube hasta <strong>9 m</strong> y cae a los <strong>6 m</strong>. ¿Cuánto vale <strong>a</strong>? Actívalo con «Contexto Físico».
+            </p>
+            <div class="reto-inputs-row">
+              <label style="font-size:var(--fs-label);font-weight:700;">Coeficiente a = <input type="number" id="r5A" class="num-field tabular-nums" step="0.1" style="width:90px;" placeholder="Ej. -1"></label>
+              <button type="button" class="btn btn-cyan" id="btnCheckR5" style="flex:1;">Comprobar</button>
+            </div>
+            <div class="status-box" id="fbBox5" role="status"></div>
+          </div>
+
+        </div>
+
+        <!-- CONTENEDOR DINÁMICO DE RETOS ADAPTATIVOS DE REFUERZO -->
+        <div id="adaptiveRetosMount" class="reto-stack" style="margin-top:10px;"></div>
+
+        <!-- CONCLUSIÓN ESCRITA PARA LA TRAZA -->
+        <div class="ctrl-box" style="margin-top:12px;">
+          <label for="closingArgumentInput" style="display:block;font-size:var(--fs-label);font-weight:800;margin-bottom:4px;">
+            Tu conclusión para la puesta en común:
+          </label>
+          <textarea id="closingArgumentInput" class="justif-input" placeholder="Explica cómo se relacionan la forma canónica y el discriminante con el vértice y los cortes..."></textarea>
+          <div class="btn-row" style="margin-top:8px;">
+            <button type="button" class="btn" id="btnSaveArgument" style="flex:1;">
+              <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+              <span>Guardar en la traza</span>
+            </button>
+            <button type="button" class="btn" id="btnOpenProgressFromMoment3">
+              <span>Mi progreso</span>
+            </button>
+          </div>
+          <div class="status-box" id="argSavedFeedback"></div>
+        </div>
+
+        <!-- Evidencia breve y verificable, complementaria a la traza .txt -->
+        <div class="completion-code">
+          <strong>Genera tu código de compleción</strong>
+          <p class="teacher-note" style="margin:4px 0 0;">Entrégaselo a tu docente. Resume qué retos resolviste y no puede alterarse sin que se note.</p>
+          <div class="code-row">
+            <label for="codeInitials" style="font-size:var(--fs-label);font-weight:700;">Tus iniciales:</label>
+            <input type="text" id="codeInitials" class="text-field" maxlength="3" style="width:90px;"
+                   autocomplete="off" placeholder="ABC"
+                   aria-label="Tus iniciales, máximo tres letras, sin datos personales">
+            <button type="button" class="btn btn-cyan" data-action="gen-code">Generar mi código</button>
+          </div>
+          <output class="code-out" id="codeOut" aria-live="polite"></output>
+        </div>
+
+        <!-- La otra mitad de guardar el progreso: poder borrarlo. Dos pulsaciones. -->
+        <button type="button" class="reset-progress" data-action="reset-progress"
+                aria-label="Reiniciar mi progreso: borra la predicción, las respuestas a los retos y la traza">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          <span class="reset-label">Reiniciar mi progreso</span>
+        </button>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- ===== BARRA INFERIOR FIJA EN TELÉFONO =====-->
+  <nav class="mobile-bottom-bar" aria-label="Acciones rápidas en teléfono">
+    <button type="button" class="btn btn-cyan" id="btnMobPhys" style="flex:1;">Contexto Físico</button>
+    <button type="button" class="btn" id="btnMobReset">Reiniciar</button>
+    <button type="button" class="btn" id="btnMobRetos">Retos (<span id="mobRetosCounter">0/5</span>)</button>
+  </nav>
+
+  <!-- ===== ATRIBUCIÓN MÍNIMA (CC BY VIAJA CON EL ARCHIVO). SIN DOI: LLEVA A LA GUÍA DOCENTE. =====-->
+  <footer class="identity-footer" role="contentinfo">
+    <a href="https://didaxislab.com/recursos/funcion-cuadratica/" target="_blank" rel="noopener noreferrer">Didaxis Lab</a> · Función Cuadrática y Parábola v2.0 ·
+    Héctor Banquez Buendía · <a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>
+  </footer>
+
+  <!-- ===== MODO DOCENTE: SE ABRE CON Alt+D. SIN PESTAÑA DE RESPUESTAS. =====-->
+  <div class="teacher-overlay" id="teacherOverlay" hidden>
+    <div class="teacher-panel" role="dialog" aria-modal="true" aria-labelledby="teacherTitle">
+      <div class="teacher-head">
+        <h2 id="teacherTitle">Modo docente · Función Cuadrática y Parábola</h2>
+        <div class="teacher-head-actions">
+          <button type="button" class="btn" id="btnProjection" aria-pressed="false" title="Ampliar la tipografía para proyectar en el aula">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>Proyección</span>
+          </button>
+          <button type="button" class="btn" id="btnBoardMode" aria-pressed="false" title="Ocultar el guion lateral y usar el simulador a ancho completo">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+            <span id="boardModeText">Enfocar</span>
+          </button>
+          <button type="button" class="btn" data-action="teacher-close" aria-label="Cerrar el modo docente">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span>Cerrar</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="teacher-tabs" role="tablist" aria-label="Secciones del modo docente">
+        <button role="tab" id="ttab-res" aria-selected="true"  aria-controls="tpanel-res" data-action="teacher-tab" data-tab="res">Resumen</button>
+        <button role="tab" id="ttab-err" aria-selected="false" aria-controls="tpanel-err" data-action="teacher-tab" data-tab="err" tabindex="-1">Errores frecuentes</button>
+        <button role="tab" id="ttab-fic" aria-selected="false" aria-controls="tpanel-fic" data-action="teacher-tab" data-tab="fic" tabindex="-1">Fichas imprimibles</button>
+        <button role="tab" id="ttab-ver" aria-selected="false" aria-controls="tpanel-ver" data-action="teacher-tab" data-tab="ver" tabindex="-1">Verificador</button>
+      </div>
+
+      <div class="teacher-body">
+        <section role="tabpanel" id="tpanel-res" aria-labelledby="ttab-res">
+          <h3>Ficha del recurso</h3>
+          <p><strong>Función Cuadrática y Parábola</strong> · Simulador de un solo archivo, sin conexión. Grados 9.º a 11.º. Duración sugerida: 60–90 min.</p>
+          <p><strong>Alineación DBA (v2):</strong> 9.º — DBA 2 · 10.º — DBA 7 · 11.º — DBA 2.</p>
+          <p><strong>Competencias Saber 11:</strong> Interpretación y representación (retos 1 y 3) · Formulación y ejecución (retos 2 y 4) · Argumentación (reto 5 y la conclusión escrita). Cada error abre un andamiaje de tres niveles —pista, otra vía, paso a paso— y al terminar el motor genera refuerzo según los conceptos fallados.</p>
+          <p><strong>Ruta sugerida (60 min):</strong> predicción escrita sobre el recorrido del vértice (10) → arrastre del vértice y de (0; c), con las tres formas algebraicas (15) → misiones de construcción inversa (10) → contexto físico del proyectil (10) → retos y conclusión escrita (15).</p>
+          <p><strong>Accesibilidad:</strong> alto contraste AAA, sonificación de la curva y descripción textual copiable. Útiles también para proyectar en un aula con mala luz.</p>
+          <p class="teacher-note"><strong>Atajos:</strong> Alt+D abre y cierra este panel. <em>Proyección</em> amplía la tipografía para el tablero; <em>Enfocar</em> oculta el guion lateral. El rastro del vértice permanece oculto hasta que el estudiante registra su predicción: es la respuesta a la pregunta de anticipación.</p>
+        </section>
+
+        <section role="tabpanel" id="tpanel-err" aria-labelledby="ttab-err" hidden>
+          <h3>Errores detectados en este dispositivo</h3>
+          <p class="teacher-note">La <strong>primera</strong> respuesta a cada reto, que es la diagnóstica: la que delata el obstáculo antes de que el estudiante corrija. Conteo local de esta máquina y este navegador. No sale ningún dato a la red.</p>
+          <div id="errStatsBox"></div>
+        </section>
+
+        <section role="tabpanel" id="tpanel-fic" aria-labelledby="ttab-fic" hidden>
+          <h3>Fichas imprimibles</h3>
+          <p class="teacher-note">Cada botón imprime <strong>solo</strong> esa ficha, lista para fotocopiar, con encabezado para nombre, curso y fecha.</p>
+          <div class="print-btns">
+            <button type="button" class="btn" data-action="print-sheet" data-sheet="taller">Imprimir taller del estudiante</button>
+            <button type="button" class="btn" data-action="print-sheet" data-sheet="ticket">Imprimir ticket de salida</button>
+            <button type="button" class="btn" data-action="print-sheet" data-sheet="rubrica">Imprimir rúbrica</button>
+          </div>
+        </section>
+
+        <section role="tabpanel" id="tpanel-ver" aria-labelledby="ttab-ver" hidden>
+          <h3>Verificador de códigos de compleción</h3>
+          <p class="teacher-note">El estudiante genera su código al final del panel de retos, con sus iniciales. Pégalo aquí: se valida la suma de verificación y se muestra qué retos completó y cuándo. Un código alterado en un solo carácter <strong>siempre</strong> falla. Todo ocurre en este dispositivo.</p>
+          <div class="code-row">
+            <label for="verifyCodeInput" style="font-size:var(--fs-label);font-weight:700;">Código:</label>
+            <input type="text" id="verifyCodeInput" class="text-field" style="flex:1;min-width:180px;"
+                   placeholder="ABC-27C4J-K8" autocomplete="off" aria-label="Código de compleción a verificar">
+            <button type="button" class="btn btn-cyan" data-action="verify-code">Verificar</button>
+          </div>
+          <output class="verify-out" id="verifyOut" role="status" aria-live="polite"></output>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL 1: TRAZABILIDAD LOCAL EXPORTABLE =====-->
+  <div class="modal-overlay" id="modalTrace" role="dialog" aria-modal="true" aria-labelledby="modalTraceTitle">
+    <div class="modal-window">
+      <div class="modal-head">
+        <h2 id="modalTraceTitle">Tu traza de trabajo</h2>
+        <button type="button" class="btn" id="btnCloseTraceTop" aria-label="Cerrar ventana de traza">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span>Cerrar</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:var(--fs-label);color:var(--text-gray);margin-bottom:10px;">
+          Se genera en tu dispositivo y no se envía a ningún servidor. Recoge tu predicción, los parámetros y misiones que exploraste, tu desempeño en los retos y tu conclusión escrita.
+        </p>
+        <div style="margin-bottom:10px;">
+          <label for="studentAliasInput" style="display:block;font-size:var(--fs-label);font-weight:700;margin-bottom:4px;">
+            Tu nombre o alias (opcional):
+          </label>
+          <input type="text" id="studentAliasInput" class="text-field" style="width:100%;" placeholder="Nada sale de tu dispositivo">
+        </div>
+        <pre class="trace-output tabular-nums" id="tracePreviewPre"></pre>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn" id="btnPrintTrace">Imprimir / Guardar PDF</button>
+        <button type="button" class="btn" id="btnCopyTrace">Copiar como texto</button>
+        <button type="button" class="btn" id="btnDownloadHtmlReport">Informe (.html)</button>
+        <button type="button" class="btn btn-cyan" id="btnDownloadTrace">Descargar (.txt)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL 2: DESCRIPCIÓN TEXTUAL Y PERFIL DE PROGRESO POR CONCEPTO =====-->
+  <div class="modal-overlay" id="modalProgress" role="dialog" aria-modal="true" aria-labelledby="modalProgressTitle">
+    <div class="modal-window">
+      <div class="modal-head">
+        <h2 id="modalProgressTitle">Tu progreso</h2>
+        <button type="button" class="btn" id="btnCloseProgressTop" aria-label="Cerrar ventana de diagnóstico">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span>Cerrar</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="ctrl-box" style="margin-bottom:12px;">
+          <div class="slider-header">
+            <strong>Descripción de la parábola actual</strong>
+            <button type="button" class="btn" id="btnCopyTextDesc" style="min-height:32px;padding:2px 10px;">Copiar descripción</button>
+          </div>
+          <p id="fullTextDescParagraph" style="font-size:var(--fs-label);margin-top:6px;"></p>
+        </div>
+
+        <div class="slider-header">
+          <strong>Aciertos (verde) y revisiones (rojo) por concepto</strong>
+          <span class="status-pill" id="adaptiveLevelBadge">Nivel: Inicial</span>
+        </div>
+        <canvas id="progressBarsCanvas" width="680" height="230" style="width:100%;height:auto;background:var(--surface-muted);border:1px solid var(--border-soft);border-radius:var(--radius-sm);margin:8px 0;"></canvas>
+        <div class="status-box visible state-info" id="adaptiveRecoBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="srLiveRegion" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);"></div>
+
+<script>
+(function() {
+  'use strict';
+
+ // ===================== FORMATO COLOMBIANO CON COMA DECIMAL (CERO EMOJIS) =====================
+  function fmtDec(num, digits) {
+    if (num === null || num === undefined || !isFinite(num)) return '—';
+    const d = typeof digits === 'number' ? digits : 2;
+    const clean = Math.abs(num) < 1e-9 ? 0 : num;
+    return clean.toFixed(d).replace('.', ',');
+  }
+
+  function fmtSigned(num, digits) {
+    const d = typeof digits === 'number' ? digits : 2;
+    const clean = Math.abs(num) < 1e-9 ? 0 : num;
+    const sign = clean >= 0 ? '+ ' : '− ';
+    return sign + Math.abs(clean).toFixed(d).replace('.', ',');
+  }
+
+  const SVG_OK = '<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+  const SVG_REVIEW = '<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+  const SVG_INFO = '<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+
+ // ===================== ESTADO GLOBAL DEL LABORATORIO =====================
+  const state = {
+    moment: 1,
+    a: 1.0,
+    b: 0.0,
+    c: 0.0,
+    xMin: -10,
+    xMax: 10,
+    yMin: -10,
+    yMax: 10,
+    activeForm: 'general',    // 'general' | 'canonica' | 'factorizada'
+    ringHighlight: null,      // null | 'general' | 'canonica' | 'factorizada'
+    poeUnlocked: false,
+    showLocusB: false,
+    blindMode: false,
+    physMode: false,
+    projPlaying: true,
+    projT: 0,                 // [0, 1] a lo largo del vuelo físico
+    hoverTableX: null,
+    highContrast: false,
+    sonifying: false,
+    historyStack: [],
+    activeMission: -1,
+    missionsDone: [false, false, false],
+
+ // Ciclo POE y Traza
+    poeChoice: null,
+    poeJustification: '',
+    closingArgument: '',
+    studentAlias: '',
+    retosOk: [false, false, false, false, false],
+    retosCompleted: 0,
+    intentos: [0, 0, 0, 0, 0],
+    firstResponses: [null, null, null, null, null],
+    adaptiveGenerated: false,
+    adaptiveCardsData: {},
+
+    perfil: {
+      nivel: 'inicial',
+      erroresPorConcepto: { concavidad: 0, vertice: 0, intercepto: 0, discriminante: 0, contextoFisico: 0 },
+      aciertosPorConcepto: { concavidad: 0, vertice: 0, intercepto: 0, discriminante: 0, contextoFisico: 0 },
+      pistasUsadas: { concavidad: 0, vertice: 0, intercepto: 0, discriminante: 0, contextoFisico: 0 },
+      intentosTotales: 0
+    },
+    experimentsLog: ['Estado inicial: a = 1,0; b = 0,0; c = 0,0'],
+    traceEvents: []
+  };
+
+ // En localStorage, no en sessionStorage: en una sala de cómputo la sesión se
+ // interrumpe y el estudiante vuelve después del descanso. El precio es que dos
+ // estudiantes en la misma máquina heredarían el trabajo del otro, y por eso el
+ // botón «Reiniciar mi progreso» es la otra mitad de esta decisión.
+  const PROGRESS_KEY = 'didaxis_cuadratica_v2_progress';
+  const LEGACY_SESSION_KEY = 'didaxis_cuadratica_v2_unified_session';
+
+  function progressStore() {
+    return window.localStorage;
+  }
+
+ // Nada se guarda hasta haber leído lo guardado. Sin esta guarda, la traza de
+ // apertura escribía el estado por defecto ANTES de que loadSession() lo
+ // leyera, y cada recarga borraba el progreso del estudiante.
+  let progressReady = false;
+
+  function saveSession() {
+    if (!progressReady) return;
+    try {
+      const payload = {
+        a: state.a, b: state.b, c: state.c,
+        poeUnlocked: state.poeUnlocked,
+        poeChoice: state.poeChoice,
+        poeJustification: state.poeJustification,
+        closingArgument: state.closingArgument,
+        studentAlias: state.studentAlias,
+        missionsDone: state.missionsDone,
+        retosOk: state.retosOk,
+        retosCompleted: state.retosCompleted,
+        intentos: state.intentos,
+        firstResponses: state.firstResponses,
+        perfil: state.perfil,
+        experimentsLog: state.experimentsLog.slice(-40),
+        traceEvents: state.traceEvents.slice(-60)
+      };
+      progressStore().setItem(PROGRESS_KEY, JSON.stringify(payload));
+    } catch (_) {}
+  }
+
+  function loadSession() {
+    let habia = false;
+    try {
+ // Una sesión abierta con la versión anterior se recupera una sola vez.
+      let raw = progressStore().getItem(PROGRESS_KEY);
+      if (!raw) raw = window.sessionStorage.getItem(LEGACY_SESSION_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (!d || typeof d !== 'object') return;
+      habia = true;
+      state.poeUnlocked = !!d.poeUnlocked;
+      if (typeof d.a === 'number') state.a = d.a;
+      if (typeof d.b === 'number') state.b = d.b;
+      if (typeof d.c === 'number') state.c = d.c;
+      state.poeChoice = d.poeChoice || null;
+      state.poeJustification = d.poeJustification || '';
+      state.closingArgument = d.closingArgument || '';
+      state.studentAlias = d.studentAlias || '';
+      if (Array.isArray(d.missionsDone) && d.missionsDone.length === 3) state.missionsDone = d.missionsDone;
+      if (Array.isArray(d.retosOk) && d.retosOk.length === 5) {
+        state.retosOk = d.retosOk;
+        state.retosCompleted = d.retosOk.filter(Boolean).length;
+      }
+      if (Array.isArray(d.intentos) && d.intentos.length === 5) state.intentos = d.intentos;
+      if (Array.isArray(d.firstResponses) && d.firstResponses.length === 5) state.firstResponses = d.firstResponses;
+      if (d.perfil && typeof d.perfil === 'object') state.perfil = d.perfil;
+      if (Array.isArray(d.experimentsLog)) state.experimentsLog = d.experimentsLog;
+      if (Array.isArray(d.traceEvents)) state.traceEvents = d.traceEvents;
+    } catch (_) {
+      habia = false;
+    } finally {
+ // A partir de aquí sí se puede escribir: ya sabemos qué había.
+      progressReady = true;
+      if (!habia) {
+        recordTrace('APERTURA', 'Laboratorio Función Cuadrática y Parábola (v2.0) iniciado.');
+      } else {
+        saveSession();
+      }
+    }
+  }
+
+ // Confirmación en dos pulsaciones, sin diálogo nativo del navegador: el
+ // segundo clic dentro de 6 segundos es el que borra.
+  let resetArmedTimer = null;
+
+  function resetProgressUI(armed) {
+    document.querySelectorAll('[data-action="reset-progress"]').forEach(function(b) {
+      const lbl = b.querySelector('.reset-label') || b;
+      lbl.textContent = armed ? 'Pulsa otra vez para borrar' : 'Reiniciar mi progreso';
+      b.classList.toggle('armed', armed);
+    });
+  }
+
+  function requestResetProgress() {
+    if (resetArmedTimer) {
+      window.clearTimeout(resetArmedTimer);
+      resetArmedTimer = null;
+      try {
+        progressStore().removeItem(PROGRESS_KEY);
+        window.sessionStorage.removeItem(LEGACY_SESSION_KEY);
+      } catch (e) {}
+      window.location.reload();
+      return;
+    }
+    resetProgressUI(true);
+    resetArmedTimer = window.setTimeout(function() {
+      resetArmedTimer = null;
+      resetProgressUI(false);
+    }, 6000);
+  }
+
+ // ===================== PESTAÑAS DE TELÉFONO =====================
+  function setMobileTab(view) {
+    const retos = view === 'retos';
+    document.body.classList.toggle('mtab-retos', retos);
+    document.body.classList.toggle('mtab-sim', !retos);
+    if (retos) document.body.classList.remove('board-mode');
+    document.querySelectorAll('[data-action="mobile-tab"]').forEach(function(b) {
+      const act = b.getAttribute('data-view') === view;
+      b.classList.toggle('active', act);
+      b.setAttribute('aria-pressed', act ? 'true' : 'false');
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function updateMobileTabPill() {
+    const pill = document.getElementById('mtabRetosPill');
+    if (!pill) return;
+    pill.textContent = state.poeUnlocked ? (state.retosCompleted + ' / 5') : 'Predice';
+  }
+
+ // ===================== COMPUERTA POE =====================
+ // El rastro del vértice ES la respuesta a la pregunta de anticipación: la
+ // curva punteada y su rótulo decían «El vértice recorre y = c − ax²» antes de
+ // que el estudiante predijera. Se ocultan hasta que registre su predicción.
+  function applyPoeGate() {
+    const btn = document.getElementById('btnToggleLocus');
+    const banner = document.getElementById('poeGateNotice');
+    if (state.poeUnlocked) {
+      if (btn) {
+        btn.disabled = false;
+        btn.title = 'Mostrar la curva que describe el vértice al variar b';
+      }
+      if (banner) banner.style.display = 'none';
+    } else {
+      state.showLocusB = false;
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.remove('active-toggle');
+        btn.setAttribute('aria-pressed', 'false');
+        btn.title = 'Se habilita cuando registres tu predicción';
+      }
+      if (banner) banner.style.display = '';
+    }
+  }
+
+  function recordTrace(category, description) {
+    const timeStr = new Date().toTimeString().split(' ')[0];
+    state.traceEvents.push({ time: timeStr, category: category, description: description });
+    const badge = document.getElementById('traceBadgeCount');
+    if (badge) badge.textContent = String(state.traceEvents.length);
+    saveSession();
+  }
+
+ // La traza de apertura se registra dentro de loadSession(), una vez leído lo
+ // que hubiera guardado. Invocada aquí arriba, escribía el estado por defecto
+ // antes de leer y borraba el progreso en cada recarga.
+
+ // ===================== CÁLCULOS MATEMÁTICOS DE LA PARÁBOLA =====================
+  const EPS_A = 0.01;
+
+  const MISSIONS = [
+    {
+      title: 'Misión 1: Vértice en V(2; −1)',
+      desc: 'Construye la parábola con a = 1,0 cuyo vértice se ubique en V(2,00; −1,00), es decir, f(x) = x² − 4x + 3.',
+      target: { a: 1.0, b: -4.0, c: 3.0 }
+    },
+    {
+      title: 'Misión 2: Arco de Puente Simétrico',
+      desc: 'Construye el arco parabólico invertido con a = −0,5, b = 0,0 y altura central c = 4,5.',
+      target: { a: -0.5, b: 0.0, c: 4.5 }
+    },
+    {
+      title: 'Misión 3: Parábola Tangente al Eje X (Δ = 0)',
+      desc: 'Construye la parábola con a = 1,0 que sea tangente al eje X en x = −2,00 (con b = 4,0 y c = 4,0).',
+      target: { a: 1.0, b: 4.0, c: 4.0 }
+    }
+  ];
+
+  function computeMathState() {
+    const a = state.a, b = state.b, c = state.c;
+    const isLinear = Math.abs(a) < EPS_A;
+    const aSafe = isLinear ? (a >= 0 ? EPS_A : -EPS_A) : a;
+    const h = -b / (2 * aSafe);
+    const k = c - (b * b) / (4 * aSafe);
+    const disc = b * b - 4 * aSafe * c;
+    let roots = [];
+    if (!isLinear) {
+      if (Math.abs(disc) < 1e-7) {
+        roots = [-b / (2 * aSafe)];
+      } else if (disc > 0) {
+        const sq = Math.sqrt(disc);
+        const r1 = (-b - sq) / (2 * aSafe);
+        const r2 = (-b + sq) / (2 * aSafe);
+        roots = [Math.min(r1, r2), Math.max(r1, r2)];
+      }
+    }
+    return { a, b, c, isLinear, aSafe, h, k, disc, roots };
+  }
+
+  function evalF(x, a, b, c) {
+    return a * x * x + b * x + c;
+  }
+
+ // ===================== LIENZO ÚNICO Y SISTEMA DE COORDENADAS =====================
+  const canvas = document.getElementById('quadCanvas');
+  const ctx = canvas.getContext('2d');
+  const wrap = document.getElementById('canvasStageWrap');
+
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const W = wrap.clientWidth || 640;
+    const H = wrap.clientHeight || 360;
+    if (canvas.width !== Math.round(W * dpr) || canvas.height !== Math.round(H * dpr)) {
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+  }
+
+  function worldToCanvas(wx, wy) {
+    const W = wrap.clientWidth || 640;
+    const H = wrap.clientHeight || 360;
+    const cx = ((wx - state.xMin) / (state.xMax - state.xMin)) * W;
+    const cy = H - ((wy - state.yMin) / (state.yMax - state.yMin)) * H;
+    return [cx, cy];
+  }
+
+  function canvasToWorld(cx, cy) {
+    const W = wrap.clientWidth || 640;
+    const H = wrap.clientHeight || 360;
+    const wx = state.xMin + (cx / W) * (state.xMax - state.xMin);
+    const wy = state.yMin + ((H - cy) / H) * (state.yMax - state.yMin);
+    return [wx, wy];
+  }
+
+  function niceStep(span) {
+    const rough = span / 8;
+    const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+    const steps = [1, 2, 2.5, 5, 10];
+    for (let i = 0; i < steps.length; i++) {
+      if (steps[i] * mag >= rough) return steps[i] * mag;
+    }
+    return 10 * mag;
+  }
+
+  function drawPoint(cx, cy, color, r, hollow) {
+    ctx.save();
+    if (hollow) {
+      ctx.fillStyle = state.highContrast ? '#000000' : '#FFFFFF';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.6;
+    } else {
+      ctx.fillStyle = color;
+      ctx.strokeStyle = state.highContrast ? '#000000' : '#FFFFFF';
+      ctx.lineWidth = 2;
+    }
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawVectorArrow(x0, y0, x1, y1, color, label) {
+    const dx = x1 - x0, dy = y1 - y0;
+    const len = Math.hypot(dx, dy);
+    if (len < 4) return;
+    const ang = Math.atan2(dy, dx);
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x1 - 8 * Math.cos(ang - 0.45), y1 - 8 * Math.sin(ang - 0.45));
+    ctx.lineTo(x1 - 8 * Math.cos(ang + 0.45), y1 - 8 * Math.sin(ang + 0.45));
+    ctx.closePath();
+    ctx.fill();
+
+    if (label) {
+      ctx.font = 'bold 11px system-ui, sans-serif';
+      ctx.fillText(label, x1 + 6 * Math.cos(ang), y1 + 6 * Math.sin(ang));
+    }
+    ctx.restore();
+  }
+
+ // ===================== RENDERIZADO DEL LIENZO ÚNICO =====================
+  function renderScene() {
+    resizeCanvas();
+    const W = wrap.clientWidth || 640;
+    const H = wrap.clientHeight || 360;
+    const M = computeMathState();
+    const isHC = state.highContrast;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = isHC ? '#000000' : '#FFFFFF';
+    ctx.fillRect(0, 0, W, H);
+
+    const xStep = niceStep(state.xMax - state.xMin);
+    const yStep = niceStep(state.yMax - state.yMin);
+
+ // 1. Cuadrícula
+    ctx.strokeStyle = isHC ? '#222222' : '#E2E8F0';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let gx = Math.floor(state.xMin / xStep) * xStep; gx <= state.xMax; gx += xStep) {
+      const [cx] = worldToCanvas(gx, 0);
+      ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
+    }
+    for (let gy = Math.floor(state.yMin / yStep) * yStep; gy <= state.yMax; gy += yStep) {
+      const [, cy] = worldToCanvas(0, gy);
+      ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+    }
+    ctx.stroke();
+
+ // 2. Ejes cartesianos
+    const [ox, oy] = worldToCanvas(0, 0);
+    ctx.strokeStyle = isHC ? '#FFFF00' : '#0B2A4A';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(0, oy); ctx.lineTo(W, oy);
+    ctx.moveTo(ox, 0); ctx.lineTo(ox, H);
+    ctx.stroke();
+
+ // Etiquetas numéricas de los ejes
+    ctx.fillStyle = isHC ? '#FFFFFF' : '#475569';
+    ctx.font = '700 11px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    for (let gx = Math.floor(state.xMin / xStep) * xStep; gx <= state.xMax; gx += xStep) {
+      if (Math.abs(gx) < xStep * 0.1) continue;
+      const [cx] = worldToCanvas(gx, 0);
+      const lbl = Number.isInteger(gx) ? String(gx) : fmtDec(gx, 1);
+      ctx.fillText(lbl, cx, Math.min(H - 16, Math.max(4, oy + 4)));
+    }
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    for (let gy = Math.floor(state.yMin / yStep) * yStep; gy <= state.yMax; gy += yStep) {
+      if (Math.abs(gy) < yStep * 0.1) continue;
+      const [, cy] = worldToCanvas(0, gy);
+      const lbl = Number.isInteger(gy) ? String(gy) : fmtDec(gy, 1);
+      ctx.fillText(lbl, Math.min(W - 6, Math.max(28, ox - 6)), cy);
+    }
+
+    ctx.fillStyle = isHC ? '#FFFF00' : '#0B2A4A';
+    ctx.font = '800 12px system-ui, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(state.physMode ? 'x (m)' : 'x', W - 8, Math.max(16, oy - 10));
+    ctx.textAlign = 'left';
+    ctx.fillText(state.physMode ? 'y (m)' : 'f(x)', Math.min(W - 40, ox + 8), 14);
+
+ // 3. Superposición de Contexto Físico en la misma gráfica (Suelo y = 0, Cota de Altura Máxima y Alcance)
+    if (state.physMode) {
+      ctx.save();
+      ctx.fillStyle = isHC ? 'rgba(0, 255, 127, 0.12)' : 'rgba(4, 120, 87, 0.08)';
+      ctx.fillRect(0, oy, W, H - oy);
+      ctx.strokeStyle = isHC ? '#00FF7F' : '#047857';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.moveTo(0, oy); ctx.lineTo(W, oy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = isHC ? '#00FF7F' : '#047857';
+      ctx.font = '800 11px system-ui, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Nivel del suelo (y = 0 m)', 10, Math.min(H - 8, oy - 6));
+      ctx.restore();
+    }
+
+ // 4. Rastro del lugar geométrico del vértice al mover b: y = c − a·x²
+    const locusBadge = document.getElementById('locusBadgeOverlay');
+    if (state.showLocusB && !M.isLinear) {
+      ctx.save();
+      ctx.strokeStyle = isHC ? 'rgba(255, 128, 255, 0.55)' : 'rgba(109, 40, 217, 0.38)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      const stepsB = 200;
+      for (let i = 0; i <= stepsB; i++) {
+        const bp = -10 + (20 * i) / stepsB;
+        const hp = -bp / (2 * M.aSafe);
+        const kp = M.c - (bp * bp) / (4 * M.aSafe);
+        const [px, py] = worldToCanvas(hp, kp);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      const signLocus = M.a >= 0 ? '− ' : '+ ';
+      locusBadge.textContent = 'El vértice recorre y = ' + fmtDec(M.c, 2) + ' ' + signLocus + fmtDec(Math.abs(M.a), 2) + 'x²';
+      locusBadge.classList.add('visible');
+    } else {
+      locusBadge.classList.remove('visible');
+    }
+
+ // 5. Curva objetivo de Misión de Construcción Inversa (si está activa)
+    if (state.activeMission >= 0) {
+      const mt = MISSIONS[state.activeMission].target;
+      ctx.save();
+      ctx.strokeStyle = isHC ? '#00FF7F' : '#047857';
+      ctx.lineWidth = 3.5;
+      ctx.setLineDash([8, 5]);
+      ctx.beginPath();
+      const N = 240;
+      for (let i = 0; i <= N; i++) {
+        const wx = state.xMin + ((state.xMax - state.xMin) * i) / N;
+        const wy = evalF(wx, mt.a, mt.b, mt.c);
+        const [px, py] = worldToCanvas(wx, wy);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.restore();
+      checkMissionMatch();
+    }
+
+ // 6. Sombra bajo el arco entre raíces cuando existen 2 raíces reales
+    if (!M.isLinear && M.roots.length === 2) {
+      ctx.save();
+      ctx.fillStyle = isHC ? 'rgba(0, 255, 255, 0.12)' : 'rgba(11, 192, 216, 0.10)';
+      ctx.beginPath();
+      const [r1x, r1y] = worldToCanvas(M.roots[0], 0);
+      ctx.moveTo(r1x, r1y);
+      for (let i = 0; i <= 140; i++) {
+        const wx = M.roots[0] + ((M.roots[1] - M.roots[0]) * i) / 140;
+        const [px, py] = worldToCanvas(wx, evalF(wx, M.aSafe, M.b, M.c));
+        ctx.lineTo(px, py);
+      }
+      const [r2x, r2y] = worldToCanvas(M.roots[1], 0);
+      ctx.lineTo(r2x, r2y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+ // 7. Trazado de la parábola principal (o recta si a = 0)
+    ctx.save();
+    ctx.strokeStyle = isHC ? '#00FFFF' : '#0A7C8C';
+    ctx.lineWidth = 3.2;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    const nSamples = 300;
+    for (let i = 0; i <= nSamples; i++) {
+      const wx = state.xMin + ((state.xMax - state.xMin) * i) / nSamples;
+      const wy = M.isLinear ? (M.b * wx + M.c) : evalF(wx, M.aSafe, M.b, M.c);
+      const [px, py] = worldToCanvas(wx, wy);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+ // 8. Eje de simetría x = h
+    if (!M.isLinear) {
+      const [vx] = worldToCanvas(M.h, 0);
+      ctx.save();
+      ctx.strokeStyle = isHC ? 'rgba(255, 255, 0, 0.6)' : 'rgba(10, 124, 140, 0.5)';
+      ctx.lineWidth = 1.4;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(vx, 0); ctx.lineTo(vx, H);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+ // 9. Puntos notables con halos táctiles para arrastre directo: Corte Y (0, c), Raíces y Vértice V(h, k)
+    const [icx, icy] = worldToCanvas(0, M.c);
+    ctx.save();
+    ctx.fillStyle = isHC ? 'rgba(255, 128, 255, 0.22)' : 'rgba(109, 40, 217, 0.16)';
+    ctx.beginPath(); ctx.arc(icx, icy, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    drawPoint(icx, icy, isHC ? '#FF80FF' : '#6D28D9', 6.5, state.blindMode);
+
+    if (!M.isLinear) {
+      for (let i = 0; i < M.roots.length; i++) {
+        const [rx, ry] = worldToCanvas(M.roots[i], 0);
+        drawPoint(rx, ry, isHC ? '#FF6B6B' : '#B91C1C', 6, state.blindMode);
+      }
+      const [vx, vy] = worldToCanvas(M.h, M.k);
+      ctx.save();
+      ctx.fillStyle = isHC ? 'rgba(255, 255, 0, 0.25)' : 'rgba(11, 192, 216, 0.24)';
+      ctx.beginPath(); ctx.arc(vx, vy, 15, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      drawPoint(vx, vy, isHC ? '#FFFF00' : '#0B2A4A', 7.5, state.blindMode);
+
+      if (!state.blindMode) {
+        ctx.fillStyle = isHC ? '#FFFF00' : '#0B2A4A';
+        ctx.font = '800 11px system-ui, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('V(' + fmtDec(M.h, 1) + '; ' + fmtDec(M.k, 1) + ')', vx + 10, vy - 8);
+      }
+    }
+
+ // 10. Resaltado por Registro Semiótico de Duval (Anillos concéntricos)
+    if (state.ringHighlight && !M.isLinear) {
+      const drawRing = function(wx, wy, col) {
+        const [px, py] = worldToCanvas(wx, wy);
+        ctx.save();
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(px, py, 14, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = 0.4;
+        ctx.beginPath(); ctx.arc(px, py, 20, 0, Math.PI * 2); ctx.stroke();
+        ctx.restore();
+      };
+      if (state.ringHighlight === 'general') drawRing(0, M.c, '#6D28D9');
+      else if (state.ringHighlight === 'canonica') drawRing(M.h, M.k, '#0A7C8C');
+      else if (state.ringHighlight === 'factorizada') {
+        M.roots.forEach(function(r) { drawRing(r, 0, '#B91C1C'); });
+      }
+    }
+
+ // 11. Proyección desde la Tabla de Datos Equivalente
+    if (state.hoverTableX !== null && !M.isLinear) {
+      const hx = state.hoverTableX;
+      const hy = evalF(hx, M.aSafe, M.b, M.c);
+      const [px, py] = worldToCanvas(hx, hy);
+      ctx.save();
+      ctx.strokeStyle = '#9A3412';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(px, oy); ctx.lineTo(px, py);
+      ctx.moveTo(ox, py); ctx.lineTo(px, py);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      drawPoint(px, py, '#9A3412', 6, false);
+      ctx.fillStyle = '#0B2A4A';
+      ctx.font = '800 12px system-ui, sans-serif';
+      ctx.fillText('(' + hx + '; ' + fmtDec(hy, 2) + ')', px + 10, py - 10);
+      ctx.restore();
+    }
+
+ // 12. Animación del proyectil y vectores de velocidad en Contexto Físico (en esta misma gráfica)
+    const alertBanner = document.getElementById('canvasAlertBanner');
+    if (state.physMode) {
+      if (M.isLinear || M.a >= 0 || M.roots.length < 2 || Math.max(M.roots[0], M.roots[1]) <= 0) {
+        alertBanner.textContent = 'Para lanzar el proyectil necesitas a < 0 y que la parábola corte el suelo en x > 0.';
+        alertBanner.classList.add('visible');
+      } else {
+        alertBanner.classList.remove('visible');
+        const xStart = Math.max(0, Math.min(M.roots[0], M.roots[1]));
+        const xImpact = Math.max(M.roots[0], M.roots[1]);
+        const wx = xStart + (xImpact - xStart) * state.projT;
+        const wy = Math.max(0, evalF(wx, M.aSafe, M.b, M.c));
+        const [px, py] = worldToCanvas(wx, wy);
+
+ // Cota de altura máxima H_máx en el vértice si h >= 0
+        if (M.h >= 0) {
+          const [vx, vy] = worldToCanvas(M.h, M.k);
+          const [, vy0] = worldToCanvas(M.h, 0);
+          ctx.save();
+          ctx.strokeStyle = '#9A3412';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath(); ctx.moveTo(vx, vy0); ctx.lineTo(vx, vy); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#9A3412';
+          ctx.font = '800 11px system-ui, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Hmáx = ' + fmtDec(M.k, 2) + ' m', vx, vy - 28);
+          ctx.restore();
+        }
+
+ // Vectores de velocidad cinemática sobre el proyectil: vx constante y vy proporcional a f'(x) = 2ax + b
+        const slope = 2 * M.aSafe * wx + M.b;
+        const vxPx = 28;
+        const vyPx = Math.max(-48, Math.min(48, -slope * 12));
+        drawVectorArrow(px, py, px + vxPx, py, '#1D4ED8', 'vx');
+        drawVectorArrow(px, py, px, py + vyPx, '#047857', 'vy');
+
+ // Esfera del proyectil
+        ctx.save();
+        ctx.fillStyle = '#9A3412';
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(px, py, 7.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+    } else if (M.isLinear) {
+      alertBanner.textContent = 'Con a = 0 queda una recta f(x) = bx + c. Mueve «a» para recuperar la parábola.';
+      alertBanner.classList.add('visible');
+    } else {
+      alertBanner.classList.remove('visible');
+    }
+
+    updateUIReadouts(M);
+  }
+
+ // ===================== ACTUALIZACIÓN DE PANELES NUMÉRICOS, ECUACIONES Y TABLA =====================
+  function updateUIReadouts(M) {
+    document.getElementById('valA').textContent = fmtDec(M.a, 1);
+    document.getElementById('valB').textContent = fmtDec(M.b, 1);
+    document.getElementById('valC').textContent = fmtDec(M.c, 1);
+
+ // 1. Tres registros algebraicos (Duval)
+    const genStr = 'f(x) = ' + fmtDec(M.a, 2) + 'x² ' + fmtSigned(M.b, 2) + 'x ' + fmtSigned(M.c, 2);
+    const canStr = M.isLinear
+      ? 'No aplica (a = 0)'
+      : 'f(x) = ' + fmtDec(M.a, 2) + '(x ' + fmtSigned(-M.h, 2) + ')² ' + fmtSigned(M.k, 2);
+    let facStr = 'No factorizable en ℝ (Δ < 0)';
+    if (!M.isLinear && M.roots.length === 1) {
+      facStr = 'f(x) = ' + fmtDec(M.a, 2) + '(x ' + fmtSigned(-M.roots[0], 2) + ')²';
+    } else if (!M.isLinear && M.roots.length === 2) {
+      facStr = 'f(x) = ' + fmtDec(M.a, 2) + '(x ' + fmtSigned(-M.roots[0], 2) + ')(x ' + fmtSigned(-M.roots[1], 2) + ')';
+    }
+
+    document.getElementById('regGeneralExpr').textContent = genStr;
+    document.getElementById('regCanonicaExpr').textContent = canStr;
+    document.getElementById('regFactorExpr').textContent = facStr;
+    document.getElementById('btnRingRoots').disabled = M.isLinear || M.roots.length === 0;
+
+ // 2. Banner de ecuación principal sobre el lienzo
+    const tagEl = document.getElementById('liveFormTag');
+    const eqSpan = document.getElementById('liveFormulaSpan');
+    if (M.isLinear) {
+      tagEl.textContent = 'Lineal (a = 0)';
+      eqSpan.textContent = 'f(x) = ' + fmtDec(M.b, 1) + 'x ' + fmtSigned(M.c, 1);
+    } else if (state.activeForm === 'canonica') {
+      tagEl.textContent = 'Canónica';
+      eqSpan.textContent = canStr;
+    } else if (state.activeForm === 'factorizada' && M.roots.length >= 1) {
+      tagEl.textContent = 'Factorizada';
+      eqSpan.textContent = facStr;
+    } else {
+      tagEl.textContent = 'General';
+      eqSpan.textContent = 'f(x) = ' + fmtDec(M.a, 1) + 'x² ' + fmtSigned(M.b, 1) + 'x ' + fmtSigned(M.c, 1);
+    }
+
+ // 3. Tira KPI con soporte para Modo Exploración (Brousseau)
+    if (M.isLinear) {
+      document.getElementById('kpiConcav').textContent = 'Recta (a = 0)';
+      document.getElementById('kpiParamASub').textContent = 'Sin término cuadrático';
+      document.getElementById('kpiVertex').textContent = 'Sin vértice';
+      document.getElementById('kpiAxisSym').textContent = '—';
+      document.getElementById('kpiDisc').textContent = '—';
+      document.getElementById('kpiRootsCount').textContent = 'Grado 1';
+      document.getElementById('kpiRoots').textContent = Math.abs(M.b) > 0.01 ? 'x = ' + fmtDec(-M.c / M.b, 2) : '—';
+    } else {
+      document.getElementById('kpiConcav').textContent = M.a > 0 ? 'Abre arriba' : 'Abre abajo';
+      document.getElementById('kpiParamASub').textContent = 'a = ' + fmtDec(M.a, 1) + ' · ' + (M.a > 0 ? 'mínimo en V' : 'máximo en V');
+
+      if (state.blindMode) {
+        document.getElementById('kpiVertex').textContent = 'V( ? ; ? )';
+        document.getElementById('kpiAxisSym').textContent = 'Eje: x = ?';
+        document.getElementById('kpiDisc').textContent = 'Δ = ?';
+        document.getElementById('kpiRootsCount').textContent = '¿Cuántas raíces?';
+        document.getElementById('kpiRoots').textContent = 'Ocultas';
+      } else {
+        document.getElementById('kpiVertex').textContent = 'V(' + fmtDec(M.h, 2) + '; ' + fmtDec(M.k, 2) + ')';
+        document.getElementById('kpiAxisSym').textContent = 'Eje: x = ' + fmtDec(M.h, 2);
+        document.getElementById('kpiDisc').textContent = 'Δ = ' + fmtDec(M.disc, 2);
+        document.getElementById('kpiRootsCount').textContent =
+          M.roots.length === 0 ? '0 raíces reales (Δ < 0)' :
+          (M.roots.length === 1 ? '1 raíz real doble (Δ = 0)' : '2 raíces reales (Δ > 0)');
+        document.getElementById('kpiRoots').textContent =
+          M.roots.length === 0 ? 'Sin cortes' :
+          (M.roots.length === 1 ? fmtDec(M.roots[0], 2) : fmtDec(M.roots[0], 2) + ' y ' + fmtDec(M.roots[1], 2));
+      }
+    }
+
+    document.getElementById('kpiYInt').textContent = 'Corte Y: ' + fmtDec(M.c, 2);
+
+ // 4. Explicación dinámica en Momento 2
+    document.getElementById('expLineA').innerHTML =
+      '<strong>Parámetro a = ' + fmtDec(M.a, 1) + ':</strong> ' +
+      (M.isLinear ? 'Al anularse a = 0 desaparece la curvatura parabólica.' :
+        (M.a > 0 ? 'Como a > 0 las ramas abren hacia arriba y el vértice es un mínimo.' : 'Como a < 0 las ramas abren hacia abajo y el vértice es un máximo.'));
+    document.getElementById('expLineB').innerHTML =
+      '<strong>Parámetro b = ' + fmtDec(M.b, 1) + ':</strong> Ubica la abscisa del vértice en <em>h = −b/(2a)</em> = ' + (M.isLinear ? '—' : fmtDec(M.h, 2)) + '.';
+    document.getElementById('expLineC').innerHTML =
+      '<strong>Parámetro c = ' + fmtDec(M.c, 1) + ':</strong> Al evaluar en <em>x</em> = 0 se obtiene el corte vertical (0; ' + fmtDec(M.c, 2) + ').';
+
+ // 5. Tabla de Datos Equivalente
+    const xs = [-3, -2, -1, 0, 1, 2, 3];
+    const xCells = document.querySelectorAll('#tableRowX td');
+    const yCells = document.querySelectorAll('#tableRowY td');
+    for (let i = 0; i < xs.length; i++) {
+      const xVal = xs[i];
+      const yVal = M.isLinear ? (M.b * xVal + M.c) : evalF(xVal, M.aSafe, M.b, M.c);
+      const isVert = !M.isLinear && Math.abs(xVal - M.h) < 0.06;
+      xCells[i].classList.toggle('vertex-col', isVert);
+      yCells[i].classList.toggle('vertex-col', isVert);
+      yCells[i].textContent = fmtDec(yVal, 2);
+    }
+  }
+
+ // ===================== HISTORIAL Y CAMBIO DE PARÁMETROS =====================
+  function pushHistory() {
+    state.historyStack.push({ a: state.a, b: state.b, c: state.c });
+    if (state.historyStack.length > 12) state.historyStack.shift();
+    document.getElementById('btnUndoQuad').disabled = state.historyStack.length === 0;
+  }
+
+  function setParams(newA, newB, newC, saveHist, logLabel) {
+    if (saveHist) pushHistory();
+    state.a = Math.max(-5, Math.min(5, Math.round(newA * 10) / 10));
+    state.b = Math.max(-10, Math.min(10, Math.round(newB * 2) / 2));
+    state.c = Math.max(-10, Math.min(10, Math.round(newC * 2) / 2));
+    document.getElementById('slA').value = state.a;
+    document.getElementById('slB').value = state.b;
+    document.getElementById('slC').value = state.c;
+    if (logLabel) {
+      const entry = logLabel + ': a=' + fmtDec(state.a, 1) + ', b=' + fmtDec(state.b, 1) + ', c=' + fmtDec(state.c, 1);
+      state.experimentsLog.push(entry);
+      recordTrace('PARAMETROS', entry);
+    }
+    renderScene();
+  }
+
+ // ===================== MANIPULACIÓN DIRECTA SOBRE EL LIENZO (ARRASTRE DE V(h,k), CORTE (0,c) Y PAN/ZOOM) =====================
+  let dragMode = null; // null | 'vertex' | 'yint' | 'pan'
+  let panOrigin = { x: 0, y: 0, xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
+
+  function getCanvasCoords(evt) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
+  }
+
+  function detectHitTarget(cx, cy, radiusPx) {
+    const M = computeMathState();
+    if (!M.isLinear) {
+      const [vx, vy] = worldToCanvas(M.h, M.k);
+      if (Math.hypot(cx - vx, cy - vy) <= radiusPx) return 'vertex';
+    }
+    const [ix, iy] = worldToCanvas(0, M.c);
+    if (Math.hypot(cx - ix, cy - iy) <= radiusPx) return 'yint';
+    return null;
+  }
+
+  canvas.addEventListener('pointerdown', function(e) {
+    const pt = getCanvasCoords(e);
+    const hit = detectHitTarget(pt.x, pt.y, 20);
+    if (hit && state.blindMode && hit === 'vertex') {
+      toggleBlindMode(false);
+      return;
+    }
+    if (hit && !state.blindMode) {
+      pushHistory();
+      dragMode = hit;
+      canvas.setPointerCapture(e.pointerId);
+      e.preventDefault();
+      return;
+    }
+    dragMode = 'pan';
+    panOrigin = { x: pt.x, y: pt.y, xMin: state.xMin, xMax: state.xMax, yMin: state.yMin, yMax: state.yMax };
+    canvas.setPointerCapture(e.pointerId);
+  });
+
+  canvas.addEventListener('pointermove', function(e) {
+    const pt = getCanvasCoords(e);
+    const tip = document.getElementById('canvasTooltip');
+
+    if (!dragMode) {
+      const hit = detectHitTarget(pt.x, pt.y, 18);
+      if (hit === 'vertex') {
+        const M = computeMathState();
+        canvas.style.cursor = 'move';
+        tip.style.opacity = '1';
+        tip.style.left = Math.min(wrap.clientWidth - 180, pt.x + 12) + 'px';
+        tip.style.top = Math.max(8, pt.y - 28) + 'px';
+        tip.textContent = state.blindMode ? 'Haz clic para revelar el vértice' : 'V(' + fmtDec(M.h, 2) + '; ' + fmtDec(M.k, 2) + ') · Arrastra para mover';
+      } else if (hit === 'yint') {
+        canvas.style.cursor = 'ns-resize';
+        tip.style.opacity = '1';
+        tip.style.left = Math.min(wrap.clientWidth - 180, pt.x + 12) + 'px';
+        tip.style.top = Math.max(8, pt.y - 28) + 'px';
+        tip.textContent = 'Corte Y (0; ' + fmtDec(state.c, 2) + ') · Arrastra verticalmente';
+      } else {
+        canvas.style.cursor = 'grab';
+        tip.style.opacity = '0';
+      }
+      return;
+    }
+
+    tip.style.opacity = '0';
+    if (dragMode === 'yint') {
+      const [, wy] = canvasToWorld(pt.x, pt.y);
+      const snapC = Math.max(-10, Math.min(10, Math.round(wy * 2) / 2));
+      setParams(state.a, state.b, snapC, false);
+    } else if (dragMode === 'vertex') {
+      const [wx, wy] = canvasToWorld(pt.x, pt.y);
+      const aSafe = Math.abs(state.a) < EPS_A ? 1 : state.a;
+      const newB = Math.max(-10, Math.min(10, Math.round((-2 * aSafe * wx) * 2) / 2));
+      const actualH = -newB / (2 * aSafe);
+      const newC = Math.max(-10, Math.min(10, Math.round((wy + aSafe * actualH * actualH) * 2) / 2));
+      setParams(state.a, newB, newC, false);
+    } else if (dragMode === 'pan') {
+      const W = wrap.clientWidth || 640;
+      const H = wrap.clientHeight || 360;
+      const spanX = panOrigin.xMax - panOrigin.xMin;
+      const spanY = panOrigin.yMax - panOrigin.yMin;
+      const dx = ((pt.x - panOrigin.x) / W) * spanX;
+      const dy = ((pt.y - panOrigin.y) / H) * spanY;
+      state.xMin = panOrigin.xMin - dx;
+      state.xMax = panOrigin.xMax - dx;
+      state.yMin = panOrigin.yMin + dy;
+      state.yMax = panOrigin.yMax + dy;
+      renderScene();
+    }
+  });
+
+  canvas.addEventListener('pointerup', function(e) {
+    if (dragMode === 'vertex' || dragMode === 'yint') {
+      recordTrace('ARRASTRE_DIRECTO', 'Ajuste táctil en gráfica (' + dragMode + '): a=' + fmtDec(state.a, 1) + ', b=' + fmtDec(state.b, 1) + ', c=' + fmtDec(state.c, 1));
+    }
+    dragMode = null;
+    try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  function zoomPlane(factor) {
+    const cx = (state.xMin + state.xMax) / 2;
+    const cy = (state.yMin + state.yMax) / 2;
+    const hx = ((state.xMax - state.xMin) / 2) * factor;
+    const hy = ((state.yMax - state.yMin) / 2) * factor;
+    state.xMin = cx - hx; state.xMax = cx + hx;
+    state.yMin = cy - hy; state.yMax = cy + hy;
+    renderScene();
+  }
+
+ // ===================== ANIMACIÓN DEL PROYECTIL EN CONTEXTO FÍSICO =====================
+  let projRaf = null;
+  let lastProjTs = null;
+
+  function stepProjAnim(ts) {
+    if (!state.physMode || !state.projPlaying) {
+      projRaf = null;
+      lastProjTs = null;
+      return;
+    }
+    if (!lastProjTs) lastProjTs = ts;
+    const dt = (ts - lastProjTs) / 1000;
+    lastProjTs = ts;
+    state.projT = (state.projT + dt * 0.36) % 1;
+    renderScene();
+    projRaf = requestAnimationFrame(stepProjAnim);
+  }
+
+ // ===================== MISIONES DE CONSTRUCCIÓN INVERSA (MOMENTO 2) =====================
+  function checkMissionMatch() {
+    if (state.activeMission < 0) return;
+    const m = MISSIONS[state.activeMission].target;
+    const err = Math.abs(state.a - m.a) * 35 + Math.abs(state.b - m.b) * 20 + Math.abs(state.c - m.c) * 20;
+    const pct = Math.max(0, Math.min(100, 100 - err));
+    document.getElementById('missionMatchBadge').textContent = 'Coincidencia: ' + fmtDec(pct, 0) + ' %';
+    const box = document.getElementById('missionFeedbackBox');
+
+    if (pct >= 98) {
+      box.className = 'status-box visible state-ok';
+      box.innerHTML = '<div class="status-lead">' + SVG_OK + '<span>Parábola construida</span></div>' +
+        '<span>Has superpuesto exactamente la parábola con a = ' + fmtDec(state.a, 1) + ', b = ' + fmtDec(state.b, 1) + ' y c = ' + fmtDec(state.c, 1) + '.</span>';
+      if (!state.missionsDone[state.activeMission]) {
+        state.missionsDone[state.activeMission] = true;
+        recordTrace('MISIÓN_NIVEL_4', MISSIONS[state.activeMission].title + ' superada.');
+      }
+    } else {
+      box.className = 'status-box visible state-info';
+      box.innerHTML = '<div class="status-lead">' + SVG_INFO + '<span>Aún no coincide</span></div>' +
+        '<span>Arrastra directamente el vértice V o el corte (0; c) para igualar ambas curvas.</span>';
+    }
+  }
+
+ // ===================== EVALUACIÓN DE LOS 5 RETOS PROGRESIVOS Y MOTOR ADAPTATIVO =====================
+  const RETOS_SPECS = {
+    1: {
+      concepto: 'concavidad',
+      validate: function() {
+        const v = document.getElementById('r1Select').value;
+        if (!v) return { incomplete: true, msg: 'Selecciona una condición en la lista desplegable antes de comprobar.' };
+        if (v === 'a<0' && state.a >= 0) {
+          return { incomplete: true, msg: 'Elegiste correctamente a < 0, pero primero mueve el deslizador "a" hacia un valor negativo en el simulador para verificar la concavidad ∩ en la gráfica.' };
+        }
+        return { ok: v === 'a<0' && state.a < 0, choice: v };
+      },
+      sol: { a: -1, b: 0, c: 4 },
+      fb: {
+        l1: 'Pista: La concavidad depende exclusivamente del signo del coeficiente cuadrático a. Prueba en el simulador a = 1 y a = −1.',
+        l2: 'Otra vía: Con a > 0 las ramas crecen hacia +∞ (∪). Para que la parábola abra hacia abajo (∩) necesitas que el término ax² sea negativo.',
+        l3: 'Paso a paso: La condición es a < 0. Cuando a es negativo, para valores grandes de |x| el término ax² domina hacia −∞.',
+        ok: 'Con a < 0 el término cuadrático invierte la orientación de las ramas y el vértice pasa a ser un máximo absoluto.'
+      }
+    },
+    2: {
+      concepto: 'vertice',
+      validate: function() {
+        const aV = parseFloat((document.getElementById('r2A').value || '').replace(',', '.'));
+        const bV = parseFloat((document.getElementById('r2B').value || '').replace(',', '.'));
+        const cV = parseFloat((document.getElementById('r2C').value || '').replace(',', '.'));
+        if (isNaN(aV) || isNaN(bV) || isNaN(cV)) {
+          return { incomplete: true, msg: 'Ingresa los tres valores numéricos de a, b y c antes de comprobar.' };
+        }
+        if (aV <= 0) {
+          return { incomplete: true, msg: 'El enunciado pide a > 0 (concavidad hacia arriba). Ajusta a un valor positivo.' };
+        }
+        const h = -bV / (2 * aV);
+        const k = cV - (bV * bV) / (4 * aV);
+        const okMath = Math.abs(h - 2) <= 0.1 && Math.abs(k + 3) <= 0.1;
+        return { ok: okMath, choice: 'a=' + aV + ', b=' + bV + ', c=' + cV };
+      },
+      sol: { a: 1, b: -4, c: 1 },
+      fb: {
+        l1: 'Pista: Usa las relaciones h = −b/(2a) = 2 y k = c − b²/(4a) = −3. Fija a = 1 y despeja primero b.',
+        l2: 'Otra vía: Si a = 1 y b = +4, entonces h = −4/2 = −2 (queda a la izquierda). Para que h = +2 necesitas que b sea negativo: b = −4.',
+        l3: 'Paso a paso: Con a = 1 y b = −4 se obtiene h = −(−4)/2 = 2. Luego k = c − 16/4 = −3 ⇒ c − 4 = −3 ⇒ c = 1.',
+        ok: 'Con a = 1, b = −4 y c = 1 la forma canónica es f(x) = (x − 2)² − 3, ubicando el vértice exactamente en V(2; −3).'
+      }
+    },
+    3: {
+      concepto: 'intercepto',
+      validate: function() {
+        const yV = parseFloat((document.getElementById('r3Y').value || '').replace(',', '.'));
+        const sust = (document.getElementById('r3Sustit').value || '').trim();
+        if (isNaN(yV)) return { incomplete: true, msg: 'Escribe el valor numérico de f(0).' };
+        const hasZero = /0/.test(sust);
+        const hasOp = /[+=·*x²^]/.test(sust);
+        const hasFiveOrC = (/5/.test(sust) || /c/i.test(sust));
+        if (sust.length < 4 || !hasZero || !hasOp || !hasFiveOrC) {
+          return { incomplete: true, msg: 'Escribe la sustitución completa evaluando en x = 0 (por ejemplo: 1·0² + 0·0 + 5 = 5).' };
+        }
+        return { ok: Math.abs(yV - 5) <= 0.05, choice: 'f(0)=' + yV + ' (' + sust + ')' };
+      },
+      sol: { a: 1, b: 0, c: 5 },
+      fb: {
+        l1: 'Pista: El corte con el eje Y ocurre cuando la abscisa vale x = 0. Evalúa f(0) = 1·(0)² + 0·(0) + 5.',
+        l2: 'Otra vía: Todo término multiplicado por 0 se anula: 1·0² = 0 y 0·0 = 0, quedando únicamente el término independiente c = 5.',
+        l3: 'Paso a paso: f(0) = 1·0² + 0·0 + 5 = 5. El corte con el eje Y es siempre (0; c) porque los términos con x se anulan en x = 0.',
+        ok: 'Fundamentaste por sustitución algebraica que en x = 0 se anulan ax² y bx, garantizando que f(0) = c = 5.'
+      }
+    },
+    4: {
+      concepto: 'discriminante',
+      validate: function() {
+        const v = document.getElementById('r4Select').value;
+        if (!v) return { incomplete: true, msg: 'Selecciona el número de raíces reales antes de comprobar.' };
+        return { ok: v === '0', choice: v + ' raíces' };
+      },
+      sol: { a: 1, b: 2, c: 5 },
+      fb: {
+        l1: 'Pista: Calcula el discriminante Δ = b² − 4ac para a = 1, b = 2 y c = 5.',
+        l2: 'Otra vía: Δ = (2)² − 4(1)(5) = 4 − 20 = −16. Como Δ es negativo, no existe raíz cuadrada real de Δ.',
+        l3: 'Paso a paso: Al ser Δ = −16 < 0 y a = 1 > 0, toda la parábola queda por encima del eje X (su mínimo es k = 4) y tiene 0 raíces reales.',
+        ok: 'Como Δ = 2² − 4(1)(5) = −16 < 0, la ecuación no tiene raíces reales y la parábola no corta al eje horizontal.'
+      }
+    },
+    5: {
+      concepto: 'contextoFisico',
+      validate: function() {
+        const aV = parseFloat((document.getElementById('r5A').value || '').replace(',', '.'));
+        if (isNaN(aV)) return { incomplete: true, msg: 'Ingresa el valor numérico del coeficiente a.' };
+        if (!state.physMode) {
+          return { incomplete: true, msg: 'Activa primero el botón «Contexto Físico» arriba de la gráfica para observar la trayectoria del proyectil.' };
+        }
+        return { ok: Math.abs(aV + 1) <= 0.05, choice: 'a=' + aV };
+      },
+      sol: { a: -1, b: 6, c: 0 },
+      fb: {
+        l1: 'Pista: Como el proyectil sale de x = 0 y cae en x = 6, la forma factorizada es f(x) = a·x(x − 6) y la altura máxima ocurre en la mitad (x = 3).',
+        l2: 'Otra vía: Evalúa en el vértice x = 3: f(3) = a·(3)(3 − 6) = −9a. Como la altura máxima es 9 m, iguala −9a = 9.',
+        l3: 'Paso a paso: De −9a = 9 se despeja a = −1. La ecuación de la trayectoria es f(x) = −x(x − 6) = −x² + 6x.',
+        ok: 'Con a = −1 y b = 6, el proyectil describe f(x) = −x² + 6x, alcanzando 9 m de altura máxima en x = 3 m e impactando en x = 6 m.'
+      }
+    }
+  };
+
+  function evaluateChallenge(id) {
+    if (state.retosOk[id - 1]) return;
+    const spec = RETOS_SPECS[id];
+    const res = spec.validate();
+    const fbBox = document.getElementById('fbBox' + id);
+    const card = document.getElementById('retoCard' + id);
+    const badge = document.getElementById('triesBadge' + id);
+
+    if (res.incomplete) {
+      fbBox.className = 'status-box visible state-review';
+      fbBox.innerHTML = '<div class="status-lead">' + SVG_REVIEW + '<span>Falta un paso</span></div><span>' + res.msg + '</span>';
+      return;
+    }
+
+    if (state.firstResponses[id - 1] === null) {
+      state.firstResponses[id - 1] = { choice: res.choice, ok: res.ok };
+      recordTrace('PRIMERA_RESPUESTA_R' + id, 'Respuesta inicial: ' + res.choice + ' (' + (res.ok ? 'Acierto en primer intento' : 'En revisión') + ')');
+    }
+
+    if (res.ok) {
+      state.retosOk[id - 1] = true;
+      state.retosCompleted = state.retosOk.filter(Boolean).length;
+      state.perfil.aciertosPorConcepto[spec.concepto]++;
+      if (state.intentos[id - 1] === 0 && state.perfil.nivel === 'inicial') state.perfil.nivel = 'intermedio';
+      else if (state.intentos[id - 1] === 0 && state.perfil.nivel === 'intermedio') state.perfil.nivel = 'avanzado';
+
+      card.classList.add('solved');
+      badge.textContent = state.intentos[id - 1] === 0 ? 'Superado (1.er intento)' : 'Superado (' + (state.intentos[id - 1] + 1) + ' int.)';
+      fbBox.className = 'status-box visible state-ok';
+      fbBox.innerHTML = '<div class="status-lead">' + SVG_OK + '<span>Correcto</span></div><span>' + spec.fb.ok + '</span>';
+
+      updateRetosProgressUI();
+      if (id < 5) unlockRetoCard(id + 1);
+      if (state.retosCompleted === 5 && !state.adaptiveGenerated) {
+        generateAdaptiveRetos();
+      }
+      saveSession();
+      return;
+    }
+
+ // Error conceptual: incrementar intento y graduar retroalimentación (Niveles 1, 2 y 3)
+    const nTry = state.intentos[id - 1];
+    state.intentos[id - 1] = nTry + 1;
+    state.perfil.intentosTotales++;
+    state.perfil.erroresPorConcepto[spec.concepto]++;
+    badge.textContent = state.intentos[id - 1] + (state.intentos[id - 1] === 1 ? ' intento' : ' intentos');
+
+    let msg = spec.fb.l1;
+    let loadBtnHtml = '';
+    if (nTry === 1) msg = spec.fb.l2;
+    else if (nTry >= 2) {
+      msg = spec.fb.l3;
+      state.perfil.pistasUsadas[spec.concepto]++;
+      state.perfil.nivel = 'inicial';
+      loadBtnHtml = '<div style="margin-top:8px;"><button type="button" class="btn" data-load-sol="' + id + '">Cargar solución en la gráfica (' + spec.sol.a + '; ' + spec.sol.b + '; ' + spec.sol.c + ')</button></div>';
+    }
+
+    fbBox.className = 'status-box visible state-review';
+    fbBox.innerHTML = '<div class="status-lead">' + SVG_REVIEW + '<span>Revisa tu razonamiento</span></div><span>' + msg + '</span>' + loadBtnHtml;
+
+    const solBtn = fbBox.querySelector('[data-load-sol]');
+    if (solBtn) {
+      solBtn.addEventListener('click', function() {
+        setParams(spec.sol.a, spec.sol.b, spec.sol.c, true, 'Solución guiada Reto ' + id);
+      });
+    }
+    saveSession();
+  }
+
+  function unlockRetoCard(id) {
+    const c = document.getElementById('retoCard' + id);
+    if (!c) return;
+    c.classList.remove('locked');
+    c.removeAttribute('aria-disabled');
+    const b = document.getElementById('triesBadge' + id);
+    if (b && b.textContent === 'Bloqueado') b.textContent = '0 intentos';
+  }
+
+  function updateRetosProgressUI() {
+    if (typeof updateMobileTabPill === 'function') updateMobileTabPill();
+    const txt = state.retosCompleted + ' / 5';
+    document.getElementById('retosProgressText').textContent = txt;
+    document.getElementById('tabRetosCount').textContent = state.retosCompleted + '/5';
+    document.getElementById('mobRetosCounter').textContent = state.retosCompleted + '/5';
+    document.getElementById('retoProgressBar').setAttribute('aria-valuenow', String(state.retosCompleted));
+    for (let i = 1; i <= 5; i++) {
+      const seg = document.querySelector('[data-rseg="' + i + '"]');
+      if (seg) seg.classList.toggle('done', !!state.retosOk[i - 1]);
+    }
+  }
+
+ // ===================== GENERADOR DE RETOS ADAPTATIVOS DE REFUERZO =====================
+  const ADAPTIVE_BANK = {
+    concavidad: {
+      title: 'Refuerzo · Concavidad',
+      stem: 'Sin necesidad de graficar, ¿hacia dónde abre la parábola f(x) = −3x² + 7x − 2?',
+      options: [
+        { val: 'arriba', text: 'Hacia arriba (∪) porque b = +7 es positivo' },
+        { val: 'abajo', text: 'Hacia abajo (∩) porque el coeficiente cuadrático a = −3 es negativo', ok: true }
+      ],
+      explain: 'El signo de a (−3 < 0) determina por sí solo que las ramas abran hacia abajo.'
+    },
+    vertice: {
+      title: 'Refuerzo · Vértice',
+      stem: 'Dada la función f(x) = 2x² − 8x + 5, ¿cuál es la coordenada horizontal h = −b/(2a) de su vértice?',
+      options: [
+        { val: '-2', text: 'h = −2,00' },
+        { val: '2', text: 'h = +2,00, porque −(−8)/(2·2) = 8/4 = 2', ok: true }
+      ],
+      explain: 'Al sustituir b = −8 y a = 2 en h = −b/(2a) se obtiene h = 8/4 = +2,00.'
+    },
+    discriminante: {
+      title: 'Refuerzo · Discriminante',
+      stem: 'En la función f(x) = x² − 6x + 9, el discriminante vale Δ = (−6)² − 4(1)(9) = 0. ¿Qué implica esto geométricamente?',
+      options: [
+        { val: 'tangente', text: 'Que la parábola es tangente al eje X en un único punto (x = 3)', ok: true },
+        { val: 'ninguna', text: 'Que la parábola no tiene ningún punto de contacto con el eje X' }
+      ],
+      explain: 'Cuando Δ = 0, las dos raíces coinciden en una raíz real doble y el vértice descansa exactamente sobre el eje X.'
+    }
+  };
+
+  function generateAdaptiveRetos() {
+    state.adaptiveGenerated = true;
+    const mount = document.getElementById('adaptiveRetosMount');
+    mount.innerHTML = '';
+    const keys = ['concavidad', 'vertice', 'discriminante'];
+    const weak = keys.filter(function(k) {
+      return (state.perfil.erroresPorConcepto[k] + state.perfil.pistasUsadas[k]) > 0;
+    });
+
+    if (weak.length === 0) return;
+
+    weak.forEach(function(k, idx) {
+      const item = ADAPTIVE_BANK[k];
+      const card = document.createElement('div');
+      card.className = 'reto-card adaptive-card';
+      card.innerHTML =
+        '<div class="reto-head-row">' +
+          '<span class="reto-title">' + item.title + '</span>' +
+          '<span class="tries-pill" style="background:var(--cyan-tint);color:var(--ink-blue);">Refuerzo personalizado</span>' +
+        '</div>' +
+        '<p style="font-size:var(--fs-label);margin-bottom:8px;">' + item.stem + '</p>' +
+        '<div class="option-stack">' +
+          item.options.map(function(o, oIdx) {
+            return '<label class="opt-card" style="min-height:38px;padding:6px 10px;font-size:var(--fs-label);">' +
+              '<input type="radio" name="adapRadio_' + idx + '" value="' + oIdx + '">' +
+              '<span>' + o.text + '</span>' +
+            '</label>';
+          }).join('') +
+        '</div>' +
+        '<button type="button" class="btn btn-cyan" data-eval-adap="' + k + '" data-adap-idx="' + idx + '" style="width:100%;">Verificar</button>' +
+        '<div class="status-box" id="adapFb_' + idx + '"></div>';
+      mount.appendChild(card);
+    });
+
+    mount.querySelectorAll('[data-eval-adap]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const k = btn.getAttribute('data-eval-adap');
+        const idx = btn.getAttribute('data-adap-idx');
+        const sel = document.querySelector('input[name="adapRadio_' + idx + '"]:checked');
+        const fb = document.getElementById('adapFb_' + idx);
+        if (!sel) return;
+        const chosen = ADAPTIVE_BANK[k].options[parseInt(sel.value, 10)];
+        if (chosen.ok) {
+          fb.className = 'status-box visible state-ok';
+          fb.innerHTML = '<div class="status-lead">' + SVG_OK + '<span>Correcto</span></div><span>' + ADAPTIVE_BANK[k].explain + '</span>';
+          state.perfil.aciertosPorConcepto[k]++;
+          recordTrace('RETO_ADAPTATIVO', ADAPTIVE_BANK[k].title + ' superado.');
+        } else {
+          fb.className = 'status-box visible state-review';
+          fb.innerHTML = '<div class="status-lead">' + SVG_REVIEW + '<span>Por revisar</span></div><span>' + ADAPTIVE_BANK[k].explain + '</span>';
+        }
+      });
+    });
+  }
+
+ // ===================== SONIFICACIÓN (WEB AUDIO API) Y DESCRIPCIÓN TEXTUAL =====================
+  let audioCtx = null;
+  let sonifTimer = null;
+
+  function toggleSonification() {
+    const btn = document.getElementById('btnSonify');
+    const txt = document.getElementById('sonifyBtnText');
+    if (state.sonifying) {
+      if (audioCtx) { try { audioCtx.close(); } catch (_) {} audioCtx = null; }
+      if (sonifTimer) { clearTimeout(sonifTimer); sonifTimer = null; }
+      state.sonifying = false;
+      btn.classList.remove('active-toggle');
+      btn.setAttribute('aria-pressed', 'false');
+      txt.textContent = 'Escuchar';
+      return;
+    }
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      audioCtx = new AC();
+      state.sonifying = true;
+      btn.classList.add('active-toggle');
+      btn.setAttribute('aria-pressed', 'true');
+      txt.textContent = 'Detener sonido';
+
+      const M = computeMathState();
+      const now = audioCtx.currentTime;
+      const dur = 3.0;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.15, now + 0.05);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+
+      let yMin = Infinity, yMax = -Infinity;
+      for (let i = 0; i <= 120; i++) {
+        const x = -10 + (20 * i) / 120;
+        const y = evalF(x, M.a, M.b, M.c);
+        if (y < yMin) yMin = y;
+        if (y > yMax) yMax = y;
+      }
+      if (Math.abs(yMax - yMin) < 1e-6) yMax = yMin + 1;
+
+      for (let i = 0; i <= 120; i++) {
+        const x = -10 + (20 * i) / 120;
+        const y = evalF(x, M.a, M.b, M.c);
+        const norm = (y - yMin) / (yMax - yMin);
+        const freq = 220 * Math.pow(2, (norm - 0.5) * 2);
+        osc.frequency.linearRampToValueAtTime(Math.max(80, Math.min(1800, freq)), now + (i / 120) * dur);
+      }
+      gain.gain.linearRampToValueAtTime(0.0001, now + dur);
+      osc.stop(now + dur + 0.05);
+
+      if (!M.isLinear && M.h >= -10 && M.h <= 10) {
+        const tV = ((M.h + 10) / 20) * dur;
+        const clickOsc = audioCtx.createOscillator();
+        const clickGain = audioCtx.createGain();
+        clickOsc.type = 'triangle';
+        clickOsc.frequency.value = 880;
+        clickGain.gain.setValueAtTime(0.001, now + tV);
+        clickGain.gain.exponentialRampToValueAtTime(0.28, now + tV + 0.01);
+        clickGain.gain.exponentialRampToValueAtTime(0.001, now + tV + 0.08);
+        clickOsc.connect(clickGain);
+        clickGain.connect(audioCtx.destination);
+        clickOsc.start(now + tV);
+        clickOsc.stop(now + tV + 0.09);
+      }
+
+      sonifTimer = setTimeout(function() {
+        if (state.sonifying) toggleSonification();
+      }, 3100);
+    } catch (_) {}
+  }
+
+  function buildFullTextDescription() {
+    const M = computeMathState();
+    const eq = 'f(x) = ' + fmtDec(M.a, 2) + 'x² ' + fmtSigned(M.b, 2) + 'x ' + fmtSigned(M.c, 2);
+    if (M.isLinear) {
+      return 'Con a = 0,00 la función ' + eq + ' se reduce a una recta lineal que corta al eje Y en (0; ' + fmtDec(M.c, 2) + ').';
+    }
+    const dir = M.a > 0 ? 'hacia arriba (mínimo en el vértice)' : 'hacia abajo (máximo en el vértice)';
+    const rootsDesc = M.roots.length === 0
+      ? 'No corta al eje horizontal X porque su discriminante Δ = ' + fmtDec(M.disc, 2) + ' es negativo.'
+      : (M.roots.length === 1
+        ? 'Es tangente al eje horizontal X en una única raíz real doble x = ' + fmtDec(M.roots[0], 2) + ' (Δ = 0).'
+        : 'Corta al eje horizontal X en dos raíces reales distintas: x₁ = ' + fmtDec(M.roots[0], 2) + ' y x₂ = ' + fmtDec(M.roots[1], 2) + ' (Δ = ' + fmtDec(M.disc, 2) + ' > 0).');
+    return 'La parábola ' + eq + ' abre ' + dir + '. Su vértice se ubica en V(' + fmtDec(M.h, 2) + '; ' + fmtDec(M.k, 2) + '), con eje de simetría en x = ' + fmtDec(M.h, 2) + '. ' + rootsDesc + ' Además, corta al eje vertical Y en el punto (0; ' + fmtDec(M.c, 2) + ').';
+  }
+
+  function renderProgressChart() {
+    document.getElementById('fullTextDescParagraph').textContent = buildFullTextDescription();
+    document.getElementById('adaptiveLevelBadge').textContent = 'Nivel: ' + state.perfil.nivel.toUpperCase();
+
+    const cv = document.getElementById('progressBarsCanvas');
+    const g = cv.getContext('2d');
+    const W = cv.width, H = cv.height;
+    g.clearRect(0, 0, W, H);
+    g.fillStyle = state.highContrast ? '#111111' : '#F8FAFC';
+    g.fillRect(0, 0, W, H);
+
+    const concepts = [
+      { key: 'concavidad', lbl: '1. Concavidad (a)' },
+      { key: 'vertice', lbl: '2. Vértice V(h; k)' },
+      { key: 'intercepto', lbl: '3. Corte Y f(0)=c' },
+      { key: 'discriminante', lbl: '4. Discriminante Δ' },
+      { key: 'contextoFisico', lbl: '5. Proyectil físico' }
+    ];
+
+    let maxVal = 2;
+    concepts.forEach(function(c) {
+      const tot = state.perfil.aciertosPorConcepto[c.key] + state.perfil.erroresPorConcepto[c.key];
+      if (tot > maxVal) maxVal = tot;
+    });
+
+    const padL = 155, padR = 120, chartW = W - padL - padR;
+    concepts.forEach(function(c, idx) {
+      const y = 26 + idx * 40;
+      const okCount = state.perfil.aciertosPorConcepto[c.key];
+      const errCount = state.perfil.erroresPorConcepto[c.key];
+
+      g.fillStyle = state.highContrast ? '#FFFFFF' : '#0B2A4A';
+      g.font = '700 13px system-ui, sans-serif';
+      g.textAlign = 'right';
+      g.fillText(c.lbl, padL - 12, y + 14);
+
+      g.fillStyle = '#CBD5E1';
+      g.fillRect(padL, y, chartW, 20);
+
+      const wOk = (okCount / maxVal) * chartW;
+      const wErr = (errCount / maxVal) * chartW;
+      g.fillStyle = '#047857';
+      g.fillRect(padL, y, wOk, 20);
+      g.fillStyle = '#B91C1C';
+      g.fillRect(padL + wOk, y, wErr, 20);
+
+      g.fillStyle = state.highContrast ? '#FFFF00' : '#0B2A4A';
+      g.textAlign = 'left';
+      g.font = '700 12px system-ui, sans-serif';
+      g.fillText(okCount + ' aciertos · ' + errCount + ' rev.', padL + chartW + 10, y + 14);
+    });
+
+    const recoBox = document.getElementById('adaptiveRecoBox');
+    recoBox.innerHTML = '<div class="status-lead">' + SVG_INFO + '<span>Recomendación</span></div>' +
+      '<span>Has completado ' + state.retosCompleted + ' de 5 retos base con ' + state.perfil.intentosTotales + ' revisiones acumuladas. ' +
+      (state.retosCompleted === 5 ? 'Revisa tus retos adaptativos de refuerzo al final del Momento 3.' : 'Completa los 5 retos del Momento 3 para desbloquear ejercicios de refuerzo adaptados a tu perfil.') + '</span>';
+  }
+
+ // ===================== GENERACIÓN DE LA TRAZA EXPORTABLE (.TXT E INFORME .HTML) =====================
+  function buildFullTraceText() {
+    const alias = state.studentAlias.trim() ? state.studentAlias.trim() : 'No declarado';
+    const M = computeMathState();
+    const lines = [];
+    lines.push('======================================================================');
+    lines.push('DIDAXIS LAB — TRAZA DE TRABAJO');
+    lines.push('Recurso: Función Cuadrática y Parábola (v2.0) · Banquez Buendía, H. E. · CC BY 4.0');
+    lines.push('Exportada: ' + new Date().toLocaleString('es-CO'));
+    lines.push('Estudiante / Equipo: ' + alias);
+    lines.push('======================================================================');
+    lines.push('');
+    lines.push('1. PREDICCIÓN INICIAL:');
+    lines.push('   - Opción elegida: ' + (state.poeChoice || 'Pendiente de registro'));
+    lines.push('   - Razón escrita: ' + (state.poeJustification || 'Sin justificación escrita'));
+    lines.push('');
+    lines.push('2. EXPLORACIÓN Y CONSTRUCCIONES:');
+    lines.push('   - Función activa: f(x) = ' + fmtDec(M.a, 2) + 'x² ' + fmtSigned(M.b, 2) + 'x ' + fmtSigned(M.c, 2));
+    lines.push('   - Vértice actual: V(' + fmtDec(M.h, 2) + '; ' + fmtDec(M.k, 2) + ') | Discriminante Δ = ' + fmtDec(M.disc, 2));
+    lines.push('   - Misiones completadas: ' + state.missionsDone.filter(Boolean).length + ' de 3');
+    state.experimentsLog.slice(-15).forEach(function(exp, idx) {
+      lines.push('   - [' + (idx + 1) + '] ' + exp);
+    });
+    lines.push('');
+    lines.push('3. DESEMPEÑO EN LOS 5 RETOS:');
+    lines.push('   - Nivel alcanzado: ' + state.perfil.nivel.toUpperCase());
+    for (let i = 1; i <= 5; i++) {
+      const f = state.firstResponses[i - 1];
+      const status = state.retosOk[i - 1] ? 'Superado (' + state.intentos[i - 1] + ' revisiones)' : 'Pendiente';
+      lines.push('   - Reto ' + i + ' (' + RETOS_SPECS[i].concepto + '): ' + status +
+        (f ? ' | 1.ª respuesta: ' + f.choice + ' (' + (f.ok ? 'Acierto inicial' : 'En revisión') + ')' : ''));
+    }
+    lines.push('');
+    lines.push('4. CONCLUSIÓN ESCRITA:');
+    lines.push('   ' + (state.closingArgument || 'Pendiente.'));
+    lines.push('');
+    lines.push('5. CRONOLOGÍA DE LA SESIÓN:');
+    state.traceEvents.forEach(function(ev, i) {
+      lines.push('   [' + (i + 1) + '] ' + ev.time + ' | ' + ev.category + ' -> ' + ev.description);
+    });
+    return lines.join('\n');
+  }
+
+
+ // ===================== MODO DOCENTE =====================
+  let teacherOpenerEl = null;
+
+  function teacherOpen() {
+    const ov = document.getElementById('teacherOverlay');
+    if (!ov || !ov.hidden) return;
+    teacherOpenerEl = document.activeElement;
+    ov.hidden = false;
+    renderErrStats();
+    const first = document.getElementById('ttab-res');
+    if (first) first.focus();
+  }
+
+  function teacherClose() {
+    const ov = document.getElementById('teacherOverlay');
+    if (!ov || ov.hidden) return;
+    ov.hidden = true;
+    if (teacherOpenerEl && teacherOpenerEl.focus) teacherOpenerEl.focus();
+  }
+
+  const TEACHER_TABS = ['res', 'err', 'fic', 'ver'];
+
+  function teacherTab(id) {
+    TEACHER_TABS.forEach(function(t) {
+      const tab = document.getElementById('ttab-' + t);
+      const panel = document.getElementById('tpanel-' + t);
+      const sel = (t === id);
+      if (tab) {
+        tab.setAttribute('aria-selected', sel ? 'true' : 'false');
+        tab.tabIndex = sel ? 0 : -1;
+      }
+      if (panel) panel.hidden = !sel;
+    });
+    if (id === 'err') renderErrStats();
+  }
+
+  function escapeTeacher(t) {
+    return String(t == null ? '' : t)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+ // Aquí no hay distractores: los retos son de respuesta construida. Lo que
+ // informa al docente es la primera respuesta, cuántas revisiones costó y qué
+ // concepto toca. La pista de primer nivel nombra el obstáculo.
+  const CONCEPTO_NOMBRE = {
+    concavidad: 'Concavidad y signo de a',
+    vertice: 'Coordenadas del vértice',
+    intercepto: 'Corte con el eje Y',
+    discriminante: 'Discriminante y raíces',
+    contextoFisico: 'Modelación del proyectil'
+  };
+
+  function renderErrStats() {
+    const box = document.getElementById('errStatsBox');
+    if (!box) return;
+    let filas = '';
+    for (let i = 1; i <= 5; i++) {
+      const spec = RETOS_SPECS[i];
+      const first = state.firstResponses[i - 1];
+      const rev = state.intentos[i - 1] || 0;
+      let tag = '<span class="err-tag na">Sin responder</span>';
+      let detalle = '';
+      if (first && first.ok && rev === 0) {
+        tag = '<span class="err-tag ok">Acierto a la primera</span>';
+      } else if (first) {
+        tag = '<span class="err-tag no">' + rev + (rev === 1 ? ' revisión' : ' revisiones') + '</span>';
+        detalle = '<br>' + escapeTeacher(spec.fb.l1);
+      }
+      filas += '<div class="err-row"><span class="err-k">Reto ' + i + '</span>' +
+               '<span class="err-v">' + tag + '<br>' +
+               escapeTeacher(CONCEPTO_NOMBRE[spec.concepto] || spec.concepto) +
+               detalle + '</span></div>';
+    }
+    const p = state.perfil;
+    let pistas = 0;
+    Object.keys(p.pistasUsadas).forEach(function(k) { pistas += p.pistasUsadas[k]; });
+    box.innerHTML = '<p class="teacher-note"><strong>' + state.retosCompleted + ' de 5</strong>' +
+      ' retos superados · nivel alcanzado: <strong>' + escapeTeacher(p.nivel) + '</strong>' +
+      ' · <strong>' + pistas + '</strong> pistas pedidas.</p>' + filas;
+  }
+
+ // ===================== FICHAS IMPRIMIBLES =====================
+  function printSheet(kind) {
+    if (['taller', 'ticket', 'rubrica'].indexOf(kind) < 0) return;
+    teacherClose();
+    document.body.classList.add('printing', 'print-' + kind);
+    const limpiar = function() {
+      document.body.classList.remove('printing', 'print-taller', 'print-ticket', 'print-rubrica');
+    };
+    window.addEventListener('afterprint', limpiar, { once: true });
+    window.setTimeout(function() {
+      window.print();
+      window.setTimeout(limpiar, 1500);
+    }, 40);
+  }
+
+ // ===================== CÓDIGO DE COMPLECIÓN SIN SERVIDOR =====================
+ // Formato compartido por todo el catálogo: III-PPPPP-CC
+ //   III   = iniciales (1 a 3 letras A-Z, normalizadas)
+ //   PPPPP = base36 de ((recurso · 256) + máscara) · 10000 + días desde 2024-01-01
+ //           recurso: 0 Azar · 1 Círculo · 2 Cuadrática · 3 Pitágoras · 4 Fracciones
+ //                    5 Área vs Perímetro · 6 a 8 los tres juegos
+ //           máscara: bit i = reto (i+1) resuelto
+ //           días: 0 a 9999 (válido hasta 2051)
+ //   CC    = suma de verificación de III+PPPPP:
+ //           c1 = Σ v(ch_i)·(i+1) mod 36 ; c2 = la misma suma mod 35
+ //   36 y 35 son coprimos, así que cualquier carácter alterado y cualquier
+ //   transposición de dos adyacentes rompen la verificación.
+  const CODE_A36 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const CODE_EPOCH = Date.UTC(2024, 0, 1);
+  const CODE_RESOURCE_ID = 2;
+  const CODE_RESOURCE_NAME = 'Función Cuadrática y Parábola';
+  const CODE_TOTAL_RETOS = 5;
+
+  function codeVal(ch) { return CODE_A36.indexOf(ch); }
+
+  function codeB36(n, w) {
+    let s = '';
+    do { s = CODE_A36[n % 36] + s; n = Math.floor(n / 36); } while (n > 0);
+    while (s.length < w) s = '0' + s;
+    return s;
+  }
+
+  function codeChecksum(s) {
+    let sum = 0;
+    for (let i = 0; i < s.length; i++) sum += codeVal(s[i]) * (i + 1);
+    return CODE_A36[sum % 36] + CODE_A36[sum % 35];
+  }
+
+  function codeNormalizeInitials(raw) {
+    return String(raw).toUpperCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\u00D1/g, 'N').replace(/[^A-Z]/g, '').slice(0, 3);
+  }
+
+  function generateCompletionCode(initials) {
+    const ini = codeNormalizeInitials(initials);
+    if (!ini) return { ok: false, err: 'Escribe entre 1 y 3 letras.' };
+    let mask = 0;
+    const hechos = state.retosOk;
+    for (let i = 0; i < CODE_TOTAL_RETOS; i++) if (hechos[i]) mask |= (1 << i);
+    const days = Math.max(0, Math.min(9999, Math.floor((Date.now() - CODE_EPOCH) / 86400000)));
+    const pay = codeB36((CODE_RESOURCE_ID * 256 + mask) * 10000 + days, 5);
+    return { ok: true, code: ini + '-' + pay + '-' + codeChecksum(ini + pay), mask: mask };
+  }
+
+  function verifyCompletionCode(code) {
+    const m = String(code).toUpperCase().trim().match(/^([A-Z]{1,3})-([0-9A-Z]{5})-([0-9A-Z]{2})$/);
+    if (!m) return { ok: false, err: 'Formato no reconocido. Debe verse como ABC-27C4J-K8.' };
+    if (codeChecksum(m[1] + m[2]) !== m[3]) {
+      return { ok: false, err: 'El código no supera la verificación: fue copiado mal o alterado.' };
+    }
+    let val = 0;
+    for (let i = 0; i < m[2].length; i++) val = val * 36 + codeVal(m[2][i]);
+    const head = Math.floor(val / 10000), days = val % 10000;
+    const recurso = Math.floor(head / 256), mask = head % 256;
+    if (recurso !== CODE_RESOURCE_ID) {
+      return { ok: false, err: 'Es un código válido, pero de otro laboratorio de Didaxis Lab. Este verificador es el de ' + CODE_RESOURCE_NAME + '.' };
+    }
+    if (mask >= (1 << CODE_TOTAL_RETOS)) return { ok: false, err: 'Código fuera de rango.' };
+    return { ok: true, ini: m[1], mask: mask, date: new Date(CODE_EPOCH + days * 86400000) };
+  }
+
+  function retosDeMascara(mask) {
+    const lista = [];
+    for (let i = 0; i < CODE_TOTAL_RETOS; i++) if (mask & (1 << i)) lista.push(i + 1);
+    return lista;
+  }
+
+  function onGenCode() {
+    const out = document.getElementById('codeOut');
+    const ini = document.getElementById('codeInitials');
+    if (!out || !ini) return;
+    const r = generateCompletionCode(ini.value);
+    if (!r.ok) {
+      out.innerHTML = '<span style="color:var(--warn-red);font-weight:700;">' + escapeTeacher(r.err) + '</span>';
+      return;
+    }
+    const n = retosDeMascara(r.mask).length;
+    out.innerHTML = '<span class="code-value">' + r.code + '</span>' +
+      '<span class="teacher-note" style="display:block;margin-top:5px;">Resume ' + n +
+      ' de ' + CODE_TOTAL_RETOS + ' retos resueltos. Cópialo tal cual, con los guiones.</span>';
+    recordTrace('CÓDIGO_DE_COMPLECIÓN', r.code + ' (' + n + ' de ' + CODE_TOTAL_RETOS + ' retos)');
+  }
+
+  function onVerifyCode() {
+    const out = document.getElementById('verifyOut');
+    const inp = document.getElementById('verifyCodeInput');
+    if (!out || !inp) return;
+    const r = verifyCompletionCode(inp.value);
+    if (!r.ok) {
+      out.innerHTML = '<span style="color:var(--warn-red);font-weight:700;">\u2715 ' + escapeTeacher(r.err) + '</span>';
+      return;
+    }
+    const lista = retosDeMascara(r.mask);
+    out.innerHTML = '<span style="color:var(--ok-green);font-weight:700;">\u2713 Código válido</span><br>' +
+      'Iniciales: <strong>' + escapeTeacher(r.ini) + '</strong> · Fecha: <strong>' +
+      escapeTeacher(r.date.toLocaleDateString('es-CO')) + '</strong><br>' +
+      'Retos resueltos: <strong>' + lista.length + ' de ' + CODE_TOTAL_RETOS + '</strong>' +
+      (lista.length ? ' (R' + lista.join(', R') + ')' : '');
+  }
+
+ // ===================== VINCULACIÓN DE EVENTOS =====================
+  function switchMoment(mNum) {
+    state.moment = mNum;
+    [1, 2, 3].forEach(function(n) {
+      const tab = document.getElementById('tabMoment' + n);
+      const panel = document.getElementById('panelMoment' + n);
+      const act = n === mNum;
+      tab.classList.toggle('active', act);
+      tab.setAttribute('aria-selected', act ? 'true' : 'false');
+      panel.style.display = act ? 'block' : 'none';
+    });
+  }
+
+  function toggleBlindMode(forceVal) {
+    state.blindMode = typeof forceVal === 'boolean' ? forceVal : !state.blindMode;
+    const btn = document.getElementById('btnBlindMode');
+    btn.classList.toggle('active-toggle', state.blindMode);
+    btn.setAttribute('aria-pressed', state.blindMode ? 'true' : 'false');
+    document.getElementById('blindModeText').textContent = state.blindMode ? 'Mostrar valores' : 'Ocultar valores';
+    document.getElementById('btnRevealConjecture').style.display = state.blindMode ? 'inline-flex' : 'none';
+    renderScene();
+  }
+
+  function togglePhysMode(forceVal) {
+    state.physMode = typeof forceVal === 'boolean' ? forceVal : !state.physMode;
+    const btn = document.getElementById('btnPhysMode');
+    const mobBtn = document.getElementById('btnMobPhys');
+    const playBtn = document.getElementById('btnPlayProj');
+    btn.classList.toggle('active-toggle', state.physMode);
+    btn.setAttribute('aria-pressed', state.physMode ? 'true' : 'false');
+    mobBtn.classList.toggle('active-toggle', state.physMode);
+    playBtn.style.display = state.physMode ? 'inline-flex' : 'none';
+
+    if (state.physMode) {
+      unlockRetoCard(5);
+      if (state.a >= 0) {
+        setParams(-1.0, 6.0, 0.0, true, 'Activado Contexto Físico con trayectoria de proyectil');
+      }
+      state.projPlaying = true;
+      lastProjTs = null;
+      if (!projRaf) projRaf = requestAnimationFrame(stepProjAnim);
+    } else {
+      if (projRaf) { cancelAnimationFrame(projRaf); projRaf = null; }
+    }
+    renderScene();
+  }
+
+  function bindAllEvents() {
+ // Despachador único para las piezas del núcleo: un solo listener en el
+ // documento, compatible con la CSP (sin onclick en el marcado).
+    document.addEventListener('click', function(ev) {
+      const el = ev.target.closest ? ev.target.closest('[data-action]') : null;
+      if (!el) return;
+      const action = el.getAttribute('data-action');
+      if (action === 'reset-progress')      { ev.preventDefault(); requestResetProgress(); }
+      else if (action === 'mobile-tab')     { ev.preventDefault(); setMobileTab(el.getAttribute('data-view')); }
+      else if (action === 'teacher-open')   { ev.preventDefault(); teacherOpen(); }
+      else if (action === 'teacher-close')  { ev.preventDefault(); teacherClose(); }
+      else if (action === 'teacher-tab')    { ev.preventDefault(); teacherTab(el.getAttribute('data-tab')); }
+      else if (action === 'print-sheet')    { ev.preventDefault(); printSheet(el.getAttribute('data-sheet')); }
+      else if (action === 'gen-code')       { ev.preventDefault(); onGenCode(); }
+      else if (action === 'verify-code')    { ev.preventDefault(); onVerifyCode(); }
+    });
+
+ // Alt+D abre y cierra el panel docente; Escape lo cierra.
+    document.addEventListener('keydown', function(ev) {
+      if (ev.altKey && (ev.key === 'd' || ev.key === 'D')) {
+        ev.preventDefault();
+        const ov = document.getElementById('teacherOverlay');
+        if (ov && ov.hidden) teacherOpen(); else teacherClose();
+      } else if (ev.key === 'Escape') {
+        const ov = document.getElementById('teacherOverlay');
+        if (ov && !ov.hidden) teacherClose();
+      }
+    });
+
+ // Clic fuera del panel = cerrar
+    const tOv = document.getElementById('teacherOverlay');
+    if (tOv) {
+      tOv.addEventListener('click', function(ev) { if (ev.target === tOv) teacherClose(); });
+    }
+
+
+ // Pantalla completa condicional
+    const fsBtn = document.getElementById('btnFullscreen');
+    if (document.fullscreenEnabled || document.webkitFullscreenEnabled) {
+      fsBtn.style.display = 'inline-flex';
+      fsBtn.addEventListener('click', function() {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){});
+        else document.exitFullscreen().catch(function(){});
+      });
+      document.addEventListener('fullscreenchange', function() {
+        document.getElementById('fullscreenText').textContent = document.fullscreenElement ? 'Salir pantalla completa' : 'Pantalla completa';
+      });
+    }
+
+ // Modo Proyección y Modo Pizarra
+    const btnProj = document.getElementById('btnProjection');
+    btnProj.addEventListener('click', function() {
+      const act = document.body.classList.toggle('projection-mode');
+      btnProj.classList.toggle('active-toggle', act);
+      btnProj.setAttribute('aria-pressed', act ? 'true' : 'false');
+      renderScene();
+    });
+
+    const btnBoard = document.getElementById('btnBoardMode');
+    function setBoardMode(forceState) {
+      const act = typeof forceState === 'boolean'
+        ? document.body.classList.toggle('board-mode', forceState)
+        : document.body.classList.toggle('board-mode');
+      btnBoard.classList.toggle('active-toggle', act);
+      btnBoard.setAttribute('aria-pressed', act ? 'true' : 'false');
+      document.getElementById('boardModeText').textContent = act ? 'Mostrar Guion y Retos' : 'Modo Pizarra';
+      setTimeout(renderScene, 60);
+    }
+    btnBoard.addEventListener('click', function() { setBoardMode(); });
+
+ // Pestañas de Momento
+    document.querySelectorAll('.moment-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        switchMoment(parseInt(tab.getAttribute('data-moment'), 10));
+      });
+    });
+
+ // Presets
+    document.querySelectorAll('[data-preset]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('[data-preset]').forEach(function(b) { b.classList.remove('active-toggle'); });
+        btn.classList.add('active-toggle');
+        const parts = btn.getAttribute('data-preset').split(',').map(Number);
+        setParams(parts[0], parts[1], parts[2], true, 'Preset cargado');
+      });
+    });
+
+    document.getElementById('btnResetQuad').addEventListener('click', function() {
+      state.xMin = -10; state.xMax = 10; state.yMin = -10; state.yMax = 10;
+      state.activeMission = -1;
+      setParams(1.0, 0.0, 0.0, true, 'Reinicio a f(x) = x²');
+    });
+
+    document.getElementById('btnUndoQuad').addEventListener('click', function() {
+      if (state.historyStack.length === 0) return;
+      const prev = state.historyStack.pop();
+      document.getElementById('btnUndoQuad').disabled = state.historyStack.length === 0;
+      setParams(prev.a, prev.b, prev.c, false);
+    });
+
+ // Sliders a, b, c
+    ['slA', 'slB', 'slC'].forEach(function(id) {
+      const el = document.getElementById(id);
+      el.addEventListener('pointerdown', function() { pushHistory(); });
+      el.addEventListener('input', function() {
+        setParams(
+          parseFloat(document.getElementById('slA').value),
+          parseFloat(document.getElementById('slB').value),
+          parseFloat(document.getElementById('slC').value),
+          false
+        );
+      });
+      el.addEventListener('change', function() {
+        recordTrace('DESLIZADOR', 'Ajuste de parámetros: a=' + fmtDec(state.a, 1) + ', b=' + fmtDec(state.b, 1) + ', c=' + fmtDec(state.c, 1));
+      });
+    });
+
+ // Modos de vista en el lienzo
+    document.getElementById('btnPhysMode').addEventListener('click', function() { togglePhysMode(); });
+    document.getElementById('btnPlayProj').addEventListener('click', function() {
+      state.projPlaying = !state.projPlaying;
+      document.getElementById('playProjText').textContent = state.projPlaying ? 'Pausar proyectil' : 'Reanudar proyectil';
+      if (state.projPlaying && !projRaf) {
+        lastProjTs = null;
+        projRaf = requestAnimationFrame(stepProjAnim);
+      }
+    });
+    document.getElementById('btnBlindMode').addEventListener('click', function() { toggleBlindMode(); });
+    document.getElementById('btnRevealConjecture').addEventListener('click', function() { toggleBlindMode(false); });
+
+    const btnLocus = document.getElementById('btnToggleLocus');
+    btnLocus.addEventListener('click', function() {
+      state.showLocusB = !state.showLocusB;
+      btnLocus.classList.toggle('active-toggle', state.showLocusB);
+      btnLocus.setAttribute('aria-pressed', state.showLocusB ? 'true' : 'false');
+      renderScene();
+    });
+
+ // Zoom en el lienzo
+    document.getElementById('btnZoomIn').addEventListener('click', function() { zoomPlane(0.78); });
+    document.getElementById('btnZoomOut').addEventListener('click', function() { zoomPlane(1.28); });
+    document.getElementById('btnZoomHome').addEventListener('click', function() {
+      state.xMin = -10; state.xMax = 10; state.yMin = -10; state.yMax = 10;
+      renderScene();
+    });
+
+ // Botones de los 3 registros de Duval
+    document.querySelectorAll('[data-ring]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const mode = btn.getAttribute('data-ring');
+        state.activeForm = mode;
+        state.ringHighlight = state.ringHighlight === mode ? null : mode;
+        document.querySelectorAll('[data-ring]').forEach(function(b) {
+          b.classList.toggle('active-toggle', b.getAttribute('data-ring') === state.ringHighlight);
+        });
+        renderScene();
+      });
+    });
+
+ // Tabla de datos equivalente (hover / focus proyecta en gráfica)
+    const tbl = document.getElementById('equivTable');
+    tbl.addEventListener('mouseover', function(e) {
+      const td = e.target.closest('td[data-x]');
+      if (td) { state.hoverTableX = parseFloat(td.getAttribute('data-x')); renderScene(); }
+    });
+    tbl.addEventListener('mouseleave', function() {
+      state.hoverTableX = null; renderScene();
+    });
+    tbl.addEventListener('focusin', function(e) {
+      const td = e.target.closest('td[data-x]');
+      if (td) { state.hoverTableX = parseFloat(td.getAttribute('data-x')); renderScene(); }
+    });
+    tbl.addEventListener('focusout', function() {
+      state.hoverTableX = null; renderScene();
+    });
+
+ // Accesibilidad: Sonificación, Alto Contraste y Modal de Progreso/Descripción
+    document.getElementById('btnSonify').addEventListener('click', toggleSonification);
+    const btnHC = document.getElementById('btnHighContrast');
+    btnHC.addEventListener('click', function() {
+      state.highContrast = !state.highContrast;
+      document.body.classList.toggle('high-contrast', state.highContrast);
+      btnHC.classList.toggle('active-toggle', state.highContrast);
+      btnHC.setAttribute('aria-pressed', state.highContrast ? 'true' : 'false');
+      renderScene();
+    });
+
+    const modalProgress = document.getElementById('modalProgress');
+    function openProgressModal() {
+      renderProgressChart();
+      modalProgress.classList.add('open');
+    }
+    document.getElementById('btnOpenDescModal').addEventListener('click', openProgressModal);
+    document.getElementById('btnOpenProgressModal').addEventListener('click', openProgressModal);
+    document.getElementById('btnOpenProgressFromMoment3').addEventListener('click', openProgressModal);
+    document.getElementById('btnCloseProgressTop').addEventListener('click', function() {
+      modalProgress.classList.remove('open');
+    });
+    document.getElementById('btnCopyTextDesc').addEventListener('click', function() {
+      const txt = buildFullTextDescription();
+      const b = this;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function() {
+          b.textContent = '¡Copiada!';
+          setTimeout(function() { b.textContent = 'Copiar descripción'; }, 1800);
+        });
+      }
+    });
+
+ // Momento 1: Registro de Anticipación POE
+    document.getElementById('btnSubmitPoe').addEventListener('click', function() {
+      const sel = document.querySelector('input[name="poeQuadOpt"]:checked');
+      const just = document.getElementById('poeJustifInput').value.trim();
+      const box = document.getElementById('poeResultBox');
+      if (!sel) {
+        box.className = 'status-box visible state-review';
+        box.innerHTML = '<div class="status-lead">' + SVG_REVIEW + '<span>Falta elegir una opción</span></div><span>Elige una de las tres opciones antes de continuar.</span>';
+        return;
+      }
+      state.poeChoice = sel.value === 'parabola_inv'
+        ? 'Opción C (Describe la parábola invertida y = c − ax²)'
+        : (sel.value === 'horizontal' ? 'Opción A (Traslación horizontal recta)' : 'Opción B (Traslación vertical)');
+      state.poeJustification = just;
+      state.poeUnlocked = true;
+      state.showLocusB = true;
+      applyPoeGate();
+      const btnLocusOn = document.getElementById('btnToggleLocus');
+      btnLocusOn.classList.add('active-toggle');
+      btnLocusOn.setAttribute('aria-pressed', 'true');
+      updateMobileTabPill();
+      setParams(1.0, -2.0, 2.0, true, 'Activación de contraste POE (a=1; c=2)');
+
+      if (sel.value === 'parabola_inv') {
+        box.className = 'status-box visible state-ok';
+        box.innerHTML = '<div class="status-lead">' + SVG_OK + '<span>Predicción registrada — acertaste</span></div>' +
+          '<span>Como h = −b/(2a) y k = c − b²/(4a) = c − a·h², al mover el deslizador "b" el vértice recorre la parábola invertida punteada y = c − ax².</span>';
+      } else {
+        box.className = 'status-box visible state-info';
+        box.innerHTML = '<div class="status-lead">' + SVG_INFO + '<span>Predicción registrada</span></div>' +
+          '<span>Observa en la gráfica la curva punteada violeta: al mover "b", cambian tanto h = −b/(2a) como k = c − b²/(4a), trazando la parábola invertida y = c − ax².</span>';
+      }
+      recordTrace('ANTICIPACIÓN_POE', state.poeChoice + (just ? ' | Razón: ' + just : ''));
+    });
+
+ // Momento 2: Misiones de Construcción Inversa
+    document.querySelectorAll('[data-qmission]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const idx = parseInt(btn.getAttribute('data-qmission'), 10);
+        state.activeMission = idx;
+        if (idx >= 0) {
+          document.getElementById('missionDescText').textContent = MISSIONS[idx].desc;
+        } else {
+          document.getElementById('missionDescText').textContent = 'Exploración libre.';
+          document.getElementById('missionMatchBadge').textContent = 'Exploración libre';
+          document.getElementById('missionFeedbackBox').className = 'status-box';
+        }
+        renderScene();
+      });
+    });
+
+ // Momento 3: Los 5 Retos Progresivos
+    document.getElementById('btnCheckR1').addEventListener('click', function() { evaluateChallenge(1); });
+    document.getElementById('btnCheckR2').addEventListener('click', function() { evaluateChallenge(2); });
+    document.getElementById('btnLoadR3Preset').addEventListener('click', function() {
+      setParams(1.0, 0.0, 5.0, true, 'Cargado preset Reto 3 (1; 0; 5)');
+    });
+    document.getElementById('btnCheckR3').addEventListener('click', function() { evaluateChallenge(3); });
+    document.getElementById('btnCheckR4').addEventListener('click', function() { evaluateChallenge(4); });
+    document.getElementById('btnCheckR5').addEventListener('click', function() { evaluateChallenge(5); });
+
+ // Guardar conclusión escrita
+    document.getElementById('btnSaveArgument').addEventListener('click', function() {
+      const txt = document.getElementById('closingArgumentInput').value.trim();
+      const box = document.getElementById('argSavedFeedback');
+      if (!txt) {
+        box.className = 'status-box visible state-review';
+        box.innerHTML = '<div class="status-lead">' + SVG_REVIEW + '<span>Falta escribir tu conclusión</span></div><span>Escribe tu conclusión antes de guardarla en la traza.</span>';
+        return;
+      }
+      state.closingArgument = txt;
+      recordTrace('CONCLUSIÓN_ESCRITA', txt);
+      box.className = 'status-box visible state-ok';
+      box.innerHTML = '<div class="status-lead">' + SVG_OK + '<span>Guardado en la traza</span></div><span>Puedes exportarla desde el botón «Traza».</span>';
+    });
+
+ // Barra inferior de teléfono
+    document.getElementById('btnMobPhys').addEventListener('click', function() { togglePhysMode(); });
+    document.getElementById('btnMobReset').addEventListener('click', function() {
+      setParams(1.0, 0.0, 0.0, true, 'Reinicio móvil a f(x) = x²');
+    });
+    document.getElementById('btnMobRetos').addEventListener('click', function() {
+      setMobileTab('retos');
+      switchMoment(3);
+      document.getElementById('panelMoment3').scrollIntoView({ behavior: 'smooth' });
+    });
+
+ // Modal de Traza Exportable
+    const modalTrace = document.getElementById('modalTrace');
+    document.getElementById('btnOpenTrace').addEventListener('click', function() {
+      document.getElementById('tracePreviewPre').textContent = buildFullTraceText();
+      modalTrace.classList.add('open');
+    });
+    document.getElementById('btnCloseTraceTop').addEventListener('click', function() {
+      modalTrace.classList.remove('open');
+    });
+    document.getElementById('studentAliasInput').addEventListener('input', function() {
+      state.studentAlias = this.value;
+      document.getElementById('tracePreviewPre').textContent = buildFullTraceText();
+      saveSession();
+    });
+    document.getElementById('btnPrintTrace').addEventListener('click', function() { window.print(); });
+    document.getElementById('btnCopyTrace').addEventListener('click', function() {
+      const txt = buildFullTraceText();
+      const b = this;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function() {
+          b.textContent = 'Copiado al portapapeles';
+          setTimeout(function() { b.textContent = 'Copiar como texto'; }, 1800);
+        });
+      }
+    });
+    document.getElementById('btnDownloadTrace').addEventListener('click', function() {
+      const txt = buildFullTraceText();
+      const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'traza-funcion-cuadratica-v2-didaxislab.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    document.getElementById('btnDownloadHtmlReport').addEventListener('click', function() {
+      const preText = buildFullTraceText().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const repHtml = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe Función Cuadrática — Didaxis Lab</title>' +
+        '<style>body{font-family:system-ui,sans-serif;max-width:820px;margin:24px auto;padding:0 16px;color:#0B2A4A;}pre{background:#EEF2F6;padding:14px;border-radius:8px;white-space:pre-wrap;font-size:13px;border:1px solid #7A879B;}</style></head>' +
+        '<body><h1>Traza — Función Cuadrática v2.0 · Didaxis Lab</h1><pre>' + preText + '</pre></body></html>';
+      const blob = new Blob([repHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'informe-funcion-cuadratica-v2-didaxislab.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get('modo') === 'pizarra') setBoardMode(true);
+    } catch (_) {}
+
+    window.addEventListener('resize', renderScene);
+  }
+
+ // ===================== INICIALIZACIÓN =====================
+  loadSession();
+  if (window.innerWidth > 920) {
+    document.getElementById('quadSecondaryDrawer').setAttribute('open', 'open');
+  }
+  document.getElementById('slA').value = state.a;
+  document.getElementById('slB').value = state.b;
+  document.getElementById('slC').value = state.c;
+  if (state.poeJustification) document.getElementById('poeJustifInput').value = state.poeJustification;
+  if (state.closingArgument) document.getElementById('closingArgumentInput').value = state.closingArgument;
+  if (state.studentAlias) document.getElementById('studentAliasInput').value = state.studentAlias;
+
+  updateRetosProgressUI();
+  for (let i = 1; i <= 5; i++) {
+    if (state.retosOk[i - 1]) {
+      const c = document.getElementById('retoCard' + i);
+      if (c) { c.classList.remove('locked'); c.classList.add('solved'); }
+      document.getElementById('triesBadge' + i).textContent = 'Superado';
+      if (i < 5) unlockRetoCard(i + 1);
+    }
+  }
+  document.getElementById('traceBadgeCount').textContent = String(state.traceEvents.length);
+ // En teléfono se abre por los Retos mientras la compuerta Predice siga cerrada:
+ // es el paso que va primero y el que habilita el rastro del vértice.
+  setMobileTab(state.poeUnlocked ? 'sim' : 'retos');
+  updateMobileTabPill();
+  applyPoeGate();
+
+  bindAllEvents();
+  renderScene();
+})();
+</script>
+<!-- ================= FICHAS IMPRIMIBLES (solo visibles al imprimir) ================= -->
+<section class="print-sheet" id="sheetTaller" aria-hidden="true">
+  <header class="ps-head">
+    <div class="ps-brand">DIDAXIS LAB</div>
+    <h1>Taller — Función Cuadrática y Parábola</h1>
+    <div class="ps-meta">Nombre: ______________________________ &nbsp; Curso: ________ &nbsp; Fecha: ____ / ____ / ______</div>
+  </header>
+  <ol class="ps-list">
+    <li><strong>Antes de explorar.</strong> En <em>f</em>(<em>x</em>) = <em>x</em>² + <em>bx</em> + 2 mueves solo <em>b</em>, de −10 a +10. ¿Qué recorrido describe el vértice? Escribe tu respuesta y <strong>por qué</strong>, antes de tocar el simulador. <div class="ps-space"></div></li>
+    <li><strong>El signo de a.</strong> Prueba <em>a</em> = 1 y <em>a</em> = −1. ¿Qué cambia en la gráfica? ¿El vértice es máximo o mínimo en cada caso? <div class="ps-space"></div></li>
+    <li><strong>Tres escrituras de la misma parábola.</strong> Para <em>f</em>(<em>x</em>) = <em>x</em>² − 6<em>x</em> + 8, completa y di qué transparenta cada forma.
+      <table class="ps-table" style="margin-top:6px;">
+        <thead><tr><th>Forma</th><th>Expresión</th><th>Qué se lee de inmediato</th></tr></thead>
+        <tbody>
+          <tr><td>General</td><td><em>y</em> = <em>x</em>² − 6<em>x</em> + 8</td><td></td></tr>
+          <tr><td>Canónica</td><td></td><td></td></tr>
+          <tr><td>Factorizada</td><td></td><td></td></tr>
+        </tbody>
+      </table></li>
+    <li><strong>El discriminante decide.</strong> Sin dibujar, di cuántos cortes con el eje X tiene cada una y compruébalo después en el simulador.
+      <table class="ps-table" style="margin-top:6px;">
+        <thead><tr><th>Función</th><th>Δ = b² − 4ac</th><th>N.º de raíces reales</th></tr></thead>
+        <tbody>
+          <tr><td><em>y</em> = <em>x</em>² − 4<em>x</em> + 3</td><td></td><td></td></tr>
+          <tr><td><em>y</em> = <em>x</em>² − 4<em>x</em> + 4</td><td></td><td></td></tr>
+          <tr><td><em>y</em> = <em>x</em>² − 4<em>x</em> + 7</td><td></td><td></td></tr>
+        </tbody>
+      </table></li>
+    <li><strong>No confundas k con c.</strong> ¿Cuándo coinciden la ordenada del vértice <em>k</em> y el corte con el eje Y <em>c</em>? Da un ejemplo y uno donde no coincidan. <div class="ps-space"></div></li>
+    <li><strong>Contexto físico.</strong> Activa el proyectil. ¿Qué representan en la parábola la altura máxima y el alcance? ¿Qué parámetro habría que cambiar para que llegue más lejos sin subir más? <div class="ps-space tall"></div></li>
+  </ol>
+  <footer class="ps-foot">didaxislab.com · Recurso educativo abierto</footer>
+</section>
+
+<section class="print-sheet" id="sheetTicket" aria-hidden="true">
+  <header class="ps-head">
+    <div class="ps-brand">DIDAXIS LAB</div>
+    <h1>Ticket de salida — Función Cuadrática y Parábola</h1>
+    <div class="ps-meta">Nombre: ______________________________ &nbsp; Curso: ________ &nbsp; Fecha: ____ / ____ / ______</div>
+  </header>
+  <ol class="ps-list">
+    <li>Un compañero dice que al aumentar <em>b</em> «la parábola solo se corre hacia la izquierda, a la misma altura». ¿Tiene razón? Corrige la frase y explica qué le pasa en realidad al vértice. <div class="ps-space tall"></div></li>
+    <li>Si <em>a</em> &gt; 0 y <em>c</em> &gt; 0, ¿la parábola corta siempre al eje X? Decide y justifica con el discriminante. <div class="ps-space tall"></div></li>
+    <li>Describe una situación real que se modele con una parábola e indica qué representarían el vértice y los cortes con el eje X. <div class="ps-space"></div></li>
+  </ol>
+  <p class="ps-self">Autoevaluación — hoy mi comprensión de la función cuadrática quedó: &nbsp; ☐ Sólida &nbsp; ☐ En construcción &nbsp; ☐ Necesito repaso</p>
+  <footer class="ps-foot">didaxislab.com · Recurso educativo abierto</footer>
+</section>
+
+<section class="print-sheet" id="sheetRubrica" aria-hidden="true">
+  <header class="ps-head">
+    <div class="ps-brand">DIDAXIS LAB</div>
+    <h1>Rúbrica de evaluación — Función Cuadrática y Parábola</h1>
+    <div class="ps-meta">Estudiante: ______________________________ &nbsp; Curso: ________ &nbsp; Fecha: ____ / ____ / ______</div>
+  </header>
+  <table class="ps-table">
+    <thead>
+      <tr><th>Criterio</th><th>Superior</th><th>Alto</th><th>Básico</th><th>Bajo</th></tr>
+    </thead>
+    <tbody>
+      <tr><th>Álgebra y gráfica</th>
+        <td>Pasa entre las tres formas con soltura y elige la que conviene a cada pregunta.</td>
+        <td>Relaciona cada parámetro con su efecto en la gráfica.</td>
+        <td>Reconoce a y c, pero lee b como una traslación horizontal.</td>
+        <td>Trata la expresión y la curva como cosas separadas.</td></tr>
+      <tr><th>Vértice y cortes</th>
+        <td>Deduce el vértice por la fórmula y por la forma canónica, y distingue k de c con un contraejemplo.</td>
+        <td>Calcula el vértice y los cortes correctamente.</td>
+        <td>Halla los cortes pero confunde la ordenada del vértice con el corte en Y.</td>
+        <td>Confunde raíces, vértice y corte en Y.</td></tr>
+      <tr><th>Argumentación</th>
+        <td>Usa el discriminante para anticipar el número de raíces y refuta afirmaciones falsas.</td>
+        <td>Justifica el número de raíces con el signo de Δ.</td>
+        <td>Llega a conclusiones correctas con argumentos incompletos.</td>
+        <td>Argumenta por la forma del dibujo, sin apoyarse en los valores.</td></tr>
+      <tr><th>Uso del recurso</th>
+        <td>Diseña sus propias pruebas: fija parámetros y mueve uno solo para aislar su efecto.</td>
+        <td>Completa misiones y retos con autonomía.</td>
+        <td>Avanza con apoyo constante de las pistas.</td>
+        <td>Arrastra el vértice sin conectar lo que ve con la pregunta.</td></tr>
+    </tbody>
+  </table>
+  <footer class="ps-foot">didaxislab.com · Recurso educativo abierto</footer>
+</section>
+
+</body>
+</html>
