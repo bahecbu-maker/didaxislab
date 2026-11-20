@@ -1,0 +1,4238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:;">
+  <meta name="description" content="Laboratorio interactivo de trigonometría: del giro sobre el círculo unitario a la onda periódica. Didaxis Lab.">
+  <!-- Sin DOI ni enlaces a Zenodo: el registro contiene la guía docente. La ficha completa
+ y la citación viven en la página del recurso. -->
+  <meta name="author" content="Héctor Enrique Banquez Buendía">
+  <meta name="dcterms.license" content="https://creativecommons.org/licenses/by/4.0/">
+  <meta name="citation_title" content="Laboratorio Interactivo: Círculo Unitario y Ondas (v2.0)">
+  <meta name="citation_author" content="Banquez Buendía, Héctor Enrique">
+  <meta name="citation_publication_date" content="2026/11">
+  <title>Círculo Unitario y Ondas — Didaxis Lab</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /**/
+    :root {
+      --ink-blue: #0B2A4A;        /* 14,5:1 sobre blanco — Texto y titulares */
+      --brand-cyan: #0BC0D8;      /* 6,6:1 con azul tinta — Rellenos y botones (nunca texto blanco) */
+      --cyan-tint: #E6F9FC;       /* Fondo suave de selección con texto azul tinta */
+      --teal-accent: #0A7C8C;     /* 4,9:1 sobre blanco — Enlaces, líneas de gráfico e indicador de foco */
+      --text-gray: #566579;       /* 5,9:1 sobre blanco — Etiquetas secundarias */
+      --border-gray: #7A879B;     /* 3,6:1 sobre blanco — Bordes de controles y líneas de diagramas */
+      --border-soft: #CBD5E1;     /* Divisor estructural suave */
+      --surface-bg: #F4F7FA;      /* Fondo general de aplicación */
+      --surface-card: #FFFFFF;    /* Superficie principal */
+      --surface-muted: #EEF2F6;   /* Superficie secundaria */
+      --ok-green: #047857;        /* 5,5:1 sobre blanco — Estado correcto */
+      --ok-bg: #ECFDF5;
+      --warn-red: #B91C1C;        /* 6,5:1 sobre blanco — Estado por revisar */
+      --warn-bg: #FEF2F2;
+      --cos-blue: #1D4ED8;        /* 6,7:1 sobre blanco — Serie Coseno */
+      --tan-amber: #9A3412;       /* 7,4:1 sobre blanco — Serie Tangente */
+
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+
+      --fs-body: 16px;
+      --fs-label: 13px;
+      --fs-small: 12px;
+      --fs-kpi: 24px;
+      --fs-h1: 18px;
+      --fs-h2: 16px;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 12px;
+    }
+
+    
+    /* MODO PIZARRA (OCULTA EL GUION LATERAL PARA PROYECCIÓN O EXPLORACIÓN A ANCHO COMPLETO) */
+    body.board-mode main.lab-workspace {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.board-mode .col-script {
+      display: none !important;
+    }
+
+    /* MODO PROYECCIÓN */
+    body.projection-mode {
+      --fs-body: 18px;
+      --fs-label: 15px;
+      --fs-small: 14px;
+      --fs-kpi: 28px;
+      --fs-h1: 21px;
+      --fs-h2: 18px;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: var(--font-sans);
+      font-size: var(--fs-body);
+      background: var(--surface-bg);
+      color: var(--ink-blue);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* RESPETO A PREFERENCIA DE MOVIMIENTO REDUCIDO */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* FOCO VISIBLE PARA OPERABILIDAD POR TECLADO */
+    :focus-visible {
+      outline: 3px solid var(--teal-accent);
+      outline-offset: 2px;
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+
+    .math-var {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+    }
+
+    .svg-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      vertical-align: middle;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* CABECERA CANÓNICA */
+    header.lab-header {
+      background: var(--surface-card);
+      border-bottom: 1.5px solid var(--border-soft);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-Identity {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--ink-blue);
+      font-weight: 800;
+      font-size: var(--fs-h1);
+      min-height: 44px;
+      padding: 4px 6px;
+      border-radius: var(--radius-sm);
+    }
+    .brand-link svg.brand-logo {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+    }
+    .header-sep {
+      width: 1.5px;
+      height: 28px;
+      background: var(--border-soft);
+    }
+    .title-block {
+      display: flex;
+      flex-direction: column;
+    }
+    .lab-main-title {
+      font-size: var(--fs-h1);
+      font-weight: 800;
+      color: var(--ink-blue);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .status-pill {
+      font-size: var(--fs-small);
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--ok-bg);
+      color: var(--ok-green);
+      border: 1px solid var(--ok-green);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* CONTROLES INTERACTIVOS (44x44 PX MÍNIMO Y 8 PX DE SEPARACIÓN) */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: var(--fs-label);
+      font-weight: 700;
+      cursor: pointer;
+      border: 1.5px solid var(--border-gray);
+      background: var(--surface-card);
+      color: var(--ink-blue);
+      transition: background-color 0.15s, border-color 0.15s;
+      text-decoration: none;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--cyan-tint);
+      border-color: var(--teal-accent);
+    }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    /* Cian de marca siempre con texto azul tinta (#0B2A4A), nunca texto blanco */
+    .btn-cyan {
+      background: var(--brand-cyan);
+      color: var(--ink-blue);
+      border-color: var(--ink-blue);
+    }
+    .btn-cyan:hover:not(:disabled) {
+      background: #09B0C6;
+      border-color: var(--ink-blue);
+    }
+    .btn.active-toggle {
+      background: var(--cyan-tint);
+      border-color: var(--ink-blue);
+      box-shadow: inset 0 0 0 1px var(--ink-blue);
+    }
+
+    .badge-count {
+      background: var(--brand-cyan);
+      color: var(--ink-blue);
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--ink-blue);
+    }
+
+    
+    /* ORDEN EN TELÉFONO (360x640): ESCENARIO Y DESLIZADOR PRIMERO, KPI DEBAJO */
+    @media (max-width: 920px) {
+      /* Proyección y pizarra son controles del docente: no ocupan fila en el teléfono. */
+      .header-sep { display: none; }
+      header.lab-header {
+        padding: 6px 10px;
+        gap: 6px;
+      }
+      .guiding-banner {
+        padding: 6px 10px;
+        font-size: var(--fs-label);
+      }
+      .col-stage > .card {
+        order: 1;
+        padding: 10px;
+      }
+      .col-stage > .kpi-strip {
+        order: 2;
+      }
+      .col-stage > details.collapsible-panel {
+        order: 3;
+      }
+    }
+
+    /* PANEL PLEGABLE DE CONTROLES SECUNDARIOS (VELOCIDAD Y SERIES */
+    details.secondary-drawer {
+      background: var(--surface-muted);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      margin-top: 10px;
+    }
+    details.secondary-drawer > summary {
+      min-height: 44px;
+      padding: 8px 12px;
+      font-size: var(--fs-label);
+      font-weight: 800;
+      color: var(--ink-blue);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      list-style: none;
+    }
+    details.secondary-drawer > summary::-webkit-details-marker { display: none; }
+    .drawer-body-grid {
+      padding: 10px 12px;
+      border-top: 1px solid var(--border-soft);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 1200px) { .btn-text-wide { display: none; } }
+
+    .svg-node-handle {
+      cursor: ns-resize;
+    }
+    .svg-node-handle-ew {
+      cursor: ew-resize;
+    }
+
+    /* CINTA DE PREGUNTA ORIENTADORA */
+    .guiding-banner {
+      background: var(--ink-blue);
+      color: var(--surface-card);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .guiding-text {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: var(--fs-body);
+    }
+    .guiding-chip {
+      background: var(--brand-cyan);
+      color: var(--ink-blue);
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      flex-shrink: 0;
+    }
+
+    /* DISPOSICIÓN EN DOS COLUMNAS PARA ESCRITORIO Y PROYECTOR */
+    main.lab-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.95fr);
+      gap: 16px;
+      padding: 14px 16px 24px;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+      align-items: start;
+    }
+
+    @media (max-width: 1040px) {
+      main.lab-workspace {
+        grid-template-columns: 1fr;
+        padding: 10px 10px 84px; /* Espacio inferior para la barra de acción fija en teléfono */
+      }
+    }
+
+    .col-stage, .col-script {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .card {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .card-title {
+      font-size: var(--fs-h2);
+      font-weight: 800;
+      color: var(--ink-blue);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* PANEL DE MAGNITUDES EN TIEMPO REAL CON CIFRAS CLAVE DE 24 PX */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 8px;
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+    }
+    .kpi-box {
+      background: var(--surface-muted);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    .kpi-label {
+      font-size: var(--fs-label);
+      color: var(--text-gray);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .kpi-num {
+      font-size: var(--fs-kpi);
+      font-weight: 800;
+      color: var(--ink-blue);
+      line-height: 1.15;
+    }
+    .kpi-sub {
+      font-size: var(--fs-small);
+      color: var(--text-gray);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* BARRA DE MODO DE VISTA DEL LIENZO */
+    .stage-mode-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .mode-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* CONTENEDOR SVG DEL ESCENARIO MANIPULABLE Y REGISTROS SINCRONIZADOS */
+    .svg-stage-wrap {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      touch-action: none;
+      user-select: none;
+    }
+    #mainSvg {
+      width: 100%;
+      height: auto;
+      min-height: 290px;
+      max-height: 460px;
+      display: block;
+    }
+    .svg-drag-target {
+      cursor: grab;
+    }
+    .svg-drag-target:active {
+      cursor: grabbing;
+    }
+
+    .keyboard-instruction {
+      font-size: var(--fs-label);
+      color: var(--text-gray);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* CONTROLES DE MANIPULACIÓN Y PANELES PLEGABLES */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .ctrl-box {
+      background: var(--surface-muted);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+      font-size: var(--fs-label);
+      font-weight: 700;
+    }
+    .slider-wrap {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(to right, var(--teal-accent) var(--pct, 6.25%), var(--border-soft) var(--pct, 6.25%));
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--brand-cyan);
+      border: 3px solid var(--ink-blue);
+      cursor: grab;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--brand-cyan);
+      border: 3px solid var(--ink-blue);
+      cursor: grab;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* CASILLAS DE SERIES CON DISTINCIÓN POR TRAZO, ETIQUETA DIRECTA Y COLOR */
+    .series-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .series-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 44px;
+      padding: 6px 10px;
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: var(--fs-label);
+      font-weight: 700;
+    }
+    .series-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .series-item input[type=checkbox] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--ink-blue);
+      cursor: pointer;
+    }
+
+    /* DESPLEGABLES ACCESIBLES (<details>) */
+    details.collapsible-panel {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    details.collapsible-panel > summary {
+      min-height: 48px;
+      padding: 10px 14px;
+      font-size: var(--fs-body);
+      font-weight: 800;
+      color: var(--ink-blue);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--surface-muted);
+      list-style: none;
+    }
+    details.collapsible-panel > summary::-webkit-details-marker { display: none; }
+    .collapsible-body {
+      padding: 14px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    /* TABLA DE DATOS EQUIVALENTE PARA ACCESIBILIDAD Y LECTORES DE PANTALLA */
+    .data-table-wrap {
+      overflow-x: auto;
+    }
+    table.equiv-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--fs-label);
+      text-align: right;
+    }
+    table.equiv-table th, table.equiv-table td {
+      padding: 8px 10px;
+      border: 1px solid var(--border-soft);
+    }
+    table.equiv-table th {
+      background: var(--surface-muted);
+      color: var(--ink-blue);
+      font-weight: 800;
+      text-align: center;
+    }
+    table.equiv-table tr.current-row {
+      background: var(--cyan-tint);
+      font-weight: 800;
+    }
+
+    /* COLUMNA DERECHA: GUION DE LA ACTIVIDAD EN 3 MOMENTOS (POE + EXPLORACIÓN + RETOS) */
+    .moment-stepper {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .moment-tab {
+      min-height: 48px;
+      padding: 8px 6px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-gray);
+      background: var(--surface-card);
+      color: var(--ink-blue);
+      font-family: var(--font-sans);
+      font-size: var(--fs-label);
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.25;
+    }
+    .moment-tab span.m-step {
+      display: block;
+      font-size: var(--fs-small);
+      color: var(--text-gray);
+      text-transform: uppercase;
+    }
+    .moment-tab.active {
+      background: var(--brand-cyan);
+      color: var(--ink-blue);
+      border-color: var(--ink-blue);
+      box-shadow: inset 0 0 0 1px var(--ink-blue);
+    }
+    .moment-tab.active span.m-step {
+      color: var(--ink-blue);
+    }
+
+    /* AVISO DE BLOQUEO PREVIO A LA ANTICIPACIÓN */
+    .gate-banner {
+      background: var(--surface-muted);
+      border-left: 4px solid var(--teal-accent);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-label);
+      color: var(--ink-blue);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    /* OPCIONES DE RADIO ACCESIBLES (44x44 PX MÍNIMO Y 8 PX DE SEPARACIÓN) */
+    .option-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .opt-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 44px;
+      padding: 10px 12px;
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: var(--fs-body);
+      color: var(--ink-blue);
+      line-height: 1.4;
+    }
+    .opt-card:hover {
+      background: var(--cyan-tint);
+      border-color: var(--teal-accent);
+    }
+    .opt-card input[type=radio] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--ink-blue);
+      flex-shrink: 0;
+    }
+
+    textarea.justif-input, input.text-field {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: var(--fs-body);
+      color: var(--ink-blue);
+      background: var(--surface-card);
+    }
+    textarea.justif-input {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    /* CAJAS DE ESTADO Y RETROALIMENTACIÓN DIAGNÓSTICA (NUNCA SOLO POR COLOR: ICONO + PALABRA) */
+    .status-box {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-label);
+      line-height: 1.5;
+      display: none;
+    }
+    .status-box.visible { display: block; }
+    .status-box.state-ok {
+      background: var(--ok-bg);
+      border: 1.5px solid var(--ok-green);
+      color: var(--ink-blue);
+    }
+    .status-box.state-review {
+      background: var(--warn-bg);
+      border: 1.5px solid var(--warn-red);
+      color: var(--ink-blue);
+    }
+    .status-box.state-info {
+      background: var(--surface-muted);
+      border: 1.5px solid var(--teal-accent);
+      color: var(--ink-blue);
+    }
+    .status-lead {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .status-box.state-ok .status-lead { color: var(--ok-green); }
+    .status-box.state-review .status-lead { color: var(--warn-red); }
+    .status-box.state-info .status-lead { color: var(--teal-accent); }
+
+    /* FÓRMULA SIMBÓLICA (APARECE SOLO TRAS LA EXPLORACIÓN INICIAL) */
+    .symbolic-banner {
+      background: var(--surface-muted);
+      border: 1.5px solid var(--ink-blue);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      text-align: center;
+      font-size: var(--fs-h2);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    /* NAVEGACIÓN DE LOS 6 RETOS SABER 11 */
+    .reto-grid-nav {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .reto-num-btn {
+      min-height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-gray);
+      background: var(--surface-card);
+      color: var(--ink-blue);
+      font-weight: 800;
+      font-size: var(--fs-label);
+      cursor: pointer;
+    }
+    .reto-num-btn.active {
+      background: var(--brand-cyan);
+      color: var(--ink-blue);
+      border-color: var(--ink-blue);
+    }
+    .reto-num-btn.done {
+      border-color: var(--ok-green);
+      background: var(--ok-bg);
+      color: var(--ok-green);
+    }
+
+    .comp-pill {
+      display: inline-block;
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--surface-muted);
+      border: 1px solid var(--border-gray);
+      color: var(--ink-blue);
+      margin-bottom: 8px;
+    }
+
+    /* PIE DE ATRIBUCIÓN: UNA SOLA LÍNEA. LA FICHA COMPLETA VIVE EN LA PÁGINA DEL RECURSO. */
+    /* ============================================================
+       NÚCLEO · Pestañas de teléfono, reinicio, modo docente y fichas
+       Esta sección es idéntica en todos los recursos del catálogo.
+       ============================================================ */
+
+    /* Pestañas de teléfono. Aparecen cuando las dos columnas se apilan: sin
+       ellas, el paso Predice queda muy por debajo de los controles que bloquea
+       y el ciclo POE se lee al revés. */
+    .mobile-tabs { display: none; }
+    @media (max-width: 1040px) {
+      .mobile-tabs {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        gap: 6px;
+        padding: 6px 10px;
+        background: var(--surface-card);
+        border-bottom: 1.5px solid var(--border-soft);
+      }
+      body.mtab-retos .col-stage { display: none; }
+      body.mtab-sim .col-script { display: none; }
+    }
+    .mobile-tabs button {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 44px;
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: var(--fs-label);
+      font-weight: 800;
+      color: var(--text-gray);
+      background: var(--surface-muted);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+    }
+    .mobile-tabs button .svg-icon { width: 16px; height: 16px; }
+    .mobile-tabs button.active {
+      color: var(--ink-blue);
+      background: var(--brand-cyan);
+      border-color: var(--ink-blue);
+    }
+    .mobile-tabs button:focus-visible { outline: 3px solid var(--teal-accent); outline-offset: 2px; }
+    .mtab-pill {
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: var(--surface-card);
+      color: var(--ink-blue);
+      border: 1px solid var(--border-soft);
+    }
+    .mobile-tabs button.active .mtab-pill { border-color: var(--ink-blue); }
+
+    /* Reinicio del progreso: la otra mitad de guardarlo. Discreto. */
+    .reset-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      margin-top: 12px;
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: var(--fs-small);
+      font-weight: 700;
+      color: var(--text-gray);
+      background: transparent;
+      border: 1px dashed var(--border-soft);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .reset-progress .svg-icon { width: 14px; height: 14px; }
+    .reset-progress:hover,
+    .reset-progress.armed {
+      color: var(--warn-red);
+      border-color: var(--warn-red);
+      background: var(--warn-bg);
+    }
+    .reset-progress.armed { border-style: solid; }
+    .reset-progress:focus-visible { outline: 3px solid var(--teal-accent); outline-offset: 2px; }
+
+    /* Modo docente. No es la pantalla del estudiante: se abre con Alt+D y aquí
+       sí caben el código DBA y la ficha curricular, porque el archivo viaja por
+       USB sin la página que los contiene. No tiene pestaña de respuestas. */
+    .teacher-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 42, 74, 0.68);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1100;
+    }
+    .teacher-overlay[hidden] { display: none; }
+    .teacher-panel {
+      background: var(--surface-card);
+      border-radius: var(--radius-lg);
+      width: min(760px, 100%);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .teacher-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      background: var(--ink-blue);
+    }
+    .teacher-head h2 { margin: 0; font-size: var(--fs-h2); color: var(--surface-card); }
+    .teacher-head-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .teacher-head .btn {
+      min-height: 36px;
+      padding: 6px 10px;
+      font-size: var(--fs-small);
+      background: transparent;
+      color: var(--surface-card);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+    .teacher-head .btn:hover { background: rgba(255, 255, 255, 0.12); }
+    .teacher-head .btn.active-toggle {
+      background: var(--brand-cyan);
+      color: var(--ink-blue);
+      border-color: var(--brand-cyan);
+    }
+    .teacher-head .btn:focus-visible { outline: 3px solid var(--brand-cyan); outline-offset: 2px; }
+    .teacher-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 8px 12px 0;
+      background: var(--surface-muted);
+      flex-wrap: wrap;
+    }
+    .teacher-tabs [role="tab"] {
+      font-family: inherit;
+      font-size: var(--fs-label);
+      font-weight: 700;
+      color: var(--text-gray);
+      background: transparent;
+      border: 0;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      padding: 9px 12px;
+      min-height: 40px;
+      cursor: pointer;
+    }
+    .teacher-tabs [role="tab"][aria-selected="true"] { background: var(--surface-card); color: var(--ink-blue); }
+    .teacher-tabs [role="tab"]:focus-visible { outline: 3px solid var(--teal-accent); outline-offset: -3px; }
+    .teacher-body { padding: 14px 18px 18px; overflow-y: auto; }
+    .teacher-body h3 { margin: 2px 0 8px; color: var(--ink-blue); font-size: var(--fs-h2); }
+    .teacher-body p { font-size: var(--fs-label); line-height: 1.55; margin-bottom: 8px; }
+    .teacher-note { color: var(--text-gray); font-size: var(--fs-small); }
+    .print-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .err-row {
+      display: flex;
+      gap: 10px;
+      padding: 9px 0;
+      border-top: 1px solid var(--border-soft);
+      font-size: var(--fs-label);
+    }
+    .err-row:first-child { border-top: 0; }
+    .err-k { flex: 0 0 116px; font-weight: 800; color: var(--ink-blue); }
+    .err-v { flex: 1; min-width: 0; }
+    .err-tag {
+      display: inline-block;
+      font-size: var(--fs-small);
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 999px;
+      margin-bottom: 3px;
+    }
+    .err-tag.ok { background: var(--ok-bg); color: var(--ok-green); }
+    .err-tag.no { background: var(--warn-bg); color: var(--warn-red); }
+    .err-tag.na { background: var(--surface-muted); color: var(--text-gray); }
+    .code-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+    .code-out, .verify-out { display: block; margin-top: 8px; font-size: var(--fs-label); line-height: 1.5; }
+    .code-value {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--ink-blue);
+      background: var(--cyan-tint);
+      border: 1.5px solid var(--brand-cyan);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .completion-code {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1.5px dashed var(--brand-cyan);
+      border-radius: var(--radius-md);
+      background: var(--cyan-tint);
+    }
+    .completion-code > strong { font-size: var(--fs-label); color: var(--ink-blue); }
+
+    /* Fichas imprimibles: invisibles en pantalla, cada una se imprime sola */
+    .print-sheet { display: none; }
+    @media print {
+      body.printing > *:not(.print-sheet) { display: none !important; }
+      body.printing .print-sheet { display: none !important; }
+      body.print-taller  #sheetTaller,
+      body.print-ticket  #sheetTicket,
+      body.print-rubrica #sheetRubrica { display: block !important; }
+      .print-sheet { color: #000; font-size: 11pt; }
+      .ps-head { border-bottom: 2px solid #000; margin-bottom: 10px; padding-bottom: 6px; }
+      .ps-brand { font-size: 9pt; font-weight: 800; letter-spacing: .12em; }
+      .ps-head h1 { font-size: 15pt; margin: 2px 0 4px; }
+      .ps-meta { font-size: 10pt; }
+      .ps-list { margin: 0 0 8px 18px; }
+      .ps-list li { margin-bottom: 6px; line-height: 1.4; }
+      .ps-space { border-bottom: 1px solid #999; height: 34px; margin-top: 5px; }
+      .ps-space.tall { height: 64px; }
+      .ps-table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+      .ps-table th, .ps-table td { border: 1px solid #000; padding: 5px; text-align: left; vertical-align: top; }
+      .ps-self { margin: 10px 0; font-size: 10pt; }
+      .ps-foot { margin-top: 12px; font-size: 8.5pt; border-top: 1px solid #999; padding-top: 5px; }
+    }
+
+    footer.identity-footer {
+      background: var(--surface-card);
+      border-top: 1.5px solid var(--border-soft);
+      padding: 10px 16px 16px;
+      font-size: var(--fs-small);
+      color: var(--text-gray);
+      text-align: center;
+    }
+    footer.identity-footer a { color: var(--teal-accent); }
+
+    /* BARRA DE ACCIÓN FIJA EN EL BORDE INFERIOR PARA TELÉFONO */
+    .mobile-bottom-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface-card);
+      border-top: 2px solid var(--ink-blue);
+      padding: 8px 10px;
+      z-index: 90;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 -2px 10px rgba(11, 42, 74, 0.12);
+    }
+    @media (max-width: 1040px) {
+      .mobile-bottom-bar {
+        display: flex;
+      }
+    }
+
+    /* MODALES (GUÍA DOCENTE Y TRAZA EXPORTABLE) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 42, 74, 0.68);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-window {
+      background: var(--surface-card);
+      border: 2px solid var(--ink-blue);
+      border-radius: var(--radius-lg);
+      max-width: 860px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-head {
+      background: var(--ink-blue);
+      color: var(--surface-card);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .modal-head h2 {
+      font-size: var(--fs-h1);
+      font-weight: 800;
+    }
+    .modal-body {
+      padding: 18px;
+      overflow-y: auto;
+      font-size: var(--fs-body);
+      color: var(--ink-blue);
+    }
+    .modal-foot {
+      padding: 12px 18px;
+      background: var(--surface-muted);
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    pre.trace-output {
+      background: var(--surface-muted);
+      border: 1.5px solid var(--border-gray);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--ink-blue);
+      white-space: pre-wrap;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    @media print {
+      header.lab-header, .guiding-banner, .mobile-bottom-bar, .mobile-tabs,
+      .reset-progress, .modal-foot {
+        display: none !important;
+      }
+      html, body { background: #FFFFFF !important; }
+      /* Al imprimir no hay pestañas: las dos columnas salen siempre. */
+      .col-stage, .col-script { display: flex !important; }
+      .modal-overlay.open {
+        position: static !important;
+        background: none !important;
+        padding: 0 !important;
+      }
+      .modal-window {
+        max-width: 100% !important;
+        max-height: none !important;
+        border: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====: ENCABEZADO DE IDENTIFICACIÓN =====-->
+  <header class="lab-header">
+    <div class="brand-Identity">
+      <a class="brand-link" href="https://www.didaxislab.com" target="_blank" rel="noopener noreferrer">
+        <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Logo Didaxis Lab">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#0B2A4A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#0B2A4A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="3"/>
+          <circle cx="80" cy="20" r="15" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="3"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="3"/>
+          <circle cx="20" cy="80" r="15" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="3"/>
+        </svg>
+        <span>Didaxis Lab</span>
+      </a>
+      <div class="header-sep" aria-hidden="true"></div>
+      <div class="title-block">
+        <h1 class="lab-main-title">
+          <span>Círculo Unitario y Ondas</span>
+        </h1>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <button type="button" class="btn teacher-entry" data-action="teacher-open"
+              aria-haspopup="dialog" title="Panel para docentes (Alt+D)">
+        <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>
+        <span>Modo docente</span>
+      </button>
+      <button type="button" class="btn btn-cyan" id="btnOpenTrace">
+        <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Traza</span>
+        <span class="badge-count tabular-nums" id="traceBadgeCount">1</span>
+      </button>
+      <button type="button" class="btn" id="btnFullscreen" style="display:none;" aria-label="Pantalla completa" title="Pantalla completa">
+        <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        <span id="fullscreenText" class="btn-text-wide">Pantalla completa</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== PREGUNTA ORIENTADORA =====-->
+  <div class="guiding-banner" role="region" aria-label="Pregunta orientadora del laboratorio">
+    <div class="guiding-text">
+      <span class="guiding-chip">Pregunta</span>
+      <strong>¿Cómo pasa un giro a ser una onda?</strong>
+    </div>
+  </div>
+
+  <!-- ===== PESTAÑAS DE TELÉFONO: SOLO CUANDO LAS DOS COLUMNAS SE APILAN =====-->
+  <nav class="mobile-tabs" aria-label="Vistas del laboratorio">
+    <button type="button" data-action="mobile-tab" data-view="sim" class="active" aria-pressed="true">
+      <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18"/></svg>
+      Simulador
+    </button>
+    <button type="button" data-action="mobile-tab" data-view="retos" aria-pressed="false">
+      <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Retos
+      <span class="mtab-pill tabular-nums" id="mtabRetosPill">Predice</span>
+    </button>
+  </nav>
+
+  <!-- ===== ESPACIO DE TRABAJO EN DOS COLUMNAS =====-->
+  <main class="lab-workspace">
+
+    <!-- ===== COLUMNA IZQUIERDA: ESCENARIO MANIPULABLE, MAGNITUDES, GRÁFICOS Y CONTROLES =====-->
+    <section class="col-stage" id="colStage" aria-label="Escenario manipulable y registros sincronizados">
+
+      <!--: PANEL DE MAGNITUDES CON CIFRAS CLAVE DE 24 PX Y COMA DECIMAL -->
+      <div class="kpi-strip" aria-live="polite">
+        <div class="kpi-box">
+          <span class="kpi-label">Ángulo <span class="math-var">θ</span></span>
+          <span class="kpi-num tabular-nums" id="kpiAngleDeg">45,0°</span>
+          <span class="kpi-sub tabular-nums" id="kpiAngleRad">π/4 rad (0,785 rad)</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Ordenada · sen(<span class="math-var">θ</span>)</span>
+          <span class="kpi-num tabular-nums" id="kpiSin" style="color:var(--teal-accent);">+0,707</span>
+          <span class="kpi-sub tabular-nums" id="kpiSinExact">Predice primero</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Abscisa · cos(<span class="math-var">θ</span>)</span>
+          <span class="kpi-num tabular-nums" id="kpiCos" style="color:var(--cos-blue);">+0,707</span>
+          <span class="kpi-sub tabular-nums" id="kpiCosExact">Predice primero</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Tangente · tan(<span class="math-var">θ</span>)</span>
+          <span class="kpi-num tabular-nums" id="kpiTan" style="color:var(--tan-amber);">+1,000</span>
+          <span class="kpi-sub tabular-nums" id="kpiPyth">sen²θ + cos²θ = 1,000</span>
+        </div>
+      </div>
+
+      <!--Y 4: ESCENARIO MANIPULABLE Y REGISTROS SINCRONIZADOS -->
+      <div class="card">
+        <div class="stage-mode-bar">
+          <div class="mode-group" role="group" aria-label="Selección de registros visibles">
+            <button type="button" class="btn active-toggle" data-view="both">Círculo + Onda</button>
+            <button type="button" class="btn" data-view="circle">Foco Círculo</button>
+            <button type="button" class="btn" data-view="wave">Foco Onda</button>
+            <button type="button" class="btn" data-view="harmonic">Oscilador</button>
+          </div>
+          <div class="mode-group" role="group" aria-label="Ayudas geométricas directas">
+            <button type="button" class="btn active-toggle" id="btnToggleUnwrap" aria-pressed="true" title="Mostrar cómo el arco en radianes se desenrolla sobre el eje horizontal de la onda">
+              <span>Arco desenrollado</span>
+            </button>
+            <button type="button" class="btn active-toggle" id="btnToggleWaveHandles" aria-pressed="true" title="Mostrar nodos arrastrables sobre la curva para cambiar amplitud [A], eje medio [D] y periodo [T]">
+              <span>Nodos [A, D, T]</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="svg-stage-wrap">
+          <svg id="mainSvg" viewBox="0 0 920 390" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Registros sincronizados del círculo unitario a la izquierda y la gráfica de ondas trigonométricas a la derecha">
+            <defs>
+              <marker id="axisArrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#0B2A4A"/>
+              </marker>
+              <marker id="unwrapArrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#6D28D9"/>
+              </marker>
+              <clipPath id="clipCircleArea">
+                <rect x="5" y="15" width="365" height="360"/>
+              </clipPath>
+              <clipPath id="clipWaveArea">
+                <rect x="375" y="15" width="535" height="360"/>
+              </clipPath>
+            </defs>
+
+            <!-- CAPA 1: CUADRÍCULA Y EJES CON UNIDADES -->
+            <g id="layerGrid"></g>
+
+            <!-- CAPA 2: CÍRCULO UNITARIO, SÍMBOLO DE ÁNGULO RECTO Y SEGMENTOS DIRIGIDOS -->
+            <g id="layerCircle" clip-path="url(#clipCircleArea)"></g>
+            <g id="layerCircleText"></g>
+
+            <!-- CAPA 3: PROYECCIÓN HORIZONTAL HOMÓLOGA Y DESENROLLADO DEL ARCO -->
+            <g id="layerProjections"></g>
+
+            <!-- CAPA 4: GRÁFICA FUNCIONAL DE ONDAS Y NODOS VISUALES -->
+            <g id="layerWave" clip-path="url(#clipWaveArea)"></g>
+            <g id="layerWaveText"></g>
+
+            <!-- CAPA 5: CONTROLES DIRECTOS ACCESIBLES (44x44 PX MÍNIMO Y TECLADO) -->
+            <g id="layerInteractive">
+              <rect id="handleWaveArea" class="svg-drag-target" x="380" y="20" width="520" height="350" fill="transparent"
+                    aria-hidden="true"/>
+              <circle id="handlePointP" class="svg-drag-target" cx="250" cy="120" r="24" fill="transparent"
+                      tabindex="0" role="slider" aria-label="Punto P en el círculo unitario (usa las flechas del teclado para girar el ángulo)"
+                      aria-valuemin="0" aria-valuemax="720" aria-valuenow="45" aria-valuetext="45,0 grados"/>
+              <circle id="handleNodeA" class="svg-node-handle" cx="500" cy="90" r="22" fill="transparent"
+                      tabindex="0" role="slider" aria-label="Nodo de Amplitud A en la cresta de la onda (arrastra verticalmente o usa flechas arriba y abajo)"
+                      aria-valuemin="0.5" aria-valuemax="2.5" aria-valuenow="1.0" aria-valuetext="Amplitud A igual a 1,0"/>
+              <circle id="handleNodeD" class="svg-node-handle" cx="441" cy="195" r="22" fill="transparent"
+                      tabindex="0" role="slider" aria-label="Nodo de Desplazamiento vertical D en el eje medio (arrastra verticalmente o usa flechas arriba y abajo)"
+                      aria-valuemin="-1.5" aria-valuemax="1.5" aria-valuenow="0.0" aria-valuetext="Eje medio D igual a 0,0"/>
+              <circle id="handleNodeT" class="svg-node-handle-ew" cx="655" cy="42" r="22" fill="transparent"
+                      tabindex="0" role="slider" aria-label="Nodo de Periodo T en la cota superior (arrastra horizontalmente o usa flechas izquierda y derecha)"
+                      aria-valuemin="0.5" aria-valuemax="4.0" aria-valuenow="1.0" aria-valuetext="Frecuencia B igual a 1,0"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="keyboard-instruction">
+          <span>
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Arrastra <strong>P</strong> sobre el círculo, o los nodos <strong>[A]</strong>, <strong>[D]</strong> y <strong>[T]</strong> sobre la onda.
+          </span>
+          <span class="tabular-nums" id="quadrantStatusLabel">Cuadrante I · sen(+) cos(+)</span>
+        </div>
+
+        <!-- CONTROL PRIMARIO SIEMPRE VISIBLE JUNTO AL LIENZO -->
+        <div class="ctrl-box" style="margin-top:8px;padding:10px;">
+          <div class="slider-header">
+            <label for="slAngle">Ángulo <span class="math-var">θ</span></label>
+            <span class="tabular-nums" id="lblSliderAngle">45,0° (π/4 rad)</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="slAngle" min="0" max="720" step="0.5" value="45">
+          </div>
+          <div class="btn-row" style="margin-top:6px;justify-content:space-between;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-cyan" id="btnPlay" disabled title="Se habilita cuando registres tu predicción">
+                <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
+                <span id="btnPlayText">Animar</span>
+              </button>
+              <button type="button" class="btn" id="btnReset">
+                <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span>Reiniciar</span>
+              </button>
+            </div>
+            <label style="display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-label);font-weight:700;min-height:44px;padding:0 6px;cursor:pointer;">
+              <input type="checkbox" id="chkSnap" checked style="width:18px;height:18px;accent-color:var(--ink-blue);">
+              <span>Imantar ángulos notables</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- PANEL PLEGABLE DE CONTROLES SECUNDARIOS (VELOCIDAD Y SERIES ACTIVAS -->
+        <details class="secondary-drawer" id="trigSecondaryDrawer">
+          <summary>
+            <span>Más opciones</span>
+            <span style="color:var(--teal-accent);">▼</span>
+          </summary>
+          <div class="drawer-body-grid">
+            <div>
+              <div class="slider-header">
+                <span>Velocidad de giro</span>
+              </div>
+              <div class="btn-row" style="margin-top:6px;" role="group" aria-label="Velocidad de giro">
+                <button type="button" class="btn" data-speed="15" style="flex:1;">0,5× Lento</button>
+                <button type="button" class="btn active-toggle" data-speed="35" style="flex:1;">1× Normal</button>
+                <button type="button" class="btn" data-speed="70" style="flex:1;">2× Rápido</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="slider-header">
+                <span>Series visibles</span>
+              </div>
+              <div class="series-list">
+                <label class="series-item">
+                  <span class="series-left">
+                    <input type="checkbox" id="chkSin" checked>
+                    <svg width="28" height="10" aria-hidden="true"><line x1="0" y1="5" x2="28" y2="5" stroke="#0A7C8C" stroke-width="3.5"/></svg>
+                    <span>Seno · sen(<span class="math-var">θ</span>) [Continuo]</span>
+                  </span>
+                  <span class="tabular-nums" id="readSinSeries">+0,707</span>
+                </label>
+
+                <label class="series-item">
+                  <span class="series-left">
+                    <input type="checkbox" id="chkCos">
+                    <svg width="28" height="10" aria-hidden="true"><line x1="0" y1="5" x2="28" y2="5" stroke="#1D4ED8" stroke-width="3.5" stroke-dasharray="7,4"/></svg>
+                    <span>Coseno · cos(<span class="math-var">θ</span>) [Guiones]</span>
+                  </span>
+                  <span class="tabular-nums" id="readCosSeries">+0,707</span>
+                </label>
+
+                <label class="series-item">
+                  <span class="series-left">
+                    <input type="checkbox" id="chkTan">
+                    <svg width="28" height="10" aria-hidden="true"><line x1="0" y1="5" x2="28" y2="5" stroke="#9A3412" stroke-width="3.5" stroke-dasharray="3,3"/></svg>
+                    <span>Tangente · tan(<span class="math-var">θ</span>) [Punteado]</span>
+                  </span>
+                  <span class="tabular-nums" id="readTanSeries">+1,000</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- TABLA DE DATOS EQUIVALENTE AL GRÁFICO (ACCESIBILIDAD -->
+      <details class="collapsible-panel">
+        <summary>
+          <span>
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+            Tabla de valores
+          </span>
+          <span style="font-size:var(--fs-label);color:var(--teal-accent);">▼</span>
+        </summary>
+        <div class="collapsible-body">
+          <div class="data-table-wrap">
+            <table class="equiv-table tabular-nums" aria-label="Valores numéricos equivalentes del círculo unitario y la función periódica">
+              <thead>
+                <tr>
+                  <th scope="col">Ángulo (Grados)</th>
+                  <th scope="col">Radianes (Exacto / Dec)</th>
+                  <th scope="col">sen(θ) base</th>
+                  <th scope="col">cos(θ) base</th>
+                  <th scope="col">tan(θ) base</th>
+                  <th scope="col">Onda activa y(θ)</th>
+                </tr>
+              </thead>
+              <tbody id="equivTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!--: SÍNTESIS CONCEPTUAL E INSTITUCIONALIZACIÓN -->
+      <details class="collapsible-panel">
+        <summary>
+          <span>
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Qué deberías poder explicar al final
+          </span>
+          <span style="font-size:var(--fs-label);color:var(--teal-accent);">▼</span>
+        </summary>
+        <div class="collapsible-body">
+          <div class="controls-grid">
+            <div class="ctrl-box">
+              <strong>1. Del giro a la onda</strong>
+              <p style="font-size:var(--fs-label);margin-top:4px;">
+                Cada punto del círculo de radio 1 tiene coordenadas (<span class="math-var">x, y</span>) = (cos <span class="math-var">θ</span>, sen <span class="math-var">θ</span>). Al desenrollar <span class="math-var">θ</span> sobre el eje horizontal, la ordenada va trazando la onda <span class="math-var">y</span> = sen(<span class="math-var">θ</span>).
+              </p>
+            </div>
+            <div class="ctrl-box">
+              <strong>2. Por qué sen² + cos² = 1</strong>
+              <p style="font-size:var(--fs-label);margin-top:4px;">
+                Por Pitágoras en el triángulo de hipotenusa <span class="math-var">r</span> = 1. En <span class="math-var">θ</span> = π/2 y 3π/2 el radio queda paralelo a la recta <span class="math-var">x</span> = 1 (cos <span class="math-var">θ</span> = 0): ahí tan(<span class="math-var">θ</span>) tiene una asíntota.
+              </p>
+            </div>
+            <div class="ctrl-box">
+              <strong>3. Qué hace cada parámetro</strong>
+              <p style="font-size:var(--fs-label);margin-top:4px;">
+                En <span class="math-var">y = A</span>·sen(<span class="math-var">Bθ + C</span>) + <span class="math-var">D</span>: <strong>A</strong> es la amplitud medida desde el eje medio <strong>D</strong>, <strong>B</strong> fija el periodo <strong>T = 2π/B</strong> y <strong>C</strong> corre la onda horizontalmente.
+              </p>
+            </div>
+          </div>
+        </div>
+      </details>
+
+    </section>
+
+    <!-- ===== COLUMNA DERECHA: GUION DE LA ACTIVIDAD (ANTICIPACIÓN, EXPLORACIÓN Y 6 RETOS SABER 11) =====-->
+    <aside class="col-script" id="colScript" aria-label="Guion estructurado de la actividad">
+
+      <!-- SELECTOR DE LOS 3 MOMENTOS DIDÁCTICOS -->
+      <div class="moment-stepper" role="tablist" aria-label="Momentos de la secuencia didáctica">
+        <button type="button" class="moment-tab active" data-moment="1" role="tab" aria-selected="true" id="tabMoment1">
+          <span class="m-step">Paso 1</span>Predice
+        </button>
+        <button type="button" class="moment-tab" data-moment="2" role="tab" aria-selected="false" id="tabMoment2">
+          <span class="m-step">Paso 2</span>Transforma
+        </button>
+        <button type="button" class="moment-tab" data-moment="3" role="tab" aria-selected="false" id="tabMoment3">
+          <span class="m-step">Paso 3</span>Retos
+        </button>
+      </div>
+
+      <!-- ===== PANEL MOMENTO 1: ANTICIPACIÓN OBLIGATORIA (CICLO POE) =====-->
+      <div class="card" id="panelMoment1" role="tabpanel" aria-labelledby="tabMoment1">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Predice antes de explorar</span>
+          </h2>
+        </div>
+
+        <div class="gate-banner" id="poeGateNotice">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div>
+            La animación, los valores exactos y los parámetros de transformación se habilitan cuando registres tu predicción.
+          </div>
+        </div>
+
+        <p style="font-size:var(--fs-body);margin-bottom:8px;">
+          Imagina que el punto <span class="math-var">P</span> recorre el primer cuadrante desde <strong>0° hasta 90°</strong> en dos tramos angulares iguales: primero de <strong>0° a 45°</strong> y luego de <strong>45° a 90°</strong>. ¿Cómo aumenta la ordenada vertical sen(<span class="math-var">θ</span>)?
+        </p>
+
+        <div class="option-stack" role="radiogroup" aria-label="Opciones de anticipación">
+          <label class="opt-card">
+            <input type="radio" name="poeOpt" value="lineal">
+            <span><strong>A.</strong> Aumenta lo mismo en ambos tramos: +0,500 de 0° a 45° y +0,500 de 45° a 90°.</span>
+          </label>
+          <label class="opt-card">
+            <input type="radio" name="poeOpt" value="rapido_inicio">
+            <span><strong>B.</strong> Sube más rápido entre 0° y 45° (pasa de 0,700) y más lento entre 45° y 90°.</span>
+          </label>
+          <label class="opt-card">
+            <input type="radio" name="poeOpt" value="lento_inicio">
+            <span><strong>C.</strong> Sube menos de 0,300 entre 0° y 45° y la mayor parte entre 45° y 90°.</span>
+          </label>
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label for="poeJustifInput" style="display:block;font-size:var(--fs-label);font-weight:700;margin-bottom:4px;">
+            ¿Por qué? Queda registrado en tu traza.
+          </label>
+          <textarea id="poeJustifInput" class="justif-input" placeholder="Escribe por qué crees que pasa eso..."></textarea>
+        </div>
+
+        <button type="button" class="btn btn-cyan" id="btnSubmitPoe" style="width:100%;">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          <span>Registrar mi predicción</span>
+        </button>
+
+        <div class="status-box" id="poeResultBox" aria-live="polite"></div>
+      </div>
+
+      <!-- ===== PANEL MOMENTO 2: EXPLORACIÓN GUIADA Y CONSTRUCCIÓN INVERSA =====-->
+      <div class="card" id="panelMoment2" role="tabpanel" aria-labelledby="tabMoment2" style="display:none;">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span>Transforma la onda</span>
+          </h2>
+        </div>
+
+        <!-- La expresión simbólica aparece aquí como cierre de la exploración inicial -->
+        <div class="symbolic-banner tabular-nums" id="symbolicBanner">
+          <span class="math-var">y</span>(<span class="math-var">θ</span>) = <span id="symA" style="color:var(--teal-accent);">1,0</span> · sen(<span id="symB" style="color:var(--cos-blue);">1,0</span><span class="math-var">θ</span> + <span id="symC">0</span>) + <span id="symD" style="color:var(--ok-green);">0,0</span>
+        </div>
+
+        <p style="font-size:var(--fs-label);color:var(--text-gray);margin-bottom:10px;">
+          Mueve un parámetro a la vez y compáralo con la onda base en sombra.
+        </p>
+
+        <div class="ctrl-box" style="margin-bottom:10px;">
+          <div class="slider-header">
+            <label for="slA"><strong>A</strong> · Amplitud</label>
+            <span class="tabular-nums" id="valA">1,0</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="slA" min="0.5" max="2.5" step="0.1" value="1.0">
+          </div>
+
+          <div class="slider-header" style="margin-top:6px;">
+            <label for="slB"><strong>B</strong> · Periodo T = 2π/B</label>
+            <span class="tabular-nums" id="valB">1,0</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="slB" min="0.5" max="4.0" step="0.1" value="1.0">
+          </div>
+
+          <div class="slider-header" style="margin-top:6px;">
+            <label for="slC"><strong>C</strong> · Desfase</label>
+            <span class="tabular-nums" id="valC">0 rad</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="slC" min="-3.1416" max="3.1416" step="0.7854" value="0">
+          </div>
+
+          <div class="slider-header" style="margin-top:6px;">
+            <label for="slD"><strong>D</strong> · Eje medio</label>
+            <span class="tabular-nums" id="valD">0,0</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="slD" min="-1.5" max="1.5" step="0.1" value="0.0">
+          </div>
+
+          <div class="btn-row" style="margin-top:8px;justify-content:space-between;">
+            <label style="display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-label);font-weight:700;min-height:44px;cursor:pointer;">
+              <input type="checkbox" id="chkGhost" checked style="width:18px;height:18px;accent-color:var(--ink-blue);">
+              <span>Onda base en sombra</span>
+            </label>
+            <button type="button" class="btn" id="btnResetABCD">Restablecer</button>
+          </div>
+        </div>
+
+        <!-- RETO DE CONSTRUCCIÓN INVERSA -->
+        <div class="ctrl-box" style="border:1.5px solid var(--teal-accent);background:var(--surface-card);">
+          <div class="slider-header">
+            <strong style="color:var(--teal-accent);">Construye la onda objetivo</strong>
+            <span class="tabular-nums" id="missionMatchPct" style="font-weight:800;">Coincidencia: 0,0 %</span>
+          </div>
+          <p id="missionDescription" style="font-size:var(--fs-label);margin:6px 0;">
+            Elige una misión y superpón tu curva sobre la onda verde del gráfico.
+          </p>
+          <div class="btn-row">
+            <button type="button" class="btn" data-mission="0">1 · Marea</button>
+            <button type="button" class="btn" data-mission="1">2 · Doble frecuencia</button>
+            <button type="button" class="btn" data-mission="2">3 · Desfase +π/2</button>
+            <button type="button" class="btn" data-mission="-1">Ocultar</button>
+          </div>
+          <div class="status-box" id="missionStatusBox"></div>
+        </div>
+      </div>
+
+      <!-- ===== PANEL MOMENTO 3: BLOQUE DE 6 RETOS TIPO SABER 11 =====-->
+      <div class="card" id="panelMoment3" role="tabpanel" aria-labelledby="tabMoment3" style="display:none;">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span>Retos</span>
+          </h2>
+          <span class="status-pill tabular-nums" id="retosCounterPill">0 / 6</span>
+        </div>
+
+        <p style="font-size:var(--fs-label);color:var(--text-gray);margin-bottom:8px;">
+          Tu primera respuesta a cada reto queda registrada en la traza.
+        </p>
+
+        <div class="reto-grid-nav" role="tablist" aria-label="Selector de los 6 retos">
+          <button type="button" class="reto-num-btn active" data-reto-tab="0">R1</button>
+          <button type="button" class="reto-num-btn" data-reto-tab="1">R2</button>
+          <button type="button" class="reto-num-btn" data-reto-tab="2">R3</button>
+          <button type="button" class="reto-num-btn" data-reto-tab="3">R4</button>
+          <button type="button" class="reto-num-btn" data-reto-tab="4">R5</button>
+          <button type="button" class="reto-num-btn" data-reto-tab="5">R6</button>
+        </div>
+
+        <div id="retosCardsMount"></div>
+
+        <!-- CAMPO DE JUSTIFICACIÓN ESCRITA PARA LA TRAZA -->
+        <div class="ctrl-box" style="margin-top:12px;">
+          <label for="closingArgumentInput" style="display:block;font-size:var(--fs-label);font-weight:800;margin-bottom:4px;">
+            Tu conclusión para la puesta en común:
+          </label>
+          <textarea id="closingArgumentInput" class="justif-input" placeholder="Explica con tus palabras por qué al duplicar B el periodo se reduce a la mitad (π) y por qué tan(90°) no existe..."></textarea>
+          <button type="button" class="btn" id="btnSaveArgument" style="margin-top:8px;width:100%;">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+            <span>Guardar en la traza</span>
+          </button>
+          <div class="status-box" id="argSavedFeedback"></div>
+        </div>
+
+        <!-- Evidencia breve y verificable, complementaria a la traza .txt -->
+        <div class="completion-code">
+          <strong>Genera tu código de compleción</strong>
+          <p class="teacher-note" style="margin:4px 0 0;">Entrégaselo a tu docente. Resume qué retos resolviste y no puede alterarse sin que se note.</p>
+          <div class="code-row">
+            <label for="codeInitials" style="font-size:var(--fs-label);font-weight:700;">Tus iniciales:</label>
+            <input type="text" id="codeInitials" class="text-field" maxlength="3" style="width:90px;"
+                   autocomplete="off" placeholder="ABC"
+                   aria-label="Tus iniciales, máximo tres letras, sin datos personales">
+            <button type="button" class="btn btn-cyan" data-action="gen-code">Generar mi código</button>
+          </div>
+          <output class="code-out" id="codeOut" aria-live="polite"></output>
+        </div>
+
+        <!-- La otra mitad de guardar el progreso: poder borrarlo. Dos pulsaciones. -->
+        <button type="button" class="reset-progress" data-action="reset-progress"
+                aria-label="Reiniciar mi progreso: borra la predicción, las respuestas a los retos y la traza">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          <span class="reset-label">Reiniciar mi progreso</span>
+        </button>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- ===== BARRA DE ACCIÓN FIJA EN EL BORDE INFERIOR PARA TELÉFONO =====-->
+  <nav class="mobile-bottom-bar" aria-label="Acciones rápidas en teléfono">
+    <button type="button" class="btn btn-cyan" id="btnMobilePlay" style="flex:1;">
+      <span id="mobilePlayText">Predecir</span>
+    </button>
+    <button type="button" class="btn" id="btnMobileStep15" title="Avanzar ángulo 15 grados">+15°</button>
+    <button type="button" class="btn" id="btnMobileRetos">Retos</button>
+  </nav>
+
+  <!-- ===== ATRIBUCIÓN MÍNIMA (CC BY VIAJA CON EL ARCHIVO). SIN DOI: LLEVA A LA GUÍA DOCENTE. =====-->
+  <footer class="identity-footer" role="contentinfo">
+    <a href="https://didaxislab.com/recursos/circulo-ondas/" target="_blank" rel="noopener noreferrer">Didaxis Lab</a> · Círculo Unitario y Ondas v2.0 ·
+    Héctor Banquez Buendía · <a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>
+  </footer>
+
+  <!-- ===== MODO DOCENTE: SE ABRE CON Alt+D. SIN PESTAÑA DE RESPUESTAS. =====-->
+  <div class="teacher-overlay" id="teacherOverlay" hidden>
+    <div class="teacher-panel" role="dialog" aria-modal="true" aria-labelledby="teacherTitle">
+      <div class="teacher-head">
+        <h2 id="teacherTitle">Modo docente · Círculo Unitario y Ondas</h2>
+        <div class="teacher-head-actions">
+          <button type="button" class="btn" id="btnProjection" aria-pressed="false" title="Ampliar la tipografía para proyectar en el aula">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>Proyección</span>
+          </button>
+          <button type="button" class="btn" id="btnBoardMode" aria-pressed="false" title="Ocultar el guion lateral y usar el simulador a ancho completo">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+            <span id="boardModeText">Enfocar</span>
+          </button>
+          <button type="button" class="btn" data-action="teacher-close" aria-label="Cerrar el modo docente">
+            <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span>Cerrar</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="teacher-tabs" role="tablist" aria-label="Secciones del modo docente">
+        <button role="tab" id="ttab-res" aria-selected="true"  aria-controls="tpanel-res" data-action="teacher-tab" data-tab="res">Resumen</button>
+        <button role="tab" id="ttab-err" aria-selected="false" aria-controls="tpanel-err" data-action="teacher-tab" data-tab="err" tabindex="-1">Errores frecuentes</button>
+        <button role="tab" id="ttab-fic" aria-selected="false" aria-controls="tpanel-fic" data-action="teacher-tab" data-tab="fic" tabindex="-1">Fichas imprimibles</button>
+        <button role="tab" id="ttab-ver" aria-selected="false" aria-controls="tpanel-ver" data-action="teacher-tab" data-tab="ver" tabindex="-1">Verificador</button>
+      </div>
+
+      <div class="teacher-body">
+        <section role="tabpanel" id="tpanel-res" aria-labelledby="ttab-res">
+          <h3>Ficha del recurso</h3>
+          <p><strong>Círculo Unitario y Ondas</strong> · Simulador de un solo archivo, sin conexión. Grados 10.º y 11.º. Duración sugerida: 60–90 min.</p>
+          <p><strong>Alineación DBA (v2):</strong> 10.º — DBA 4 (razones trigonométricas y su uso en la resolución de problemas) · 11.º — DBA 3 (funciones trigonométricas: amplitud, periodo y desfase).</p>
+          <p><strong>Competencias Saber 11:</strong> dos retos por competencia. Interpretación y representación (retos 1 y 4) · Formulación y ejecución (retos 2 y 5) · Argumentación (retos 3 y 6). Los de formulación solo se habilitan cuando el estudiante ya configuró el modelo que la pregunta describe.</p>
+          <p><strong>Ruta sugerida (60 min):</strong> predicción escrita y compuerta POE (10) → giro de P, ángulos notables y arco desenrollado (15) → transformaciones A, B, C y D sobre la onda (15) → las tres misiones de construcción inversa (10) → retos y conclusión escrita (10).</p>
+          <p class="teacher-note"><strong>Atajos:</strong> Alt+D abre y cierra este panel. <em>Proyección</em> amplía la tipografía para el tablero; <em>Enfocar</em> oculta el guion lateral. En pantallas estrechas el lienzo arranca en <em>Foco Círculo</em>, porque los dos registros juntos son ilegibles por debajo de 920 px; los botones de la barra superior cambian de registro.</p>
+        </section>
+
+        <section role="tabpanel" id="tpanel-err" aria-labelledby="ttab-err" hidden>
+          <h3>Errores detectados en este dispositivo</h3>
+          <p class="teacher-note">La <strong>primera</strong> respuesta a cada reto, que es la diagnóstica: la que delata el obstáculo antes de que el estudiante corrija. Conteo local de esta máquina y este navegador. No sale ningún dato a la red.</p>
+          <div id="errStatsBox"></div>
+        </section>
+
+        <section role="tabpanel" id="tpanel-fic" aria-labelledby="ttab-fic" hidden>
+          <h3>Fichas imprimibles</h3>
+          <p class="teacher-note">Cada botón imprime <strong>solo</strong> esa ficha, lista para fotocopiar, con encabezado para nombre, curso y fecha.</p>
+          <div class="print-btns">
+            <button type="button" class="btn" data-action="print-sheet" data-sheet="taller">Imprimir taller del estudiante</button>
+            <button type="button" class="btn" data-action="print-sheet" data-sheet="ticket">Imprimir ticket de salida</button>
+            <button type="button" class="btn" data-action="print-sheet" data-sheet="rubrica">Imprimir rúbrica</button>
+          </div>
+        </section>
+
+        <section role="tabpanel" id="tpanel-ver" aria-labelledby="ttab-ver" hidden>
+          <h3>Verificador de códigos de compleción</h3>
+          <p class="teacher-note">El estudiante genera su código al final del panel de retos, con sus iniciales. Pégalo aquí: se valida la suma de verificación y se muestra qué retos completó y cuándo. Un código alterado en un solo carácter <strong>siempre</strong> falla. Todo ocurre en este dispositivo.</p>
+          <div class="code-row">
+            <label for="verifyCodeInput" style="font-size:var(--fs-label);font-weight:700;">Código:</label>
+            <input type="text" id="verifyCodeInput" class="text-field" style="flex:1;min-width:180px;"
+                   placeholder="ABC-13F7K-M2" autocomplete="off" aria-label="Código de compleción a verificar">
+            <button type="button" class="btn btn-cyan" data-action="verify-code">Verificar</button>
+          </div>
+          <output class="verify-out" id="verifyOut" role="status" aria-live="polite"></output>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: TRAZABILIDAD LOCAL EXPORTABLE =====-->
+  <div class="modal-overlay" id="modalTrace" role="dialog" aria-modal="true" aria-labelledby="modalTraceTitle">
+    <div class="modal-window">
+      <div class="modal-head">
+        <h2 id="modalTraceTitle">Tu traza de trabajo</h2>
+        <button type="button" class="btn" id="btnCloseTraceTop" aria-label="Cerrar ventana de traza"><svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span>Cerrar</span></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:var(--fs-label);color:var(--text-gray);margin-bottom:10px;">
+          Se genera en tu dispositivo y no se envía a ningún servidor. Recoge tu predicción, los parámetros que exploraste, tu primera respuesta a cada reto y tu conclusión escrita.
+        </p>
+        <div style="margin-bottom:10px;">
+          <label for="studentAliasInput" style="display:block;font-size:var(--fs-label);font-weight:700;margin-bottom:4px;">
+            Tu nombre o alias (opcional):
+          </label>
+          <input type="text" id="studentAliasInput" class="text-field" placeholder="Nada sale de tu dispositivo">
+        </div>
+        <pre class="trace-output tabular-nums" id="tracePreviewPre"></pre>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn" id="btnPrintTrace">Imprimir / Guardar PDF</button>
+        <button type="button" class="btn" id="btnCopyTrace">Copiar como texto</button>
+        <button type="button" class="btn btn-cyan" id="btnDownloadTrace">Descargar archivo (.txt)</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function() {
+  'use strict';
+
+ // ===================== UTILIDADES DE FORMATO COLOMBIANO (COMA DECIMAL =====================
+  function fmtDec(num, digits) {
+    if (!isFinite(num)) return 'Indef. (∞)';
+    const d = typeof digits === 'number' ? digits : 3;
+    return num.toFixed(d).replace('.', ',');
+  }
+
+  function fmtSignedDec(num, digits) {
+    if (!isFinite(num)) return 'Indef. (∞)';
+    const d = typeof digits === 'number' ? digits : 3;
+    const sign = num >= 0 ? '+' : '−';
+    return sign + Math.abs(num).toFixed(d).replace('.', ',');
+  }
+
+ // Iconos vectoriales en línea para estados
+  const SVG_ICON_OK = '<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+  const SVG_ICON_REVIEW = '<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+  const SVG_ICON_INFO = '<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+
+ // ===================== ESTADO GLOBAL DEL RECURSO =====================
+  const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const state = {
+    moment: 1,
+    viewMode: 'both',       // 'both' | 'circle' | 'wave' | 'harmonic'
+    angle: 45,              // Grados [0, 720]
+    playing: false,
+    speed: 35,              // Grados / s
+    snapNotable: true,
+    showSin: true,
+    showCos: false,
+    showTan: false,
+    showGhost: true,
+    showUnwrapArc: true,
+    showWaveHandles: true,
+    A: 1.0,
+    B: 1.0,
+    C: 0.0,
+    D: 0.0,
+    activeMission: -1,
+    missionsDone: [false, false, false],
+    poeUnlocked: false,
+    poeChoice: null,
+    poeJustification: '',
+    closingArgument: '',
+    studentAlias: '',
+    activeRetoIdx: 0,
+    firstResponses: [null, null, null, null, null, null], // Registro inmutable del primer intento (5.3)
+    retosVerified: [false, false, false, false, false, false],
+    notablesVisited: new Set([45]),
+    experimentsLog: ['Estado inicial: θ = 45,0°; A = 1,0; B = 1,0; C = 0; D = 0,0'],
+    traceEvents: []
+  };
+
+ // En localStorage, no en sessionStorage: en una sala de cómputo la sesión se
+ // interrumpe y el estudiante vuelve después del descanso. El precio es que dos
+ // estudiantes en la misma máquina heredarían el trabajo del otro, y por eso el
+ // botón «Reiniciar mi progreso» es la otra mitad de esta decisión.
+  const PROGRESS_KEY = 'didaxis_circulo_ondas_v2_progress';
+  const LEGACY_SESSION_KEY = 'didaxis_circulo_ondas_v2_session';
+
+  function progressStore() {
+    return window.localStorage;
+  }
+
+ // Nada se guarda hasta haber leído lo guardado. Sin esta guarda, la traza de
+ // apertura escribía el estado por defecto ANTES de que loadTrigSession() lo
+ // leyera, y cada recarga borraba el progreso del estudiante.
+  let progressReady = false;
+
+  function saveTrigSession() {
+    if (!progressReady) return;
+    try {
+      const payload = {
+        poeUnlocked: state.poeUnlocked,
+        poeChoice: state.poeChoice,
+        poeJustification: state.poeJustification,
+        closingArgument: state.closingArgument,
+        studentAlias: state.studentAlias,
+        missionsDone: state.missionsDone,
+        firstResponses: state.firstResponses,
+        retosVerified: state.retosVerified,
+        notablesVisited: Array.from(state.notablesVisited),
+        experimentsLog: state.experimentsLog.slice(-40),
+        traceEvents: state.traceEvents.slice(-60)
+      };
+      progressStore().setItem(PROGRESS_KEY, JSON.stringify(payload));
+    } catch (e) {}
+  }
+
+  function loadTrigSession() {
+    let habia = false;
+    try {
+ // Una sesión abierta con la versión anterior se recupera una sola vez.
+      let raw = progressStore().getItem(PROGRESS_KEY);
+      if (!raw) raw = window.sessionStorage.getItem(LEGACY_SESSION_KEY);
+      if (!raw) return;
+      habia = true;
+      const data = JSON.parse(raw);
+      if (data && typeof data === 'object') {
+        state.poeUnlocked = !!data.poeUnlocked;
+        state.poeChoice = data.poeChoice || null;
+        state.poeJustification = data.poeJustification || '';
+        state.closingArgument = data.closingArgument || '';
+        state.studentAlias = data.studentAlias || '';
+        if (Array.isArray(data.missionsDone) && data.missionsDone.length === 3) {
+          state.missionsDone = data.missionsDone;
+        }
+        if (Array.isArray(data.firstResponses) && data.firstResponses.length === 6) {
+          state.firstResponses = data.firstResponses;
+        }
+        if (Array.isArray(data.retosVerified) && data.retosVerified.length === 6) {
+          state.retosVerified = data.retosVerified;
+        }
+        if (Array.isArray(data.notablesVisited)) {
+          state.notablesVisited = new Set(data.notablesVisited);
+        }
+        if (Array.isArray(data.experimentsLog)) state.experimentsLog = data.experimentsLog;
+        if (Array.isArray(data.traceEvents)) state.traceEvents = data.traceEvents;
+      }
+    } catch (e) {
+      habia = false;
+    } finally {
+ // A partir de aquí sí se puede escribir: ya sabemos qué había.
+      progressReady = true;
+      if (!habia) {
+        recordTrace('APERTURA', 'Laboratorio Círculo Unitario y Ondas (v2.0) iniciado.');
+      } else {
+        saveTrigSession();
+      }
+    }
+  }
+
+ // Confirmación en dos pulsaciones, sin diálogo nativo del navegador: el
+ // segundo clic dentro de 6 segundos es el que borra.
+  let resetArmedTimer = null;
+
+  function resetProgressUI(armed) {
+    document.querySelectorAll('[data-action="reset-progress"]').forEach(function(b) {
+      const lbl = b.querySelector('.reset-label') || b;
+      lbl.textContent = armed ? 'Pulsa otra vez para borrar' : 'Reiniciar mi progreso';
+      b.classList.toggle('armed', armed);
+    });
+  }
+
+  function requestResetProgress() {
+    if (resetArmedTimer) {
+      window.clearTimeout(resetArmedTimer);
+      resetArmedTimer = null;
+      try {
+        progressStore().removeItem(PROGRESS_KEY);
+        window.sessionStorage.removeItem(LEGACY_SESSION_KEY);
+      } catch (e) {}
+      window.location.reload();
+      return;
+    }
+    resetProgressUI(true);
+    resetArmedTimer = window.setTimeout(function() {
+      resetArmedTimer = null;
+      resetProgressUI(false);
+    }, 6000);
+  }
+
+ // ===================== PESTAÑAS DE TELÉFONO =====================
+  function setMobileTab(view) {
+    const retos = view === 'retos';
+    document.body.classList.toggle('mtab-retos', retos);
+    document.body.classList.toggle('mtab-sim', !retos);
+    if (retos) document.body.classList.remove('board-mode');
+    document.querySelectorAll('[data-action="mobile-tab"]').forEach(function(b) {
+      const act = b.getAttribute('data-view') === view;
+      b.classList.toggle('active', act);
+      b.setAttribute('aria-pressed', act ? 'true' : 'false');
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function updateMobileTabPill() {
+    const pill = document.getElementById('mtabRetosPill');
+    if (!pill) return;
+    pill.textContent = state.poeUnlocked
+      ? (state.retosVerified.filter(Boolean).length + ' / 6')
+      : 'Predice';
+  }
+
+  function recordTrace(category, description) {
+    const timeStr = new Date().toTimeString().split(' ')[0];
+    state.traceEvents.push({ time: timeStr, category: category, description: description });
+    const badge = document.getElementById('traceBadgeCount');
+    if (badge) badge.textContent = String(state.traceEvents.length);
+    saveTrigSession();
+  }
+
+ // La traza de apertura se registra dentro de loadTrigSession(), una vez leído
+ // lo que hubiera guardado. Invocada aquí arriba, escribía el estado por defecto
+ // antes de leer y borraba el progreso en cada recarga.
+
+ // ===================== VALORES EXACTOS DE REFERENCIA =====================
+  const NOTABLE_ANGLES = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360];
+  const EXACT_LOOKUP = {
+    0:   { rad: '0',      sin: '0',       cos: '1',       tan: '0' },
+    30:  { rad: 'π/6',    sin: '1/2',     cos: '√3/2',    tan: '√3/3' },
+    45:  { rad: 'π/4',    sin: '√2/2',    cos: '√2/2',    tan: '1' },
+    60:  { rad: 'π/3',    sin: '√3/2',    cos: '1/2',     tan: '√3' },
+    90:  { rad: 'π/2',    sin: '1',       cos: '0',       tan: 'Indef. (∞)' },
+    120: { rad: '2π/3',   sin: '√3/2',    cos: '−1/2',    tan: '−√3' },
+    135: { rad: '3π/4',   sin: '√2/2',    cos: '−√2/2',   tan: '−1' },
+    150: { rad: '5π/6',   sin: '1/2',     cos: '−√3/2',   tan: '−√3/3' },
+    180: { rad: 'π',      sin: '0',       cos: '−1',      tan: '0' },
+    210: { rad: '7π/6',   sin: '−1/2',    cos: '−√3/2',   tan: '√3/3' },
+    225: { rad: '5π/4',   sin: '−√2/2',   cos: '−√2/2',   tan: '1' },
+    240: { rad: '4π/3',   sin: '−√3/2',   cos: '−1/2',    tan: '√3' },
+    270: { rad: '3π/2',   sin: '−1',      cos: '0',       tan: 'Indef. (∞)' },
+    300: { rad: '5π/3',   sin: '−√3/2',   cos: '1/2',     tan: '−√3' },
+    315: { rad: '7π/4',   sin: '−√2/2',   cos: '√2/2',    tan: '−1' },
+    330: { rad: '11π/6',  sin: '−1/2',    cos: '√3/2',    tan: '−√3/3' },
+    360: { rad: '2π',     sin: '0',       cos: '1',       tan: '0' }
+  };
+
+  function formatPhaseC(val) {
+    const steps = Math.round(val / (Math.PI / 4));
+    if (steps === 0) return '0 rad';
+    const sign = steps < 0 ? '−' : '+';
+    const absS = Math.abs(steps);
+    if (absS === 1) return sign + 'π/4';
+    if (absS === 2) return sign + 'π/2';
+    if (absS === 3) return sign + '3π/4';
+    return sign + 'π';
+  }
+
+  function formatExactRad(deg) {
+    const rounded = Math.round(deg * 10) / 10;
+    const mod360 = Math.round(rounded % 360);
+    if (Math.abs(rounded - Math.round(rounded)) < 0.08 && EXACT_LOOKUP[mod360]) {
+      if (rounded === 360) return '2π';
+      if (rounded === 540) return '3π';
+      if (rounded === 720) return '4π';
+      if (rounded < 360) return EXACT_LOOKUP[mod360].rad;
+    }
+    return fmtDec(deg * Math.PI / 180, 3);
+  }
+
+  function getQuadrantLabel(deg) {
+    const norm = ((deg % 360) + 360) % 360;
+    if (norm === 0 || norm === 90 || norm === 180 || norm === 270 || norm === 360) {
+      return 'Ángulo cuadrantal (sobre eje cartesiano)';
+    }
+    if (norm < 90) return 'Cuadrante I · sen(+) cos(+)';
+    if (norm < 180) return 'Cuadrante II · sen(+) cos(−)';
+    if (norm < 270) return 'Cuadrante III · sen(−) cos(−)';
+    return 'Cuadrante IV · sen(−) cos(+)';
+  }
+
+ // ===================== MISIONES DE CONSTRUCCIÓN INVERSA =====================
+  const MISSIONS = [
+    {
+      title: 'Marea en la Bahía de Cartagena',
+      desc: 'Amplitud A = 1,5 m y eje medio D = +0,5 m, con B = 1,0 y C = 0 rad.',
+      target: { A: 1.5, B: 1.0, C: 0.0, D: 0.5 }
+    },
+    {
+      title: 'Señal acústica de doble frecuencia',
+      desc: 'Amplitud A = 2,0 y frecuencia B = 2,0 (periodo T = π rad), con C = 0 rad y D = 0,0.',
+      target: { A: 2.0, B: 2.0, C: 0.0, D: 0.0 }
+    },
+    {
+      title: 'Onda desfasada +π/2 rad (es el coseno)',
+      desc: 'A = 1,0, B = 1,0, desfase C = +π/2 rad y D = −0,5.',
+      target: { A: 1.0, B: 1.0, C: Math.PI / 2, D: -0.5 }
+    }
+  ];
+
+ // ===================== BANCO DE 6 RETOS TIPO SABER 11 (2 POR COMPETENCIA =====================
+  const RETOS_BANK = [
+    {
+      id: 1,
+      competencia: 'Interpretación y representación',
+      stem: 'Lleva <span class="math-var">P</span> al <strong>Cuadrante II</strong> con las series de Seno y Coseno activas. Al recorrer de 90,0° a 180,0°, ¿cómo se comportan a la vez sen(θ) y cos(θ)?',
+      hint: 'Observa en el círculo unitario si el punto P está por encima o por debajo del eje horizontal (signo de sen θ) y si está a la izquierda o a la derecha del eje vertical (signo de cos θ).',
+      requireState: null,
+      options: [
+        {
+          letter: 'A',
+          text: 'Tanto sen(θ) como cos(θ) son negativos en el Cuadrante II porque ambas curvas van descendiendo en la gráfica.',
+          ok: false,
+          diag: 'Confundes la pendiente de decrecimiento con el signo del valor de la función. Entre 90° y 180° la curva de sen(θ) desciende desde +1,000 hasta 0,000, pero permanece sobre el eje horizontal (valores positivos).'
+        },
+        {
+          letter: 'B',
+          text: 'sen(θ) conserva signo positivo mientras decrece de +1,000 a 0,000, y cos(θ) toma signo negativo decreciendo de 0,000 a −1,000.',
+          ok: true,
+          diag: 'Identificas correctamente la conversión entre el registro circular y el funcional: en el Cuadrante II el punto P está sobre el eje horizontal (ordenada sen θ > 0) y a la izquierda del eje vertical (abscisa cos θ < 0).'
+        },
+        {
+          letter: 'C',
+          text: 'sen(θ) es negativo porque el punto P está a la izquierda del eje vertical, mientras que cos(θ) es positivo.',
+          ok: false,
+          diag: 'Inviertes las coordenadas cartesianas en el círculo unitario: la posición a la izquierda del eje vertical determina el signo negativo de la abscisa x = cos(θ), no de la ordenada y = sen(θ).'
+        },
+        {
+          letter: 'D',
+          text: 'Ambas razones son positivas porque todo el recorrido entre 90,0° y 180,0° ocurre en el semiplano superior.',
+          ok: false,
+          diag: 'Lectura parcial del registro figural: estar en el semiplano superior hace positiva la ordenada sen(θ), pero la proyección horizontal cos(θ) cae en el semieje negativo X.'
+        }
+      ]
+    },
+    {
+      id: 2,
+      competencia: 'Interpretación y representación',
+      stem: 'Activa a la vez <strong>Seno</strong> y <strong>Coseno</strong> con los parámetros base (A = 1,0; B = 1,0; C = 0; D = 0,0). ¿Qué transformación convierte exactamente sen(θ) en cos(θ)?',
+      hint: 'Compara en qué ángulo alcanza su primer máximo (+1,000) la curva de cos(θ) frente al ángulo en que lo alcanza sen(θ).',
+      requireState: null,
+      options: [
+        {
+          letter: 'A',
+          text: 'Multiplicar la amplitud por −1, ya que cos(θ) es el reflejo vertical de sen(θ) respecto al eje horizontal.',
+          ok: false,
+          diag: 'En θ = 0°, sen(0°) = 0 y cos(0°) = +1,000. Un reflejo vertical de sen(θ) seguiría pasando por (0, 0) en lugar de iniciar en (0, 1).'
+        },
+        {
+          letter: 'B',
+          text: 'Sumar un desplazamiento vertical D = +1,0 a la función sen(θ) para que inicie en el punto (0, 1).',
+          ok: false,
+          diag: 'Si sumas D = +1,0 a sen(θ), la onda oscilaría entre 0,0 y +2,0, mientras que cos(θ) oscila entre −1,0 y +1,0.'
+        },
+        {
+          letter: 'C',
+          text: 'Aplicar un desfase horizontal de C = +π/2 rad (90,0°), pues en todo ángulo se cumple sen(θ + π/2) = cos(θ).',
+          ok: true,
+          diag: 'Reconoces la equivalencia entre registros por traslación de fase: como el coseno alcanza en θ = 0 rad el valor que el seno alcanza en θ = π/2 rad, adelantar la fase en +π/2 rad superpone ambas curvas.'
+        },
+        {
+          letter: 'D',
+          text: 'Duplicar la frecuencia angular a B = 2,0, porque el coseno completa el doble de ciclos que el seno en [0, 2π].',
+          ok: false,
+          diag: 'Tanto sen(θ) como cos(θ) provienen del mismo giro sobre el círculo unitario y comparten exactamente el mismo periodo fundamental T = 2π rad.'
+        }
+      ]
+    },
+    {
+      id: 3,
+      competencia: 'Formulación y ejecución · Paso 2',
+      stem: 'Un mareógrafo en Cartagena registra que el nivel del mar oscila periódicamente entre una marea baja de <strong>0,5 m</strong> y una marea alta de <strong>2,5 m</strong>. Configura <strong>A</strong> y <strong>D</strong> en el modelo <em>y = A·sen(θ) + D</em> para reproducir ese rango. ¿Qué valores lo logran?',
+      hint: 'La línea media D es el promedio entre el máximo y el mínimo, y la amplitud A es la distancia desde esa línea media hasta el máximo. Ajusta los deslizadores A y D en el Momento 2.',
+      requireState: function() {
+        const ok = Math.abs(state.A - 1.0) < 0.05 && Math.abs(state.D - 1.5) < 0.05 && Math.abs(state.B - 1.0) < 0.05 && Math.abs(state.C) < 0.05;
+        return {
+          passed: ok,
+          msg: 'Para validar este reto de Formulación y Ejecución debes configurar primero el modelo en los controles del Momento 2 (actualmente tienes A = ' + fmtDec(state.A, 1) + ', B = ' + fmtDec(state.B, 1) + ', C = ' + formatPhaseC(state.C) + ', D = ' + fmtDec(state.D, 1) + ').'
+        };
+      },
+      options: [
+        {
+          letter: 'A',
+          text: 'A = 2,5 y D = 0,5, porque A indica el nivel máximo del agua y D indica el nivel mínimo.',
+          ok: false,
+          diag: 'Confundes los valores extremos del fenómeno con los parámetros algebraicos: con A = 2,5 y D = 0,5 la onda oscilaría entre D − A = −2,0 m y D + A = +3,0 m.'
+        },
+        {
+          letter: 'B',
+          text: 'A = 2,0 y D = 0,5, porque la diferencia total entre marea alta y marea baja es de 2,0 metros.',
+          ok: false,
+          diag: 'Tomas la excursión pico a pico (2,5 − 0,5 = 2,0 m) como si fuera la amplitud A. La amplitud se mide desde el eje medio hasta una cresta: A = (2,5 − 0,5)/2 = 1,0 m.'
+        },
+        {
+          letter: 'C',
+          text: 'A = 1,0 y D = 1,5, porque el eje medio se ubica en D = 1,5 m y la amplitud de oscilación es A = 1,0 m.',
+          ok: true,
+          diag: 'Formulas y ejecutas correctamente el modelo en el simulador: con D = (2,5 + 0,5)/2 = 1,5 m y A = (2,5 − 0,5)/2 = 1,0 m, la onda oscila entre 1,5 − 1,0 = 0,5 m y 1,5 + 1,0 = 2,5 m.'
+        },
+        {
+          letter: 'D',
+          text: 'A = 1,5 y D = 1,0, porque el promedio corresponde a la amplitud A y la semidiferencia al eje medio D.',
+          ok: false,
+          diag: 'Inviertes el papel operatorio de los parámetros: A multiplica a sen(θ) controlando la amplitud (1,0 m) y D suma trasladando el eje de equilibrio (1,5 m).'
+        }
+      ]
+    },
+    {
+      id: 4,
+      competencia: 'Formulación y ejecución · Paso 2',
+      stem: 'Se requiere analizar la onda <strong>y(θ) = 2,0 · sen(2,0θ)</strong> exactamente en el instante angular <strong>θ = 60,0° (π/3 rad)</strong>. Configura <strong>A = 2,0; B = 2,0; C = 0; D = 0,0</strong> y lleva el ángulo a <strong>θ = 60,0°</strong>. ¿Cuál es el periodo T y qué valor toma y(60,0°)?',
+      hint: 'Ajusta A = 2,0 y B = 2,0 en el Momento 2 y coloca el deslizador de ángulo en 60,0°. Observa que el argumento interno vale 2·60° = 120°.',
+      requireState: function() {
+        const okParams = Math.abs(state.A - 2.0) < 0.05 && Math.abs(state.B - 2.0) < 0.05 && Math.abs(state.C) < 0.05 && Math.abs(state.D) < 0.05;
+        const okAngle = Math.abs(state.angle - 60) <= 1.5;
+        return {
+          passed: okParams && okAngle,
+          msg: 'Configura en el simulador A = 2,0; B = 2,0; C = 0; D = 0,0 y ubica el ángulo en θ = 60,0° antes de verificar (estado actual: θ = ' + fmtDec(state.angle, 1) + '°, A = ' + fmtDec(state.A, 1) + ', B = ' + fmtDec(state.B, 1) + ').'
+        };
+      },
+      options: [
+        {
+          letter: 'A',
+          text: 'Periodo T = 4π rad y valor y(60,0°) = √3 ≈ +1,732.',
+          ok: false,
+          diag: 'Calculas bien la ordenada y(60°), pero multiplicas el periodo por 2 en lugar de dividirlo: con B = 2,0 caben dos ciclos en 2π rad, luego T = 2π/2 = π rad.'
+        },
+        {
+          letter: 'B',
+          text: 'Periodo T = π rad y valor y(60,0°) = 2 · sen(120°) = 2 · (√3/2) = √3 ≈ +1,732.',
+          ok: true,
+          diag: 'Ejecutas el modelo y verificas el estado en el simulador: para B = 2,0 el periodo se comprime a T = 2π/2 = π rad, y en θ = 60° la fase interna es 120°, dando 2 · (√3/2) = √3 ≈ +1,732.'
+        },
+        {
+          letter: 'C',
+          text: 'Periodo T = π rad y valor y(60,0°) = 2 · (1/2) = +1,000.',
+          ok: false,
+          diag: 'Determinas bien el periodo T = π rad, pero confundes sen(120°) con 1/2: en 120° (Cuadrante II) el seno vale √3/2 ≈ 0,866, por lo que al multiplicar por A = 2,0 se obtiene +1,732.'
+        },
+        {
+          letter: 'D',
+          text: 'Periodo T = 2π rad y valor y(60,0°) = +2,000.',
+          ok: false,
+          diag: 'Ignoras el efecto del parámetro B = 2,0 sobre el periodo y sobre el argumento del seno: el máximo +2,000 ocurre en θ = 45° (donde 2θ = 90°), no en θ = 60°.'
+        }
+      ]
+    },
+    {
+      id: 5,
+      competencia: 'Argumentación',
+      stem: 'Un estudiante comprueba que en θ = 30°, 45° y 60° la expresión <strong>sen²(θ) + cos²(θ)</strong> da <strong>1,000</strong>, y concluye: <em>«Como dio 1,000 en los tres ángulos que probé, queda demostrado que sen²(θ) + cos²(θ) = 1 para cualquier ángulo real θ»</em>. Sobre el razonamiento del estudiante, es correcto afirmar que:',
+      hint: 'Distingue entre la validez de la conclusión matemática y si tres casos particulares son suficientes para garantizar una propiedad sobre infinitos ángulos.',
+      requireState: null,
+      options: [
+        {
+          letter: 'A',
+          text: 'Su demostración es suficiente, porque en geometría basta comprobar tres ángulos notables distintos para validar una identidad universal.',
+          ok: false,
+          diag: 'Confundes constatación empírica en casos finitos con una garantía deductiva universal: ningún número finito de ejemplos particulares basta por sí solo para demostrar una propiedad para todos los números reales.'
+        },
+        {
+          letter: 'B',
+          text: 'La identidad es falsa, porque el hecho de que tres casos particulares no basten como prueba refuta la igualdad sen²(θ) + cos²(θ) = 1.',
+          ok: false,
+          diag: 'Confundes mostrar que una evidencia es insuficiente con refutar la afirmación: la conclusión del estudiante sí es verdadera, lo que falla en su argumento es que omitió la garantía estructural.'
+        },
+        {
+          letter: 'C',
+          text: 'Su evidencia de tres casos es insuficiente para probar una afirmación general; la garantía que la sostiene universalmente es que para todo punto P del círculo unitario, |cos θ| y |sen θ| son catetos de un triángulo rectángulo de hipotenusa constante r = 1.',
+          ok: true,
+          diag: 'Distingues con rigor entre una muestra finita y una garantía estructural: el teorema de Pitágoras sobre el círculo de radio r = 1 garantiza que cos²(θ) + sen²(θ) = 1² = 1 en cualquier ángulo.'
+        },
+        {
+          letter: 'D',
+          text: 'Su conclusión es verdadera porque sen(θ) + cos(θ) = 1 para todo ángulo θ, y al elevar ambos miembros al cuadrado se conserva el 1.',
+          ok: false,
+          diag: 'Apelas a una garantía algebraica falsa: en general sen(θ) + cos(θ) ≠ 1 (por ejemplo, en θ = 45° la suma es √2 ≈ 1,414) y además (a + b)² ≠ a² + b².'
+        }
+      ]
+    },
+    {
+      id: 6,
+      competencia: 'Argumentación',
+      stem: 'Analiza las siguientes dos afirmaciones sobre las funciones trigonométricas:<br><strong>Afirmación I:</strong> <em>«Al pasar de y = sen(θ) a y = sen(2θ), el periodo de la onda se duplica de 2π a 4π»</em>.<br><strong>Afirmación II:</strong> <em>«En θ = 90,0° (π/2 rad) la función tan(θ) no está definida»</em>.<br>¿Qué opción evalúa y justifica correctamente ambas afirmaciones?',
+      hint: 'Compara en el lienzo la onda con B = 2,0 frente a la onda base en sombra, y activa la serie Tangente llevando el ángulo exactamente a 90,0°.',
+      requireState: null,
+      options: [
+        {
+          letter: 'A',
+          text: 'Ambas son verdaderas: multiplicar θ por 2 estira horizontalmente la onda al doble, y en 90,0° la tangente no existe porque sen(90,0°) = 0.',
+          ok: false,
+          diag: 'Aceptas la concepción alternativa lineal sobre el parámetro B y cometes un error de lectura en 90°: en θ = 90° el seno vale +1,000, no 0.'
+        },
+        {
+          letter: 'B',
+          text: 'La I es falsa porque con B = 2 el ángulo recorre el ciclo de 2π rad al doble de rapidez (reduciendo el periodo a T = 2π/2 = π rad); y la II es verdadera porque en 90,0° el radio es vertical y paralelo a la recta tangente x = 1 (cos 90° = 0), por lo que no hay intersección.',
+          ok: true,
+          diag: 'Integras refutación y garantía geométrica: demuestras por qué B = 2 comprime el periodo a π rad y explicas la asíntota vertical de tan(90°) tanto por el paralelismo entre el eje Y y la recta x = 1 como por la anulación de cos(90°) en el denominador.'
+        },
+        {
+          letter: 'C',
+          text: 'La I es falsa porque el parámetro B solo cambia la amplitud vertical de la onda, y la II es falsa porque tan(90,0°) = 1,000.',
+          ok: false,
+          diag: 'Rechazas la Afirmación I con una garantía falsa (quien controla la amplitud es A, no B) y confundes el valor de tan(45°) = 1,000 con el comportamiento asintótico en 90°.'
+        },
+        {
+          letter: 'D',
+          text: 'La I es verdadera únicamente cuando A = 2,0, y la II es verdadera porque en 90,0° el punto P sale del círculo unitario.',
+          ok: false,
+          diag: 'El periodo T = 2π/B es independiente de la amplitud A, y el punto P permanece siempre sobre la circunferencia de radio 1; lo que diverge hacia ±∞ es la intersección de la recta secante con x = 1.'
+        }
+      ]
+    }
+  ];
+
+ // ===================== CONSTRUCCIÓN DE NODOS SVG PERSISTENTES =====================
+  const svg = document.getElementById('mainSvg');
+  const layerGrid = document.getElementById('layerGrid');
+  const layerCircle = document.getElementById('layerCircle');
+  const layerCircleText = document.getElementById('layerCircleText');
+  const layerProjections = document.getElementById('layerProjections');
+  const layerWave = document.getElementById('layerWave');
+  const layerWaveText = document.getElementById('layerWaveText');
+  const handlePointP = document.getElementById('handlePointP');
+  const handleWaveArea = document.getElementById('handleWaveArea');
+  const handleNodeA = document.getElementById('handleNodeA');
+  const handleNodeD = document.getElementById('handleNodeD');
+  const handleNodeT = document.getElementById('handleNodeT');
+
+  const GEOM = {
+    CY: 195,
+    CX: 175,
+    WX0: 415,
+    WX1: 895,
+    WW: 480,
+    getScaleY: function() {
+      const extent = Math.max(1.2, Math.abs(state.A) + Math.abs(state.D));
+      return extent <= 1.25 ? 104 : Math.min(104, 142 / extent);
+    }
+  };
+
+  const nodes = {};
+
+  function elSvg(tag, attrs, parent) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    if (attrs) {
+      for (const k in attrs) el.setAttribute(k, attrs[k]);
+    }
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+
+  function initSvgScene() {
+    nodes.gridGroup = elSvg('g', {}, layerGrid);
+
+    nodes.divider = elSvg('line', {
+      x1: 372, y1: 15, x2: 372, y2: 375,
+      stroke: '#7A879B', 'stroke-width': '1.2', 'stroke-dasharray': '4,4'
+    }, layerGrid);
+
+    nodes.titleLeft = elSvg('text', {
+      x: GEOM.CX, y: 24, 'text-anchor': 'middle',
+      'font-size': '12', 'font-weight': '800', fill: '#0B2A4A'
+    }, layerGrid);
+    nodes.titleLeft.textContent = 'REGISTRO CIRCULAR: CÍRCULO UNITARIO (r = 1)';
+
+    nodes.titleRight = elSvg('text', {
+      x: (GEOM.WX0 + GEOM.WX1) / 2, y: 24, 'text-anchor': 'middle',
+      'font-size': '12', 'font-weight': '800', fill: '#0B2A4A'
+    }, layerGrid);
+    nodes.titleRight.textContent = 'REGISTRO FUNCIONAL: ONDA y(θ) EN FUNCIÓN DE θ (rad)';
+
+ // Ejes cartesianos con unidades
+    nodes.cAxisX = elSvg('line', {
+      x1: 20, y1: GEOM.CY, x2: 350, y2: GEOM.CY,
+      stroke: '#0B2A4A', 'stroke-width': '1.6', 'marker-end': 'url(#axisArrow)'
+    }, layerGrid);
+    nodes.cAxisY = elSvg('line', {
+      x1: GEOM.CX, y1: 365, x2: GEOM.CX, y2: 35,
+      stroke: '#0B2A4A', 'stroke-width': '1.6', 'marker-end': 'url(#axisArrow)'
+    }, layerGrid);
+    nodes.cAxisXLabel = elSvg('text', {
+      x: 344, y: GEOM.CY - 8, 'font-size': '12', 'font-weight': '700', fill: '#0B2A4A', 'text-anchor': 'end'
+    }, layerGrid);
+    nodes.cAxisXLabel.textContent = 'x (cos)';
+    nodes.cAxisYLabel = elSvg('text', {
+      x: GEOM.CX + 8, y: 44, 'font-size': '12', 'font-weight': '700', fill: '#0B2A4A'
+    }, layerGrid);
+    nodes.cAxisYLabel.textContent = 'y (sen)';
+
+    nodes.wAxisX = elSvg('line', {
+      x1: GEOM.WX0, y1: GEOM.CY, x2: GEOM.WX1 + 14, y2: GEOM.CY,
+      stroke: '#0B2A4A', 'stroke-width': '1.6', 'marker-end': 'url(#axisArrow)'
+    }, layerGrid);
+    nodes.wAxisY = elSvg('line', {
+      x1: GEOM.WX0, y1: 365, x2: GEOM.WX0, y2: 35,
+      stroke: '#0B2A4A', 'stroke-width': '1.6', 'marker-end': 'url(#axisArrow)'
+    }, layerGrid);
+    nodes.wAxisXLabel = elSvg('text', {
+      x: GEOM.WX1 + 8, y: GEOM.CY - 8, 'font-size': '12', 'font-weight': '700', fill: '#0B2A4A', 'text-anchor': 'end'
+    }, layerGrid);
+    nodes.wAxisXLabel.textContent = 'θ (rad)';
+    nodes.wAxisYLabel = elSvg('text', {
+      x: GEOM.WX0 + 8, y: 44, 'font-size': '12', 'font-weight': '700', fill: '#0B2A4A'
+    }, layerGrid);
+    nodes.wAxisYLabel.textContent = 'y(θ)';
+
+    nodes.midlineD = elSvg('line', {
+      x1: 25, y1: GEOM.CY, x2: GEOM.WX1, y2: GEOM.CY,
+      stroke: '#047857', 'stroke-width': '1.4', 'stroke-dasharray': '6,4', opacity: '0'
+    }, layerGrid);
+
+ // Elementos del círculo
+    nodes.ghostCircle = elSvg('circle', {
+      cx: GEOM.CX, cy: GEOM.CY, r: 104,
+      fill: 'none', stroke: '#7A879B', 'stroke-width': '1.3', 'stroke-dasharray': '4,4', opacity: '0'
+    }, layerCircle);
+
+    nodes.mainCircle = elSvg('circle', {
+      cx: GEOM.CX, cy: GEOM.CY, r: 104,
+      fill: 'rgba(11, 192, 216, 0.04)', stroke: '#0B2A4A', 'stroke-width': '2.2'
+    }, layerCircle);
+
+    nodes.ticksGroup = elSvg('g', {}, layerCircle);
+
+    nodes.refTriangle = elSvg('polygon', {
+      points: '0,0 0,0 0,0',
+      fill: 'rgba(10, 124, 140, 0.12)', stroke: 'none'
+    }, layerCircle);
+
+    nodes.angleArc = elSvg('path', {
+      d: '', fill: 'rgba(154, 52, 18, 0.14)', stroke: '#9A3412', 'stroke-width': '2'
+    }, layerCircle);
+
+ // Tangente geométrica en x = 1
+    nodes.tanLineX1 = elSvg('line', {
+      x1: 0, y1: 20, x2: 0, y2: 370,
+      stroke: '#7A879B', 'stroke-width': '1.4', 'stroke-dasharray': '4,3', opacity: '0'
+    }, layerCircle);
+    nodes.tanSecant = elSvg('line', {
+      x1: 0, y1: 0, x2: 0, y2: 0,
+      stroke: '#9A3412', 'stroke-width': '1.5', 'stroke-dasharray': '3,3', opacity: '0'
+    }, layerCircle);
+    nodes.tanSegment = elSvg('line', {
+      x1: 0, y1: 0, x2: 0, y2: 0,
+      stroke: '#9A3412', 'stroke-width': '3.8', opacity: '0'
+    }, layerCircle);
+    nodes.tanPoint = elSvg('circle', {
+      cx: 0, cy: 0, r: 5.5, fill: '#9A3412', stroke: '#FFFFFF', 'stroke-width': '1.5', opacity: '0'
+    }, layerCircle);
+    nodes.tanParallelAlert = elSvg('text', {
+      x: GEOM.CX, y: 58, 'text-anchor': 'middle',
+      'font-size': '12', 'font-weight': '800', fill: '#B91C1C', opacity: '0'
+    }, layerCircleText);
+    nodes.tanParallelAlert.textContent = 'Radio vertical paralelo a x = 1 (Asíntota)';
+
+ // Segmentos dirigidos Coseno y Seno
+    nodes.cosSeg = elSvg('line', {
+      x1: GEOM.CX, y1: GEOM.CY, x2: GEOM.CX, y2: GEOM.CY,
+      stroke: '#1D4ED8', 'stroke-width': '4', 'stroke-dasharray': '7,3'
+    }, layerCircle);
+    nodes.sinSeg = elSvg('line', {
+      x1: GEOM.CX, y1: GEOM.CY, x2: GEOM.CX, y2: GEOM.CY,
+      stroke: '#0A7C8C', 'stroke-width': '4'
+    }, layerCircle);
+    nodes.radiusSeg = elSvg('line', {
+      x1: GEOM.CX, y1: GEOM.CY, x2: GEOM.CX, y2: GEOM.CY,
+      stroke: '#0B2A4A', 'stroke-width': '2.5'
+    }, layerCircle);
+
+ // Oscilador Armónico Simple (MAS)
+    nodes.harmonicGroup = elSvg('g', { opacity: '0' }, layerCircle);
+    nodes.springCoil = elSvg('path', {
+      d: '', fill: 'none', stroke: '#566579', 'stroke-width': '2.2', 'stroke-linejoin': 'round'
+    }, nodes.harmonicGroup);
+    nodes.springBlock = elSvg('rect', {
+      x: 0, y: 0, width: 28, height: 22, rx: 4,
+      fill: '#0BC0D8', stroke: '#0B2A4A', 'stroke-width': '2'
+    }, nodes.harmonicGroup);
+    nodes.pendRod = elSvg('line', {
+      x1: 60, y1: 55, x2: 60, y2: 150, stroke: '#0B2A4A', 'stroke-width': '2.2'
+    }, nodes.harmonicGroup);
+    nodes.pendBob = elSvg('circle', {
+      cx: 60, cy: 150, r: 10, fill: '#1D4ED8', stroke: '#FFFFFF', 'stroke-width': '2'
+    }, nodes.harmonicGroup);
+
+ // Punto P
+    nodes.pointHalo = elSvg('circle', {
+      cx: GEOM.CX, cy: GEOM.CY, r: 14, fill: 'rgba(11, 192, 216, 0.28)'
+    }, layerCircle);
+    nodes.pointP = elSvg('circle', {
+      cx: GEOM.CX, cy: GEOM.CY, r: 8, fill: '#0BC0D8', stroke: '#0B2A4A', 'stroke-width': '2.5'
+    }, layerCircle);
+    nodes.pointPLabel = elSvg('text', {
+      x: GEOM.CX, y: GEOM.CY, 'font-size': '12', 'font-weight': '800', fill: '#0B2A4A'
+    }, layerCircleText);
+
+ // Proyecciones horizontales entre registros
+    nodes.projSin = elSvg('line', {
+      x1: 0, y1: 0, x2: 0, y2: 0,
+      stroke: '#0A7C8C', 'stroke-width': '1.8', 'stroke-dasharray': '5,4'
+    }, layerProjections);
+    nodes.projTan = elSvg('line', {
+      x1: 0, y1: 0, x2: 0, y2: 0,
+      stroke: '#9A3412', 'stroke-width': '1.5', 'stroke-dasharray': '3,3', opacity: '0'
+    }, layerProjections);
+
+ // Ondas y etiquetas directas sobre las series
+    nodes.asymptotesGroup = elSvg('g', {}, layerWave);
+
+    nodes.ghostWave = elSvg('path', {
+      d: '', fill: 'none', stroke: '#7A879B', 'stroke-width': '1.8', 'stroke-dasharray': '4,4', opacity: '0'
+    }, layerWave);
+
+    nodes.targetWave = elSvg('path', {
+      d: '', fill: 'none', stroke: '#047857', 'stroke-width': '4.2', 'stroke-dasharray': '8,5', opacity: '0'
+    }, layerWave);
+
+    nodes.waveSin = elSvg('path', {
+      d: '', fill: 'none', stroke: '#0A7C8C', 'stroke-width': '2.8', 'stroke-linejoin': 'round'
+    }, layerWave);
+    nodes.waveCos = elSvg('path', {
+      d: '', fill: 'none', stroke: '#1D4ED8', 'stroke-width': '2.6', 'stroke-dasharray': '8,4', 'stroke-linejoin': 'round'
+    }, layerWave);
+    nodes.waveTan = elSvg('path', {
+      d: '', fill: 'none', stroke: '#9A3412', 'stroke-width': '2.3', 'stroke-dasharray': '3,3', 'stroke-linejoin': 'round'
+    }, layerWave);
+
+    nodes.trailSin = elSvg('path', {
+      d: '', fill: 'none', stroke: '#0B2A4A', 'stroke-width': '4', 'stroke-linecap': 'round'
+    }, layerWave);
+
+    nodes.cursorLine = elSvg('line', {
+      x1: GEOM.WX0, y1: 35, x2: GEOM.WX0, y2: 365,
+      stroke: '#566579', 'stroke-width': '1.5', 'stroke-dasharray': '4,3'
+    }, layerWave);
+
+    nodes.dotSin = elSvg('circle', {
+      cx: 0, cy: 0, r: 6.5, fill: '#0BC0D8', stroke: '#0B2A4A', 'stroke-width': '2'
+    }, layerWave);
+    nodes.dotCos = elSvg('circle', {
+      cx: 0, cy: 0, r: 6, fill: '#1D4ED8', stroke: '#FFFFFF', 'stroke-width': '2', opacity: '0'
+    }, layerWave);
+    nodes.dotTan = elSvg('circle', {
+      cx: 0, cy: 0, r: 6, fill: '#9A3412', stroke: '#FFFFFF', 'stroke-width': '2', opacity: '0'
+    }, layerWave);
+
+ // Etiquetas directas sobre cada serie en el gráfico
+    nodes.directLblSin = elSvg('text', {
+      x: 0, y: 0, 'font-size': '12', 'font-weight': '800', fill: '#0A7C8C'
+    }, layerWaveText);
+    nodes.directLblCos = elSvg('text', {
+      x: 0, y: 0, 'font-size': '12', 'font-weight': '800', fill: '#1D4ED8', opacity: '0'
+    }, layerWaveText);
+    nodes.directLblTan = elSvg('text', {
+      x: 0, y: 0, 'font-size': '12', 'font-weight': '800', fill: '#9A3412', opacity: '0'
+    }, layerWaveText);
+
+ // Símbolo de ángulo recto (⊥) y etiquetas del triángulo pitagórico en el círculo
+    nodes.rightAngleBox = elSvg('polyline', {
+      points: '0,0 0,0 0,0',
+      fill: 'rgba(11, 42, 74, 0.08)', stroke: '#0B2A4A', 'stroke-width': '1.8', opacity: '0'
+    }, layerCircle);
+    nodes.triLegCosLbl = elSvg('text', {
+      x: 0, y: 0, 'font-size': '11', 'font-weight': '800', fill: '#1D4ED8', 'text-anchor': 'middle', opacity: '0'
+    }, layerCircleText);
+    nodes.triLegSinLbl = elSvg('text', {
+      x: 0, y: 0, 'font-size': '11', 'font-weight': '800', fill: '#0A7C8C', opacity: '0'
+    }, layerCircleText);
+    nodes.oneRadTickGroup = elSvg('g', {}, layerCircleText);
+
+ // Grupo de desenrollado geométrico del arco (θ rad) entre el círculo y el eje horizontal de la onda
+    nodes.unwrapGroup = elSvg('g', {}, layerProjections);
+
+    nodes.periodGroup = elSvg('g', {}, layerWaveText);
+
+ // Nodos visuales de manipulación directa sobre la onda [A], [D], [T]
+    nodes.waveHandlesGroup = elSvg('g', {}, layerWaveText);
+  }
+
+  function buildCurveD(fn, maxRad) {
+    const steps = 340;
+    const limit = typeof maxRad === 'number' ? maxRad : 4 * Math.PI;
+    const scaleX = GEOM.WW / (4 * Math.PI);
+    const scaleY = GEOM.getScaleY();
+    let d = '';
+    let drawing = false;
+    let prevY = 0;
+
+    for (let i = 0; i <= steps; i++) {
+      const t = (i / steps) * limit;
+      const val = fn(t);
+      const px = GEOM.WX0 + t * scaleX;
+      const py = GEOM.CY - val * scaleY;
+
+      if (!isFinite(val) || Math.abs(val) > 6.2 || (drawing && Math.abs(py - prevY) > 210)) {
+        drawing = false;
+        continue;
+      }
+      if (!drawing) {
+        d += 'M ' + px.toFixed(1) + ' ' + py.toFixed(1) + ' ';
+        drawing = true;
+      } else {
+        d += 'L ' + px.toFixed(1) + ' ' + py.toFixed(1) + ' ';
+      }
+      prevY = py;
+    }
+    return d;
+  }
+
+ // ===================== ACTUALIZACIÓN DE LA ESCENA Y LECTURAS =====================
+  function updateScene() {
+    const scaleY = GEOM.getScaleY();
+    const scaleX = GEOM.WW / (4 * Math.PI);
+    const deg = state.angle;
+    const rad = deg * Math.PI / 180;
+    const A = state.A, B = state.B, C = state.C, D = state.D;
+    const phase = B * rad + C;
+
+    const sinBase = Math.sin(rad);
+    const cosBase = Math.cos(rad);
+    const tanBase = Math.tan(rad);
+
+    const sinVal = A * Math.sin(phase) + D;
+    const cosVal = A * Math.cos(phase) + D;
+    const tanVal = A * Math.tan(phase) + D;
+
+    const cCenterY = GEOM.CY - D * scaleY;
+    const cRadiusPx = Math.abs(A) * scaleY;
+
+ // 1. Cuadrícula con etiquetas de ≥ 12 px y coma decimal
+    let gHtml = '';
+    const maxU = scaleY > 85 ? 1 : 3;
+    for (let u = -maxU; u <= maxU; u++) {
+      const gy = GEOM.CY - u * scaleY;
+      if (gy < 35 || gy > 365) continue;
+      const isZ = u === 0;
+      gHtml += '<line x1="25" y1="' + gy.toFixed(1) + '" x2="' + GEOM.WX1 + '" y2="' + gy.toFixed(1) + '" stroke="' + (isZ ? '#7A879B' : '#CBD5E1') + '" stroke-width="' + (isZ ? '1.3' : '0.9') + '"/>';
+      if (u !== 0) {
+        const lblNum = fmtDec(u, 1);
+        gHtml += '<text x="' + (GEOM.WX0 - 6) + '" y="' + (gy + 4).toFixed(1) + '" font-size="12" font-weight="700" fill="#566579" text-anchor="end">' + lblNum + '</text>';
+        gHtml += '<text x="' + (GEOM.CX + 5) + '" y="' + (gy - 4).toFixed(1) + '" font-size="12" font-weight="700" fill="#566579">' + lblNum + '</text>';
+      }
+    }
+
+    const xTicks = [
+      [0, '0'], [0.5, 'π/2'], [1, 'π'], [1.5, '3π/2'], [2, '2π'],
+      [2.5, '5π/2'], [3, '3π'], [3.5, '7π/2'], [4, '4π']
+    ];
+    for (let i = 0; i < xTicks.length; i++) {
+      const mx = GEOM.WX0 + xTicks[i][0] * Math.PI * scaleX;
+      gHtml += '<line x1="' + mx.toFixed(1) + '" y1="35" x2="' + mx.toFixed(1) + '" y2="360" stroke="#CBD5E1" stroke-width="0.9"/>';
+      gHtml += '<text x="' + mx.toFixed(1) + '" y="' + (GEOM.CY + 16) + '" font-size="12" font-weight="700" fill="#0B2A4A" text-anchor="middle">' + xTicks[i][1] + '</text>';
+    }
+    nodes.gridGroup.innerHTML = gHtml;
+
+    if (Math.abs(D) > 0.01) {
+      nodes.midlineD.setAttribute('y1', cCenterY.toFixed(1));
+      nodes.midlineD.setAttribute('y2', cCenterY.toFixed(1));
+      nodes.midlineD.setAttribute('opacity', '0.9');
+    } else {
+      nodes.midlineD.setAttribute('opacity', '0');
+    }
+
+ // 2. Círculo unitario y marcas notables
+    const isModified = Math.abs(A - 1) > 0.01 || Math.abs(B - 1) > 0.01 || Math.abs(C) > 0.01 || Math.abs(D) > 0.01;
+    if (isModified && state.showGhost) {
+      nodes.ghostCircle.setAttribute('cx', GEOM.CX);
+      nodes.ghostCircle.setAttribute('cy', GEOM.CY);
+      nodes.ghostCircle.setAttribute('r', scaleY.toFixed(1));
+      nodes.ghostCircle.setAttribute('opacity', '0.75');
+    } else {
+      nodes.ghostCircle.setAttribute('opacity', '0');
+    }
+
+    nodes.mainCircle.setAttribute('cx', GEOM.CX);
+    nodes.mainCircle.setAttribute('cy', cCenterY.toFixed(1));
+    nodes.mainCircle.setAttribute('r', cRadiusPx.toFixed(1));
+
+    let tHtml = '';
+    for (let i = 0; i < 16; i++) {
+      const aR = NOTABLE_ANGLES[i] * Math.PI / 180;
+      const r1 = cRadiusPx - 5, r2 = cRadiusPx + 3;
+      tHtml += '<line x1="' + (GEOM.CX + r1 * Math.cos(aR)).toFixed(1) + '" y1="' + (cCenterY - r1 * Math.sin(aR)).toFixed(1) +
+               '" x2="' + (GEOM.CX + r2 * Math.cos(aR)).toFixed(1) + '" y2="' + (cCenterY - r2 * Math.sin(aR)).toFixed(1) +
+               '" stroke="#7A879B" stroke-width="1.4"/>';
+    }
+    nodes.ticksGroup.innerHTML = tHtml;
+
+    const px = GEOM.CX + A * scaleY * Math.cos(phase);
+    const py = GEOM.CY - sinVal * scaleY;
+
+    nodes.refTriangle.setAttribute('points',
+      GEOM.CX + ',' + cCenterY.toFixed(1) + ' ' +
+      px.toFixed(1) + ',' + cCenterY.toFixed(1) + ' ' +
+      px.toFixed(1) + ',' + py.toFixed(1)
+    );
+
+    const normDeg = ((phase * 180 / Math.PI) % 360 + 360) % 360;
+    const arcR = Math.min(28, cRadiusPx * 0.32);
+    if (normDeg > 0.5 && normDeg < 359.5) {
+      const ax = GEOM.CX + arcR * Math.cos(phase);
+      const ay = cCenterY - arcR * Math.sin(phase);
+      const large = normDeg > 180 ? 1 : 0;
+      nodes.angleArc.setAttribute('d',
+        'M ' + GEOM.CX + ' ' + cCenterY.toFixed(1) +
+        ' L ' + (GEOM.CX + arcR).toFixed(1) + ' ' + cCenterY.toFixed(1) +
+        ' A ' + arcR.toFixed(1) + ' ' + arcR.toFixed(1) + ' 0 ' + large + ' 0 ' + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' Z'
+      );
+    } else {
+      nodes.angleArc.setAttribute('d', '');
+    }
+
+    nodes.cosSeg.setAttribute('x1', GEOM.CX);
+    nodes.cosSeg.setAttribute('y1', cCenterY.toFixed(1));
+    nodes.cosSeg.setAttribute('x2', px.toFixed(1));
+    nodes.cosSeg.setAttribute('y2', cCenterY.toFixed(1));
+    nodes.cosSeg.setAttribute('opacity', state.showCos ? '1' : '0.45');
+
+    nodes.sinSeg.setAttribute('x1', px.toFixed(1));
+    nodes.sinSeg.setAttribute('y1', cCenterY.toFixed(1));
+    nodes.sinSeg.setAttribute('x2', px.toFixed(1));
+    nodes.sinSeg.setAttribute('y2', py.toFixed(1));
+    nodes.sinSeg.setAttribute('opacity', state.showSin ? '1' : '0.35');
+
+    nodes.radiusSeg.setAttribute('x1', GEOM.CX);
+    nodes.radiusSeg.setAttribute('y1', cCenterY.toFixed(1));
+    nodes.radiusSeg.setAttribute('x2', px.toFixed(1));
+    nodes.radiusSeg.setAttribute('y2', py.toFixed(1));
+
+    nodes.pointHalo.setAttribute('cx', px.toFixed(1));
+    nodes.pointHalo.setAttribute('cy', py.toFixed(1));
+    nodes.pointP.setAttribute('cx', px.toFixed(1));
+    nodes.pointP.setAttribute('cy', py.toFixed(1));
+    handlePointP.setAttribute('cx', px.toFixed(1));
+    handlePointP.setAttribute('cy', py.toFixed(1));
+    handlePointP.setAttribute('aria-valuenow', deg.toFixed(1));
+    handlePointP.setAttribute('aria-valuetext', fmtDec(deg, 1) + ' grados');
+
+    const offX = Math.cos(phase) >= 0 ? 12 : -24;
+    const offY = Math.sin(phase) >= 0 ? -10 : 18;
+    nodes.pointPLabel.setAttribute('x', (px + offX).toFixed(1));
+    nodes.pointPLabel.setAttribute('y', (py + offY).toFixed(1));
+    nodes.pointPLabel.textContent = 'P';
+
+ // Tangente en x = 1
+    const tanX = GEOM.CX + cRadiusPx;
+    if (state.showTan) {
+      nodes.tanLineX1.setAttribute('x1', tanX.toFixed(1));
+      nodes.tanLineX1.setAttribute('x2', tanX.toFixed(1));
+      nodes.tanLineX1.setAttribute('opacity', '1');
+      if (Math.abs(Math.cos(phase)) < 0.035) {
+        nodes.tanSecant.setAttribute('opacity', '0');
+        nodes.tanSegment.setAttribute('opacity', '0');
+        nodes.tanPoint.setAttribute('opacity', '0');
+        nodes.tanParallelAlert.setAttribute('opacity', '1');
+      } else {
+        nodes.tanParallelAlert.setAttribute('opacity', '0');
+        const ty = Math.max(-200, Math.min(600, GEOM.CY - tanVal * scaleY));
+        nodes.tanSecant.setAttribute('x1', GEOM.CX);
+        nodes.tanSecant.setAttribute('y1', cCenterY.toFixed(1));
+        nodes.tanSecant.setAttribute('x2', tanX.toFixed(1));
+        nodes.tanSecant.setAttribute('y2', ty.toFixed(1));
+        nodes.tanSecant.setAttribute('opacity', '0.85');
+
+        nodes.tanSegment.setAttribute('x1', tanX.toFixed(1));
+        nodes.tanSegment.setAttribute('y1', cCenterY.toFixed(1));
+        nodes.tanSegment.setAttribute('x2', tanX.toFixed(1));
+        nodes.tanSegment.setAttribute('y2', ty.toFixed(1));
+        nodes.tanSegment.setAttribute('opacity', '1');
+
+        nodes.tanPoint.setAttribute('cx', tanX.toFixed(1));
+        nodes.tanPoint.setAttribute('cy', ty.toFixed(1));
+        nodes.tanPoint.setAttribute('opacity', (ty >= 20 && ty <= 370) ? '1' : '0');
+      }
+    } else {
+      nodes.tanLineX1.setAttribute('opacity', '0');
+      nodes.tanSecant.setAttribute('opacity', '0');
+      nodes.tanSegment.setAttribute('opacity', '0');
+      nodes.tanPoint.setAttribute('opacity', '0');
+      nodes.tanParallelAlert.setAttribute('opacity', '0');
+    }
+
+ // Símbolo de ángulo recto (⊥) en el pie de la perpendicular (px, cCenterY) y etiquetas de catetos
+    const dxP = px - GEOM.CX;
+    const dyP = py - cCenterY;
+    if (Math.abs(dxP) > 15 && Math.abs(dyP) > 15) {
+      const sq = 9;
+      const sx = dxP > 0 ? -sq : sq;
+      const sy = dyP > 0 ? -sq : sq;
+      nodes.rightAngleBox.setAttribute('points',
+        (px + sx).toFixed(1) + ',' + cCenterY.toFixed(1) + ' ' +
+        (px + sx).toFixed(1) + ',' + (cCenterY + sy).toFixed(1) + ' ' +
+        px.toFixed(1) + ',' + (cCenterY + sy).toFixed(1)
+      );
+      nodes.rightAngleBox.setAttribute('opacity', '1');
+
+      nodes.triLegCosLbl.setAttribute('x', ((GEOM.CX + px) / 2).toFixed(1));
+      nodes.triLegCosLbl.setAttribute('y', (cCenterY + (dyP < 0 ? 14 : -6)).toFixed(1));
+      nodes.triLegCosLbl.textContent = 'cos θ';
+      nodes.triLegCosLbl.setAttribute('opacity', '0.9');
+
+      nodes.triLegSinLbl.setAttribute('x', (px + (dxP >= 0 ? 6 : -34)).toFixed(1));
+      nodes.triLegSinLbl.setAttribute('y', ((cCenterY + py) / 2 + 4).toFixed(1));
+      nodes.triLegSinLbl.textContent = 'sen θ';
+      nodes.triLegSinLbl.setAttribute('opacity', '0.9');
+    } else {
+      nodes.rightAngleBox.setAttribute('opacity', '0');
+      nodes.triLegCosLbl.setAttribute('opacity', '0');
+      nodes.triLegSinLbl.setAttribute('opacity', '0');
+    }
+
+ // Marca de referencia de 1 radián (arco = radio r ≈ 57,3°) sobre la circunferencia
+    if (state.showUnwrapArc && cRadiusPx >= 45) {
+      const x1r = GEOM.CX + cRadiusPx * Math.cos(1);
+      const y1r = cCenterY - cRadiusPx * Math.sin(1);
+      const x1rOut = GEOM.CX + (cRadiusPx + 8) * Math.cos(1);
+      const y1rOut = cCenterY - (cRadiusPx + 8) * Math.sin(1);
+      nodes.oneRadTickGroup.innerHTML =
+        '<line x1="' + x1r.toFixed(1) + '" y1="' + y1r.toFixed(1) + '" x2="' + x1rOut.toFixed(1) + '" y2="' + y1rOut.toFixed(1) + '" stroke="#6D28D9" stroke-width="2.2"/>' +
+        '<text x="' + (x1rOut + 4).toFixed(1) + '" y="' + (y1rOut - 2).toFixed(1) + '" font-size="11" font-weight="800" fill="#6D28D9">1 rad (arco=r)</text>';
+    } else {
+      nodes.oneRadTickGroup.innerHTML = '';
+    }
+
+ // Modo Oscilador Armónico (MAS) con pista vertical dedicada sin solapar el círculo
+    if (state.viewMode === 'harmonic') {
+      nodes.harmonicGroup.setAttribute('opacity', '1');
+      const spX = 342, topY = 28;
+      const coils = 10;
+      const len = Math.max(22, (py - 11) - topY);
+      let dSp = 'M ' + (spX - 14) + ' ' + topY + ' L ' + (spX + 14) + ' ' + topY + ' M ' + spX + ' ' + topY + ' ';
+      for (let k = 1; k <= coils; k++) {
+        const cyC = topY + ((k - 0.5) / coils) * len;
+        const cxC = spX + (k % 2 === 0 ? 8 : -8);
+        dSp += 'L ' + cxC + ' ' + cyC.toFixed(1) + ' ';
+      }
+      dSp += 'L ' + spX + ' ' + (py - 11).toFixed(1);
+      nodes.springCoil.setAttribute('d', dSp);
+      nodes.springBlock.setAttribute('x', spX - 14);
+      nodes.springBlock.setAttribute('y', (py - 11).toFixed(1));
+
+      const pivX = 46, pivY = 44, rodL = 78;
+      const alpha = 0.42 * Math.min(1.6, Math.abs(A)) * Math.sin(phase);
+      const bx = pivX + rodL * Math.sin(alpha);
+      const by = pivY + rodL * Math.cos(alpha);
+      nodes.pendRod.setAttribute('x1', pivX);
+      nodes.pendRod.setAttribute('y1', pivY);
+      nodes.pendRod.setAttribute('x2', bx.toFixed(1));
+      nodes.pendRod.setAttribute('y2', by.toFixed(1));
+      nodes.pendBob.setAttribute('cx', bx.toFixed(1));
+      nodes.pendBob.setAttribute('cy', by.toFixed(1));
+    } else {
+      nodes.harmonicGroup.setAttribute('opacity', '0');
+    }
+
+ // 3. Ondas y etiquetas directas
+    const waveX = GEOM.WX0 + rad * scaleX;
+    nodes.cursorLine.setAttribute('x1', waveX.toFixed(1));
+    nodes.cursorLine.setAttribute('x2', waveX.toFixed(1));
+
+    if (isModified && state.showGhost) {
+      nodes.ghostWave.setAttribute('d', buildCurveD(function(t) { return Math.sin(t); }));
+      nodes.ghostWave.setAttribute('opacity', '0.75');
+    } else {
+      nodes.ghostWave.setAttribute('opacity', '0');
+    }
+
+    if (state.activeMission >= 0) {
+      const m = MISSIONS[state.activeMission].target;
+      nodes.targetWave.setAttribute('d', buildCurveD(function(t) {
+        return m.A * Math.sin(m.B * t + m.C) + m.D;
+      }));
+      nodes.targetWave.setAttribute('opacity', '0.85');
+      checkMissionMatch();
+    } else {
+      nodes.targetWave.setAttribute('opacity', '0');
+    }
+
+    if (state.showSin) {
+      nodes.waveSin.setAttribute('d', buildCurveD(function(t) { return A * Math.sin(B * t + C) + D; }));
+      nodes.trailSin.setAttribute('d', buildCurveD(function(t) { return A * Math.sin(B * t + C) + D; }, Math.max(0.01, rad)));
+      nodes.dotSin.setAttribute('cx', waveX.toFixed(1));
+      nodes.dotSin.setAttribute('cy', py.toFixed(1));
+      nodes.dotSin.setAttribute('opacity', '1');
+
+      nodes.directLblSin.setAttribute('x', Math.min(GEOM.WX1 - 45, waveX + 8).toFixed(1));
+      nodes.directLblSin.setAttribute('y', Math.max(48, py - 8).toFixed(1));
+      nodes.directLblSin.textContent = 'sen';
+      nodes.directLblSin.setAttribute('opacity', '1');
+
+      if (state.viewMode === 'both' || state.viewMode === 'harmonic') {
+        nodes.projSin.setAttribute('x1', px.toFixed(1));
+        nodes.projSin.setAttribute('y1', py.toFixed(1));
+        nodes.projSin.setAttribute('x2', waveX.toFixed(1));
+        nodes.projSin.setAttribute('y2', py.toFixed(1));
+        nodes.projSin.setAttribute('opacity', '0.9');
+      } else {
+        nodes.projSin.setAttribute('opacity', '0');
+      }
+    } else {
+      nodes.waveSin.setAttribute('d', '');
+      nodes.trailSin.setAttribute('d', '');
+      nodes.dotSin.setAttribute('opacity', '0');
+      nodes.directLblSin.setAttribute('opacity', '0');
+      nodes.projSin.setAttribute('opacity', '0');
+    }
+
+    if (state.showCos) {
+      nodes.waveCos.setAttribute('d', buildCurveD(function(t) { return A * Math.cos(B * t + C) + D; }));
+      const wyC = GEOM.CY - cosVal * scaleY;
+      nodes.dotCos.setAttribute('cx', waveX.toFixed(1));
+      nodes.dotCos.setAttribute('cy', wyC.toFixed(1));
+      nodes.dotCos.setAttribute('opacity', '1');
+
+      nodes.directLblCos.setAttribute('x', Math.min(GEOM.WX1 - 45, waveX + 8).toFixed(1));
+      nodes.directLblCos.setAttribute('y', Math.min(355, wyC + 15).toFixed(1));
+      nodes.directLblCos.textContent = 'cos';
+      nodes.directLblCos.setAttribute('opacity', '1');
+    } else {
+      nodes.waveCos.setAttribute('d', '');
+      nodes.dotCos.setAttribute('opacity', '0');
+      nodes.directLblCos.setAttribute('opacity', '0');
+    }
+
+    if (state.showTan) {
+      nodes.waveTan.setAttribute('d', buildCurveD(function(t) {
+        const v = Math.tan(B * t + C);
+        return Math.abs(v) > 8 ? NaN : A * v + D;
+      }));
+      let asHtml = '';
+      for (let k = -4; k <= 16; k++) {
+        const tA = ((k + 0.5) * Math.PI - C) / B;
+        if (tA >= 0 && tA <= 4 * Math.PI) {
+          const ax = GEOM.WX0 + tA * scaleX;
+          asHtml += '<line x1="' + ax.toFixed(1) + '" y1="35" x2="' + ax.toFixed(1) + '" y2="365" stroke="#B91C1C" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.7"/>';
+        }
+      }
+      nodes.asymptotesGroup.innerHTML = asHtml;
+
+      const wyT = GEOM.CY - tanVal * scaleY;
+      if (Math.abs(Math.cos(phase)) >= 0.035 && wyT >= 25 && wyT <= 365) {
+        nodes.dotTan.setAttribute('cx', waveX.toFixed(1));
+        nodes.dotTan.setAttribute('cy', wyT.toFixed(1));
+        nodes.dotTan.setAttribute('opacity', '1');
+        nodes.directLblTan.setAttribute('x', Math.min(GEOM.WX1 - 45, waveX + 8).toFixed(1));
+        nodes.directLblTan.setAttribute('y', wyT.toFixed(1));
+        nodes.directLblTan.textContent = 'tan';
+        nodes.directLblTan.setAttribute('opacity', '1');
+
+        if (state.viewMode === 'both') {
+          nodes.projTan.setAttribute('x1', tanX.toFixed(1));
+          nodes.projTan.setAttribute('y1', wyT.toFixed(1));
+          nodes.projTan.setAttribute('x2', waveX.toFixed(1));
+          nodes.projTan.setAttribute('y2', wyT.toFixed(1));
+          nodes.projTan.setAttribute('opacity', '0.75');
+        } else {
+          nodes.projTan.setAttribute('opacity', '0');
+        }
+      } else {
+        nodes.dotTan.setAttribute('opacity', '0');
+        nodes.directLblTan.setAttribute('opacity', '0');
+        nodes.projTan.setAttribute('opacity', '0');
+      }
+    } else {
+      nodes.waveTan.setAttribute('d', '');
+      nodes.asymptotesGroup.innerHTML = '';
+      nodes.dotTan.setAttribute('opacity', '0');
+      nodes.directLblTan.setAttribute('opacity', '0');
+      nodes.projTan.setAttribute('opacity', '0');
+    }
+
+ // Cota superior del Periodo T = 2π/B
+    const periodRad = (2 * Math.PI) / B;
+    const xP0 = GEOM.WX0;
+    const xP1 = Math.min(GEOM.WX1, GEOM.WX0 + periodRad * scaleX);
+    const lblT = B === 1 ? 'T = 2π rad' : (B === 2 ? 'T = π rad' : (B === 0.5 ? 'T = 4π rad' : 'T = 2π/' + fmtDec(B, 1)));
+    nodes.periodGroup.innerHTML =
+      '<line x1="' + xP0 + '" y1="42" x2="' + xP1.toFixed(1) + '" y2="42" stroke="#0B2A4A" stroke-width="1.6"/>' +
+      '<line x1="' + xP0 + '" y1="37" x2="' + xP0 + '" y2="47" stroke="#0B2A4A" stroke-width="1.6"/>' +
+      '<line x1="' + xP1.toFixed(1) + '" y1="37" x2="' + xP1.toFixed(1) + '" y2="47" stroke="#0B2A4A" stroke-width="1.6"/>' +
+      '<rect x="' + (((xP0 + xP1) / 2) - 46).toFixed(1) + '" y="31" width="92" height="18" rx="4" fill="#EEF2F6" stroke="#7A879B"/>' +
+      '<text x="' + ((xP0 + xP1) / 2).toFixed(1) + '" y="44" font-size="12" font-weight="800" fill="#0B2A4A" text-anchor="middle">' + lblT + '</text>';
+
+ // 4. Desenrollado geométrico del arco (θ rad) sobre la circunferencia y sobre el eje horizontal de la onda
+    if (state.showUnwrapArc && deg > 0.5) {
+      const modRad = (rad % (2 * Math.PI));
+      const effRad = modRad < 0.02 && deg >= 359 ? 2 * Math.PI : modRad;
+      let arcPath = '';
+      const nArcSteps = 42;
+      for (let s = 0; s <= nArcSteps; s++) {
+        const aStep = (s / nArcSteps) * effRad;
+        const ax = GEOM.CX + cRadiusPx * Math.cos(aStep);
+        const ay = cCenterY - cRadiusPx * Math.sin(aStep);
+        arcPath += (s === 0 ? 'M ' : 'L ') + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' ';
+      }
+      const endArcX = GEOM.CX + cRadiusPx * Math.cos(effRad);
+      const endArcY = cCenterY - cRadiusPx * Math.sin(effRad);
+      const ctrlX = (endArcX + waveX) / 2;
+      const ctrlY = Math.min(358, Math.max(endArcY, GEOM.CY) + 46);
+
+      let uHtml = '';
+      if (state.viewMode !== 'wave') {
+        uHtml += '<path d="' + arcPath + '" fill="none" stroke="#6D28D9" stroke-width="4.5" stroke-linecap="round"/>';
+      }
+      if (state.viewMode !== 'circle') {
+        uHtml += '<line x1="' + GEOM.WX0 + '" y1="' + GEOM.CY + '" x2="' + waveX.toFixed(1) + '" y2="' + GEOM.CY + '" stroke="#6D28D9" stroke-width="5" stroke-linecap="round"/>';
+        uHtml += '<circle cx="' + waveX.toFixed(1) + '" cy="' + GEOM.CY + '" r="4.5" fill="#6D28D9"/>';
+        const badgeX = Math.max(GEOM.WX0 + 58, Math.min(GEOM.WX1 - 65, (GEOM.WX0 + waveX) / 2));
+        uHtml += '<rect x="' + (badgeX - 58).toFixed(1) + '" y="' + (GEOM.CY + 20) + '" width="116" height="18" rx="4" fill="#F5F3FF" stroke="#6D28D9"/>';
+        uHtml += '<text x="' + badgeX.toFixed(1) + '" y="' + (GEOM.CY + 33) + '" text-anchor="middle" font-size="11" font-weight="800" fill="#6D28D9">Arco θ = ' + fmtDec(rad, 2) + ' rad</text>';
+      }
+      if (state.viewMode === 'both') {
+        uHtml += '<path d="M ' + endArcX.toFixed(1) + ' ' + endArcY.toFixed(1) + ' Q ' + ctrlX.toFixed(1) + ' ' + ctrlY.toFixed(1) + ' ' + waveX.toFixed(1) + ' ' + (GEOM.CY + 2) + '" fill="none" stroke="#6D28D9" stroke-width="1.6" stroke-dasharray="4,3" marker-end="url(#unwrapArrow)"/>';
+      }
+      nodes.unwrapGroup.innerHTML = uHtml;
+    } else {
+      nodes.unwrapGroup.innerHTML = '';
+    }
+
+ // 5. Nodos arrastrables directamente sobre la curva de onda: [A] Cresta, [D] Eje medio, [T] Periodo
+    if (state.showWaveHandles && state.viewMode !== 'circle') {
+ // Encontrar primera cresta visible en (0.15, 3.85*pi)
+      let tCrest = (Math.PI / 2 - C) / B;
+      const periodT = (2 * Math.PI) / B;
+      while (tCrest < 0.22) tCrest += periodT;
+      while (tCrest > 3.85 * Math.PI) tCrest -= periodT;
+      tCrest = Math.max(0.2, Math.min(3.85 * Math.PI, tCrest));
+
+      const xNodeA = GEOM.WX0 + tCrest * scaleX;
+      const yNodeA = Math.max(28, Math.min(360, GEOM.CY - (D + A) * scaleY));
+
+      const xNodeD = GEOM.WX0 + 28;
+      const yNodeD = Math.max(35, Math.min(355, cCenterY));
+
+      const xNodeT = Math.max(GEOM.WX0 + 36, Math.min(GEOM.WX1 - 10, xP1));
+      const yNodeT = 42;
+
+      handleNodeA.setAttribute('cx', xNodeA.toFixed(1));
+      handleNodeA.setAttribute('cy', yNodeA.toFixed(1));
+      handleNodeA.setAttribute('aria-valuenow', A.toFixed(1));
+      handleNodeA.setAttribute('aria-valuetext', 'Amplitud A igual a ' + fmtDec(A, 1));
+      handleNodeA.style.display = 'block';
+
+      handleNodeD.setAttribute('cx', xNodeD.toFixed(1));
+      handleNodeD.setAttribute('cy', yNodeD.toFixed(1));
+      handleNodeD.setAttribute('aria-valuenow', D.toFixed(1));
+      handleNodeD.setAttribute('aria-valuetext', 'Eje medio D igual a ' + fmtSignedDec(D, 1));
+      handleNodeD.style.display = 'block';
+
+      handleNodeT.setAttribute('cx', xNodeT.toFixed(1));
+      handleNodeT.setAttribute('cy', yNodeT.toFixed(1));
+      handleNodeT.setAttribute('aria-valuenow', B.toFixed(1));
+      handleNodeT.setAttribute('aria-valuetext', 'Frecuencia B igual a ' + fmtDec(B, 1));
+      handleNodeT.style.display = 'block';
+
+      nodes.waveHandlesGroup.innerHTML =
+ // Línea guía vertical de amplitud A desde el eje medio hasta la cresta
+        '<line x1="' + xNodeA.toFixed(1) + '" y1="' + cCenterY.toFixed(1) + '" x2="' + xNodeA.toFixed(1) + '" y2="' + yNodeA.toFixed(1) + '" stroke="#0A7C8C" stroke-width="1.8" stroke-dasharray="3,2"/>' +
+ // Nodo [A]
+        '<rect x="' + (xNodeA - 18).toFixed(1) + '" y="' + (yNodeA - 11).toFixed(1) + '" width="36" height="22" rx="6" fill="#0BC0D8" stroke="#0B2A4A" stroke-width="2"/>' +
+        '<text x="' + xNodeA.toFixed(1) + '" y="' + (yNodeA + 4).toFixed(1) + '" text-anchor="middle" font-size="11" font-weight="900" fill="#0B2A4A">↕ A</text>' +
+ // Nodo [D]
+        '<rect x="' + (xNodeD - 18).toFixed(1) + '" y="' + (yNodeD - 11).toFixed(1) + '" width="36" height="22" rx="6" fill="#ECFDF5" stroke="#047857" stroke-width="2"/>' +
+        '<text x="' + xNodeD.toFixed(1) + '" y="' + (yNodeD + 4).toFixed(1) + '" text-anchor="middle" font-size="11" font-weight="900" fill="#047857">↕ D</text>' +
+ // Nodo [T]
+        '<rect x="' + (xNodeT - 18).toFixed(1) + '" y="' + (yNodeT - 11).toFixed(1) + '" width="36" height="22" rx="6" fill="#EEF2F6" stroke="#1D4ED8" stroke-width="2"/>' +
+        '<text x="' + xNodeT.toFixed(1) + '" y="' + (yNodeT + 4).toFixed(1) + '" text-anchor="middle" font-size="11" font-weight="900" fill="#1D4ED8">↔ T</text>';
+    } else {
+      nodes.waveHandlesGroup.innerHTML = '';
+      handleNodeA.style.display = 'none';
+      handleNodeD.style.display = 'none';
+      handleNodeT.style.display = 'none';
+    }
+
+    updateReadoutsAndTable(deg, rad, sinBase, cosBase, tanBase, sinVal, cosVal, tanVal, phase);
+  }
+
+  function updateReadoutsAndTable(deg, rad, sinBase, cosBase, tanBase, sinVal, cosVal, tanVal, phase) {
+    const exactRadStr = formatExactRad(deg);
+    document.getElementById('kpiAngleDeg').textContent = fmtDec(deg, 1) + '°';
+    document.getElementById('kpiAngleRad').textContent = exactRadStr + ' rad (' + fmtDec(rad, 3) + ' rad)';
+    document.getElementById('lblSliderAngle').textContent = fmtDec(deg, 1) + '° (' + exactRadStr + ' rad)';
+
+    document.getElementById('kpiSin').textContent = fmtSignedDec(sinVal, 3);
+    document.getElementById('kpiCos').textContent = fmtSignedDec(cosVal, 3);
+    const isTanUndef = Math.abs(Math.cos(phase)) < 0.035;
+    document.getElementById('kpiTan').textContent = isTanUndef ? 'Indef. (∞)' : fmtSignedDec(tanVal, 3);
+
+    document.getElementById('readSinSeries').textContent = fmtSignedDec(sinVal, 3);
+    document.getElementById('readCosSeries').textContent = fmtSignedDec(cosVal, 3);
+    document.getElementById('readTanSeries').textContent = isTanUndef ? 'Indef. (∞)' : fmtSignedDec(tanVal, 3);
+
+    document.getElementById('quadrantStatusLabel').textContent = getQuadrantLabel(deg);
+
+ // Los valores exactos de referencia permanecen ocultos hasta que el estudiante registra su anticipación
+    const mod360 = Math.round(deg % 360);
+    const isNotable = Math.abs(deg - Math.round(deg)) < 0.15 && EXACT_LOOKUP[mod360];
+    if (!state.poeUnlocked) {
+      document.getElementById('kpiSinExact').textContent = 'Predice primero';
+      document.getElementById('kpiCosExact').textContent = 'Predice primero';
+    } else if (isNotable) {
+      const ex = EXACT_LOOKUP[mod360];
+      document.getElementById('kpiSinExact').textContent = 'Exacto base: sen(' + mod360 + '°) = ' + ex.sin;
+      document.getElementById('kpiCosExact').textContent = 'Exacto base: cos(' + mod360 + '°) = ' + ex.cos;
+      if (!state.notablesVisited.has(mod360)) {
+        state.notablesVisited.add(mod360);
+        recordTrace('EXPLORACIÓN', 'Ángulo notable inspeccionado: θ = ' + mod360 + '° (' + ex.rad + ' rad).');
+      }
+    } else {
+      document.getElementById('kpiSinExact').textContent = 'sen base = ' + fmtSignedDec(sinBase, 3);
+      document.getElementById('kpiCosExact').textContent = 'cos base = ' + fmtSignedDec(cosBase, 3);
+    }
+
+    const s2 = sinBase * sinBase, c2 = cosBase * cosBase;
+    document.getElementById('kpiPyth').textContent = 'sen²θ + cos²θ = ' + fmtDec(s2, 2) + ' + ' + fmtDec(c2, 2) + ' = 1,000';
+
+    updateSliderFill(document.getElementById('slAngle'), 0, 720);
+
+ // Actualizar tabla de datos equivalente accesible
+    const rowsAngles = [0, 30, 45, 60, 90, 180, 270, 360];
+    const tbody = document.getElementById('equivTableBody');
+    let tbHtml = '';
+
+ // Fila del ángulo actual en la parte superior
+    tbHtml += buildTableRowHtml(deg, true);
+    for (let i = 0; i < rowsAngles.length; i++) {
+      tbHtml += buildTableRowHtml(rowsAngles[i], false);
+    }
+    tbody.innerHTML = tbHtml;
+  }
+
+  function buildTableRowHtml(aDeg, isCurrent) {
+    const aRad = aDeg * Math.PI / 180;
+    const mod = Math.round(aDeg % 360);
+    const ex = (Math.abs(aDeg - Math.round(aDeg)) < 0.1 && EXACT_LOOKUP[mod]) ? EXACT_LOOKUP[mod] : null;
+    const sB = Math.sin(aRad), cB = Math.cos(aRad);
+    const tB = Math.abs(cB) < 0.035 ? NaN : Math.tan(aRad);
+    const yActive = state.A * Math.sin(state.B * aRad + state.C) + state.D;
+
+    const radCell = (ex ? ex.rad + ' (' + fmtDec(aRad, 3) + ')' : fmtDec(aRad, 3));
+    const sinCell = state.poeUnlocked && ex ? ex.sin + ' (' + fmtSignedDec(sB, 3) + ')' : fmtSignedDec(sB, 3);
+    const cosCell = state.poeUnlocked && ex ? ex.cos + ' (' + fmtSignedDec(cB, 3) + ')' : fmtSignedDec(cB, 3);
+    const tanCell = !isFinite(tB) ? 'Indef. (∞)' : fmtSignedDec(tB, 3);
+
+    return '<tr class="' + (isCurrent ? 'current-row' : '') + '">' +
+      '<td>' + (isCurrent ? 'Actual: ' : '') + fmtDec(aDeg, 1) + '°</td>' +
+      '<td>' + radCell + '</td>' +
+      '<td>' + sinCell + '</td>' +
+      '<td>' + cosCell + '</td>' +
+      '<td>' + tanCell + '</td>' +
+      '<td>' + fmtSignedDec(yActive, 3) + '</td>' +
+    '</tr>';
+  }
+
+  function updateSliderFill(el, min, max) {
+    const pct = ((parseFloat(el.value) - min) / (max - min)) * 100;
+    el.style.setProperty('--pct', Math.max(0, Math.min(100, pct)).toFixed(1) + '%');
+  }
+
+  function setAngle(newDeg) {
+    let clamped = Math.max(0, Math.min(720, newDeg));
+    if (state.snapNotable && !state.playing) {
+      const mod = clamped % 360;
+      const baseTurn = Math.floor(clamped / 360) * 360;
+      for (let i = 0; i < NOTABLE_ANGLES.length; i++) {
+        if (Math.abs(mod - NOTABLE_ANGLES[i]) <= 2.4) {
+          clamped = baseTurn + NOTABLE_ANGLES[i];
+          break;
+        }
+      }
+    }
+    state.angle = clamped;
+    document.getElementById('slAngle').value = clamped;
+    updateScene();
+  }
+
+ // ===================== CONSTRUCCIÓN INVERSA =====================
+  function checkMissionMatch() {
+    if (state.activeMission < 0) return;
+    const m = MISSIONS[state.activeMission].target;
+    const err = Math.abs(state.A - m.A) * 35 + Math.abs(state.B - m.B) * 35 + Math.abs(state.C - m.C) * 25 + Math.abs(state.D - m.D) * 35;
+    const pct = Math.max(0, Math.min(100, 100 - err));
+    document.getElementById('missionMatchPct').textContent = 'Coincidencia: ' + fmtDec(pct, 1) + ' %';
+
+    const box = document.getElementById('missionStatusBox');
+    if (pct >= 98) {
+      box.className = 'status-box visible state-ok';
+      box.innerHTML = '<div class="status-lead">' + SVG_ICON_OK + '<span>Onda construida</span></div>' +
+        '<span>Has superpuesto exactamente la curva con A = ' + fmtDec(state.A, 1) + ', B = ' + fmtDec(state.B, 1) + ', C = ' + formatPhaseC(state.C) + ' y D = ' + fmtDec(state.D, 1) + '.</span>';
+      if (!state.missionsDone[state.activeMission]) {
+        state.missionsDone[state.activeMission] = true;
+        recordTrace('CONSTRUCCIÓN_NIVEL_4', MISSIONS[state.activeMission].title + ' completada con éxito.');
+      }
+    } else {
+      box.className = 'status-box visible state-info';
+      box.innerHTML = '<div class="status-lead">' + SVG_ICON_INFO + '<span>Aún no coincide</span></div>' +
+        '<span>Observa la diferencia de altura máxima (A), de eje medio (D), de número de ciclos (B) o de corte inicial (C).</span>';
+    }
+  }
+
+ // ===================== RENDERIZADO Y EVALUACIÓN DE LOS 6 RETOS SABER 11 =====================
+  function renderRetosCards() {
+    const mount = document.getElementById('retosCardsMount');
+    mount.innerHTML = '';
+
+    RETOS_BANK.forEach(function(reto, idx) {
+      const wrap = document.createElement('div');
+      wrap.id = 'retoCard_' + idx;
+      wrap.style.display = idx === state.activeRetoIdx ? 'block' : 'none';
+
+      let optsHtml = '';
+      reto.options.forEach(function(opt, oIdx) {
+        optsHtml +=
+          '<label class="opt-card">' +
+            '<input type="radio" name="retoRadio_' + idx + '" value="' + oIdx + '">' +
+            '<span><strong>' + opt.letter + '.</strong> ' + opt.text + '</span>' +
+          '</label>';
+      });
+
+      wrap.innerHTML =
+        '<div class="comp-pill">' + reto.competencia + '</div>' +
+        '<p style="font-size:var(--fs-body);margin-bottom:10px;">' + reto.stem + '</p>' +
+        '<div class="option-stack" role="radiogroup" aria-label="Opciones del Reto ' + reto.id + '">' + optsHtml + '</div>' +
+        '<div class="btn-row">' +
+          '<button type="button" class="btn btn-cyan" data-eval-reto="' + idx + '" style="flex:1;">Verificar</button>' +
+          '<button type="button" class="btn" data-hint-reto="' + idx + '">Pista</button>' +
+        '</div>' +
+        '<div class="status-box" id="retoHintBox_' + idx + '"></div>' +
+        '<div class="status-box" id="retoFeedbackBox_' + idx + '" aria-live="polite"></div>';
+
+      mount.appendChild(wrap);
+    });
+
+    mount.querySelectorAll('[data-eval-reto]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        evaluateRetoItem(parseInt(btn.getAttribute('data-eval-reto'), 10));
+      });
+    });
+
+    mount.querySelectorAll('[data-hint-reto]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const idx = parseInt(btn.getAttribute('data-hint-reto'), 10);
+        const hBox = document.getElementById('retoHintBox_' + idx);
+        hBox.className = 'status-box visible state-info';
+        hBox.innerHTML = '<div class="status-lead">' + SVG_ICON_INFO + '<span>Pista</span></div>' +
+          '<span>' + RETOS_BANK[idx].hint + '</span>';
+      });
+    });
+  }
+
+  function evaluateRetoItem(idx) {
+    const reto = RETOS_BANK[idx];
+    const selected = document.querySelector('input[name="retoRadio_' + idx + '"]:checked');
+    const fbBox = document.getElementById('retoFeedbackBox_' + idx);
+
+    if (!selected) {
+      fbBox.className = 'status-box visible state-review';
+      fbBox.innerHTML = '<div class="status-lead">' + SVG_ICON_REVIEW + '<span>Falta elegir una opción</span></div>' +
+        '<span>Elige una de las cuatro opciones antes de verificar.</span>';
+      return;
+    }
+
+ // Verificar primero contra el estado real del simulador si el reto es de construcción/ejecución
+    if (typeof reto.requireState === 'function') {
+      const check = reto.requireState();
+      if (!check.passed) {
+        fbBox.className = 'status-box visible state-review';
+        fbBox.innerHTML = '<div class="status-lead">' + SVG_ICON_REVIEW + '<span>Falta configurar el simulador</span></div>' +
+          '<span>' + check.msg + '</span>';
+        recordTrace('RETO_' + reto.id + '_ESTADO_INCOMPLETO', check.msg);
+        return;
+      }
+    }
+
+    const optIdx = parseInt(selected.value, 10);
+    const chosen = reto.options[optIdx];
+
+ // Registrar inmutablemente la primera respuesta con valor diagnóstico
+    if (state.firstResponses[idx] === null) {
+      state.firstResponses[idx] = {
+        letter: chosen.letter,
+        ok: chosen.ok,
+        simState: 'θ=' + fmtDec(state.angle, 1) + '°; A=' + fmtDec(state.A, 1) + '; B=' + fmtDec(state.B, 1) + '; D=' + fmtDec(state.D, 1)
+      };
+      recordTrace('PRIMERA_RESPUESTA_R' + reto.id,
+        'Opción ' + chosen.letter + ' (' + (chosen.ok ? 'Acierto en primer intento' : 'Distractor diagnóstico') + ') con ' + state.firstResponses[idx].simState);
+    } else {
+      recordTrace('REVISION_R' + reto.id, 'Evaluó opción ' + chosen.letter + ' (' + (chosen.ok ? 'Acierto' : 'En revisión') + ').');
+    }
+
+    if (chosen.ok) {
+      fbBox.className = 'status-box visible state-ok';
+      fbBox.innerHTML = '<div class="status-lead">' + SVG_ICON_OK + '<span>Correcto</span></div>' +
+        '<span>' + chosen.diag + '</span>';
+      state.retosVerified[idx] = true;
+      const navBtn = document.querySelector('[data-reto-tab="' + idx + '"]');
+      if (navBtn) navBtn.classList.add('done');
+      const count = state.retosVerified.filter(Boolean).length;
+      document.getElementById('retosCounterPill').textContent = count + ' / 6';
+    } else {
+      fbBox.className = 'status-box visible state-review';
+      fbBox.innerHTML = '<div class="status-lead">' + SVG_ICON_REVIEW + '<span>Revisa tu razonamiento</span></div>' +
+        '<span>' + chosen.diag + '</span>';
+    }
+  }
+
+ // ===================== GESTIÓN DE PUNTERO Y TECLADO SOBRE EL LIENZO =====================
+  function svgCoordsFromEvent(evt) {
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    const ctm = svg.getScreenCTM();
+    return ctm ? pt.matrixTransform(ctm.inverse()) : { x: 0, y: 0 };
+  }
+
+  let dragCircle = false;
+  let dragWave = false;
+
+  handlePointP.addEventListener('pointerdown', function(e) {
+    if (state.playing) toggleAnimation();
+    dragCircle = true;
+    handlePointP.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  handlePointP.addEventListener('pointermove', function(e) {
+    if (!dragCircle) return;
+    const pt = svgCoordsFromEvent(e);
+    const scaleY = GEOM.getScaleY();
+    const cy = GEOM.CY - state.D * scaleY;
+    let ang = Math.atan2(cy - pt.y, pt.x - GEOM.CX) * 180 / Math.PI;
+    if (ang < 0) ang += 360;
+    const turn = state.angle >= 360 ? 360 : 0;
+    let cand = turn + ang;
+    if (state.angle > 300 && state.angle < 360 && ang < 60) cand = 360 + ang;
+    if (state.angle >= 360 && state.angle < 420 && ang > 300) cand = ang;
+    setAngle(cand);
+  });
+
+  handlePointP.addEventListener('pointerup', function(e) {
+    if (dragCircle) {
+      dragCircle = false;
+      handlePointP.releasePointerCapture(e.pointerId);
+    }
+  });
+
+ // Operabilidad completa por teclado sobre el Punto P
+  handlePointP.addEventListener('keydown', function(e) {
+    const step = e.shiftKey ? 15 : 1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setAngle(state.angle + step);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setAngle(state.angle - step);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setAngle(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      setAngle(360);
+    }
+  });
+
+  handleWaveArea.addEventListener('pointerdown', function(e) {
+    if (state.playing) toggleAnimation();
+    dragWave = true;
+    handleWaveArea.setPointerCapture(e.pointerId);
+    const pt = svgCoordsFromEvent(e);
+    const f = Math.max(0, Math.min(1, (pt.x - GEOM.WX0) / GEOM.WW));
+    setAngle(f * 720);
+    e.preventDefault();
+  });
+
+  handleWaveArea.addEventListener('pointermove', function(e) {
+    if (!dragWave) return;
+    const pt = svgCoordsFromEvent(e);
+    const f = Math.max(0, Math.min(1, (pt.x - GEOM.WX0) / GEOM.WW));
+    setAngle(f * 720);
+  });
+
+  handleWaveArea.addEventListener('pointerup', function(e) {
+    if (dragWave) {
+      dragWave = false;
+      handleWaveArea.releasePointerCapture(e.pointerId);
+    }
+  });
+
+ // ===================== MANIPULACIÓN DIRECTA SOBRE LA CURVA DE ONDA: NODOS [A], [D] Y [T] =====================
+  function snapHalfIfClose(val, minV, maxV) {
+    let v = Math.max(minV, Math.min(maxV, Math.round(val * 10) / 10));
+    const nearestHalf = Math.round(v * 2) / 2;
+    if (Math.abs(v - nearestHalf) <= 0.08) v = nearestHalf;
+    return v;
+  }
+
+  let dragModeNode = null; // 'A' | 'D' | 'T'
+
+  handleNodeA.addEventListener('pointerdown', function(e) {
+    if (state.playing) toggleAnimation();
+    dragModeNode = 'A';
+    handleNodeA.setPointerCapture(e.pointerId);
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  handleNodeA.addEventListener('pointermove', function(e) {
+    if (dragModeNode !== 'A') return;
+    const pt = svgCoordsFromEvent(e);
+    const scaleY = GEOM.getScaleY();
+    const cCenterY = GEOM.CY - state.D * scaleY;
+    const rawA = (cCenterY - pt.y) / scaleY;
+    state.A = snapHalfIfClose(rawA, 0.5, 2.5);
+    syncABCDUI();
+    updateScene();
+  });
+  handleNodeA.addEventListener('pointerup', function(e) {
+    if (dragModeNode === 'A') {
+      dragModeNode = null;
+      handleNodeA.releasePointerCapture(e.pointerId);
+      const msg = 'Ajuste directo en curva [Nodo A]: A = ' + fmtDec(state.A, 1);
+      state.experimentsLog.push(msg);
+      recordTrace('NODO_ONDA_A', msg);
+    }
+  });
+  handleNodeA.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      state.A = Math.min(2.5, Math.round((state.A + 0.1) * 10) / 10);
+      syncABCDUI(); updateScene();
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      state.A = Math.max(0.5, Math.round((state.A - 0.1) * 10) / 10);
+      syncABCDUI(); updateScene();
+    }
+  });
+
+  handleNodeD.addEventListener('pointerdown', function(e) {
+    if (state.playing) toggleAnimation();
+    dragModeNode = 'D';
+    handleNodeD.setPointerCapture(e.pointerId);
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  handleNodeD.addEventListener('pointermove', function(e) {
+    if (dragModeNode !== 'D') return;
+    const pt = svgCoordsFromEvent(e);
+    const scaleY = GEOM.getScaleY();
+    const rawD = (GEOM.CY - pt.y) / scaleY;
+    state.D = snapHalfIfClose(rawD, -1.5, 1.5);
+    syncABCDUI();
+    updateScene();
+  });
+  handleNodeD.addEventListener('pointerup', function(e) {
+    if (dragModeNode === 'D') {
+      dragModeNode = null;
+      handleNodeD.releasePointerCapture(e.pointerId);
+      const msg = 'Ajuste directo en curva [Nodo D]: D = ' + fmtSignedDec(state.D, 1);
+      state.experimentsLog.push(msg);
+      recordTrace('NODO_ONDA_D', msg);
+    }
+  });
+  handleNodeD.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      state.D = Math.min(1.5, Math.round((state.D + 0.1) * 10) / 10);
+      syncABCDUI(); updateScene();
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      state.D = Math.max(-1.5, Math.round((state.D - 0.1) * 10) / 10);
+      syncABCDUI(); updateScene();
+    }
+  });
+
+  handleNodeT.addEventListener('pointerdown', function(e) {
+    if (state.playing) toggleAnimation();
+    dragModeNode = 'T';
+    handleNodeT.setPointerCapture(e.pointerId);
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  handleNodeT.addEventListener('pointermove', function(e) {
+    if (dragModeNode !== 'T') return;
+    const pt = svgCoordsFromEvent(e);
+    const scaleX = GEOM.WW / (4 * Math.PI);
+    const periodRad = Math.max(0.5 * Math.PI, Math.min(4 * Math.PI, (pt.x - GEOM.WX0) / scaleX));
+    const rawB = (2 * Math.PI) / periodRad;
+    state.B = snapHalfIfClose(rawB, 0.5, 4.0);
+    syncABCDUI();
+    updateScene();
+  });
+  handleNodeT.addEventListener('pointerup', function(e) {
+    if (dragModeNode === 'T') {
+      dragModeNode = null;
+      handleNodeT.releasePointerCapture(e.pointerId);
+      const msg = 'Ajuste directo en curva [Nodo T]: B = ' + fmtDec(state.B, 1);
+      state.experimentsLog.push(msg);
+      recordTrace('NODO_ONDA_T', msg);
+    }
+  });
+  handleNodeT.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      state.B = Math.min(4.0, Math.round((state.B + 0.1) * 10) / 10);
+      syncABCDUI(); updateScene();
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      state.B = Math.max(0.5, Math.round((state.B - 0.1) * 10) / 10);
+      syncABCDUI(); updateScene();
+    }
+  });
+
+ // ===================== ANIMACIÓN CONTINUA (BLOQUEADA ANTES DE ANTICIPAR =====================
+  let rafId = null;
+  let lastTs = null;
+
+  function animLoop(ts) {
+    if (!lastTs) lastTs = ts;
+    const dt = (ts - lastTs) / 1000;
+    lastTs = ts;
+
+    state.angle = (state.angle + state.speed * dt) % 720;
+    document.getElementById('slAngle').value = state.angle;
+    updateScene();
+
+    if (state.playing) rafId = requestAnimationFrame(animLoop);
+  }
+
+  function toggleAnimation() {
+    if (!state.poeUnlocked) {
+      switchMoment(1);
+      return;
+    }
+    state.playing = !state.playing;
+    const btnText = document.getElementById('btnPlayText');
+    const mobText = document.getElementById('mobilePlayText');
+    if (state.playing) {
+      btnText.textContent = 'Detener giro';
+      mobText.textContent = 'Detener';
+      lastTs = null;
+      rafId = requestAnimationFrame(animLoop);
+    } else {
+      btnText.textContent = 'Animar giro';
+      mobText.textContent = 'Animar giro';
+      if (rafId) cancelAnimationFrame(rafId);
+    }
+  }
+
+ // ===================== CAMBIO DE MOMENTO Y SINCRONIZACIÓN DE PARÁMETROS =====================
+  function switchMoment(mNum) {
+    state.moment = mNum;
+    [1, 2, 3].forEach(function(n) {
+      const tab = document.getElementById('tabMoment' + n);
+      const panel = document.getElementById('panelMoment' + n);
+      const isAct = n === mNum;
+      tab.classList.toggle('active', isAct);
+      tab.setAttribute('aria-selected', isAct ? 'true' : 'false');
+      panel.style.display = isAct ? 'block' : 'none';
+    });
+  }
+
+  function syncABCDUI() {
+    document.getElementById('slA').value = state.A;
+    document.getElementById('slB').value = state.B;
+    document.getElementById('slC').value = state.C;
+    document.getElementById('slD').value = state.D;
+
+    document.getElementById('valA').textContent = fmtDec(state.A, 1);
+    document.getElementById('valB').textContent = fmtDec(state.B, 1);
+    document.getElementById('valC').textContent = formatPhaseC(state.C);
+    document.getElementById('valD').textContent = fmtSignedDec(state.D, 1);
+
+    document.getElementById('symA').textContent = fmtDec(state.A, 1);
+    document.getElementById('symB').textContent = fmtDec(state.B, 1);
+    document.getElementById('symC').textContent = formatPhaseC(state.C);
+    document.getElementById('symD').textContent = fmtDec(state.D, 1);
+
+    updateSliderFill(document.getElementById('slA'), 0.5, 2.5);
+    updateSliderFill(document.getElementById('slB'), 0.5, 4.0);
+    updateSliderFill(document.getElementById('slC'), -3.1416, 3.1416);
+    updateSliderFill(document.getElementById('slD'), -1.5, 1.5);
+  }
+
+ // ===================== COMPILACIÓN DE LA TRAZA CON CONTENIDO MÍNIMO =====================
+  function buildFullTraceText() {
+    const alias = state.studentAlias.trim() ? state.studentAlias.trim() : 'No declarado';
+    const lines = [];
+    lines.push('======================================================================');
+    lines.push('DIDAXIS LAB — TRAZA DE TRABAJO');
+    lines.push('Recurso: Círculo Unitario y Ondas (v2.0) · Banquez Buendía, H. E. · CC BY 4.0');
+    lines.push('Exportada: ' + new Date().toLocaleString('es-CO'));
+    lines.push('Estudiante / Equipo: ' + alias);
+    lines.push('======================================================================');
+    lines.push('');
+    lines.push('1. PREDICCIÓN INICIAL:');
+    lines.push('   - Opción elegida: ' + (state.poeChoice || 'Pendiente de registro'));
+    lines.push('   - Razón escrita: ' + (state.poeJustification || 'Sin justificación escrita'));
+    lines.push('');
+    lines.push('2. EXPLORACIÓN Y CONSTRUCCIONES:');
+    lines.push('   - Ángulos notables explorados: ' + Array.from(state.notablesVisited).sort(function(a,b){return a-b;}).join('°, ') + '°');
+    lines.push('   - Misiones completadas: ' + state.missionsDone.filter(Boolean).length + ' de 3');
+    state.experimentsLog.forEach(function(exp, idx) {
+      lines.push('   - [' + (idx + 1) + '] ' + exp);
+    });
+    lines.push('');
+    lines.push('3. PRIMERA RESPUESTA A CADA RETO Y ESTADO FINAL:');
+    RETOS_BANK.forEach(function(r, idx) {
+      const first = state.firstResponses[idx];
+      const finalStatus = state.retosVerified[idx] ? 'Verificado correctamente' : 'Pendiente';
+      if (first) {
+        lines.push('   - Reto ' + r.id + ' (' + r.competencia.split('(')[0].trim() + '):');
+        lines.push('     * Primera respuesta: Opción ' + first.letter + ' (' + (first.ok ? 'Acierto inicial' : 'Distractor diagnóstico') + ') [' + first.simState + ']');
+        lines.push('     * Estado al exportar: ' + finalStatus);
+      } else {
+        lines.push('   - Reto ' + r.id + ': Sin responder aún.');
+      }
+    });
+    lines.push('');
+    lines.push('4. CONCLUSIÓN ESCRITA:');
+    lines.push('   ' + (state.closingArgument || 'Pendiente.'));
+    lines.push('');
+    lines.push('5. CRONOLOGÍA DE LA SESIÓN:');
+    state.traceEvents.forEach(function(ev, i) {
+      lines.push('   [' + (i + 1) + '] ' + ev.time + ' | ' + ev.category + ' -> ' + ev.description);
+    });
+    return lines.join('\n');
+  }
+
+
+ // ===================== MODO DOCENTE =====================
+  let teacherOpenerEl = null;
+
+  function teacherOpen() {
+    const ov = document.getElementById('teacherOverlay');
+    if (!ov || !ov.hidden) return;
+    teacherOpenerEl = document.activeElement;
+    ov.hidden = false;
+    renderErrStats();
+    const first = document.getElementById('ttab-res');
+    if (first) first.focus();
+  }
+
+  function teacherClose() {
+    const ov = document.getElementById('teacherOverlay');
+    if (!ov || ov.hidden) return;
+    ov.hidden = true;
+    if (teacherOpenerEl && teacherOpenerEl.focus) teacherOpenerEl.focus();
+  }
+
+  const TEACHER_TABS = ['res', 'err', 'fic', 'ver'];
+
+  function teacherTab(id) {
+    TEACHER_TABS.forEach(function(t) {
+      const tab = document.getElementById('ttab-' + t);
+      const panel = document.getElementById('tpanel-' + t);
+      const sel = (t === id);
+      if (tab) {
+        tab.setAttribute('aria-selected', sel ? 'true' : 'false');
+        tab.tabIndex = sel ? 0 : -1;
+      }
+      if (panel) panel.hidden = !sel;
+    });
+    if (id === 'err') renderErrStats();
+  }
+
+  function escapeTeacher(t) {
+    return String(t == null ? '' : t)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+ // La primera respuesta es la diagnóstica: delata el obstáculo antes de corregir.
+  function renderErrStats() {
+    const box = document.getElementById('errStatsBox');
+    if (!box) return;
+    const filas = RETOS_BANK.map(function(reto, idx) {
+      const first = state.firstResponses[idx];
+      if (!first) {
+        return '<div class="err-row"><span class="err-k">Reto ' + reto.id + '</span>' +
+               '<span class="err-v"><span class="err-tag na">Sin responder</span><br>' +
+               escapeTeacher(reto.competencia) + '</span></div>';
+      }
+      const opt = reto.options.filter(function(o) { return o.letter === first.letter; })[0];
+      const tag = first.ok
+        ? '<span class="err-tag ok">Acierto a la primera</span>'
+        : '<span class="err-tag no">Opción ' + first.letter + ' · distractor</span>';
+      const diag = (!first.ok && opt) ? '<br>' + opt.diag : '';
+      const donde = first.station ? ' · ' + escapeTeacher(first.station) : '';
+      return '<div class="err-row"><span class="err-k">Reto ' + reto.id + '</span>' +
+             '<span class="err-v">' + tag + '<br>' + escapeTeacher(reto.competencia) +
+             donde + diag + '</span></div>';
+    });
+    const resp = state.firstResponses.filter(Boolean);
+    const aciertos = resp.filter(function(r) { return r.ok; }).length;
+    box.innerHTML = '<p class="teacher-note"><strong>' + resp.length + ' de 6</strong>' +
+      ' retos respondidos · <strong>' + aciertos + '</strong> acertados en el primer intento.</p>' +
+      filas.join('');
+  }
+
+ // ===================== FICHAS IMPRIMIBLES =====================
+  function printSheet(kind) {
+    if (['taller', 'ticket', 'rubrica'].indexOf(kind) < 0) return;
+    teacherClose();
+    document.body.classList.add('printing', 'print-' + kind);
+    const limpiar = function() {
+      document.body.classList.remove('printing', 'print-taller', 'print-ticket', 'print-rubrica');
+    };
+    window.addEventListener('afterprint', limpiar, { once: true });
+    window.setTimeout(function() {
+      window.print();
+      window.setTimeout(limpiar, 1500);
+    }, 40);
+  }
+
+ // ===================== CÓDIGO DE COMPLECIÓN SIN SERVIDOR =====================
+ // Formato compartido por todo el catálogo: III-PPPPP-CC
+ //   III   = iniciales (1 a 3 letras A-Z, normalizadas)
+ //   PPPPP = base36 de ((recurso · 256) + máscara) · 10000 + días desde 2024-01-01
+ //           recurso: 0 Azar · 1 Círculo · 2 Cuadrática · 3 Pitágoras · 4 Fracciones
+ //                    5 Área vs Perímetro · 6 a 8 los tres juegos
+ //           máscara: bit i = reto (i+1) resuelto
+ //           días: 0 a 9999 (válido hasta 2051)
+ //   CC    = suma de verificación de III+PPPPP:
+ //           c1 = Σ v(ch_i)·(i+1) mod 36 ; c2 = la misma suma mod 35
+ //   36 y 35 son coprimos, así que cualquier carácter alterado y cualquier
+ //   transposición de dos adyacentes rompen la verificación.
+  const CODE_A36 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const CODE_EPOCH = Date.UTC(2024, 0, 1);
+  const CODE_RESOURCE_ID = 1;
+  const CODE_RESOURCE_NAME = 'Círculo Unitario y Ondas';
+  const CODE_TOTAL_RETOS = 6;
+
+  function codeVal(ch) { return CODE_A36.indexOf(ch); }
+
+  function codeB36(n, w) {
+    let s = '';
+    do { s = CODE_A36[n % 36] + s; n = Math.floor(n / 36); } while (n > 0);
+    while (s.length < w) s = '0' + s;
+    return s;
+  }
+
+  function codeChecksum(s) {
+    let sum = 0;
+    for (let i = 0; i < s.length; i++) sum += codeVal(s[i]) * (i + 1);
+    return CODE_A36[sum % 36] + CODE_A36[sum % 35];
+  }
+
+  function codeNormalizeInitials(raw) {
+    return String(raw).toUpperCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\u00D1/g, 'N').replace(/[^A-Z]/g, '').slice(0, 3);
+  }
+
+  function generateCompletionCode(initials) {
+    const ini = codeNormalizeInitials(initials);
+    if (!ini) return { ok: false, err: 'Escribe entre 1 y 3 letras.' };
+    let mask = 0;
+    const hechos = state.retosVerified;
+    for (let i = 0; i < CODE_TOTAL_RETOS; i++) if (hechos[i]) mask |= (1 << i);
+    const days = Math.max(0, Math.min(9999, Math.floor((Date.now() - CODE_EPOCH) / 86400000)));
+    const pay = codeB36((CODE_RESOURCE_ID * 256 + mask) * 10000 + days, 5);
+    return { ok: true, code: ini + '-' + pay + '-' + codeChecksum(ini + pay), mask: mask };
+  }
+
+  function verifyCompletionCode(code) {
+    const m = String(code).toUpperCase().trim().match(/^([A-Z]{1,3})-([0-9A-Z]{5})-([0-9A-Z]{2})$/);
+    if (!m) return { ok: false, err: 'Formato no reconocido. Debe verse como ABC-13F7K-M2.' };
+    if (codeChecksum(m[1] + m[2]) !== m[3]) {
+      return { ok: false, err: 'El código no supera la verificación: fue copiado mal o alterado.' };
+    }
+    let val = 0;
+    for (let i = 0; i < m[2].length; i++) val = val * 36 + codeVal(m[2][i]);
+    const head = Math.floor(val / 10000), days = val % 10000;
+    const recurso = Math.floor(head / 256), mask = head % 256;
+    if (recurso !== CODE_RESOURCE_ID) {
+      return { ok: false, err: 'Es un código válido, pero de otro laboratorio de Didaxis Lab. Este verificador es el de ' + CODE_RESOURCE_NAME + '.' };
+    }
+    if (mask >= (1 << CODE_TOTAL_RETOS)) return { ok: false, err: 'Código fuera de rango.' };
+    return { ok: true, ini: m[1], mask: mask, date: new Date(CODE_EPOCH + days * 86400000) };
+  }
+
+  function retosDeMascara(mask) {
+    const lista = [];
+    for (let i = 0; i < CODE_TOTAL_RETOS; i++) if (mask & (1 << i)) lista.push(i + 1);
+    return lista;
+  }
+
+  function onGenCode() {
+    const out = document.getElementById('codeOut');
+    const ini = document.getElementById('codeInitials');
+    if (!out || !ini) return;
+    const r = generateCompletionCode(ini.value);
+    if (!r.ok) {
+      out.innerHTML = '<span style="color:var(--warn-red);font-weight:700;">' + escapeTeacher(r.err) + '</span>';
+      return;
+    }
+    const n = retosDeMascara(r.mask).length;
+    out.innerHTML = '<span class="code-value">' + r.code + '</span>' +
+      '<span class="teacher-note" style="display:block;margin-top:5px;">Resume ' + n +
+      ' de ' + CODE_TOTAL_RETOS + ' retos resueltos. Cópialo tal cual, con los guiones.</span>';
+    recordTrace('CÓDIGO_DE_COMPLECIÓN', r.code + ' (' + n + ' de ' + CODE_TOTAL_RETOS + ' retos)');
+  }
+
+  function onVerifyCode() {
+    const out = document.getElementById('verifyOut');
+    const inp = document.getElementById('verifyCodeInput');
+    if (!out || !inp) return;
+    const r = verifyCompletionCode(inp.value);
+    if (!r.ok) {
+      out.innerHTML = '<span style="color:var(--warn-red);font-weight:700;">\u2715 ' + escapeTeacher(r.err) + '</span>';
+      return;
+    }
+    const lista = retosDeMascara(r.mask);
+    out.innerHTML = '<span style="color:var(--ok-green);font-weight:700;">\u2713 Código válido</span><br>' +
+      'Iniciales: <strong>' + escapeTeacher(r.ini) + '</strong> · Fecha: <strong>' +
+      escapeTeacher(r.date.toLocaleDateString('es-CO')) + '</strong><br>' +
+      'Retos resueltos: <strong>' + lista.length + ' de ' + CODE_TOTAL_RETOS + '</strong>' +
+      (lista.length ? ' (R' + lista.join(', R') + ')' : '');
+  }
+
+ // ===================== VINCULACIÓN DE EVENTOS =====================
+  function bindAllEvents() {
+ // Despachador único para las piezas del núcleo: un solo listener en el
+ // documento, compatible con la CSP (sin onclick en el marcado).
+    document.addEventListener('click', function(ev) {
+      const el = ev.target.closest ? ev.target.closest('[data-action]') : null;
+      if (!el) return;
+      const action = el.getAttribute('data-action');
+      if (action === 'reset-progress')      { ev.preventDefault(); requestResetProgress(); }
+      else if (action === 'mobile-tab')     { ev.preventDefault(); setMobileTab(el.getAttribute('data-view')); }
+      else if (action === 'teacher-open')   { ev.preventDefault(); teacherOpen(); }
+      else if (action === 'teacher-close')  { ev.preventDefault(); teacherClose(); }
+      else if (action === 'teacher-tab')    { ev.preventDefault(); teacherTab(el.getAttribute('data-tab')); }
+      else if (action === 'print-sheet')    { ev.preventDefault(); printSheet(el.getAttribute('data-sheet')); }
+      else if (action === 'gen-code')       { ev.preventDefault(); onGenCode(); }
+      else if (action === 'verify-code')    { ev.preventDefault(); onVerifyCode(); }
+    });
+
+ // Alt+D abre y cierra el panel docente; Escape lo cierra.
+    document.addEventListener('keydown', function(ev) {
+      if (ev.altKey && (ev.key === 'd' || ev.key === 'D')) {
+        ev.preventDefault();
+        const ov = document.getElementById('teacherOverlay');
+        if (ov && ov.hidden) teacherOpen(); else teacherClose();
+      } else if (ev.key === 'Escape') {
+        const ov = document.getElementById('teacherOverlay');
+        if (ov && !ov.hidden) teacherClose();
+      }
+    });
+
+ // Clic fuera del panel = cerrar
+    const tOv = document.getElementById('teacherOverlay');
+    if (tOv) {
+      tOv.addEventListener('click', function(ev) { if (ev.target === tOv) teacherClose(); });
+    }
+
+
+ // Pantalla completa solo si el navegador la admite
+    const fsBtn = document.getElementById('btnFullscreen');
+    if (document.fullscreenEnabled || document.webkitFullscreenEnabled) {
+      fsBtn.style.display = 'inline-flex';
+      fsBtn.addEventListener('click', function() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(function(){});
+        } else {
+          document.exitFullscreen().catch(function(){});
+        }
+      });
+      document.addEventListener('fullscreenchange', function() {
+        document.getElementById('fullscreenText').textContent = document.fullscreenElement
+          ? 'Salir pantalla completa'
+          : 'Pantalla completa';
+      });
+    }
+
+ // Modo Proyección
+    const btnProj = document.getElementById('btnProjection');
+    btnProj.addEventListener('click', function() {
+      const active = document.body.classList.toggle('projection-mode');
+      btnProj.classList.toggle('active-toggle', active);
+      btnProj.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
+ // Pestañas de Momento
+    document.querySelectorAll('.moment-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        switchMoment(parseInt(tab.getAttribute('data-moment'), 10));
+      });
+    });
+
+ // Registro de Anticipación (Momento 1 — Desbloqueo de valores teóricos y animación)
+    document.getElementById('btnSubmitPoe').addEventListener('click', function() {
+      const sel = document.querySelector('input[name="poeOpt"]:checked');
+      const justif = document.getElementById('poeJustifInput').value.trim();
+      const box = document.getElementById('poeResultBox');
+
+      if (!sel) {
+        box.className = 'status-box visible state-review';
+        box.innerHTML = '<div class="status-lead">' + SVG_ICON_REVIEW + '<span>Falta tu predicción</span></div>' +
+          '<span>Elige una de las tres opciones antes de continuar.</span>';
+        return;
+      }
+
+      const val = sel.value;
+      state.poeUnlocked = true;
+      state.poeChoice = val === 'rapido_inicio'
+        ? 'Opción B (Sube más rápido de 0° a 45° y desacelera hacia 90°)'
+        : (val === 'lineal' ? 'Opción A (Crecimiento lineal uniforme: +0,500 por tramo)' : 'Opción C (Sube lento al inicio y acelera hacia 90°)');
+      state.poeJustification = justif;
+
+      document.getElementById('btnPlay').disabled = false;
+      document.getElementById('btnPlayText').textContent = 'Animar giro';
+      document.getElementById('mobilePlayText').textContent = 'Animar giro';
+      document.getElementById('poeGateNotice').style.display = 'none';
+
+      if (val === 'rapido_inicio') {
+        box.className = 'status-box visible state-ok';
+        box.innerHTML = '<div class="status-lead">' + SVG_ICON_OK + '<span>Predicción registrada</span></div>' +
+          '<span>En θ = 45,0° (mitad del ángulo hacia 90,0°), la ordenada sen(45,0°) ya alcanza √2/2 ≈ +0,707 (más del 70,7 % de la altura total), porque cerca de 0° el arco del círculo sube casi verticalmente y cerca de 90° se aplana horizontalmente.</span>';
+      } else {
+        box.className = 'status-box visible state-info';
+        box.innerHTML = '<div class="status-lead">' + SVG_ICON_INFO + '<span>Predicción registrada</span></div>' +
+          '<span>Se han desbloqueado los valores exactos de referencia. Observa que en θ = 30,0° el seno ya vale 1/2 = +0,500 y en θ = 45,0° alcanza √2/2 ≈ +0,707; en el segundo tramo (45° a 90°) solo sube los 0,293 restantes.</span>';
+      }
+
+      recordTrace('ANTICIPACIÓN_POE', state.poeChoice + (justif ? ' | Razón escrita: ' + justif : ''));
+      updateScene();
+    });
+
+ // Controles de ángulo y animación
+    document.getElementById('slAngle').addEventListener('input', function() {
+      setAngle(parseFloat(this.value));
+    });
+    document.getElementById('chkSnap').addEventListener('change', function() {
+      state.snapNotable = this.checked;
+    });
+    document.getElementById('btnPlay').addEventListener('click', toggleAnimation);
+    document.getElementById('btnReset').addEventListener('click', function() {
+      if (state.playing) toggleAnimation();
+      state.A = 1.0; state.B = 1.0; state.C = 0.0; state.D = 0.0;
+      state.activeMission = -1;
+      syncABCDUI();
+      setAngle(0);
+    });
+
+    document.querySelectorAll('[data-speed]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('[data-speed]').forEach(function(b) { b.classList.remove('active-toggle'); });
+        btn.classList.add('active-toggle');
+        state.speed = parseFloat(btn.getAttribute('data-speed'));
+      });
+    });
+
+ // Series
+    document.getElementById('chkSin').addEventListener('change', function() {
+      state.showSin = this.checked; updateScene();
+    });
+    document.getElementById('chkCos').addEventListener('change', function() {
+      state.showCos = this.checked; updateScene();
+    });
+    document.getElementById('chkTan').addEventListener('change', function() {
+      state.showTan = this.checked; updateScene();
+    });
+    document.getElementById('chkGhost').addEventListener('change', function() {
+      state.showGhost = this.checked; updateScene();
+    });
+
+ // Modos de vista
+ // :not([data-action]) deja fuera las pestañas de teléfono, que también
+ // llevan data-view pero no son modos de vista del lienzo.
+    document.querySelectorAll('[data-view]:not([data-action])').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const v = btn.getAttribute('data-view');
+        state.viewMode = v;
+        document.querySelectorAll('[data-view]:not([data-action])').forEach(function(b) { b.classList.remove('active-toggle'); });
+        btn.classList.add('active-toggle');
+        if (v === 'circle') svg.setAttribute('viewBox', '0 0 375 390');
+        else if (v === 'wave') svg.setAttribute('viewBox', '370 0 550 390');
+        else svg.setAttribute('viewBox', '0 0 920 390');
+        updateScene();
+      });
+    });
+
+ // Interruptores de Arco Desenrollado y Nodos en Onda
+    const btnUnwrap = document.getElementById('btnToggleUnwrap');
+    btnUnwrap.addEventListener('click', function() {
+      state.showUnwrapArc = !state.showUnwrapArc;
+      btnUnwrap.classList.toggle('active-toggle', state.showUnwrapArc);
+      btnUnwrap.setAttribute('aria-pressed', state.showUnwrapArc ? 'true' : 'false');
+      updateScene();
+    });
+
+    const btnWaveH = document.getElementById('btnToggleWaveHandles');
+    btnWaveH.addEventListener('click', function() {
+      state.showWaveHandles = !state.showWaveHandles;
+      btnWaveH.classList.toggle('active-toggle', state.showWaveHandles);
+      btnWaveH.setAttribute('aria-pressed', state.showWaveHandles ? 'true' : 'false');
+      updateScene();
+    });
+
+ // Parámetros A, B, C, D
+    ['slA', 'slB', 'slC', 'slD'].forEach(function(id) {
+      document.getElementById(id).addEventListener('change', function() {
+        const summary = 'Cambio de parámetros: A = ' + fmtDec(state.A, 1) + '; B = ' + fmtDec(state.B, 1) + '; C = ' + formatPhaseC(state.C) + '; D = ' + fmtDec(state.D, 1);
+        state.experimentsLog.push(summary);
+        recordTrace('PARAMETROS', summary);
+      });
+      document.getElementById(id).addEventListener('input', function() {
+        state.A = parseFloat(document.getElementById('slA').value);
+        state.B = parseFloat(document.getElementById('slB').value);
+        state.C = parseFloat(document.getElementById('slC').value);
+        state.D = parseFloat(document.getElementById('slD').value);
+        syncABCDUI();
+        updateScene();
+      });
+    });
+
+    document.getElementById('btnResetABCD').addEventListener('click', function() {
+      state.A = 1.0; state.B = 1.0; state.C = 0.0; state.D = 0.0;
+      syncABCDUI();
+      updateScene();
+    });
+
+ // Misiones de construcción inversa
+    document.querySelectorAll('[data-mission]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const mIdx = parseInt(btn.getAttribute('data-mission'), 10);
+        state.activeMission = mIdx;
+        if (mIdx >= 0) {
+          document.getElementById('missionDescription').textContent = MISSIONS[mIdx].desc;
+        } else {
+          document.getElementById('missionDescription').textContent = 'Exploración libre de los parámetros.';
+          document.getElementById('missionStatusBox').className = 'status-box';
+        }
+        updateScene();
+      });
+    });
+
+ // Selector de retos
+    document.querySelectorAll('[data-reto-tab]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const idx = parseInt(btn.getAttribute('data-reto-tab'), 10);
+        state.activeRetoIdx = idx;
+        document.querySelectorAll('[data-reto-tab]').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        RETOS_BANK.forEach(function(_, cIdx) {
+          document.getElementById('retoCard_' + cIdx).style.display = cIdx === idx ? 'block' : 'none';
+        });
+      });
+    });
+
+ // Guardar justificación escrita de cierre
+    document.getElementById('btnSaveArgument').addEventListener('click', function() {
+      const txt = document.getElementById('closingArgumentInput').value.trim();
+      const box = document.getElementById('argSavedFeedback');
+      if (!txt) {
+        box.className = 'status-box visible state-review';
+        box.innerHTML = '<div class="status-lead">' + SVG_ICON_REVIEW + '<span>Falta escribir tu conclusión</span></div>' +
+          '<span>Escribe tu conclusión antes de guardarla en la traza.</span>';
+        return;
+      }
+      state.closingArgument = txt;
+      recordTrace('JUSTIFICACION_CIERRE', txt);
+      box.className = 'status-box visible state-ok';
+      box.innerHTML = '<div class="status-lead">' + SVG_ICON_OK + '<span>Guardado en la traza</span></div>' +
+        '<span>Puedes exportarla desde el botón «Traza».</span>';
+    });
+
+ // Barra fija inferior de teléfono
+    document.getElementById('btnMobilePlay').addEventListener('click', function() {
+      if (!state.poeUnlocked) {
+        switchMoment(1);
+        document.getElementById('panelMoment1').scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+      } else {
+        toggleAnimation();
+      }
+    });
+    document.getElementById('btnMobileStep15').addEventListener('click', function() {
+      setAngle((state.angle + 15) % 720);
+    });
+    document.getElementById('btnMobileRetos').addEventListener('click', function() {
+      setMobileTab('retos');
+      switchMoment(3);
+      document.getElementById('panelMoment3').scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    });
+
+ // Modo Pizarra (ocultar/mostrar guion lateral) y soporte de parámetro URL ?modo=pizarra
+    const btnBoard = document.getElementById('btnBoardMode');
+    function toggleBoardMode(forceState) {
+      const active = typeof forceState === 'boolean'
+        ? document.body.classList.toggle('board-mode', forceState)
+        : document.body.classList.toggle('board-mode');
+      btnBoard.classList.toggle('active-toggle', active);
+      btnBoard.setAttribute('aria-pressed', active ? 'true' : 'false');
+      document.getElementById('boardModeText').textContent = active ? 'Mostrar Guion y Retos' : 'Modo Pizarra';
+    }
+    btnBoard.addEventListener('click', function() { toggleBoardMode(); });
+
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('modo') === 'pizarra') toggleBoardMode(true);
+    } catch (e) {}
+
+ // Modal de Traza Local Exportable
+    const modalTrace = document.getElementById('modalTrace');
+
+    document.getElementById('btnOpenTrace').addEventListener('click', function() {
+      document.getElementById('tracePreviewPre').textContent = buildFullTraceText();
+      modalTrace.classList.add('open');
+    });
+    document.getElementById('btnCloseTraceTop').addEventListener('click', function() {
+      modalTrace.classList.remove('open');
+    });
+    document.getElementById('studentAliasInput').addEventListener('input', function() {
+      state.studentAlias = this.value;
+      document.getElementById('tracePreviewPre').textContent = buildFullTraceText();
+    });
+
+    document.getElementById('btnPrintTrace').addEventListener('click', function() {
+      window.print();
+    });
+    document.getElementById('btnCopyTrace').addEventListener('click', function() {
+      const txt = buildFullTraceText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function() {
+          const btn = document.getElementById('btnCopyTrace');
+          btn.textContent = 'Copiado al portapapeles';
+          setTimeout(function() { btn.textContent = 'Copiar como texto'; }, 1800);
+        });
+      }
+    });
+    document.getElementById('btnDownloadTrace').addEventListener('click', function() {
+      const txt = buildFullTraceText();
+      const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'traza-circulo-unitario-v2-didaxislab.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+
+ // ===================== INICIALIZACIÓN =====================
+  loadTrigSession();
+  if (window.innerWidth > 920) {
+    document.getElementById('trigSecondaryDrawer').setAttribute('open', 'open');
+  }
+  initSvgScene();
+  renderRetosCards();
+  bindAllEvents();
+  if (state.poeUnlocked) {
+    document.getElementById('btnPlay').disabled = false;
+    document.getElementById('btnPlayText').textContent = 'Animar giro';
+    document.getElementById('mobilePlayText').textContent = 'Animar giro';
+    document.getElementById('poeGateNotice').style.display = 'none';
+    document.getElementById('poeJustifInput').value = state.poeJustification || '';
+  }
+  if (state.closingArgument) {
+    document.getElementById('closingArgumentInput').value = state.closingArgument;
+  }
+  if (state.studentAlias) {
+    document.getElementById('studentAliasInput').value = state.studentAlias;
+  }
+  state.retosVerified.forEach(function(done, idx) {
+    if (done) {
+      const nb = document.querySelector('[data-reto-tab="' + idx + '"]');
+      if (nb) nb.classList.add('done');
+    }
+  });
+  document.getElementById('retosCounterPill').textContent = state.retosVerified.filter(Boolean).length + ' / 6';
+ // En teléfono se abre por los Retos mientras la compuerta Predice siga cerrada:
+ // es el paso que va primero y el que habilita el resto.
+  setMobileTab(state.poeUnlocked ? 'sim' : 'retos');
+  updateMobileTabPill();
+ // Los dos registros juntos son ilegibles por debajo de 920 px: 920 unidades de
+ // lienzo en 340 de pantalla. Se arranca en Foco Círculo, que es el objeto que
+ // el estudiante manipula; los botones de vista siguen ahí para cambiarlo.
+  if (window.innerWidth <= 920) {
+    const btnFocoCirculo = document.querySelector('[data-view="circle"]:not([data-action])');
+    if (btnFocoCirculo) btnFocoCirculo.click();
+  }
+  document.getElementById('traceBadgeCount').textContent = String(state.traceEvents.length);
+  syncABCDUI();
+  updateScene();
+})();
+</script>
+<!-- ================= FICHAS IMPRIMIBLES (solo visibles al imprimir) ================= -->
+<section class="print-sheet" id="sheetTaller" aria-hidden="true">
+  <header class="ps-head">
+    <div class="ps-brand">DIDAXIS LAB</div>
+    <h1>Taller — Círculo Unitario y Ondas</h1>
+    <div class="ps-meta">Nombre: ______________________________ &nbsp; Curso: ________ &nbsp; Fecha: ____ / ____ / ______</div>
+  </header>
+  <ol class="ps-list">
+    <li><strong>Antes de explorar.</strong> El punto P recorre el primer cuadrante en dos tramos iguales: de 0° a 45° y de 45° a 90°. ¿Sube lo mismo sen(θ) en los dos? Escribe tu respuesta y <strong>por qué</strong>, antes de tocar el simulador. <div class="ps-space"></div></li>
+    <li><strong>Ángulos notables.</strong> Completa con el simulador, en forma exacta y decimal.
+      <table class="ps-table" style="margin-top:6px;">
+        <thead><tr><th>θ</th><th>0°</th><th>30°</th><th>45°</th><th>60°</th><th>90°</th></tr></thead>
+        <tbody>
+          <tr><th>sen θ</th><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>cos θ</th><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>tan θ</th><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table></li>
+    <li><strong>El arco desenrollado.</strong> Activa «Arco desenrollado». Explica con tus palabras qué significa que θ = 1 rad y por qué 2π rad equivalen a 360°. <div class="ps-space tall"></div></li>
+    <li><strong>Las cuatro transformaciones.</strong> Parte de <em>y</em> = sen(<em>x</em>) y anota qué le ocurre a la curva —amplitud, periodo, desplazamiento— en cada caso. Dibuja la primera.
+      <table class="ps-table" style="margin-top:6px;">
+        <thead><tr><th>Función</th><th>Qué cambia</th><th>Parámetro responsable</th></tr></thead>
+        <tbody>
+          <tr><td><em>y</em> = 2·sen(<em>x</em>)</td><td></td><td></td></tr>
+          <tr><td><em>y</em> = sen(2<em>x</em>)</td><td></td><td></td></tr>
+          <tr><td><em>y</em> = sen(<em>x</em> + π/2)</td><td></td><td></td></tr>
+          <tr><td><em>y</em> = sen(<em>x</em>) − 1</td><td></td><td></td></tr>
+        </tbody>
+      </table></li>
+    <li><strong>Misión marea.</strong> ¿Qué valores de A, B, C y D producen una onda que oscila entre 1 y 3 con periodo 2π? Justifica cada uno antes de mover el deslizador. <div class="ps-space tall"></div></li>
+    <li><strong>La tangente.</strong> ¿Por qué tan(90°) no existe? Apóyate en el segmento de tangente del círculo, no solo en la calculadora. <div class="ps-space tall"></div></li>
+  </ol>
+  <footer class="ps-foot">didaxislab.com · Recurso educativo abierto</footer>
+</section>
+
+<section class="print-sheet" id="sheetTicket" aria-hidden="true">
+  <header class="ps-head">
+    <div class="ps-brand">DIDAXIS LAB</div>
+    <h1>Ticket de salida — Círculo Unitario y Ondas</h1>
+    <div class="ps-meta">Nombre: ______________________________ &nbsp; Curso: ________ &nbsp; Fecha: ____ / ____ / ______</div>
+  </header>
+  <ol class="ps-list">
+    <li>Un compañero dice que en <em>y</em> = sen(2<em>x</em>) «la onda es el doble de alta». ¿Tiene razón? Corrige la frase y di qué parámetro confundió. <div class="ps-space tall"></div></li>
+    <li>¿Qué tienen en común sen(30°) y sen(150°)? ¿Y en qué se diferencian de sen(210°)? Explícalo con la posición de P en el círculo. <div class="ps-space tall"></div></li>
+    <li>Describe una situación real que se modele con una función periódica e indica qué representarían A, B, C y D en ese caso. <div class="ps-space"></div></li>
+  </ol>
+  <p class="ps-self">Autoevaluación — hoy mi comprensión del paso de giro a onda quedó: &nbsp; ☐ Sólida &nbsp; ☐ En construcción &nbsp; ☐ Necesito repaso</p>
+  <footer class="ps-foot">didaxislab.com · Recurso educativo abierto</footer>
+</section>
+
+<section class="print-sheet" id="sheetRubrica" aria-hidden="true">
+  <header class="ps-head">
+    <div class="ps-brand">DIDAXIS LAB</div>
+    <h1>Rúbrica de evaluación — Círculo Unitario y Ondas</h1>
+    <div class="ps-meta">Estudiante: ______________________________ &nbsp; Curso: ________ &nbsp; Fecha: ____ / ____ / ______</div>
+  </header>
+  <table class="ps-table">
+    <thead>
+      <tr><th>Criterio</th><th>Superior</th><th>Alto</th><th>Básico</th><th>Bajo</th></tr>
+    </thead>
+    <tbody>
+      <tr><th>Del giro a la onda</th>
+        <td>Explica la onda como el registro del giro en el tiempo y usa el arco desenrollado para justificar la equivalencia grados–radianes.</td>
+        <td>Relaciona la posición de P con el punto correspondiente de la curva.</td>
+        <td>Lee cada registro por separado, sin conectarlos.</td>
+        <td>Trata la curva como un dibujo sin relación con el círculo.</td></tr>
+      <tr><th>Parámetros A, B, C y D</th>
+        <td>Anticipa el efecto de cada parámetro antes de moverlo y distingue amplitud de eje medio y periodo de desfase.</td>
+        <td>Identifica correctamente qué parámetro produce cada cambio.</td>
+        <td>Reconoce A y D, pero lee B como un estiramiento horizontal.</td>
+        <td>Mueve los deslizadores por ensayo y error.</td></tr>
+      <tr><th>Argumentación</th>
+        <td>Justifica con valores exactos y explica por qué tan(90°) es indefinida, no cero.</td>
+        <td>Elige justificaciones válidas y explica por qué fallan las inválidas.</td>
+        <td>Llega a conclusiones correctas con argumentos incompletos.</td>
+        <td>Argumenta por la forma del dibujo, sin apoyarse en los valores.</td></tr>
+      <tr><th>Uso del recurso</th>
+        <td>Construye las ondas objetivo razonando cada parámetro y comprueba con los valores exactos.</td>
+        <td>Completa las misiones y los retos con autonomía.</td>
+        <td>Avanza con apoyo constante.</td>
+        <td>Arrastra P sin conectar lo que ve con la pregunta.</td></tr>
+    </tbody>
+  </table>
+  <footer class="ps-foot">didaxislab.com · Recurso educativo abierto</footer>
+</section>
+
+</body>
+</html>
