@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Héctor Banquez — El autor de Didaxis Lab</title>
+<meta name="description" content="Héctor Enrique Banquez Buendía: docente de matemáticas y estadística, doctorando en Educación Matemática y autor de Didaxis Lab. Investigación sobre argumentación matemática mediada por tecnología.">
+
+<link rel="canonical" href="https://didaxislab.com/autor/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="author" content="Héctor Enrique Banquez Buendía">
+<meta name="theme-color" content="#1B2A5A">
+
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Didaxis Lab">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Héctor Banquez — El autor de Didaxis Lab">
+<meta property="og:description" content="Docente de matemáticas y estadística, doctorando en Educación Matemática. Investiga la argumentación matemática mediada por tecnología.">
+<meta property="og:url" content="https://didaxislab.com/autor/">
+<meta property="og:image" content="https://didaxislab.com/img/autor-640.jpg">
+<meta name="twitter:card" content="summary">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "url": "https://didaxislab.com/autor/",
+  "inLanguage": "es-CO",
+  "mainEntity": {
+    "@type": "Person",
+    "@id": "https://didaxislab.com/#autor",
+    "name": "Héctor Enrique Banquez Buendía",
+    "alternateName": "Héctor Banquez",
+    "jobTitle": "Docente de matemáticas y estadística",
+    "image": "https://didaxislab.com/img/autor-640.jpg",
+    "url": "https://didaxislab.com/autor/",
+    "identifier": "https://orcid.org/0009-0007-6705-0407",
+    "homeLocation": { "@type": "Place", "name": "Cartagena de Indias, Colombia" },
+    "knowsLanguage": "es",
+    "knowsAbout": [
+      "Educación matemática",
+      "Argumentación matemática",
+      "Recursos educativos digitales",
+      "Inteligencia artificial en educación",
+      "Estadística aplicada a la gestión educativa"
+    ],
+    "alumniOf": [
+      { "@type": "CollegeOrUniversity", "name": "Universidad Pedagógica Experimental Libertador (UPEL)" },
+      { "@type": "CollegeOrUniversity", "name": "Universidad de Cartagena" }
+    ],
+    "sameAs": [
+      "https://orcid.org/0009-0007-6705-0407",
+      "https://www.linkedin.com/in/hectorbanquez"
+    ]
+  }
+}
+</script>
+
+<style>
+  :root{
+    --navy:#1B2A5A; --navy-dark:#0F1C3F; --cyan:#0BC0D8; --cyan-soft:#E2F7FA;
+    --cyan-deep:#0E7888; --amber-ink:#9A3412; --amber-soft:#FBF1DF;
+    --ink:#1B2A5A; --muted:#5B6B82; --line:#E6E9EF; --bg:#FAFBFC; --panel:#FFFFFF;
+    --grid:rgba(11,192,216,0.06); --radius:16px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--navy);text-decoration:none;}
+  h1,h2,h3{letter-spacing:-.02em;color:var(--navy);}
+  section{scroll-margin-top:78px;}
+
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:30;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;min-height:44px;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .nav{display:flex;align-items:center;gap:22px;}
+  .nav a{font-size:14.5px;font-weight:600;color:var(--muted);
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav a:hover,.nav a[aria-current="page"]{color:var(--navy);}
+  .nav .nav-cta{color:#fff;background:var(--navy);padding:8px 15px;border-radius:9px;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav .nav-cta:hover{background:var(--navy-dark);color:#fff;}
+  @media (max-width:760px){
+    .topbar-inner{flex-wrap:wrap;gap:10px 0;padding:11px 18px 12px;}
+    .nav{width:100%;gap:0 16px;flex-wrap:wrap;justify-content:space-between;}
+    .nav a{font-size:14px;min-height:40px;display:inline-flex;align-items:center;}
+    .nav .nav-cta{display:none;}
+  }
+  @media (max-width:380px){ .nav a{font-size:13.3px;} }
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:54px 22px;}
+
+  /* ---------- Portada ---------- */
+  .intro{position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:var(--panel);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:28px 28px;}
+  .intro-grid{max-width:var(--maxw);margin:0 auto;padding:46px 22px 48px;
+    display:grid;grid-template-columns:200px 1fr;gap:34px;align-items:start;}
+  @media (max-width:720px){ .intro-grid{grid-template-columns:1fr;gap:22px;padding:34px 22px 36px;} }
+  .portrait{width:200px;height:200px;border-radius:var(--radius);object-fit:cover;
+    border:1px solid var(--line);box-shadow:var(--shadow);}
+  @media (max-width:720px){ .portrait{width:128px;height:128px;} }
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .intro h1{font-size:clamp(30px,4.6vw,42px);line-height:1.1;font-weight:800;}
+  .intro .role{margin-top:10px;font-size:17px;color:var(--muted);max-width:52ch;}
+  .idlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+  .idlink{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:9px 15px;
+    font-size:14px;font-weight:600;color:var(--navy);background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;}
+  .idlink:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+  .idlink svg{width:16px;height:16px;flex:0 0 auto;}
+
+  /* ---------- Cuerpo ---------- */
+  .sec-head{margin-bottom:20px;}
+  .sec-head h2{font-size:clamp(23px,3vw,29px);font-weight:800;}
+  .sec-head p{margin-top:9px;color:var(--muted);font-size:15.5px;max-width:62ch;}
+  .lede{font-size:17.5px;line-height:1.62;max-width:68ch;}
+  .lede p{margin-bottom:15px;}
+  .pull{margin:28px 0 24px;padding:16px 0 16px 22px;border-left:3px solid var(--cyan);
+    font-size:19px;line-height:1.45;font-weight:600;color:var(--navy);max-width:48ch;}
+
+  .band{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+
+  .tl{list-style:none;display:flex;flex-direction:column;}
+  .tl li{position:relative;padding:0 0 22px 28px;border-left:2px solid var(--line);}
+  .tl li:last-child{padding-bottom:0;border-left-color:transparent;}
+  .tl li::before{content:"";position:absolute;left:-7px;top:5px;width:12px;height:12px;
+    border-radius:50%;background:var(--cyan);border:2px solid var(--panel);}
+  .tl .t-when{font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--cyan-deep);
+    text-transform:uppercase;}
+  .tl .t-what{font-size:16.5px;font-weight:700;color:var(--navy);margin-top:2px;}
+  .tl .t-where{font-size:14.5px;color:var(--muted);margin-top:1px;}
+  .tl .t-note{font-size:14px;color:var(--muted);margin-top:6px;max-width:62ch;}
+
+  .pubs{list-style:none;display:flex;flex-direction:column;gap:2px;}
+  .pubs li{padding:15px 0;border-bottom:1px solid var(--line);}
+  .pubs li:first-child{border-top:1px solid var(--line);}
+  .pubs .p-title{font-size:15.5px;font-weight:700;color:var(--navy);line-height:1.4;}
+  .pubs .p-meta{font-size:14px;color:var(--muted);margin-top:4px;}
+  .pubs .p-meta em{font-style:italic;}
+  .pubs a{color:var(--cyan-deep);font-weight:600;word-break:break-word;}
+  .pubs a:hover{color:var(--navy);}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--navy);background:var(--cyan-soft);border-radius:999px;padding:3px 9px;margin-left:7px;
+    vertical-align:1px;}
+  .tag.press{background:var(--amber-soft);color:var(--amber-ink);}
+
+  details.more{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);}
+  details.more > summary{cursor:pointer;list-style:none;padding:14px 18px;min-height:44px;
+    font-size:15px;font-weight:700;color:var(--navy);display:flex;align-items:center;
+    justify-content:space-between;gap:12px;}
+  details.more > summary::-webkit-details-marker{display:none;}
+  details.more > summary::after{content:"+";font-size:19px;font-weight:700;color:var(--cyan-deep);}
+  details.more[open] > summary::after{content:"–";}
+  details.more > div{padding:0 18px 16px;}
+
+  .teach{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 26px;}
+  @media (max-width:700px){ .teach{grid-template-columns:1fr;} }
+  .teach div{padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;}
+  .teach h3{font-size:15.5px;font-weight:700;margin-bottom:4px;}
+  .teach p{font-size:14px;color:var(--muted);}
+
+  .cta{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
+    background:var(--cyan-soft);border:1px solid #C9EDF3;border-radius:var(--radius);padding:24px 26px;}
+  @media (max-width:640px){ .cta{grid-template-columns:1fr;} }
+  .cta h2{font-size:21px;font-weight:800;}
+  .cta p{font-size:15px;color:var(--muted);margin-top:6px;max-width:52ch;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15.5px;font-weight:700;
+    padding:13px 22px;border-radius:11px;min-height:44px;transition:.18s;
+    color:#fff;background:var(--navy);white-space:nowrap;}
+  .btn:hover{background:var(--navy-dark);color:#fff;transform:translateY(-1px);}
+
+  footer{border-top:1px solid var(--line);background:var(--panel);}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:30px 22px;display:flex;
+    align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .foot-brand{display:flex;flex-direction:column;gap:8px;max-width:320px;}
+  .foot-brand .row{display:flex;align-items:center;gap:9px;}
+  .foot-brand .logo-mark{width:26px;height:26px;}
+  .foot-brand .name{font-weight:800;font-size:17px;color:var(--navy);}
+  .foot-brand small{color:var(--muted);font-size:13px;line-height:1.5;}
+  .foot-col h4{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;}
+  .foot-col a{display:block;font-size:14px;color:var(--ink);margin-bottom:7px;}
+  .foot-col a:hover{color:var(--cyan-deep);}
+  .foot-bottom{border-top:1px solid var(--line);}
+  .foot-bottom div{max-width:var(--maxw);margin:0 auto;padding:16px 22px;display:flex;
+    justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);}
+
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} *{transition:none!important;} .btn:hover{transform:none;} }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="Didaxis Lab — inicio">
+        <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </a>
+      <nav class="nav">
+        <a href="/#recursos">Recursos</a>
+        <a href="/juegos/">Juegos</a>
+        <a href="/#por-que">Por qué</a>
+        <a href="/#fundamentacion">Fundamentación</a>
+        <a href="/autor/" aria-current="page">El autor</a>
+        <a class="nav-cta" href="/#recursos">Explorar</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= PORTADA ================= -->
+  <section class="intro">
+    <div class="intro-grid">
+      <img class="portrait" src="/img/autor-640.jpg"
+           srcset="/img/autor-320.jpg 320w, /img/autor-640.jpg 640w" sizes="200px"
+           width="200" height="200"
+           alt="Retrato de Héctor Enrique Banquez Buendía">
+      <div>
+        <span class="eyebrow">El autor</span>
+        <h1>Héctor Enrique Banquez Buendía</h1>
+        <p class="role">Docente de matemáticas y estadística · Doctorando en Educación Matemática ·
+           Magíster en Recursos Digitales Aplicados a la Educación. Cartagena de Indias, Colombia.</p>
+        <div class="idlinks">
+          <a class="idlink" href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9 8h.01"/></svg>
+            ORCID 0009-0007-6705-0407</a>
+          <a class="idlink" href="https://www.linkedin.com/in/hectorbanquez" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7h.01M12 17v-4a2 2 0 0 1 4 0v4"/></svg>
+            LinkedIn</a>
+          <a class="idlink" href="mailto:bahecbu@gmail.com">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            Escribir</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= QUIÉN SOY ================= -->
+  <section class="wrap">
+    <div class="lede">
+      <p>Llevo más de diez años enseñando matemáticas y estadística en básica secundaria y media: álgebra,
+         geometría, funciones, cálculo y estadística, en aulas de Cartagena. Esa es la parte que explica
+         por qué existe Didaxis Lab.</p>
+      <p>Los recursos de este sitio no nacieron de una idea de producto, sino de una dificultad concreta
+         de clase: un estudiante puede llegar al resultado correcto sin haber sostenido en ningún momento
+         el porqué. Un simulador no resuelve eso por sí solo, pero puede obligar a que el estudiante se
+         comprometa con una predicción antes de ver la respuesta, y después confrontarla con lo que
+         realmente ocurre.</p>
+      <p class="pull">La inteligencia artificial da fluidez. La comprensión exige sostener el porqué.</p>
+      <p>Esa misma pregunta es la de mi investigación doctoral. Estudio cómo la tecnología media la
+         argumentación matemática: qué cambia en el razonamiento de un estudiante cuando arrastra un
+         punto en geometría dinámica, y qué queda del juicio del docente cuando una inteligencia
+         artificial ya le entregó una respuesta terminada.</p>
+      <p>Coordino además la plataforma Moodle de mi institución y dirijo a cuatro practicantes de diseño
+         instruccional en la producción de recursos digitales. Cada laboratorio de este sitio pasa por el
+         <a href="https://doi.org/10.5281/zenodo.24509193" target="_blank" rel="noopener">marco de calidad</a>
+         antes de publicarse: si una sola casilla queda sin marcar, no sale.</p>
+    </div>
+  </section>
+
+  <!-- ================= FORMACIÓN ================= -->
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Formación</h2>
+      </div>
+      <ul class="tl">
+        <li>
+          <div class="t-when">Mar. 2024 – actualidad</div>
+          <div class="t-what">Doctorado en Educación Matemática <span class="tag">En curso</span></div>
+          <div class="t-where">Universidad Pedagógica Experimental Libertador (UPEL), Venezuela</div>
+          <p class="t-note">Tesis en desarrollo: «Argumentación matemática mediada por tecnología en
+             funciones racionales», con enfoque etnográfico. Grado previsto para 2027.</p>
+        </li>
+        <li>
+          <div class="t-when">Feb. 2022 – may. 2024</div>
+          <div class="t-what">Magíster en Recursos Digitales Aplicados a la Educación</div>
+          <div class="t-where">Universidad de Cartagena</div>
+          <p class="t-note">Tesis en coautoría sobre el fortalecimiento del pensamiento aleatorio
+             mediante aprendizaje basado en proyectos y un objeto virtual de aprendizaje.</p>
+        </li>
+        <li>
+          <div class="t-when">Feb. 2022 – feb. 2023</div>
+          <div class="t-what">Especialista en Didáctica y TIC</div>
+          <div class="t-where">Universidad de Cartagena</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= INVESTIGACIÓN ================= -->
+  <section class="wrap">
+    <div class="sec-head">
+      <h2>Investigación y publicaciones</h2>
+      <p>Argumentación matemática y mediación tecnológica · inteligencia artificial generativa y
+         validación matemática en educación · diseño de recursos educativos digitales y multimodalidad.</p>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:10px;">Artículos en revistas indexadas y arbitradas</h3>
+    <ul class="pubs">
+      <li>
+        <div class="p-title">Argumentación en el estudio de funciones matemáticas en educación media:
+          una experiencia áulica con un recurso interactivo</div>
+        <p class="p-meta"><em>UNIÓN – Revista Iberoamericana de Educación Matemática</em>, 22(76), 2026 ·
+          <a href="https://revistaunion.org/index.php/UNION/article/view/1815" target="_blank" rel="noopener">revistaunion.org/index.php/UNION/article/view/1815</a></p>
+      </li>
+      <li>
+        <div class="p-title">Argumentación e inteligencia artificial en las políticas y el currículo de
+          Colombia: análisis crítico de los marcos UNESCO, CONPES 4144 y DBA</div>
+        <p class="p-meta"><em>CienciAmérica</em>, 15(2), 58–76, 2026 ·
+          <a href="https://doi.org/10.33210/ca.v15i2.561" target="_blank" rel="noopener">doi.org/10.33210/ca.v15i2.561</a></p>
+      </li>
+      <li>
+        <div class="p-title">La multimodalidad en entornos Moodle como estrategia de aprendizaje híbrido:
+          revisión integrativa de estudios en educación básica y media (2015–2025)</div>
+        <p class="p-meta"><em>Revista Científica Innovación Educativa EduSciences</em>, 112–129, 2026 ·
+          <a href="https://doi.org/10.47230/EduSciences.v2.n2.2026.112-129" target="_blank" rel="noopener">doi.org/10.47230/EduSciences.v2.n2.2026.112-129</a></p>
+      </li>
+      <li>
+        <div class="p-title">Fricción epistémica evaluativa: un marco para fortalecer la atribución de
+          comprensión matemática en tareas mediadas por inteligencia artificial generativa
+          <span class="tag press">En prensa</span></div>
+        <p class="p-meta"><em>Revista Digital Docentes Conectados</em>, Universidad Nacional de San Luis,
+          Argentina · Publicación prevista para diciembre de 2026</p>
+      </li>
+    </ul>
+
+    <h3 style="font-size:16px;font-weight:700;margin:26px 0 10px;">Preprints</h3>
+    <ul class="pubs">
+      <li>
+        <div class="p-title">Mediación semiótica de la argumentación matemática en entornos de geometría
+          dinámica: un modelo analítico para GeoGebra en educación secundaria</div>
+        <p class="p-meta">EdArXiv, 2026 ·
+          <a href="https://doi.org/10.35542/osf.io/crkgy_v2" target="_blank" rel="noopener">doi.org/10.35542/osf.io/crkgy_v2</a></p>
+      </li>
+      <li>
+        <div class="p-title">Juicio didáctico-matemático ante respuestas generadas por inteligencia
+          artificial: una revisión integrativa de estudios empíricos</div>
+        <p class="p-meta">SocArXiv, 2026 ·
+          <a href="https://doi.org/10.31235/osf.io/bczdp_v2" target="_blank" rel="noopener">doi.org/10.31235/osf.io/bczdp_v2</a></p>
+      </li>
+    </ul>
+
+    <h3 style="font-size:16px;font-weight:700;margin:26px 0 10px;">Documentos del proyecto</h3>
+    <ul class="pubs">
+      <li>
+        <div class="p-title">Didaxis Lab. Matemática que se manipula: fundamentación teórica, didáctica
+          y técnica de un laboratorio abierto de matemáticas interactivas para el aula colombiana (v. 1.1)</div>
+        <p class="p-meta">Didaxis Lab; Zenodo, 2026 ·
+          <a href="https://doi.org/10.5281/zenodo.24509602" target="_blank" rel="noopener">doi.org/10.5281/zenodo.24509602</a></p>
+      </li>
+      <li>
+        <div class="p-title">Didaxis Lab. Marco de calidad de los recursos (v. 2.0)</div>
+        <p class="p-meta">Didaxis Lab; Zenodo, 2026 ·
+          <a href="https://doi.org/10.5281/zenodo.24509193" target="_blank" rel="noopener">doi.org/10.5281/zenodo.24509193</a></p>
+      </li>
+    </ul>
+
+    <details class="more">
+      <summary>Ponencias y conferencias <span class="sr-only">(desplegar)</span></summary>
+      <div>
+        <ul class="pubs">
+          <li>
+            <div class="p-title">Monstruos en la pantalla: una lectura lakatosiana del teorema de Varignon
+              en geometría dinámica</div>
+            <p class="p-meta">IV Foro de Historia y Filosofía de las Matemáticas, Universidad del Atlántico,
+              Colombia · 2–3 de diciembre de 2026</p>
+          </li>
+          <li>
+            <div class="p-title">Crear con IA, usar sin conexión: diseño y validación docente de recursos
+              interactivos para aulas con conectividad limitada</div>
+            <p class="p-meta">Congreso Internacional de Inteligencia Artificial, Juventudes por Latinoamérica
+              y el Caribe y Fundación Educando con Amor, Puerto Rico · 20–22 de noviembre de 2026</p>
+          </li>
+          <li>
+            <div class="p-title">De la pantalla a la razón: un modelo para analizar cómo GeoGebra media la
+              argumentación matemática en secundaria</div>
+            <p class="p-meta">IV Congreso Internacional de la Innovación y la Tecnología en la Educación,
+              Universidad Andina Simón Bolívar, Ecuador · 12–14 de noviembre de 2026</p>
+          </li>
+          <li>
+            <div class="p-title">Inteligencia artificial como andamio cognitivo: una experiencia en cálculo
+              de grado undécimo</div>
+            <p class="p-meta">Comunicaciones de Innovación Curricular en Educación Matemática,
+              Universidad de los Andes, Bogotá · 3 de noviembre de 2026</p>
+          </li>
+          <li>
+            <div class="p-title">¿Quién valida lo que responde la IA? El juicio didáctico-matemático como
+              competencia de la profesión docente</div>
+            <p class="p-meta">III Congreso Internacional sobre la Profesión Docente, Red de Investigación
+              Educativa Paraguay (RIE-Py), Asunción · 29–30 de octubre de 2026</p>
+          </li>
+          <li>
+            <div class="p-title">El error como aprendizaje: pensamiento aleatorio y preguntas Saber 11 en
+              entornos digitales</div>
+            <p class="p-meta">Comunicaciones de Innovación Curricular en Educación Matemática,
+              Universidad de los Andes, Bogotá · 18 de agosto de 2026</p>
+          </li>
+          <li>
+            <div class="p-title">Contenidos multimodales para aprender dentro y fuera del aula: una
+              experiencia de diseño en Moodle</div>
+            <p class="p-meta">I Congreso Internacional de Experiencias Educativas «Padre Joaquín López»,
+              Fe y Alegría Venezuela · 17–19 de junio de 2026</p>
+          </li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= AULA Y FORMACIÓN DOCENTE ================= -->
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>En el aula y con otros docentes</h2>
+        <p>Diez años de clase y de liderazgo académico en colegios de Cartagena, más la formación que
+           imparto a otros profesores.</p>
+      </div>
+      <ul class="tl">
+        <li>
+          <div class="t-when">Oct. 2024 – actualidad</div>
+          <div class="t-what">Líder de Plataforma Educativa</div>
+          <div class="t-where">Colegio Biffi, Cartagena</div>
+          <p class="t-note">Coordino la plataforma Moodle institucional y dirijo a cuatro practicantes de
+             Ingeniería Multimedia y Producción Multimedia en el diseño instruccional y la producción de
+             recursos digitales, que reviso y valido editorial y pedagógicamente.</p>
+        </li>
+        <li>
+          <div class="t-when">Ene. 2024 – may. 2025</div>
+          <div class="t-what">Líder de Área y Docente de Matemáticas</div>
+          <div class="t-where">Colegio Biffi, Cartagena</div>
+          <p class="t-note">Matemáticas en 8.º y 11.º, incluidos funciones y cálculo, con preparación para
+             la prueba Saber 11.º. Coordiné la planeación curricular del área con enfoque STEAM e inclusivo.</p>
+        </li>
+        <li>
+          <div class="t-when">Feb. 2023 – dic. 2023</div>
+          <div class="t-what">Docente de Matemáticas</div>
+          <div class="t-where">Colegio de La Salle, Cartagena</div>
+          <p class="t-note">Álgebra y geometría en 8.º y 9.º centradas en la resolución de problemas.
+             Lideré las Olimpiadas Matemáticas Lasallistas 2023.</p>
+        </li>
+        <li>
+          <div class="t-when">Feb. 2018 – nov. 2022</div>
+          <div class="t-what">Docente de Matemáticas y Tecnología</div>
+          <div class="t-where">Colegio Militar Almirante Colón, Cartagena</div>
+          <p class="t-note">Matemáticas, tecnología y estadística de 8.º a 11.º. Apliqué análisis de
+             regresión lineal a la certificación de calidad EFQM de la institución.</p>
+        </li>
+        <li>
+          <div class="t-when">Feb. 2016 – nov. 2017</div>
+          <div class="t-what">Docente de Matemáticas y Física</div>
+          <div class="t-where">Centro de Enseñanza Hijos de Bolívar, Cartagena</div>
+        </li>
+      </ul>
+
+      <details class="more">
+        <summary>Formación docente que he impartido <span class="sr-only">(desplegar)</span></summary>
+        <div>
+          <div class="teach" style="margin-top:4px;">
+            <div>
+              <h3>Diseñar para aprender</h3>
+              <p>Pedagogía, inteligencia artificial y recursos digitales para transformar la clase.
+                 Tallerista invitado, Corporación Instituto Los Angelitos, Cartagena (oct. 2026, 4 h).</p>
+            </div>
+            <div>
+              <h3>Evaluar con sentido</h3>
+              <p>Diseño de preguntas interactivas en Moodle. Colegio Biffi, Cartagena (mar. 2026, 2 h),
+                 con cobertura del 100 % del cuerpo docente.</p>
+            </div>
+            <div>
+              <h3>Inteligencia artificial aplicada a la educación</h3>
+              <p>Colegio Biffi, Cartagena (oct. 2025, 4 h), con cobertura del 100 % del cuerpo docente.</p>
+            </div>
+            <div>
+              <h3>Referentes de calidad del MEN</h3>
+              <p>Construcción del currículo. Colegio Militar Almirante Colón, Cartagena (abr. 2019, 2 h).</p>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= CIERRE ================= -->
+  <section class="wrap">
+    <div class="cta">
+      <div>
+        <h2>Los laboratorios</h2>
+        <p>Siete simuladores y tres juegos, abiertos y gratuitos, que funcionan sin conexión y se
+           incrustan en cualquier plataforma. Úsalos, adáptalos y compártelos citando la fuente.</p>
+      </div>
+      <a class="btn" href="/#recursos">Ver los recursos →</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-inner">
+      <div class="foot-brand">
+        <div class="row">
+          <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true">
+            <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+            <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+            <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+            <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+          </svg>
+          <span class="name">Didaxis Lab</span>
+        </div>
+        <small>Simuladores interactivos de matemáticas, abiertos para toda el aula.</small>
+      </div>
+      <div style="display:flex;gap:44px;flex-wrap:wrap;">
+        <div class="foot-col">
+          <h4>Proyecto</h4>
+          <a href="/#recursos">Laboratorios</a>
+          <a href="/juegos/">Juegos</a>
+          <a href="/#fundamentacion">Fundamentación</a>
+          <a href="/#incrustar">Llévalo a tu plataforma</a>
+        </div>
+        <div class="foot-col">
+          <h4>El autor</h4>
+          <a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">ORCID</a>
+          <a href="https://www.linkedin.com/in/hectorbanquez" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="mailto:bahecbu@gmail.com">Correo</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>
+        <span>© 2026 Didaxis Lab · Héctor Banquez</span>
+        <span>Contenido bajo licencia CC BY 4.0</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
