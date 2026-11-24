@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poliedros y Redes 3D · Laboratorio interactivo — Didaxis Lab</title>
+<meta name="description" content="Laboratorio interactivo para plegar y desplegar sólidos: cinco familias de poliedros, los once desarrollos del cubo y la relación C + V − A con su contraejemplo. Guía docente y 6 retos tipo Saber. Funciona sin conexión.">
+
+  <!-- ============ METADATOS · EDITAR POR RECURSO ============ -->
+  <link rel="canonical" href="https://didaxislab.com/recursos/poliedros-redes-3d/">
+  <meta name="author" content="Héctor Enrique Banquez Buendía">
+  <meta name="keywords" content="poliedros, redes, desarrollos planos, plantillas, cubo, prisma, pirámide, relación de Euler, caras vértices aristas, pensamiento espacial, simulador, recurso interactivo, DBA, matemáticas, Colombia">
+
+  <!-- Citación académica (Zenodo / Google Scholar / Zotero) -->
+  <meta name="DC.identifier" content="https://doi.org/10.5281/zenodo.24511202">
+  <meta name="citation_title" content="Laboratorio de Poliedros y Redes 3D: del sólido a su desarrollo plano (v1.0)">
+  <meta name="citation_author" content="Banquez Buendía, Héctor Enrique">
+  <meta name="citation_publication_date" content="2026/11">
+  <meta name="citation_doi" content="10.5281/zenodo.24511202">
+  <meta name="citation_public_url" content="https://didaxislab.com/recursos/poliedros-redes-3d/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Didaxis Lab">
+  <meta property="og:locale" content="es_CO">
+  <meta property="og:title" content="Poliedros y Redes 3D · Laboratorio interactivo — Didaxis Lab">
+  <meta property="og:description" content="Tres estaciones para plegar y desplegar sólidos, construir los once desarrollos del cubo y descubrir dónde deja de valer que C + V − A = 2.">
+  <meta property="og:url" content="https://didaxislab.com/recursos/poliedros-redes-3d/">
+  <meta property="og:image" content="https://didaxislab.com/recursos/poliedros-redes-3d/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Didaxis Lab — Laboratorio de Poliedros y Redes 3D">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Poliedros y Redes 3D · Laboratorio interactivo — Didaxis Lab">
+  <meta name="twitter:description" content="Pliega y despliega sólidos para descubrir por qué 6 cuadrados no dan 24 aristas, y dónde deja de valer que C + V − A = 2.">
+  <meta name="twitter:image" content="https://didaxislab.com/recursos/poliedros-redes-3d/og.png">
+
+  <!-- Datos estructurados -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    "name": "Laboratorio de Poliedros y Redes 3D: del sólido a su desarrollo plano",
+    "description": "Laboratorio interactivo en tres estaciones para relacionar un sólido con sus desarrollos planos: cinco familias de poliedros con desplegado animado y pares de pegado, constructor de los once desarrollos válidos del cubo con detección de choques, y laboratorio de la relación C + V − A con truncamiento y un poliedro con túnel como contraejemplo. Incluye 6 retos tipo Saber con diagnóstico por distractor y guía docente alineada a los DBA del MEN de Colombia.",
+    "url": "https://didaxislab.com/recursos/poliedros-redes-3d/",
+    "identifier": "https://doi.org/10.5281/zenodo.24511202",
+    "sameAs": "https://doi.org/10.5281/zenodo.24511202",
+    "inLanguage": "es",
+    "learningResourceType": "Simulación interactiva",
+    "interactivityType": "active",
+    "educationalLevel": "Educación Básica (5.° a 8.°)",
+    "educationalUse": ["instruction", "assessment"],
+    "teaches": "Relación entre un cuerpo tridimensional y sus desarrollos planos; los once desarrollos del cubo; caras opuestas; relación C + V − A en poliedros cerrados y su contraejemplo con túnel; generalización algebraica para prismas de base n.",
+    "keywords": "poliedros, desarrollos planos, plantillas, cubo, relación de Euler, caras vértices aristas, pensamiento espacial, DBA",
+    "isAccessibleForFree": true,
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "creativeWorkStatus": "Published",
+    "datePublished": "2026-11-24",
+    "dateModified": "2026-11-24",
+    "version": "1.0",
+    "educationalAlignment": [
+      { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "5.° DBA 6 — Propiedades de un cuerpo en términos de bidimensionalidad y tridimensionalidad; composición y descomposición de las formas" },
+      { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "6.° DBA 4 — Estrategias e instrumentos (desarrollo de la forma o plantillas) para la construcción de figuras planas y cuerpos" },
+      { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "8.° DBA 9 — Procedimientos inductivos y lenguaje algebraico para formular y poner a prueba conjeturas" }
+    ],
+    "author": {
+      "@type": "Person",
+      "name": "Héctor Enrique Banquez Buendía",
+      "identifier": "https://orcid.org/0009-0007-6705-0407",
+      "url": "https://orcid.org/0009-0007-6705-0407"
+    },
+    "publisher": { "@type": "Organization", "name": "Didaxis Lab", "url": "https://didaxislab.com" }
+  }
+  </script>
+
+<style>
+  :root{
+    --navy:#1B2A5A;
+    --navy-dark:#0F1C3F;
+    --cyan:#0BC0D8;
+    --cyan-soft:#E2F7FA;
+    --cyan-deep:#0E7888;      /* Enlaces en estado hover: 5,17:1 sobre blanco */
+    --ink:#1B2A5A;
+    --muted:#5B6B82;
+    --line:#E6E9EF;
+    --bg:#FAFBFC;
+    --panel:#FFFFFF;
+    --ok:#047857;             /* Confirmaciones con texto blanco encima: 5,48:1 */
+    --ok-soft:#E7F7EF;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --maxw:880px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--navy);}
+  h2,h3,h4{color:var(--navy);letter-spacing:-.01em;}
+
+  /* ---------- Barra de marca ---------- */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:20;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;min-height:44px;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .topbar a.back{font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .topbar a.back:hover{color:var(--navy);}
+
+  /* ---------- Layout ---------- */
+  main{max-width:var(--maxw);margin:0 auto;padding:32px 20px 16px;}
+  section{margin-bottom:36px;}
+
+  /* ---------- Encabezado del recurso ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center;}
+  .chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;
+    background:#EEF1F6;color:var(--muted);}
+  .chip.topic{background:var(--cyan-soft);color:var(--navy);font-weight:700;}
+  .chip.status-ok{background:var(--ok-soft);color:#16623F;font-weight:700;}
+  .resource-title{font-size:clamp(30px,5.5vw,44px);font-weight:800;line-height:1.12;color:var(--navy);}
+  .resource-lead{margin-top:14px;font-size:clamp(16px,2.4vw,19px);color:var(--muted);max-width:62ch;}
+
+  /* ---------- Escenario del simulador ---------- */
+  .stage-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:0 2px 10px;flex-wrap:wrap;}
+  .stage-label{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--navy);display:inline-flex;align-items:center;gap:8px;}
+  .stage-label::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .stage-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .stage-link{font-size:13.5px;font-weight:600;color:var(--navy);text-decoration:none;
+    display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:9px;min-height:44px;
+    border:1px solid var(--line);background:var(--panel);box-shadow:0 1px 2px rgba(22,36,58,.04);transition:.15s;}
+  .stage-link:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+  .stage-link svg{width:15px;height:15px;flex:0 0 auto;}
+  .stage{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    box-shadow:var(--shadow);background:var(--panel);}
+  .stage iframe{display:block;width:100%;height:740px;border:0;}
+
+  /* ---------- Encabezado de sección ---------- */
+  .section-head{margin-bottom:14px;}
+  .section-head h2{font-size:23px;font-weight:800;}
+  .section-sub{color:var(--muted);font-size:15px;margin-top:6px;max-width:64ch;}
+
+  /* ---------- Estaciones ---------- */
+  .station-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;}
+  .station-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px 20px;}
+  .station-card .num{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--muted);display:block;margin-bottom:3px;}
+  .station-card h3{font-size:16.5px;font-weight:800;margin-bottom:6px;}
+  .station-card p{font-size:14.5px;color:var(--muted);}
+
+  /* ---------- Ficha curricular ---------- */
+  .fact-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;}
+  .fact-row{display:flex;gap:18px;padding:13px 20px;border-top:1px solid var(--line);flex-wrap:wrap;}
+  .fact-row:first-child{border-top:0;}
+  .fact-k{flex:0 0 190px;font-size:12px;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted);padding-top:2px;}
+  .fact-v{flex:1;min-width:220px;font-size:15px;color:var(--ink);}
+  .fact-v .note{display:block;font-size:13.5px;color:var(--muted);margin-top:3px;}
+  @media (max-width:560px){.fact-k{flex:0 0 100%;}}
+
+  /* ---------- Guía docente (PDF) ---------- */
+  .guide-card{display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 24px;}
+  .guide-icon{flex:0 0 auto;width:46px;height:46px;border-radius:11px;background:var(--cyan-soft);
+    display:flex;align-items:center;justify-content:center;color:var(--navy);}
+  .guide-icon svg{width:24px;height:24px;}
+  .guide-text{flex:1;min-width:220px;}
+  .guide-text h2{font-size:20px;font-weight:800;margin-bottom:4px;}
+  .guide-text p{color:var(--muted);font-size:14.5px;}
+  .guide-btn{flex:0 0 auto;font-size:14px;font-weight:700;color:#fff;background:var(--navy);
+    border-radius:10px;padding:11px 18px;text-decoration:none;white-space:nowrap;transition:background .15s;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .guide-btn:hover{background:var(--navy-dark);}
+  @media (max-width:560px){.guide-btn{width:100%;justify-content:center;}}
+
+  /* ---------- Compartir e incrustar ---------- */
+  .share{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;box-shadow:var(--shadow);}
+  .share-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+  .share h2{font-size:20px;font-weight:800;}
+  .share-tabs{display:inline-flex;background:#F4F6F9;border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px;}
+  .share-tab{font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);background:transparent;
+    border:0;border-radius:7px;padding:5px 11px;cursor:pointer;transition:.15s;min-height:38px;}
+  .share-tab.active{background:var(--panel);color:var(--navy);box-shadow:0 1px 3px rgba(22,36,58,.08);}
+  .share p{color:var(--muted);font-size:14.5px;margin-bottom:14px;max-width:64ch;}
+  .code-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;}
+  code.share-code-box{flex:1;min-width:0;font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12.5px;line-height:1.5;color:#33415A;background:#F4F6F9;border:1px solid var(--line);
+    border-radius:10px;padding:11px 14px;overflow-x:auto;white-space:nowrap;display:flex;align-items:center;}
+  .btn-copy{font:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;color:#fff;
+    background:var(--navy);border:0;border-radius:10px;padding:0 20px;min-height:44px;transition:background .15s;}
+  .btn-copy:hover{background:var(--navy-dark);}
+  .btn-copy.done{background:var(--ok);}
+  @media (max-width:700px){.btn-copy{width:100%;padding:12px 0;}.stage iframe{height:860px;}}
+
+  /* ---------- Autoría, DOI y cómo citar ---------- */
+  .meta-block{border-top:1px solid var(--line);padding-top:24px;}
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px 20px;margin-bottom:20px;}
+  .meta-item{display:flex;flex-direction:column;gap:2px;}
+  .meta-k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .meta-v{font-size:14px;color:var(--ink);}
+  .meta-v a{color:var(--navy);font-weight:600;text-decoration:none;border-bottom:1px solid var(--cyan);}
+  .meta-v a:hover{color:var(--cyan-deep);}
+  .cite{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);}
+  .cite-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+  .cite-label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);}
+  .cite-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .cite-copy{font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--navy);background:#fff;
+    border:1px solid var(--line);border-radius:8px;padding:6px 12px;white-space:nowrap;transition:.15s;min-height:44px;}
+  .cite-copy:hover{background:var(--cyan-soft);border-color:var(--cyan);}
+  .cite-copy.done{background:var(--ok-soft);border-color:#BCE7D2;color:#16623F;}
+  .cite-text{font-size:13.5px;line-height:1.6;color:var(--ink);font-family:ui-monospace,Menlo,Consolas,monospace;}
+
+  /* ---------- Pie ---------- */
+  footer{border-top:1px solid var(--line);max-width:var(--maxw);margin:0 auto;padding:24px 20px 40px;
+    font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;}
+
+  a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none !important;}}
+</style>
+</head>
+<body>
+
+  <!-- ====================== BARRA DE MARCA ====================== -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </a>
+      <a class="back" href="/recursos/">← Todos los recursos</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================== ENCABEZADO DEL RECURSO ================== -->
+    <section class="resource-head">
+      <div class="chips">
+        <span class="chip topic">Pensamiento espacial</span>
+        <span class="chip">Grados 5.° a 8.°</span>
+        <span class="chip">60 min</span>
+        <span class="chip status-ok">Versión 1.0</span>
+      </div>
+      <h1 class="resource-title">Poliedros y Redes 3D</h1>
+      <p class="resource-lead">Una red del cubo tiene 6 cuadrados y 24 bordes en el papel, pero el cubo armado tiene 12 aristas. Tres estaciones para entender por qué, construir los once desarrollos del cubo y descubrir dónde deja de valer que C + V − A = 2.</p>
+    </section>
+
+    <!-- ===================== SIMULADOR ===================== -->
+    <section class="stage-wrap">
+      <div class="stage-bar">
+        <span class="stage-label">Simulador interactivo</span>
+        <div class="stage-actions">
+          <a class="stage-link" href="./simulador.html" target="_blank" rel="noopener" title="Abrir el simulador solo, a pantalla completa">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            <span>Abrir solo el simulador</span>
+          </a>
+          <a class="stage-link" href="https://doi.org/10.5281/zenodo.24511202" target="_blank" rel="noopener" title="Ir al registro en Zenodo para descargar el archivo autocontenido y usarlo sin conexión">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>Descargar para usar sin conexión</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="stage">
+        <iframe src="./simulador.html" title="Poliedros y Redes 3D: simulador interactivo" loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <!-- ===================== QUÉ HACE EL ESTUDIANTE ===================== -->
+    <section class="stations">
+      <div class="section-head">
+        <h2>Qué hace el estudiante</h2>
+        <p class="section-sub">El simulador abre pidiendo una predicción escrita. Hasta que el estudiante la registra, la columna C + V − A muestra «Oculta», y el desplegado animado, los pares de pegado y los seis retos quedan inactivos. Girar los sólidos, Rayos X y contar caras siguen disponibles: se bloquea lo que se anticipa, no la exploración.</p>
+      </div>
+
+      <div class="station-grid">
+        <article class="station-card">
+          <span class="num">Estación 1</span>
+          <h3>Explora y despliega</h3>
+          <p>Gira cinco familias de poliedros, mira a través con Rayos X, cuenta caras tocándolas y despliega el sólido hasta su red plana. Los <em>pares de pegado</em> numeran los bordes que se juntan de dos en dos.</p>
+        </article>
+        <article class="station-card">
+          <span class="num">Estación 2</span>
+          <h3>Constructor de redes del cubo</h3>
+          <p>Arma arreglos de seis cuadrados sobre una cuadrícula y pliégalos en 3D. El simulador reconoce los once desarrollos válidos y muestra exactamente qué caras chocan cuando el arreglo no cierra.</p>
+        </article>
+        <article class="station-card">
+          <span class="num">Estación 3</span>
+          <h3>Laboratorio de C + V − A</h3>
+          <p>Corta esquinas del cubo y del tetraedro de una en una y registra cada paso en una tabla acumulativa. Luego abre el poliedro con túnel pasante, que da 0 en vez de 2 y marca el límite de la regla.</p>
+        </article>
+        <article class="station-card">
+          <span class="num">Paso 3</span>
+          <h3>Retos, conclusión y código</h3>
+          <p>Seis retos tipo Saber con diagnóstico escrito para cada distractor y tres pistas escalonadas. Uno de ellos va <em>sin gráfico en pantalla</em>. Cierra con una conclusión escrita y un código de compleción que el docente comprueba sin conexión.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== GUÍA DOCENTE (PDF) ===================== -->
+    <section class="guide">
+      <div class="guide-card">
+        <span class="guide-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>
+            <path d="M9 13h6M9 17h6"/>
+          </svg>
+        </span>
+        <div class="guide-text">
+          <h2>Guía docente (PDF)</h2>
+          <p>Pensada para preparar la sesión antes de entrar al aula —en papel y sin un computador delante—, detalla cómo dictar la clase paso a paso: la secuencia en cuatro bloques con tiempos, las consignas formuladas tal como se dicen en voz alta, qué hacer cuando el curso se atasca en cada obstáculo concreto, las claves de los seis retos verificadas contra el código fuente y un plan B para dictar la clase con un solo computador.</p>
+        </div>
+        <a class="guide-btn" href="./guia-docente.pdf" target="_blank" rel="noopener">⬇ Descargar PDF</a>
+      </div>
+    </section>
+
+    <!-- ===================== FICHA CURRICULAR ===================== -->
+    <section class="curricular">
+      <div class="section-head">
+        <h2>Ficha curricular</h2>
+      </div>
+      <div class="fact-card">
+        <div class="fact-row">
+          <span class="fact-k">Pensamiento</span>
+          <span class="fact-v">Espacial y sistemas geométricos, con entrada al variacional en el Paso 3</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-k">Grados</span>
+          <span class="fact-v">5.° a 8.°</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-k">DBA v2 (MEN, 2016)</span>
+          <span class="fact-v">5.° DBA 6 · 6.° DBA 4 · 7.° DBA 5 y 7 · 8.° DBA 9 y 7
+            <span class="note">En 5.° y 6.° el recurso cubre su DBA de principio a fin; en 8.° lo cubre por la vía de la Estación 3 y de los retos 4 a 6. En 7.° el apoyo es parcial: el recurso hace variar la base de 3 a 8 lados y pide deducir el prisma de 20, pero no pide escribir las expresiones C = n + 2, V = 2n y A = 3n, que es lo que el DBA 7 espera. La guía docente indica cómo pedirlas aparte.</span></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-k">Competencias Saber 11</span>
+          <span class="fact-v">Interpretación y representación · Formulación y ejecución · Argumentación
+            <span class="note">Los 6 retos están dentro del simulador, dos por competencia. Cada distractor lleva un diagnóstico escrito que nombra el error, y hay tres pistas escalonadas por reto.</span></span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-k">Obstáculo que ataca</span>
+          <span class="fact-v">Contar los bordes del papel como aristas del sólido; dar por válida cualquier figura de seis cuadrados pegados; suponer que los extremos de una tira quedan enfrentados; sumar los cortes al balance; olvidar las tapas del prisma; leer el contraejemplo como un error de conteo</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-k">Tiempo sugerido</span>
+          <span class="fact-v">60 minutos en cuatro bloques: anticipación, exploración, retos y cierre. Ruta compacta de 45 min con las Estaciones 1 y 2 y los retos 1, 2 y 3</span>
+        </div>
+        <div class="fact-row">
+          <span class="fact-k">Requisitos</span>
+          <span class="fact-v">Ninguno. Sin registro, sin cuenta y sin conexión una vez cargado el archivo. Ningún dato sale del dispositivo del estudiante.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== COMPARTIR ===================== -->
+    <section class="share">
+      <div class="share-top">
+        <h2>Compartir en tu clase</h2>
+        <div class="share-tabs" role="tablist" aria-label="Opciones para compartir el simulador">
+          <button type="button" class="share-tab active" id="tabShareLink" role="tab" aria-selected="true">Enlace</button>
+          <button type="button" class="share-tab" id="tabShareEmbed" role="tab" aria-selected="false">Incrustar</button>
+        </div>
+      </div>
+      <p id="shareDesc">Comparte este enlace por WhatsApp, Classroom o Moodle: tus estudiantes abrirán <b>solo el simulador</b>, sin esta página ni la guía docente.</p>
+      <div class="code-row">
+        <code class="share-code-box" id="shareCodeBox">https://didaxislab.com/recursos/poliedros-redes-3d/simulador.html</code>
+        <button class="btn-copy" id="copyShareBtn" type="button">Copiar enlace</button>
+      </div>
+    </section>
+
+    <!-- ===================== AUTORÍA, DOI Y CÓMO CITAR ===================== -->
+    <section class="meta-block">
+      <div class="meta-grid">
+        <div class="meta-item"><span class="meta-k">Autor</span><span class="meta-v">Héctor Enrique Banquez Buendía</span></div>
+        <div class="meta-item"><span class="meta-k">ORCID</span><span class="meta-v"><a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">0009-0007-6705-0407</a></span></div>
+        <div class="meta-item"><span class="meta-k">DOI (Zenodo)</span><span class="meta-v"><a href="https://doi.org/10.5281/zenodo.24511202" target="_blank" rel="noopener">10.5281/zenodo.24511202</a></span></div>
+        <div class="meta-item"><span class="meta-k">Licencia</span><span class="meta-v"><a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">CC BY 4.0</a></span></div>
+        <div class="meta-item"><span class="meta-k">Versión</span><span class="meta-v">v1.0 · Noviembre de 2026</span></div>
+      </div>
+      <div class="cite">
+        <div class="cite-head">
+          <span class="cite-label">Cómo citar este recurso (APA 7.ª ed.)</span>
+          <div class="cite-actions">
+            <button class="cite-copy" id="risBtn" type="button" title="Exportar la referencia para Zotero o Mendeley">Descargar .RIS</button>
+            <button class="cite-copy" id="citeBtn" type="button">Copiar cita</button>
+          </div>
+        </div>
+        <p class="cite-text" id="citeText">Banquez Buendía, H. E. (2026). <i>Laboratorio de Poliedros y Redes 3D: del sólido a su desarrollo plano</i> (Versión 1.0) [Simulación interactiva]. Didaxis Lab; Zenodo. https://doi.org/10.5281/zenodo.24511202</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>Didaxis Lab · Recursos educativos abiertos</span>
+    <span>CC BY 4.0 · Héctor Banquez</span>
+  </footer>
+
+<script>
+  /* ====================== METADATOS DE CITACIÓN · EDITAR POR RECURSO ====================== */
+  var RESOURCE_RIS_META = {
+    title: "Laboratorio de Poliedros y Redes 3D: del sólido a su desarrollo plano (v. 1.0)",
+    doi: "10.5281/zenodo.24511202",
+    url: "https://doi.org/10.5281/zenodo.24511202",
+    version: "1.0",
+    date: "2026/11/24",
+    filename: "didaxislab-poliedros-redes-3d-v1.ris",
+    keywords: ["Poliedros", "Desarrollos planos", "Relación de Euler", "Pensamiento espacial", "Educación Matemática", "Didaxis Lab"]
+  };
+
+  /* ====================== COMPARTIR: ENLACE O CÓDIGO DE INCRUSTACIÓN ====================== */
+  (function(){
+    var box = document.getElementById('shareCodeBox');
+    var btn = document.getElementById('copyShareBtn');
+    var desc = document.getElementById('shareDesc');
+    var tabLink = document.getElementById('tabShareLink');
+    var tabEmbed = document.getElementById('tabShareEmbed');
+
+    var baseUrl = (location.protocol === 'http:' || location.protocol === 'https:')
+      ? window.location.href.split('?')[0].split('#')[0].replace(/[^\/]*$/, '')
+      : 'https://didaxislab.com/recursos/poliedros-redes-3d/';
+    var studentUrl = baseUrl + 'simulador.html';
+    var iframeCode = '<iframe src="' + studentUrl + '" width="100%" height="740" '
+                   + 'style="border:1px solid #e6e9ef;border-radius:14px" '
+                   + 'loading="lazy" allowfullscreen></iframe>';
+
+    var mode = 'link'; // 'link' | 'embed'
+
+    function updateShareUI(){
+      var isLink = (mode === 'link');
+      tabLink.classList.toggle('active', isLink);
+      tabLink.setAttribute('aria-selected', isLink ? 'true' : 'false');
+      tabEmbed.classList.toggle('active', !isLink);
+      tabEmbed.setAttribute('aria-selected', !isLink ? 'true' : 'false');
+
+      if(isLink){
+        desc.innerHTML = 'Comparte este enlace por WhatsApp, Classroom o Moodle: tus estudiantes abrirán <b>solo el simulador</b>, sin esta página ni la guía docente.';
+        box.textContent = studentUrl;
+        btn.textContent = 'Copiar enlace';
+      } else {
+        desc.innerHTML = 'Copia este código para incrustar <b>solo el simulador</b> en Moodle, Google Sites o tu página institucional. El estudiante no necesita registrarse.';
+        box.textContent = iframeCode;
+        btn.textContent = 'Copiar código';
+      }
+    }
+
+    tabLink.addEventListener('click', function(){ mode = 'link'; updateShareUI(); });
+    tabEmbed.addEventListener('click', function(){ mode = 'embed'; updateShareUI(); });
+
+    btn.addEventListener('click', function(){
+      var targetText = mode === 'link' ? studentUrl : iframeCode;
+      var defaultLabel = mode === 'link' ? 'Copiar enlace' : 'Copiar código';
+      navigator.clipboard.writeText(targetText).then(function(){
+        btn.textContent = '¡Copiado!';
+        btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = defaultLabel; btn.classList.remove('done'); }, 1800);
+      }).catch(function(){
+        var r = document.createRange(); r.selectNode(box);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        try { document.execCommand('copy'); btn.textContent = '¡Copiado!'; } catch(err){}
+        sel.removeAllRanges();
+        setTimeout(function(){ btn.textContent = defaultLabel; }, 1800);
+      });
+    });
+
+    updateShareUI();
+  })();
+
+  /* ====================== COPIAR CITA APA 7 Y DESCARGAR .RIS ====================== */
+  (function(){
+    var btn = document.getElementById('citeBtn');
+    var txt = document.getElementById('citeText');
+    var risBtn = document.getElementById('risBtn');
+
+    if(btn && txt){
+      btn.addEventListener('click', function(){
+        var s = (txt.innerText || txt.textContent).trim();
+        navigator.clipboard.writeText(s).then(function(){
+          btn.textContent = '¡Copiada!'; btn.classList.add('done');
+          setTimeout(function(){ btn.textContent = 'Copiar cita'; btn.classList.remove('done'); }, 1800);
+        }).catch(function(){
+          var r = document.createRange(); r.selectNode(txt);
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          try{ document.execCommand('copy'); btn.textContent = '¡Copiada!'; }catch(e){}
+          sel.removeAllRanges(); setTimeout(function(){ btn.textContent = 'Copiar cita'; }, 1800);
+        });
+      });
+    }
+
+    if(risBtn){
+      risBtn.addEventListener('click', function(){
+        var kwLines = RESOURCE_RIS_META.keywords.map(function(k){ return 'KW  - ' + k; });
+        var risContent = [
+          'TY  - COMP',
+          'TI  - ' + RESOURCE_RIS_META.title,
+          'AU  - Banquez Buendía, Héctor Enrique',
+          'PY  - 2026',
+          'DA  - ' + RESOURCE_RIS_META.date,
+          'PB  - Didaxis Lab / Zenodo',
+          'ET  - ' + RESOURCE_RIS_META.version,
+          'LA  - es',
+          'DO  - ' + RESOURCE_RIS_META.doi,
+          'UR  - ' + RESOURCE_RIS_META.url
+        ].concat(kwLines, ['ER  - ']).join('\r\n');
+        var blob = new Blob([risContent], { type: 'application/x-research-info-systems;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = RESOURCE_RIS_META.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
+  })();
+</script>
+</body>
+</html>
