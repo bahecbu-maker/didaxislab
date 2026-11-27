@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juegos matemáticos interactivos — Didaxis Lab</title>
+<meta name="description" content="Seis juegos matemáticos abiertos donde la operación es la mecánica: plano cartesiano, geometría 3D, función cuadrática, evaluación de funciones, enteros y deducción numérica. Sin cuentas, descargables y listos para Moodle.">
+
+<!-- ============ METADATOS Y SEO ============ -->
+<link rel="canonical" href="https://didaxislab.com/juegos/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="author" content="Héctor Enrique Banquez Buendía">
+<meta name="keywords" content="juegos de matemáticas, juegos educativos abiertos, plano cartesiano, poliedros, función cuadrática, números enteros, deducción numérica, Moodle, sin conexión, Didaxis Lab">
+<meta name="theme-color" content="#1B2A5A">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Didaxis Lab">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Juegos matemáticos — Didaxis Lab">
+<meta property="og:description" content="Seis juegos donde la matemática es la mecánica: abiertos, descargables, sin cuentas y listos para incrustar en clase.">
+<meta property="og:url" content="https://didaxislab.com/juegos/">
+<meta property="og:image" content="https://didaxislab.com/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Juegos matemáticos interactivos — Didaxis Lab">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Juegos matemáticos — Didaxis Lab">
+<meta name="twitter:description" content="Seis juegos donde la matemática es la mecánica: abiertos, descargables, sin cuentas y listos para incrustar en clase.">
+<meta name="twitter:image" content="https://didaxislab.com/og-home.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": "https://didaxislab.com/juegos/#pagina",
+      "name": "Juegos matemáticos — Didaxis Lab",
+      "url": "https://didaxislab.com/juegos/",
+      "description": "Catálogo de seis juegos educativos abiertos de matemáticas, descargables en un solo archivo HTML y listos para usar sin conexión o incrustar en Moodle.",
+      "inLanguage": "es-CO",
+      "isPartOf": { "@id": "https://didaxislab.com/#website" },
+      "mainEntity": { "@id": "https://didaxislab.com/juegos/#lista" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://didaxislab.com/#autor",
+      "name": "Héctor Enrique Banquez Buendía",
+      "alternateName": "Héctor Banquez",
+      "url": "https://didaxislab.com/autor/",
+      "identifier": "https://orcid.org/0009-0007-6705-0407"
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://didaxislab.com/juegos/#lista",
+      "name": "Juegos matemáticos de Didaxis Lab",
+      "numberOfItems": 6,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "LearningResource",
+            "name": "Rumbo Cartesiano",
+            "url": "https://didaxislab.com/juegos/rumbo-cartesiano.html",
+            "description": "21 misiones en 4 mundos para dominar el plano cartesiano, los cuatro cuadrantes, traslaciones por corrientes, simetría axial y deducción por sonar.",
+            "learningResourceType": "Juego educativo interactivo",
+            "educationalLevel": "Grados 6.º a 9.º",
+            "inLanguage": "es-CO",
+            "isAccessibleForFree": true,
+            "license": "https://creativecommons.org/licenses/by/4.0/",
+            "author": { "@id": "https://didaxislab.com/#autor" }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "LearningResource",
+            "name": "Guardianes del Claro",
+            "url": "https://didaxislab.com/juegos/guardianes-del-claro.html",
+            "description": "Identificación de patrones y evaluación de funciones lineales, cuadráticas y exponenciales para defender la aldea noche a noche.",
+            "learningResourceType": "Juego educativo interactivo",
+            "educationalLevel": "Grados 9.º a 11.º",
+            "inLanguage": "es-CO",
+            "isAccessibleForFree": true,
+            "license": "https://creativecommons.org/licenses/by/4.0/",
+            "author": { "@id": "https://didaxislab.com/#autor" }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "item": {
+            "@type": "LearningResource",
+            "name": "El último pliegue",
+            "url": "https://didaxislab.com/juegos/el-ultimo-pliegue.html",
+            "description": "18 retos en 3 mundos de geometría espacial para plegar desarrollos planos de cubos, prismas, pirámides y orientar rampas.",
+            "learningResourceType": "Juego educativo interactivo",
+            "educationalLevel": "Grados 6.º a 9.º",
+            "inLanguage": "es-CO",
+            "isAccessibleForFree": true,
+            "license": "https://creativecommons.org/licenses/by/4.0/",
+            "author": { "@id": "https://didaxislab.com/#autor" }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "item": {
+            "@type": "LearningResource",
+            "name": "La senda del arquero",
+            "url": "https://didaxislab.com/juegos/senda-del-arquero.html",
+            "description": "20 niveles en 4 actos de tiro con arco donde la flecha sigue una función cuadrática en forma de vértice, factorizada y general.",
+            "learningResourceType": "Juego educativo interactivo",
+            "educationalLevel": "Grados 8.º y 9.º",
+            "inLanguage": "es-CO",
+            "isAccessibleForFree": true,
+            "license": "https://creativecommons.org/licenses/by/4.0/",
+            "author": { "@id": "https://didaxislab.com/#autor" }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "item": {
+            "@type": "LearningResource",
+            "name": "Guardianes del Cero",
+            "url": "https://didaxislab.com/juegos/guardianes-del-cero.html",
+            "description": "Juego de defensa con números enteros donde cada torre suma una cantidad fija para neutralizar invasores negativos exactamente en cero.",
+            "learningResourceType": "Juego educativo interactivo",
+            "educationalLevel": "Grado 7.º en adelante",
+            "inLanguage": "es-CO",
+            "isAccessibleForFree": true,
+            "license": "https://creativecommons.org/licenses/by/4.0/",
+            "author": { "@id": "https://didaxislab.com/#autor" }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "item": {
+            "@type": "LearningResource",
+            "name": "Misión Número Secreto",
+            "url": "https://didaxislab.com/juegos/mision-numero-secreto.html",
+            "description": "Deducción numérica por descarte cruzando pistas de divisibilidad, múltiplos, paridad y desigualdades.",
+            "learningResourceType": "Juego educativo interactivo",
+            "educationalLevel": "Grados 5.º a 8.º",
+            "inLanguage": "es-CO",
+            "isAccessibleForFree": true,
+            "license": "https://creativecommons.org/licenses/by/4.0/",
+            "author": { "@id": "https://didaxislab.com/#autor" }
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+  /* Mismos testigos de diseño que el resto del sitio */
+  :root{
+    --navy:#1B2A5A; --navy-dark:#0F1C3F; --cyan:#0BC0D8; --cyan-soft:#E2F7FA;
+    --cyan-deep:#0E7888; --ink:#1B2A5A; --muted:#5B6B82; --line:#E6E9EF;
+    --bg:#FAFBFC; --panel:#FFFFFF; --grid:rgba(11,192,216,0.06); --radius:16px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --shadow-lg:0 12px 40px rgba(22,36,58,.12); --maxw:1080px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--navy);text-decoration:none;}
+  h1,h2,h3{letter-spacing:-.02em;color:var(--navy);}
+  [hidden]{display:none !important;}
+
+  /* ── Barra superior (misma estructura y comportamiento que la portada) ── */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:30;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:13px 22px;display:flex;
+    align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;min-height:44px;flex:0 0 auto;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .nav{display:flex;align-items:center;gap:22px;}
+  .nav a{font-size:14.5px;font-weight:600;color:var(--muted);
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav a:hover{color:var(--navy);}
+  .nav a[aria-current="page"]{color:var(--navy);}
+  .nav .nav-cta{color:#fff;background:var(--navy);padding:8px 15px;border-radius:9px;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav .nav-cta:hover{background:var(--navy-dark);color:#fff;}
+
+  /* ── Encabezado de página ── */
+  .page-head{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:28px 28px;}
+  .page-head-inner{max-width:var(--maxw);margin:0 auto;padding:50px 22px 42px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .page-head h1{font-size:clamp(32px,5vw,46px);line-height:1.08;font-weight:800;}
+  .page-head p{margin-top:14px;font-size:clamp(16px,2.2vw,18px);color:var(--muted);max-width:62ch;}
+  .head-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+  .head-chips span{font-size:12.5px;font-weight:600;color:var(--navy);background:var(--cyan-soft);
+    border:1px solid #CDEDF3;padding:5px 12px;border-radius:999px;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:34px 22px 48px;}
+
+  /* ── Barra de filtros editorial ── */
+  .catalog-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    flex-wrap:wrap;margin-bottom:26px;}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;}
+  .filter-btn{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+    font-family:inherit;font-size:13.5px;font-weight:700;color:var(--muted);
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;
+    padding:8px 15px;min-height:40px;transition:background .16s,border-color .16s,color .16s;}
+  .filter-btn:hover{border-color:var(--cyan);color:var(--navy);}
+  .filter-btn .count{display:inline-flex;align-items:center;justify-content:center;
+    min-width:20px;height:20px;padding:0 6px;border-radius:999px;font-size:11.5px;
+    font-weight:800;background:#EEF2F7;color:var(--muted);transition:background .16s,color .16s;}
+  .filter-btn[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .filter-btn[aria-pressed="true"] .count{background:rgba(255,255,255,.18);color:#fff;}
+  .catalog-count{font-size:13.5px;font-weight:600;color:var(--muted);}
+
+  /* ── Rejilla editorial 2×3 ── */
+  .games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:stretch;}
+
+  .game{display:flex;flex-direction:column;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;
+    transition:box-shadow .2s,border-color .2s,transform .2s;}
+  .game:hover{box-shadow:var(--shadow-lg);border-color:#D4DAE6;transform:translateY(-2px);}
+
+  /* La vista previa es el juego mismo en movimiento, no una captura */
+  .stage{position:relative;aspect-ratio:16/10;background:#07081A;overflow:hidden;flex:0 0 auto;}
+  .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;}
+  .stage-tag{position:absolute;left:12px;top:12px;z-index:2;pointer-events:none;
+    display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;
+    background:rgba(6,10,26,.62);border:1px solid rgba(255,255,255,.20);backdrop-filter:blur(6px);
+    font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#EAF6FF;}
+  .stage-tag i{width:6px;height:6px;border-radius:50%;background:#4ADE80;font-style:normal;
+    box-shadow:0 0 8px 2px rgba(74,222,128,.7);}
+
+  .game-body{display:flex;flex-direction:column;flex:1 1 auto;padding:22px 24px 24px;}
+  .game-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    flex-wrap:wrap;margin-bottom:10px;}
+  .chip{display:inline-block;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--navy);}
+  .level-tag{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.01em;}
+
+  .game-body h2{font-size:clamp(21px,2.4vw,25px);font-weight:800;line-height:1.18;}
+  .game-body > p{margin-top:9px;color:var(--muted);font-size:14.5px;line-height:1.58;}
+
+  /* ── Ficha técnica y fila de citación APA 7.ª ── */
+  .facts{margin-top:16px;border-top:1px solid var(--line);}
+  .facts div{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.48;}
+  .facts dt{flex:0 0 86px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--muted);padding-top:2px;}
+  .facts dd{color:var(--ink);min-width:0;flex:1;}
+
+  .fact-cite dd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .cite-txt{font-size:12px;line-height:1.45;color:var(--muted);word-break:break-word;}
+  .cite-txt em{font-style:italic;color:var(--ink);}
+  .btn-cite-copy{flex:0 0 auto;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700;
+    color:var(--navy);background:#F3F6FA;border:1px solid var(--line);border-radius:7px;
+    padding:4px 9px;line-height:1.3;transition:background .15s,border-color .15s,color .15s;}
+  .btn-cite-copy:hover{border-color:var(--cyan);background:var(--cyan-soft);color:var(--cyan-deep);}
+  .btn-cite-copy.done{background:#E3F8EE;border-color:#8FD9B6;color:#12613F;}
+
+  /* ── Vínculo discreto al laboratorio complementario ── */
+  .lab-pair{margin-top:11px;font-size:12.5px;color:var(--muted);}
+  .lab-pair a{font-weight:700;color:var(--cyan-deep);border-bottom:1px solid rgba(11,192,216,.45);}
+  .lab-pair a:hover{color:var(--navy);border-bottom-color:var(--navy);}
+
+  /* ── Trío de acciones: Jugar (principal), Incrustar y Descargar ── */
+  .acciones{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:auto;padding-top:18px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:14.5px;font-weight:700;
+    padding:11px 18px;border-radius:11px;transition:.18s;border:0;cursor:pointer;
+    background:var(--navy);color:#fff;white-space:nowrap;}
+  .btn:hover{background:var(--navy-dark);color:#fff;transform:translateY(-2px);}
+  .btn svg{width:15px;height:15px;flex:0 0 auto;}
+  .btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:700;color:var(--navy);
+    background:#fff;border:1px solid var(--line);padding:10px 14px;border-radius:11px;
+    transition:.18s;white-space:nowrap;}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan-deep);background:var(--cyan-soft);}
+  .btn-ghost svg{width:15px;height:15px;flex:0 0 auto;}
+
+  /* ── Ventana con el código de incrustado ── */
+  #dlg-incrustar{position:fixed;margin:auto;width:min(560px,92vw);border:1px solid var(--line);
+    border-radius:var(--radius);padding:28px 28px 24px;box-shadow:var(--shadow-lg);
+    color:var(--ink);background:var(--panel);}
+  #dlg-incrustar::backdrop{background:rgba(15,28,63,.42);backdrop-filter:blur(3px);}
+  #dlg-incrustar h3{font-size:21px;font-weight:800;padding-right:28px;}
+  .dlg-intro{margin-top:10px;color:var(--muted);font-size:14.5px;}
+  .dlg-lbl{display:block;margin-top:18px;margin-bottom:7px;font-size:11.5px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  #dlg-codigo{width:100%;font-family:var(--mono);
+    font-size:12.5px;line-height:1.55;color:#22314F;background:#F4F7FA;
+    border:1px solid var(--line);border-radius:10px;padding:12px 14px;resize:vertical;}
+  #dlg-codigo:focus{outline:2px solid var(--cyan);outline-offset:1px;}
+  .dlg-tip{margin-top:10px;font-size:13px;color:var(--muted);}
+  .dlg-tip code,.dlg-tip em{font-family:var(--mono);font-style:normal;
+    background:#EEF2F7;padding:1px 5px;border-radius:4px;font-size:12px;}
+  .dlg-acciones{display:flex;gap:10px;align-items:center;margin-top:20px;flex-wrap:wrap;}
+  .dlg-acciones form{display:contents;}
+  .dlg-cerrar-x{position:absolute;top:14px;right:14px;}
+  .dlg-cerrar-x button{cursor:pointer;border:0;background:transparent;color:var(--muted);
+    font-size:17px;line-height:1;padding:6px;border-radius:8px;}
+  .dlg-cerrar-x button:hover{color:var(--navy);background:#EEF2F7;}
+
+  /* ── Nota para el aula ── */
+  .aula{background:var(--panel);border-top:1px solid var(--line);}
+  .aula-inner{max-width:var(--maxw);margin:0 auto;padding:44px 22px 50px;}
+  .aula h2{font-size:clamp(22px,3.2vw,28px);font-weight:800;}
+  .aula > .aula-inner > p{margin-top:10px;color:var(--muted);max-width:64ch;}
+  .aula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(226px,1fr));gap:24px;margin-top:26px;}
+  .aula-grid > div{padding-top:15px;border-top:2px solid var(--cyan);}
+  .aula-grid h3{font-size:16.5px;font-weight:800;}
+  .aula-grid p{margin-top:6px;color:var(--muted);font-size:14.5px;}
+
+  /* ── Pie de página completo (unificado con la portada) ── */
+  footer{border-top:1px solid var(--line);background:var(--panel);}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:34px 22px;display:flex;
+    align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .foot-brand{display:flex;flex-direction:column;gap:8px;max-width:320px;}
+  .foot-brand .row{display:flex;align-items:center;gap:9px;}
+  .foot-brand .logo-mark{width:26px;height:26px;}
+  .foot-brand .name{font-weight:800;font-size:17px;color:var(--navy);}
+  .foot-brand small{color:var(--muted);font-size:13px;line-height:1.5;}
+  .foot-links{display:flex;gap:44px;flex-wrap:wrap;}
+  .foot-col h4{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .foot-col a{display:block;font-size:14px;color:var(--ink);margin-bottom:7px;}
+  .foot-col a:hover{color:var(--cyan-deep);}
+  .foot-bottom{border-top:1px solid var(--line);}
+  .foot-bottom div{max-width:var(--maxw);margin:0 auto;padding:16px 22px;display:flex;justify-content:space-between;
+    gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);}
+
+  a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:8px;}
+
+  @media (max-width:920px){
+    .games-grid{grid-template-columns:1fr;gap:22px;}
+    .game-body{padding:22px 22px 24px;}
+  }
+  @media (max-width:760px){
+    .topbar-inner{flex-wrap:wrap;gap:10px 0;padding:11px 18px 12px;}
+    .nav{width:100%;gap:0 16px;flex-wrap:wrap;justify-content:space-between;}
+    .nav a{font-size:14px;min-height:40px;display:inline-flex;align-items:center;}
+    .nav .nav-cta{display:none;}
+    .page-head-inner{padding:38px 18px 34px;}
+    .wrap{padding:26px 18px 40px;}
+  }
+  @media (max-width:560px){
+    .facts dt{flex-basis:78px;}
+    .fact-cite dd{flex-direction:column;gap:8px;}
+    .acciones .btn{flex:1 1 100%;}
+    .acciones .btn-ghost{flex:1 1 0;}
+    .catalog-count{width:100%;}
+  }
+  @media (max-width:380px){
+    .nav{gap:0 10px;}
+    .nav a{font-size:13.3px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .game:hover,.btn:hover{transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/" aria-label="Didaxis Lab — inicio">
+      <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+        <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+        <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+      </svg>
+      <span class="name">Didaxis Lab</span>
+    </a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="/recursos/">Recursos</a>
+      <a href="/juegos/" aria-current="page">Juegos</a>
+      <a href="/#por-que">Por qué</a>
+      <a href="/#fundamentacion">Fundamentación</a>
+      <a href="/autor/">El autor</a>
+      <a class="nav-cta" href="/#proyecto">El proyecto</a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="page-head-inner">
+    <span class="eyebrow">Didaxis Lab</span>
+    <h1>Juegos</h1>
+    <p>En estos juegos la matemática no va encima: es la mecánica. Cada reto exige operar,
+       ubicar, plegar o modelar para avanzar: si el número no cuadra, la escena responde y
+       muestra por qué.</p>
+    <div class="head-chips">
+      <span>6 juegos abiertos</span>
+      <span>Descargables en un HTML</span>
+      <span>Funcionan sin conexión</span>
+      <span>Sin cuentas ni datos personales</span>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+
+  <div class="catalog-bar">
+    <div class="filters" role="group" aria-label="Filtrar juegos por área">
+      <button class="filter-btn" type="button" data-filtro="todos" aria-pressed="true">
+        Todos <span class="count">6</span>
+      </button>
+      <button class="filter-btn" type="button" data-filtro="numeros" aria-pressed="false">
+        Números y lógica <span class="count">2</span>
+      </button>
+      <button class="filter-btn" type="button" data-filtro="geometria" aria-pressed="false">
+        Geometría <span class="count">2</span>
+      </button>
+      <button class="filter-btn" type="button" data-filtro="funciones" aria-pressed="false">
+        Funciones <span class="count">2</span>
+      </button>
+    </div>
+    <span class="catalog-count" id="catalog-count" role="status" aria-live="polite">Mostrando 6 juegos</span>
+  </div>
+
+  <div class="games-grid">
+
+    <!-- ─── 1. Rumbo Cartesiano ─── -->
+    <article class="game" data-cat="geometria">
+      <div class="stage" style="background:#063342;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-rumbo.html" title="Vista previa de Rumbo Cartesiano"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Plano cartesiano</span>
+          <span class="level-tag">6.° a 9.°</span>
+        </div>
+        <h2>Rumbo Cartesiano</h2>
+        <p>Traza coordenadas <strong>(X, Y)</strong> para llevar paquetes por cuatro archipiélagos
+           con arrecifes, boyas de sonar tipo buscaminas, corrientes que trasladan tu punto final
+           y faros de simetría. Si el signo o el orden fallan, el diagnóstico explica el desvío.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Cuatro cuadrantes, traslaciones por corrientes, simetría axial y deducción por sonar</dd></div>
+          <div><dt>Recorrido</dt><dd>21 misiones en 4 mundos, con atlas de estrellas e insignias</dd></div>
+          <div class="fact-cite">
+            <dt>Cómo citar</dt>
+            <dd>
+              <span class="cite-txt">Banquez Buendía, H. E. (2026). <em>Rumbo Cartesiano</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/rumbo-cartesiano.html</span>
+              <button class="btn-cite-copy" type="button" data-copiar-cita aria-label="Copiar cita APA de Rumbo Cartesiano">Copiar</button>
+            </dd>
+          </div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="rumbo-cartesiano.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="rumbo-cartesiano.html" data-nombre="Rumbo Cartesiano">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+          <a class="btn-ghost" href="rumbo-cartesiano.html" download="rumbo-cartesiano.html" title="Descargar archivo HTML para usar sin conexión">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Descargar
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 2. Guardianes del Claro ─── -->
+    <article class="game" data-cat="funciones">
+      <div class="stage" style="background:#07081A;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-claro.html" title="Vista previa de Guardianes del Claro"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Funciones</span>
+          <span class="level-tag">9.° a 11.°</span>
+        </div>
+        <h2>Guardianes del Claro</h2>
+        <p>Cada noche baja una criatura distinta y el explorador solo trae rastros: huellas,
+           plumas, sonidos. Hay que identificar la especie en las Crónicas del Bosque y evaluar
+           su función en la noche de hoy. Si el número no cuadra, la empalizada cae.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Evaluación de funciones lineales, cuadráticas y exponenciales: nueve especies, nueve patrones</dd></div>
+          <div><dt>Al terminar</dt><dd>Registro noche a noche que separa el error de cálculo del error de identificación</dd></div>
+          <div class="fact-cite">
+            <dt>Cómo citar</dt>
+            <dd>
+              <span class="cite-txt">Banquez Buendía, H. E. (2026). <em>Guardianes del Claro</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/guardianes-del-claro.html</span>
+              <button class="btn-cite-copy" type="button" data-copiar-cita aria-label="Copiar cita APA de Guardianes del Claro">Copiar</button>
+            </dd>
+          </div>
+        </dl>
+        <p class="lab-pair">Combina con el laboratorio <a href="/recursos/funcion-cuadratica/">Función Cuadrática →</a></p>
+        <div class="acciones">
+          <a class="btn" href="guardianes-del-claro.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="guardianes-del-claro.html" data-nombre="Guardianes del Claro">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+          <a class="btn-ghost" href="guardianes-del-claro.html" download="guardianes-del-claro.html" title="Descargar archivo HTML para usar sin conexión">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Descargar
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 3. El último pliegue ─── -->
+    <article class="game" data-cat="geometria">
+      <div class="stage" style="background:#081E20;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-pliegue.html" title="Vista previa de El último pliegue"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Geometría 3D</span>
+          <span class="level-tag">6.° a 9.°</span>
+        </div>
+        <h2>El último pliegue</h2>
+        <p>Acompaña a un zorro de papel doblando desarrollos planos por sus bisagras para cerrar
+           cubos, prismas y pirámides u orientar rampas. Cada cuerpo plegado con precisión enciende
+           el farol del escenario y abre paso al siguiente reto.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Desarrollos planos, ángulos de plegado, cubos, prismas, pirámides y orientación espacial</dd></div>
+          <div><dt>Recorrido</dt><dd>18 retos de geometría repartidos en 3 mundos</dd></div>
+          <div class="fact-cite">
+            <dt>Cómo citar</dt>
+            <dd>
+              <span class="cite-txt">Banquez Buendía, H. E. (2026). <em>El último pliegue</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/el-ultimo-pliegue.html</span>
+              <button class="btn-cite-copy" type="button" data-copiar-cita aria-label="Copiar cita APA de El último pliegue">Copiar</button>
+            </dd>
+          </div>
+        </dl>
+        <p class="lab-pair">Combina con el laboratorio <a href="/recursos/poliedros-redes-3d/">Poliedros y Redes 3D →</a></p>
+        <div class="acciones">
+          <a class="btn" href="el-ultimo-pliegue.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="el-ultimo-pliegue.html" data-nombre="El último pliegue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+          <a class="btn-ghost" href="el-ultimo-pliegue.html" download="el-ultimo-pliegue.html" title="Descargar archivo HTML para usar sin conexión">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Descargar
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 4. La senda del arquero ─── -->
+    <article class="game" data-cat="funciones">
+      <div class="stage" style="background:#101830;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-arquero.html" title="Vista previa de La senda del arquero"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Función cuadrática</span>
+          <span class="level-tag">8.° y 9.°</span>
+        </div>
+        <h2>La senda del arquero</h2>
+        <p>Tu flecha vuela según una parábola y tú colocas sus constantes para librar muros,
+           doseles y pasar por aros hasta clavar la diana. Los tiros fallidos quedan dibujados
+           como curvas fantasma para leer qué mueve cada parámetro.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Forma de vértice, forma factorizada por raíces y forma general de la cuadrática</dd></div>
+          <div><dt>Recorrido</dt><dd>20 niveles en 4 actos, con traductor entre formas y visor limitado</dd></div>
+          <div class="fact-cite">
+            <dt>Cómo citar</dt>
+            <dd>
+              <span class="cite-txt">Banquez Buendía, H. E. (2026). <em>La senda del arquero</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/senda-del-arquero.html</span>
+              <button class="btn-cite-copy" type="button" data-copiar-cita aria-label="Copiar cita APA de La senda del arquero">Copiar</button>
+            </dd>
+          </div>
+        </dl>
+        <p class="lab-pair">Combina con el laboratorio <a href="/recursos/funcion-cuadratica/">Función Cuadrática →</a></p>
+        <div class="acciones">
+          <a class="btn" href="senda-del-arquero.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="senda-del-arquero.html" data-nombre="La senda del arquero">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+          <a class="btn-ghost" href="senda-del-arquero.html" download="senda-del-arquero.html" title="Descargar archivo HTML para usar sin conexión">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Descargar
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 5. Guardianes del Cero ─── -->
+    <article class="game" data-cat="numeros">
+      <div class="stage" style="background:#07071A;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-cero.html" title="Vista previa de Guardianes del Cero"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Números enteros</span>
+          <span class="level-tag">7.° en adelante</span>
+        </div>
+        <h2>Guardianes del Cero</h2>
+        <p>Los invasores son números negativos y cada torre suma una cantidad fija. Un invasor
+           solo cae cuando su valor llega <strong>exactamente a cero</strong>. Al −12 lo cierra
+           antes una torre de +5 que tres de +1: elegir la torre es hacer la cuenta.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Opuesto aditivo, suma y resta de enteros, ley de signos y jerarquía de operaciones</dd></div>
+          <div><dt>Al terminar</dt><dd>Informe por tipo de operación, descargable en CSV</dd></div>
+          <div class="fact-cite">
+            <dt>Cómo citar</dt>
+            <dd>
+              <span class="cite-txt">Banquez Buendía, H. E. (2026). <em>Guardianes del Cero</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/guardianes-del-cero.html</span>
+              <button class="btn-cite-copy" type="button" data-copiar-cita aria-label="Copiar cita APA de Guardianes del Cero">Copiar</button>
+            </dd>
+          </div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="guardianes-del-cero.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="guardianes-del-cero.html" data-nombre="Guardianes del Cero">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+          <a class="btn-ghost" href="guardianes-del-cero.html" download="guardianes-del-cero.html" title="Descargar archivo HTML para usar sin conexión">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Descargar
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 6. Misión Número Secreto ─── -->
+    <article class="game" data-cat="numeros">
+      <div class="stage" style="background:#07081A;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-secreto.html" title="Vista previa de Misión Número Secreto"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Deducción numérica</span>
+          <span class="level-tag">5.° a 8.°</span>
+        </div>
+        <h2>Misión Número Secreto</h2>
+        <p>Cada personaje guarda un número y suelta una pista: es par, es múltiplo de 5, es mayor
+           que 10. Ninguna basta por sí sola; cruzadas dejan un único candidato. Hay calculadora
+           y bloc de notas para llevar el rastro del razonamiento.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Divisibilidad y múltiplos, paridad, desigualdades y razonamiento por descarte</dd></div>
+          <div><dt>Formato</dt><dd>Se juega en vertical desde el celular</dd></div>
+          <div class="fact-cite">
+            <dt>Cómo citar</dt>
+            <dd>
+              <span class="cite-txt">Banquez Buendía, H. E. (2026). <em>Misión Número Secreto</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/mision-numero-secreto.html</span>
+              <button class="btn-cite-copy" type="button" data-copiar-cita aria-label="Copiar cita APA de Misión Número Secreto">Copiar</button>
+            </dd>
+          </div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="mision-numero-secreto.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="mision-numero-secreto.html" data-nombre="Misión Número Secreto" data-alto="680">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+          <a class="btn-ghost" href="mision-numero-secreto.html" download="mision-numero-secreto.html" title="Descargar archivo HTML para usar sin conexión">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Descargar
+          </a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</main>
+
+<dialog id="dlg-incrustar" aria-labelledby="dlg-titulo">
+  <form method="dialog" class="dlg-cerrar-x"><button aria-label="Cerrar">✕</button></form>
+  <h3 id="dlg-titulo">Incrustar <span id="dlg-nombre"></span></h3>
+  <p class="dlg-intro">Copia este código y pégalo como <strong>HTML</strong> en Moodle, Google Sites,
+     WordPress o tu plataforma. El juego se carga desde didaxislab.com, así que si se corrige algo
+     tus estudiantes lo reciben sin que tengas que volver a pegar nada.</p>
+  <label class="dlg-lbl" for="dlg-codigo">Código</label>
+  <textarea id="dlg-codigo" rows="5" readonly spellcheck="false"></textarea>
+  <p class="dlg-tip">Ajusta <code>height</code> si lo quieres más alto o más bajo. En Moodle usa el
+     botón <em>&lt;/&gt;</em> del editor para pegar en modo código.</p>
+  <div class="dlg-acciones">
+    <button type="button" id="dlg-copiar" class="btn">Copiar código</button>
+    <form method="dialog"><button type="submit" class="btn-ghost">Cerrar</button></form>
+  </div>
+</dialog>
+
+<section class="aula">
+  <div class="aula-inner">
+    <h2>Cómo entran al aula</h2>
+    <p>Los juegos siguen las mismas reglas que los laboratorios: un archivo, sin instalación
+       y sin pedirle nada al estudiante.</p>
+    <div class="aula-grid">
+      <div>
+        <h3>Un archivo, sin instalación</h3>
+        <p>Cada juego es un solo HTML. Descárgalo, ábrelo con doble clic o súbelo a la plataforma del colegio como cualquier recurso.</p>
+      </div>
+      <div>
+        <h3>Sin conexión y sin cuentas</h3>
+        <p>No cargan nada desde internet ni piden registro. Funcionan en un aula sin red y no recogen datos del estudiante.</p>
+      </div>
+      <div>
+        <h3>El error también enseña</h3>
+        <p>Cuando la respuesta falla, el juego explica qué razonamiento llevó a esa cifra, no solo que es incorrecta.</p>
+      </div>
+      <div>
+        <h3>Progreso y evidencia</h3>
+        <p>Según el juego, el estudiante guarda estrellas y misiones en su navegador o descarga un informe con su desempeño.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <div class="row">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </div>
+      <small>Simuladores y juegos interactivos de matemáticas, abiertos para toda el aula.</small>
+    </div>
+    <div class="foot-links">
+      <div class="foot-col">
+        <h4>Recursos</h4>
+        <a href="/recursos/fracciones-vivas/">Fracciones Vivas</a>
+        <a href="/recursos/area-vs-perimetro/">Área vs Perímetro</a>
+        <a href="/recursos/poliedros-redes-3d/">Poliedros y Redes 3D</a>
+        <a href="/recursos/pitagoras/">Pitágoras Interactivo</a>
+        <a href="/recursos/funcion-cuadratica/">Función Cuadrática</a>
+        <a href="/recursos/circulo-ondas/">Círculo Unitario y Ondas</a>
+        <a href="/recursos/azar-probabilidad/">Azar y Probabilidad</a>
+      </div>
+      <div class="foot-col">
+        <h4>Juegos</h4>
+        <a href="/juegos/rumbo-cartesiano.html">Rumbo Cartesiano</a>
+        <a href="/juegos/guardianes-del-claro.html">Guardianes del Claro</a>
+        <a href="/juegos/el-ultimo-pliegue.html">El último pliegue</a>
+        <a href="/juegos/senda-del-arquero.html">La senda del arquero</a>
+        <a href="/juegos/guardianes-del-cero.html">Guardianes del Cero</a>
+        <a href="/juegos/mision-numero-secreto.html">Misión Número Secreto</a>
+      </div>
+      <div class="foot-col">
+        <h4>Proyecto</h4>
+        <a href="/autor/">El autor</a>
+        <a href="/#por-que">Por qué Didaxis Lab</a>
+        <a href="/#fundamentacion">Fundamentación</a>
+        <a href="/#incrustar">Llévalo a tu plataforma</a>
+        <a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">ORCID del autor</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div>
+      <span>© 2026 Didaxis Lab · Héctor Banquez</span>
+      <span>Contenido bajo licencia CC BY 4.0</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Utilidad de copiado al portapapeles con respaldo para pruebas locales */
+async function copiarTexto(texto){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    try{
+      await navigator.clipboard.writeText(texto);
+      return true;
+    }catch(e){}
+  }
+  const ta = document.createElement('textarea');
+  ta.value = texto;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'absolute';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, texto.length);
+  let ok = false;
+  try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+/* 1. Ventana de incrustado: arma el <iframe> con la dirección absoluta real,
+      así el código sirve igual en el sitio publicado que en pruebas locales. */
+(function(){
+  const dlg    = document.getElementById('dlg-incrustar');
+  const salida = document.getElementById('dlg-codigo');
+  const nombre = document.getElementById('dlg-nombre');
+  const copiar = document.getElementById('dlg-copiar');
+  if(!dlg) return;
+
+  const fragmento = (url, titulo, alto) =>
+`<iframe src="${url}"
+        title="${titulo} — Didaxis Lab"
+        width="100%" height="${alto}"
+        style="border:0;border-radius:12px"
+        allowfullscreen loading="lazy"></iframe>`;
+
+  document.querySelectorAll('[data-incrustar]').forEach(b => {
+    b.addEventListener('click', () => {
+      const url  = new URL(b.dataset.incrustar, location.href).href;
+      const alto = b.dataset.alto || 640;
+      nombre.textContent = b.dataset.nombre;
+      salida.value = fragmento(url, b.dataset.nombre, alto);
+      copiar.textContent = 'Copiar código';
+      copiar.disabled = false;
+      dlg.showModal();
+      salida.scrollTop = 0;
+    });
+  });
+
+  copiar.addEventListener('click', async () => {
+    salida.select();
+    const ok = await copiarTexto(salida.value);
+    copiar.textContent = ok ? 'Copiado ✓' : 'Copia el texto seleccionado';
+    copiar.disabled = true;
+    setTimeout(() => { copiar.textContent = 'Copiar código'; copiar.disabled = false; }, 2600);
+  });
+
+  dlg.addEventListener('click', e => { if(e.target === dlg) dlg.close(); });
+})();
+
+/* 2. Botones de copiado rápido de citas APA 7.ª por juego */
+(function(){
+  document.querySelectorAll('[data-copiar-cita]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const span = btn.previousElementSibling;
+      if(!span) return;
+      const texto = (span.innerText || span.textContent || '').trim();
+      const ok = await copiarTexto(texto);
+      btn.textContent = ok ? 'Copiada ✓' : 'Error';
+      btn.classList.toggle('done', ok);
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = 'Copiar';
+        btn.classList.remove('done');
+        btn.disabled = false;
+      }, 2200);
+    });
+  });
+})();
+
+/* 3. Filtros por área y pausa inteligente de las 6 vistas previas */
+(function(){
+  const tarjetas = Array.from(document.querySelectorAll('.game'));
+  const botones  = Array.from(document.querySelectorAll('.filter-btn'));
+  const contador = document.getElementById('catalog-count');
+  const etiquetas = {
+    todos: '',
+    numeros: ' en Números y lógica',
+    geometria: ' en Geometría',
+    funciones: ' en Funciones'
+  };
+
+  // Estado de visibilidad en pantalla por cada tarjeta
+  const enPantalla = new WeakMap();
+  const notificar = card => {
+    const iframe = card.querySelector('.stage iframe');
+    if(!iframe || !iframe.contentWindow) return;
+    const activo = !document.hidden && !card.hidden && (enPantalla.get(card) !== false);
+    try{
+      iframe.contentWindow.postMessage({ type: 'didaxis-preview', active: activo }, '*');
+    }catch(e){}
+  };
+
+  if('IntersectionObserver' in window){
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        enPantalla.set(entry.target, entry.isIntersecting);
+        notificar(entry.target);
+      });
+    }, { threshold: 0.12 });
+    tarjetas.forEach(card => obs.observe(card));
+  }
+
+  tarjetas.forEach(card => {
+    const iframe = card.querySelector('.stage iframe');
+    if(iframe) iframe.addEventListener('load', () => notificar(card));
+  });
+
+  document.addEventListener('visibilitychange', () => tarjetas.forEach(notificar));
+
+  botones.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.filtro;
+      botones.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      let visibles = 0;
+      tarjetas.forEach(card => {
+        const mostrar = (cat === 'todos' || card.dataset.cat === cat);
+        card.hidden = !mostrar;
+        if(mostrar) visibles++;
+        notificar(card);
+      });
+      if(contador){
+        const suf = etiquetas[cat] || '';
+        contador.textContent = `Mostrando ${visibles} ${visibles === 1 ? 'juego' : 'juegos'}${suf}`;
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
