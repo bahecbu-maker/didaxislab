@@ -1,0 +1,3850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#06161d" />
+<meta name="description" content="Rumbo Cartesiano — 20 misiones en 4 mundos para dominar el plano cartesiano, los 4 cuadrantes, sonar tipo buscaminas, corrientes de traslación y simetrías. Un juego de Didaxis Lab." />
+<title>Rumbo Cartesiano · Didaxis Lab</title>
+<style>
+  :root{
+    --bg:#06161d;
+    --panel:#0b202a;
+    --panel-2:#102d3a;
+    --border:rgba(224,180,98,.28);
+    --border-strong:rgba(247,217,151,.58);
+    --gold:#e4b55f;
+    --gold-hi:#f7d997;
+    --parch:#f4ead5;
+    --muted:#9ab6c0;
+    --teal:#0bc0d8;
+    --teal-soft:rgba(11,192,216,.16);
+    --ok:#52d190;
+    --danger:#f06553;
+    --warn:#f5b74c;
+    --purple:#b794ff;
+    --radius:14px;
+    --shadow:0 14px 36px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    width:100%;max-width:100vw;height:100%;
+    overflow:hidden;
+    background:var(--bg);
+    color:var(--parch);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  button{
+    font:inherit;color:inherit;cursor:pointer;border:none;background:none;
+    touch-action:manipulation;user-select:none;
+  }
+  button:focus-visible,input:focus-visible{outline:2.5px solid var(--gold-hi);outline-offset:2px}
+  button:disabled{cursor:not-allowed}
+
+  /* ── App Shell blindado contra desbordamiento horizontal ────────────── */
+  .app{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:52px minmax(0,1fr);
+    height:100dvh;
+    width:100%;
+    max-width:100vw;
+    overflow:hidden;
+  }
+
+  /* ── Header ─────────────────────────────────────────────────────────── */
+  header{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    width:100%;max-width:100%;min-width:0;overflow:hidden;
+    padding:0 12px;
+    background:linear-gradient(180deg,#0d2633,#081922);
+    border-bottom:1px solid var(--border);
+    z-index:25;
+  }
+  .brand{
+    display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--parch);
+    min-width:0;flex:0 0 auto;
+  }
+  .brand-chip{
+    width:30px;height:30px;flex:none;border-radius:8px;padding:4px;
+    background:radial-gradient(circle at 32% 28%,#fff,#e9f7fb 68%,#cdeaf3);
+    box-shadow:0 3px 10px rgba(0,0,0,.38);
+  }
+  .brand-chip svg{width:100%;height:100%;display:block}
+  .brand-txt{display:flex;flex-direction:column;line-height:1.08;min-width:0}
+  .brand-title{
+    font-family:Georgia,"Times New Roman",serif;font-size:1rem;font-weight:700;
+    color:var(--gold-hi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .brand-sub{font-size:.61rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+
+  /* Navegación de escritorio */
+  .nav-center{
+    display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 auto;
+    justify-content:center;overflow-x:auto;scrollbar-width:none;
+  }
+  .nav-center::-webkit-scrollbar{display:none}
+  .world-tabs{
+    display:flex;align-items:center;gap:3px;padding:3px;border-radius:10px;
+    background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);flex:none;
+  }
+  .w-tab{
+    height:28px;padding:0 9px;border-radius:7px;
+    font-size:.74rem;font-weight:700;color:var(--muted);white-space:nowrap;
+    transition:background .15s,color .15s;
+  }
+  .w-tab:hover{color:var(--parch);background:rgba(255,255,255,.07)}
+  .w-tab.active{background:var(--gold);color:#1f1606}
+
+  .mission-strip{display:flex;align-items:center;gap:4px;flex:none}
+  .m-pill{
+    display:flex;align-items:center;gap:3px;height:30px;padding:0 8px;border-radius:99px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.11);
+    font-size:.76rem;font-weight:650;color:var(--muted);white-space:nowrap;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .m-pill:hover{background:rgba(255,255,255,.1);color:var(--parch)}
+  .m-pill.active{background:rgba(228,181,95,.22);border-color:var(--gold);color:var(--gold-hi)}
+  .m-pill.done{border-color:rgba(82,209,144,.48);color:#bdf3d5}
+  .m-pill .st{font-size:.66rem;letter-spacing:-1px;color:var(--gold)}
+
+  /* Selector móvil compacto en el header (reemplaza nav-center en pantallas <= 860px) */
+  .mob-nav-btn{
+    display:none;align-items:center;justify-content:center;gap:6px;
+    flex:1 1 auto;min-width:0;max-width:240px;height:34px;padding:0 10px;
+    border-radius:99px;
+    background:linear-gradient(180deg,rgba(228,181,95,.18),rgba(228,181,95,.08));
+    border:1px solid rgba(228,181,95,.42);
+    color:var(--gold-hi);font-size:.78rem;font-weight:750;
+  }
+  .mob-nav-btn .mn-lbl{
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
+  }
+  .mob-nav-btn .mn-st{
+    flex:none;font-size:.7rem;color:#fff4d4;
+    padding:1px 6px;border-radius:99px;background:rgba(0,0,0,.32);
+  }
+
+  .head-tools{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+  .atlas-btn{
+    display:inline-flex;align-items:center;gap:5px;
+    height:34px;padding:0 11px;border-radius:99px;
+    background:linear-gradient(180deg,rgba(228,181,95,.2),rgba(228,181,95,.09));
+    border:1px solid rgba(228,181,95,.42);
+    font-size:.78rem;font-weight:750;color:var(--gold-hi);white-space:nowrap;
+    transition:background .15s,transform .15s;
+  }
+  .atlas-btn:hover{background:rgba(228,181,95,.3);transform:translateY(-1px)}
+  .atlas-btn .st-num{font-variant-numeric:tabular-nums;color:#fff4d4}
+
+  .icon-btn{
+    width:34px;height:34px;flex:none;border-radius:9px;display:grid;place-items:center;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+    color:var(--parch);font-size:.92rem;transition:background .15s,border-color .15s;
+  }
+  .icon-btn:hover{background:rgba(228,181,95,.16);border-color:var(--gold)}
+  .icon-btn[aria-pressed="true"]{background:var(--teal-soft);border-color:var(--teal);color:#b9f5ff}
+
+  /* ── Espacio principal: Mapa amplio + Consola táctica ───────────────── */
+  .main{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 298px;
+    gap:10px;padding:10px;
+    width:100%;max-width:100%;min-width:0;min-height:0;
+    overflow:hidden;
+  }
+
+  .stage-wrap{
+    position:relative;border-radius:var(--radius);overflow:hidden;
+    background:#07232e;border:1px solid var(--border);box-shadow:var(--shadow);
+    width:100%;max-width:100%;min-width:0;min-height:0;
+  }
+  canvas#sea{display:block;width:100%;height:100%;touch-action:none}
+
+  /* HUD sobre el mapa */
+  .map-hud{
+    position:absolute;top:8px;left:8px;right:8px;
+    display:flex;align-items:flex-start;justify-content:space-between;gap:6px;
+    pointer-events:none;z-index:5;
+  }
+  .hud-card{
+    display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:11px;
+    background:rgba(7,22,30,.84);border:1px solid var(--border);
+    box-shadow:0 6px 18px rgba(0,0,0,.32);pointer-events:auto;min-width:0;
+  }
+  .hud-mission-box{min-width:0}
+  .hud-world{
+    font-size:.61rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);font-weight:750;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .hud-mission-name{
+    font-family:Georgia,serif;font-size:.9rem;font-weight:700;color:var(--gold-hi);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .hud-metrics{display:flex;align-items:center;gap:10px;flex:none}
+  .metric{display:flex;flex-direction:column;align-items:center;line-height:1.1}
+  .metric .lbl{font-size:.56rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .metric .val{font-weight:750;font-size:.92rem;color:var(--parch);margin-top:2px;font-variant-numeric:tabular-nums}
+  .hearts{display:flex;gap:3px;margin-top:2px}
+  .heart{
+    width:12px;height:12px;display:inline-block;background:var(--danger);
+    clip-path:polygon(50% 92%,0 36%,12% 10%,34% 8%,50% 25%,66% 8%,88% 10%,100% 36%);
+    transition:transform .25s,background .25s;
+  }
+  .heart.lost{background:rgba(255,255,255,.16);transform:scale(.8)}
+
+  .hud-reset-btn{
+    width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+    background:rgba(228,181,95,.14);border:1px solid rgba(228,181,95,.32);
+    color:var(--gold-hi);font-size:.92rem;font-weight:700;
+    transition:background .15s,transform .15s;
+  }
+  .hud-reset-btn:hover{background:rgba(228,181,95,.28);transform:rotate(-25deg)}
+
+  .map-bottom-bar{
+    position:absolute;left:8px;right:8px;bottom:8px;z-index:5;
+    display:flex;align-items:center;justify-content:space-between;gap:6px;
+    pointer-events:none;
+  }
+  .pos-badge{
+    display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;
+    background:rgba(7,22,30,.86);border:1px solid var(--border);
+    font-size:.76rem;color:var(--parch);white-space:nowrap;
+  }
+  .pos-badge b{color:var(--gold-hi);font-variant-numeric:tabular-nums}
+  .pos-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal)}
+  .cargo-badge{
+    display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;
+    background:rgba(7,22,30,.86);border:1px solid rgba(82,209,144,.4);
+    font-size:.74rem;font-weight:650;color:#c9f7df;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56%;
+  }
+  .cargo-badge.pending{border-color:rgba(245,183,76,.55);color:#ffe4a8}
+
+  /* Banner cinematográfico de cambio de mundo */
+  .world-banner{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);
+    padding:15px 24px;border-radius:16px;text-align:center;max-width:86%;
+    background:rgba(6,20,28,.92);border:1px solid var(--border-strong);
+    box-shadow:0 18px 46px rgba(0,0,0,.6);
+    opacity:0;pointer-events:none;z-index:15;
+    transition:opacity .45s ease,transform .45s cubic-bezier(.22,1,.36,1);
+  }
+  .world-banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .world-banner .wb-k{font-size:.65rem;letter-spacing:.24em;text-transform:uppercase;color:var(--teal);font-weight:750}
+  .world-banner .wb-t{font-family:Georgia,serif;font-size:1.35rem;color:var(--gold-hi);margin-top:3px}
+  .world-banner .wb-s{font-size:.8rem;color:#cfe0e6;margin-top:4px}
+
+  /* Toast de mensajes y desbloqueo de medallas */
+  .toast{
+    position:absolute;left:50%;bottom:44px;transform:translate(-50%,10px);
+    max-width:min(480px,92%);padding:9px 14px;border-radius:12px;
+    background:rgba(9,26,35,.96);border:1px solid var(--gold);
+    color:var(--parch);font-size:.83rem;line-height:1.4;text-align:center;
+    box-shadow:0 12px 30px rgba(0,0,0,.55);
+    opacity:0;pointer-events:none;z-index:12;transition:opacity .25s,transform .25s;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast.bad{border-color:var(--danger);background:rgba(38,14,17,.96);color:#ffd5cf}
+  .toast.good{border-color:var(--ok);background:rgba(10,34,25,.96);color:#ccf9e1}
+
+  .medal-toast{
+    position:fixed;right:14px;top:60px;z-index:70;
+    display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:13px;
+    background:linear-gradient(135deg,#1d3340,#10212b);border:1px solid var(--gold-hi);
+    box-shadow:0 14px 36px rgba(0,0,0,.55),0 0 22px rgba(247,217,151,.22);
+    transform:translateX(120%);opacity:0;pointer-events:none;
+    transition:transform .42s cubic-bezier(.22,1,.36,1),opacity .35s;
+  }
+  .medal-toast.show{transform:none;opacity:1}
+  .medal-toast .mt-ic{font-size:1.5rem}
+  .medal-toast .mt-k{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:750}
+  .medal-toast .mt-n{font-family:Georgia,serif;font-size:.92rem;color:var(--gold-hi);font-weight:700}
+
+  /* ── Consola Táctica (blindada con min-width:0) ─────────────────────── */
+  .console{
+    display:flex;flex-direction:column;gap:9px;
+    width:100%;max-width:100%;min-width:0;min-height:0;
+    background:linear-gradient(180deg,var(--panel),#071720);
+    border:1px solid var(--border);border-radius:var(--radius);
+    padding:11px;box-shadow:var(--shadow);overflow-y:auto;
+  }
+  .brief{
+    padding:10px 11px;border-radius:11px;min-width:0;
+    background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
+  }
+  .brief-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:5px;flex-wrap:wrap}
+  .brief-tag{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:750}
+  .badge-pill{
+    font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;
+    background:rgba(228,181,95,.14);border:1px solid rgba(228,181,95,.35);color:var(--gold-hi);
+  }
+  .badge-pill.plan{background:rgba(183,148,255,.16);border-color:rgba(183,148,255,.45);color:#dfd0ff}
+  .badge-pill.ok{background:rgba(82,209,144,.15);border-color:rgba(82,209,144,.45);color:#bdf3d5}
+  .brief p{font-size:.82rem;line-height:1.44;color:#d6e4e8;overflow-wrap:break-word}
+  .brief strong{color:var(--gold-hi)}
+
+  .helm-panel{
+    display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:12px;
+    min-width:0;max-width:100%;
+    background:rgba(4,13,18,.58);border:1px solid rgba(228,181,95,.24);
+  }
+  .helm-head{
+    display:flex;justify-content:space-between;align-items:center;gap:6px;
+    font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  }
+
+  /* Contenedor flexible que en desktop se apila y en móvil se compacta en 1 fila */
+  .helm-controls{
+    display:flex;flex-direction:column;gap:8px;min-width:0;width:100%;
+  }
+  .coord-inputs{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    min-width:0;width:100%;
+  }
+  .paren{font-family:Georgia,serif;font-size:1.85rem;color:rgba(244,234,213,.4);line-height:1;flex:none}
+  .comma{font-family:Georgia,serif;font-size:1.65rem;color:var(--gold);padding-top:10px;flex:none}
+
+  .axis-field{
+    flex:1 1 0;min-width:0;max-width:100%;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    padding:6px 6px 5px;border-radius:10px;
+    background:#0c2530;border:2px solid rgba(255,255,255,.14);
+    transition:border-color .15s,background .15s,box-shadow .15s;
+  }
+  .axis-field:focus-within{
+    border-color:var(--gold);background:#123444;box-shadow:0 0 0 3px rgba(228,181,95,.18);
+  }
+  .axis-field label{
+    font-size:.62rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;
+    cursor:pointer;white-space:nowrap;
+  }
+  .axis-field.x-f label{color:#66e0f5}
+  .axis-field.y-f label{color:#ffca70}
+  .axis-field input{
+    width:100%;min-width:0;max-width:100%;
+    border:none;background:transparent;outline:none;
+    text-align:center;color:#fff;font-size:1.5rem;font-weight:800;line-height:1.15;
+    font-variant-numeric:tabular-nums;
+  }
+  .axis-field input::placeholder{color:rgba(255,255,255,.24)}
+
+  .sign-row{display:flex;align-items:center;gap:6px;min-width:0}
+  .sign-btn{
+    flex:1 1 0;min-width:0;height:32px;border-radius:8px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);
+    font-size:.78rem;font-weight:700;color:var(--gold-hi);
+    transition:background .12s,border-color .12s;
+  }
+  .sign-btn:hover:not(:disabled){background:rgba(228,181,95,.18);border-color:var(--gold)}
+
+  .sign-compact{
+    display:none;flex:none;height:44px;padding:0 10px;border-radius:10px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(228,181,95,.35);
+    color:var(--gold-hi);font-size:.82rem;font-weight:800;white-space:nowrap;
+  }
+  .sign-compact:active{background:rgba(228,181,95,.24)}
+
+  .action-row{display:flex;gap:6px;min-width:0;width:100%}
+
+  /* Estado inactivo limpio y contraste alto al habilitarse */
+  .btn-go{
+    flex:1 1 0;min-width:0;height:44px;padding:0 12px;border-radius:10px;
+    background:linear-gradient(180deg,var(--gold-hi),var(--gold));
+    color:#1f1606;font-weight:800;font-size:.92rem;letter-spacing:.02em;
+    box-shadow:0 3px 0 #9f752e,0 8px 18px rgba(228,181,95,.25);
+    white-space:nowrap;transition:transform .12s,filter .12s,background .18s,color .18s;
+  }
+  .btn-go:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px)}
+  .btn-go:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #9f752e}
+  .btn-go:disabled{
+    background:rgba(255,255,255,.07);
+    color:rgba(244,234,213,.42);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:none;
+    opacity:1;
+  }
+
+  .btn-add{
+    flex:0 0 auto;height:44px;padding:0 12px;border-radius:10px;
+    background:linear-gradient(180deg,#1a556b,#103747);
+    border:1px solid rgba(11,192,216,.55);color:#d4fbff;
+    font-weight:800;font-size:.84rem;white-space:nowrap;
+    box-shadow:0 3px 0 #092430;
+    transition:transform .12s,filter .12s,background .15s;
+  }
+  .btn-add:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+  .btn-add.pulse-cta{
+    border-color:#7ae7fa;
+    box-shadow:0 3px 0 #092430,0 0 0 3px rgba(11,192,216,.24);
+  }
+  .btn-add:disabled{
+    background:rgba(255,255,255,.05);
+    color:rgba(215,245,250,.35);
+    border:1px solid rgba(255,255,255,.1);
+    box-shadow:none;opacity:1;
+  }
+
+  .plan-hint{
+    font-size:.71rem;color:#c8b8ff;text-align:center;line-height:1.3;
+  }
+
+  .route-box{
+    display:flex;flex-direction:column;gap:6px;padding:9px 10px;border-radius:10px;min-width:0;
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  }
+  .route-head{
+    display:flex;justify-content:space-between;align-items:center;gap:6px;
+    font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+  }
+  .mini-btn{
+    font-size:.72rem;color:var(--gold-hi);padding:2px 7px;border-radius:6px;
+    background:rgba(228,181,95,.12);border:1px solid rgba(228,181,95,.26);
+  }
+  .mini-btn:hover:not(:disabled){background:rgba(228,181,95,.24)}
+  .route-chips{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font-size:.76rem;min-height:24px}
+  .chip{
+    display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;
+    background:#102f3d;border:1px solid rgba(11,192,216,.38);
+    color:#d7f7fc;font-weight:650;font-variant-numeric:tabular-nums;
+  }
+  .chip.start{border-color:rgba(82,209,144,.45);color:#bdf3d5;background:rgba(82,209,144,.12)}
+  .chip.planned{border-color:rgba(183,148,255,.55);background:rgba(183,148,255,.15);color:#ebe1ff;cursor:pointer}
+  .chip.planned:hover{background:rgba(240,101,83,.22);border-color:var(--danger)}
+  .chip.planned.bad{border-color:var(--danger);background:rgba(240,101,83,.22);color:#ffd2cb}
+  .chip.arrow{background:none;border:none;padding:0;color:var(--muted)}
+
+  .legend-box{
+    display:flex;flex-direction:column;gap:6px;padding:9px 10px;border-radius:10px;min-width:0;
+    background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);
+    margin-top:auto;
+  }
+  .legend-title{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .legend-list{display:flex;flex-direction:column;gap:5px}
+  .leg-item{display:flex;align-items:center;gap:8px;font-size:.76rem;color:#cfe0e6;line-height:1.3}
+  .leg-dot{
+    width:18px;height:18px;flex:none;border-radius:5px;display:grid;place-items:center;
+    font-size:.72rem;font-weight:800;
+  }
+
+  .console-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:6px;
+    font-size:.72rem;color:var(--muted);padding-top:2px;
+  }
+  .guide-toggle{
+    display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:99px;font-size:.72rem;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:var(--parch);
+  }
+  .guide-toggle[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft);color:#b9f5ff}
+
+  /* ── Portada Cinematográfica sobre el Mar Activo ────────────────────── */
+  .splash-layer{
+    position:fixed;inset:0;z-index:60;
+    display:flex;align-items:center;justify-content:center;padding:18px;
+    background:radial-gradient(ellipse 75% 65% at 50% 45%,rgba(5,20,28,.45),rgba(4,12,18,.88));
+    opacity:0;pointer-events:none;transition:opacity .5s ease;
+  }
+  .splash-layer.on{opacity:1;pointer-events:auto}
+  .splash-card{
+    width:min(600px,95vw);max-height:92dvh;overflow-y:auto;
+    padding:28px 24px 22px;border-radius:22px;text-align:center;
+    background:linear-gradient(180deg,rgba(13,37,48,.9),rgba(7,21,29,.95));
+    border:1px solid var(--border-strong);
+    box-shadow:0 32px 80px rgba(0,0,0,.68),inset 0 1px 0 rgba(255,255,255,.08);
+    transform:translateY(16px) scale(.97);transition:transform .45s cubic-bezier(.22,1,.36,1);
+  }
+  .splash-layer.on .splash-card{transform:none}
+  .splash-title{
+    font-family:Georgia,serif;font-weight:700;
+    font-size:clamp(1.9rem,5.4vw,3.1rem);line-height:1.05;margin:8px 0 10px;
+    background:linear-gradient(180deg,#fff7e2 0%,#f4d38b 52%,#c9933a 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 4px 16px rgba(0,0,0,.65));
+  }
+  .splash-sub{font-size:.93rem;line-height:1.52;color:#d6e6eb;max-width:48ch;margin:0 auto 16px}
+  .splash-kpis{
+    display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;
+    padding:8px 15px;border-radius:99px;margin-bottom:18px;
+    background:rgba(228,181,95,.09);border:1px solid rgba(228,181,95,.28);
+    font-size:.79rem;color:#e9ddc5;
+  }
+  .splash-kpis b{color:var(--gold-hi)}
+
+  /* ── Overlays / Modales Generales & Atlas Náutico ───────────────────── */
+  /* Por encima de la portada (60): desde la portada se abre el Atlas, y con
+     z-index 55 quedaba debajo y el botón no hacía nada visible. */
+  .overlay{
+    position:fixed;inset:0;z-index:65;display:flex;align-items:center;justify-content:center;
+    padding:14px;
+    background:radial-gradient(ellipse at 50% 42%,rgba(7,26,34,.74),rgba(4,12,16,.93));
+    opacity:0;pointer-events:none;transition:opacity .28s ease;
+  }
+  .overlay.on{opacity:1;pointer-events:auto}
+  .modal{
+    width:min(560px,95vw);max-height:90dvh;overflow-y:auto;
+    background:linear-gradient(180deg,#112c38,#091c25);
+    border:1px solid var(--border-strong);border-radius:20px;
+    padding:22px 22px 18px;text-align:center;
+    box-shadow:0 30px 75px rgba(0,0,0,.65);
+    transform:translateY(14px) scale(.97);transition:transform .28s cubic-bezier(.22,1,.36,1);
+  }
+  .modal.wide{width:min(860px,96vw);text-align:left}
+  .overlay.on .modal{transform:none}
+
+  .modal-logo{
+    width:54px;height:54px;margin:0 auto 10px;padding:8px;border-radius:15px;
+    background:radial-gradient(circle at 32% 28%,#fff,#eaf8fc 68%,#cdeaf3);
+    box-shadow:0 8px 22px rgba(0,0,0,.45),0 0 24px rgba(11,192,216,.3);
+  }
+  .modal-eyebrow{font-size:.67rem;letter-spacing:.24em;text-transform:uppercase;color:var(--teal);font-weight:750}
+  .modal h2{
+    font-family:Georgia,serif;color:var(--gold-hi);
+    font-size:clamp(1.4rem,3.6vw,1.95rem);margin:5px 0 9px;line-height:1.12;
+  }
+  .modal p{font-size:.89rem;line-height:1.5;color:#d6e5ea;margin-bottom:13px}
+
+  .atlas-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px;flex-wrap:wrap}
+  .atlas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:14px}
+  .world-card{
+    border-radius:14px;padding:12px 13px;position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,.14);
+    background:linear-gradient(155deg,rgba(255,255,255,.06),rgba(0,0,0,.22));
+  }
+  .world-card.w1{border-color:rgba(11,192,216,.35);background:linear-gradient(155deg,rgba(22,125,143,.32),rgba(7,35,48,.85))}
+  .world-card.w2{border-color:rgba(245,183,76,.35);background:linear-gradient(155deg,rgba(65,92,138,.36),rgba(16,30,54,.88))}
+  .world-card.w3{border-color:rgba(122,231,250,.32);background:linear-gradient(155deg,rgba(36,89,102,.36),rgba(9,27,36,.9))}
+  .world-card.w4{border-color:rgba(183,148,255,.38);background:linear-gradient(155deg,rgba(34,54,104,.42),rgba(8,14,32,.92))}
+
+  .wc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px}
+  .wc-title{font-family:Georgia,serif;font-size:.98rem;color:var(--gold-hi);font-weight:700}
+  .wc-sub{font-size:.72rem;color:#c9dce2;margin-bottom:8px;line-height:1.34}
+  .wc-stars{
+    font-size:.74rem;font-weight:750;color:var(--gold-hi);white-space:nowrap;
+    padding:3px 8px;border-radius:99px;background:rgba(0,0,0,.32);border:1px solid rgba(228,181,95,.3);
+  }
+  .wc-bar{height:5px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;margin-bottom:9px}
+  .wc-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-hi));transition:width .4s ease}
+
+  /* Un mundo puede tener más de cinco misiones: la rejilla se adapta en vez
+     de dejar la sexta sola en una segunda fila. */
+  .wc-missions{display:grid;grid-template-columns:repeat(auto-fit,minmax(44px,1fr));gap:6px}
+  .wm-btn{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    padding:7px 4px;border-radius:10px;
+    background:rgba(4,16,24,.58);border:1px solid rgba(255,255,255,.14);
+    transition:transform .12s,border-color .15s,background .15s;
+  }
+  .wm-btn:hover{transform:translateY(-2px);border-color:var(--gold);background:rgba(228,181,95,.18)}
+  .wm-btn.current{border-color:var(--teal);box-shadow:0 0 0 2px rgba(11,192,216,.24)}
+  .wm-btn.done{border-color:rgba(82,209,144,.52)}
+  .wm-btn .wm-n{font-size:.76rem;font-weight:800;color:var(--parch)}
+  .wm-btn .wm-s{font-size:.64rem;letter-spacing:-1px;color:var(--gold-hi)}
+  .wm-btn .wm-s.empty{color:rgba(255,255,255,.18)}
+  .wm-btn .wm-ic{font-size:.64rem;opacity:.85}
+
+  .medals-panel{
+    padding:12px 13px;border-radius:14px;
+    background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.09);
+  }
+  .medals-head{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;
+    font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:750;
+  }
+  .medals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:8px}
+  .medal-item{
+    display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:10px;
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+    opacity:.48;filter:grayscale(.75);
+  }
+  .medal-item.unlocked{
+    opacity:1;filter:none;border-color:rgba(228,181,95,.42);
+    background:linear-gradient(135deg,rgba(228,181,95,.14),rgba(11,192,216,.07));
+  }
+  .medal-item .mi-ic{font-size:1.28rem;flex:none}
+  .medal-item b{display:block;font-size:.74rem;color:var(--gold-hi);line-height:1.15}
+  .medal-item span{display:block;font-size:.67rem;color:var(--muted);line-height:1.25;margin-top:1px}
+
+  .worlds-preview{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0 16px;text-align:left}
+  .wp-card{padding:10px 11px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}
+  .wp-card b{display:block;font-size:.79rem;color:var(--gold-hi);margin-bottom:2px}
+  .wp-card span{font-size:.72rem;line-height:1.35;color:var(--muted)}
+
+  .stars-big{font-size:2.3rem;letter-spacing:6px;margin:6px 0 10px;color:rgba(255,255,255,.16)}
+  .stars-big .lit{color:var(--gold-hi);text-shadow:0 0 18px rgba(247,217,151,.55)}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 16px}
+  .stat-pill{padding:9px 6px;border-radius:11px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.09)}
+  .stat-pill .k{display:block;font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+  .stat-pill .v{display:block;font-size:1.05rem;font-weight:800;color:var(--parch);margin-top:3px}
+
+  .modal-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+  .btn-primary{
+    padding:11px 22px;border-radius:11px;font-weight:800;font-size:.9rem;
+    background:linear-gradient(180deg,var(--gold-hi),var(--gold));color:#201606;
+    box-shadow:0 4px 0 #9f752e;
+  }
+  .btn-primary:hover{filter:brightness(1.06)}
+  .btn-ghost{
+    padding:11px 16px;border-radius:11px;font-weight:650;font-size:.86rem;
+    background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--parch);
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,.12)}
+
+  /* ── REDISEÑO MÓVIL & TABLET VERTICAL (≤ 860px) ─────────────────────── */
+  @media(max-width:860px){
+    .app{grid-template-rows:48px minmax(0,1fr)}
+    header{padding:0 8px;gap:6px}
+    .brand-txt,.nav-center,.atlas-btn,#btnFs{display:none}
+    .mob-nav-btn{display:inline-flex}
+    .icon-btn{width:32px;height:32px;font-size:.88rem}
+
+    .main{
+      grid-template-columns:minmax(0,1fr);
+      grid-template-rows:minmax(0,1fr) auto;
+      gap:6px;padding:6px;
+    }
+
+    /* HUD compacto en 1 línea sobre el mapa */
+    .map-hud{top:6px;left:6px;right:6px;gap:5px}
+    .hud-card{padding:4px 8px;gap:7px;border-radius:9px}
+    .hud-world{display:none}
+    .hud-mission-name{font-size:.78rem}
+    .hud-metrics{gap:8px}
+    .metric .lbl{font-size:.52rem}
+    .metric .val{font-size:.82rem}
+    .heart{width:10px;height:10px}
+    .hud-reset-btn{width:25px;height:25px;font-size:.82rem}
+    .map-bottom-bar{left:6px;right:6px;bottom:6px}
+    .pos-badge,.cargo-badge{font-size:.69rem;padding:3px 8px}
+
+    /* Consola táctil compacta de 1 fila */
+    .console{
+      padding:7px 8px;gap:6px;overflow:visible;border-radius:12px;
+    }
+    .brief{padding:6px 8px;border-radius:9px}
+    .brief-top{margin-bottom:2px}
+    .brief p{font-size:.74rem;line-height:1.32}
+
+    .helm-panel{padding:6px 7px;gap:5px;border-radius:10px}
+    .helm-head,.sign-row{display:none}
+    .helm-controls{
+      flex-direction:row;align-items:stretch;gap:6px;
+    }
+    .coord-inputs{flex:1 1 auto;gap:4px;width:auto}
+    .paren{font-size:1.45rem}
+    .comma{font-size:1.3rem;padding-top:8px}
+    .axis-field{padding:2px 4px 3px;border-radius:8px;border-width:1.5px}
+    .axis-field label{font-size:.55rem;letter-spacing:.08em}
+    /* WCAG 2.5.8 pide 24 px de lado; aquí se escribe con el pulgar decenas de
+       veces por nivel, así que la casilla ocupa toda la caja del campo. */
+    .axis-field input{font-size:1.22rem;line-height:1.1;min-height:32px;flex:1 1 auto;width:100%}
+
+    .sign-compact.visible{display:inline-flex;align-items:center;justify-content:center}
+    .action-row{flex:0 0 auto;width:auto;gap:5px}
+    .btn-add{height:44px;padding:0 10px;font-size:.78rem}
+    .btn-go{flex:0 0 auto;height:44px;padding:0 13px;font-size:.82rem}
+
+    /* En móvil ocultamos Carta de Ruta salvo en Modo Carta Completa (Mundo 4) */
+    .console:not(.is-plan) .route-box{display:none}
+    .console.is-plan .route-box{padding:5px 8px;gap:4px}
+    .console.is-plan .route-head{font-size:.6rem}
+    .console.is-plan .chip{padding:2px 7px;font-size:.72rem}
+    .plan-hint,.legend-box,.console-foot{display:none}
+
+    .atlas-grid,.worlds-preview{grid-template-columns:1fr}
+    .wc-missions{gap:5px}
+    .toast{bottom:36px;font-size:.78rem;padding:7px 11px}
+    .sign-compact{padding:0 8px;font-size:.78rem}
+    .paren{font-size:1.25rem}
+
+    /* Cuando el teclado virtual del celular está abierto: maximizar espacio del mapa */
+    body.kb-open .app{grid-template-rows:40px minmax(0,1fr)}
+    body.kb-open header{padding:0 6px}
+    body.kb-open .brief,
+    body.kb-open .map-bottom-bar,
+    body.kb-open .route-box{display:none!important}
+    body.kb-open .main{gap:4px;padding:4px}
+    body.kb-open .console{padding:5px 6px}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *{transition-duration:.01ms!important}
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ddx-logo" viewBox="0 0 100 100">
+    <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+    <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="20" cy="20" r="15" fill="#0BC0D8"/>
+    <circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+    <circle cx="80" cy="80" r="15" fill="#0BC0D8"/>
+    <circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+  </symbol>
+</svg>
+
+<div class="app" id="appRoot">
+  <header>
+    <a class="brand" href="https://didaxislab.com" target="_blank" rel="noopener" title="Didaxis Lab">
+      <span class="brand-chip"><svg viewBox="0 0 100 100"><use href="#ddx-logo"></use></svg></span>
+      <span class="brand-txt">
+        <span class="brand-title">Rumbo Cartesiano</span>
+        <span class="brand-sub">Didaxis Lab</span>
+      </span>
+    </a>
+
+    <!-- Navegación PC -->
+    <div class="nav-center">
+      <div class="world-tabs" id="worldTabs" role="tablist" aria-label="Mundos"></div>
+      <nav class="mission-strip" id="missionStrip" aria-label="Misiones del mundo actual"></nav>
+    </div>
+
+    <!-- Navegación Móvil ultra-limpia -->
+    <button type="button" class="mob-nav-btn" id="btnMobAtlas" title="Elegir mundo o misión">
+      <span>🗺️</span>
+      <span class="mn-lbl" id="mobNavLabel">M1 · Bahía ▾</span>
+      <span class="mn-st" id="mobStarTotal">★0</span>
+    </button>
+
+    <div class="head-tools">
+      <button type="button" class="atlas-btn" id="btnAtlas" title="Abrir Atlas de los 4 Mundos y Medallas">
+        🗺️ Atlas <span class="st-num" id="starTotal">★ 0/60</span>
+      </button>
+      <button type="button" class="icon-btn" id="btnPerf" title="Modo Aula (menor carga gráfica)" aria-pressed="false">⚡</button>
+      <button type="button" class="icon-btn" id="btnSound" title="Activar o silenciar sonido" aria-pressed="true">🔊</button>
+      <button type="button" class="icon-btn" id="btnHelp" title="Manual del navegante">?</button>
+      <button type="button" class="icon-btn" id="btnFs" title="Pantalla completa">⛶</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="stage-wrap" aria-label="Mapa cartesiano de navegación">
+      <canvas id="sea" role="img" aria-label="Carta de navegación"></canvas>
+
+      <div class="map-hud">
+        <div class="hud-card hud-mission-box">
+          <div style="min-width:0">
+            <div class="hud-world" id="hudWorld">Mundo 1 · Bahía del Sol</div>
+            <div class="hud-mission-name" id="hudMission">M1: Primer Despacho</div>
+          </div>
+        </div>
+        <div class="hud-card hud-metrics">
+          <div class="metric">
+            <span class="lbl">Casco</span>
+            <div class="hearts" id="hudHearts" aria-label="Vidas restantes"></div>
+          </div>
+          <div class="metric">
+            <span class="lbl">Puntos</span>
+            <span class="val" id="hudMoves">2/2</span>
+          </div>
+          <button type="button" class="hud-reset-btn" id="btnHudReset" title="Reiniciar misión (R)">↺</button>
+        </div>
+      </div>
+
+      <div class="map-bottom-bar">
+        <div class="pos-badge">
+          <span class="pos-dot"></span>
+          <span>Lancha en <b id="hudPos">(1, 1)</b></span>
+        </div>
+        <div class="cargo-badge" id="cargoBadge">📦 Paquete a bordo</div>
+      </div>
+
+      <div class="world-banner" id="worldBanner" aria-hidden="true">
+        <div class="wb-k" id="wbEyebrow">Mundo 1</div>
+        <div class="wb-t" id="wbTitle">Bahía del Sol</div>
+        <div class="wb-s" id="wbSub">Primer cuadrante y rutas rectas</div>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </section>
+
+    <aside class="console" id="consolePanel" aria-label="Consola de coordenadas">
+      <div class="brief">
+        <div class="brief-top">
+          <span class="brief-tag" id="briefTag">Encargo #1</span>
+          <span class="badge-pill plan" id="briefMode" hidden>Carta completa</span>
+          <span class="badge-pill" id="briefBonus" hidden>★ Boya extra</span>
+        </div>
+        <p id="briefText"></p>
+      </div>
+
+      <div class="helm-panel">
+        <div class="helm-head">
+          <span id="helmPrompt">Siguiente coordenada</span>
+          <span id="rangeLabel">X: 0..8 · Y: 0..8</span>
+        </div>
+
+        <div class="helm-controls">
+          <div class="coord-inputs">
+            <span class="paren">(</span>
+            <div class="axis-field x-f">
+              <label for="inX">Eje X</label>
+              <input id="inX" type="text" size="2" inputmode="numeric" enterkeyhint="next" autocomplete="off" spellcheck="false" maxlength="3" placeholder="0" aria-label="Coordenada X" />
+            </div>
+            <span class="comma">,</span>
+            <div class="axis-field y-f">
+              <label for="inY">Eje Y</label>
+              <input id="inY" type="text" size="2" inputmode="numeric" enterkeyhint="go" autocomplete="off" spellcheck="false" maxlength="3" placeholder="0" aria-label="Coordenada Y" />
+            </div>
+            <span class="paren">)</span>
+          </div>
+
+          <!-- Signos en escritorio -->
+          <div class="sign-row" id="signRow" hidden>
+            <button type="button" class="sign-btn" id="btnSignX" title="Cambiar signo de X">± Signo X</button>
+            <button type="button" class="sign-btn" id="btnSignY" title="Cambiar signo de Y">± Signo Y</button>
+          </div>
+
+          <!-- Botón de signo inteligente en 1 fila para móvil -->
+          <button type="button" class="sign-compact" id="btnSignCompact" title="Cambiar signo del eje activo">±X</button>
+
+          <div class="action-row">
+            <button type="button" class="btn-add" id="btnAddPt" hidden>+ Añadir</button>
+            <button type="button" class="btn-go" id="btnSail">⛵ Zarpar</button>
+          </div>
+        </div>
+
+        <div class="plan-hint" id="planHint" hidden>Paso 1: añade tus puntos · Paso 2: pulsa Zarpar ruta</div>
+      </div>
+
+      <div class="route-box">
+        <div class="route-head">
+          <span id="routeTitle">Carta de ruta</span>
+          <div style="display:flex;gap:5px">
+            <button type="button" class="mini-btn" id="btnClearPlan" hidden>Limpiar</button>
+            <button type="button" class="mini-btn" id="btnReset">↺ Reiniciar</button>
+          </div>
+        </div>
+        <div class="route-chips" id="routeChips"></div>
+      </div>
+
+      <div class="legend-box" id="legendBox">
+        <div class="legend-title">Instrumentos en esta carta</div>
+        <div class="legend-list" id="legendList"></div>
+      </div>
+
+      <div class="console-foot">
+        <button type="button" class="guide-toggle" id="btnGuide" aria-pressed="true" title="Resalta el número en los ejes X e Y al escribir">
+          🧭 Guía de ejes
+        </button>
+        <span>Enter: zarpar · Tab: X↔Y</span>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<!-- Notificación de Medalla Desbloqueada -->
+<div class="medal-toast" id="medalToast" role="status" aria-live="polite">
+  <span class="mt-ic" id="mtIcon">🏅</span>
+  <div>
+    <div class="mt-k">Medalla desbloqueada</div>
+    <div class="mt-n" id="mtName">Primer Zarpe</div>
+  </div>
+</div>
+
+<!-- Portada Cinematográfica sobre el Mar Activo -->
+<div class="splash-layer on" id="ovSplash" role="dialog" aria-modal="true" aria-labelledby="splashTitle">
+  <div class="splash-card">
+    <div class="modal-logo"><svg viewBox="0 0 100 100"><use href="#ddx-logo"></use></svg></div>
+    <div class="modal-eyebrow">Didaxis Lab · Correo Náutico Cartesiano</div>
+    <h1 class="splash-title" id="splashTitle">Rumbo Cartesiano</h1>
+    <p class="splash-sub">Traza coordenadas <b>(X, Y)</b> para llevar paquetes a través de 4 archipiélagos vivos. Esquiva arrecifes, lee boyas de sonar, aprovecha corrientes marinas y domina el plano cartesiano.</p>
+    <div class="splash-kpis">
+      <span>🗺️ <b>4 Mundos</b></span>
+      <span>⛳ <b id="splashMissions">20 Misiones</b></span>
+      <span>★ <b id="splashStars">0 / 60</b></span>
+      <span>🏅 <b id="splashMedals">0 / 8</b></span>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" id="btnStart">⛵ Comenzar travesía</button>
+      <button type="button" class="btn-ghost" id="btnSplashAtlas">🗺️ Explorar Atlas</button>
+    </div>
+  </div>
+</div>
+
+<!-- Atlas Visual de Mundos y Medallas -->
+<div class="overlay" id="ovAtlas" role="dialog" aria-modal="true" aria-labelledby="atlasTitle">
+  <div class="modal wide">
+    <div class="atlas-top">
+      <div>
+        <div class="modal-eyebrow">Carta General del Archipiélago</div>
+        <h2 id="atlasTitle" style="margin-bottom:2px">Atlas de Navegación</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="wc-stars" id="atlasTotalStars">★ 0 / 60</span>
+        <button type="button" class="btn-ghost" id="btnCloseAtlas" style="padding:8px 14px">✕ Cerrar</button>
+      </div>
+    </div>
+
+    <div class="atlas-grid" id="atlasGrid"></div>
+
+    <div class="medals-panel">
+      <div class="medals-head">
+        <span>Insignias de Capitán</span>
+        <span id="medalsCount">0 / 8 desbloqueadas</span>
+      </div>
+      <div class="medals-grid" id="medalsGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Ayuda -->
+<div class="overlay" id="ovHelp" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="modal">
+    <div class="modal-eyebrow">Manual del Navegante</div>
+    <h2 id="helpTitle">Reglas y mecánicas tácticas</h2>
+    <div class="worlds-preview">
+      <div class="wp-card">
+        <b>🧭 Coordenadas (X, Y)</b>
+        <span>Primero eje horizontal <b>X</b>, luego vertical <b>Y</b>. Pulsa <b>Tab</b> o <b>coma</b> para cambiar de casilla, y <b>Enter</b> para zarpar.</span>
+      </div>
+      <div class="wp-card">
+        <b>📦 Carga y Entrega</b>
+        <span>Si aparece un muelle verde de <b>CARGA</b>, pasa por él antes de atracar en el muelle dorado de <b>ENTREGA</b>.</span>
+      </div>
+      <div class="wp-card">
+        <b>📡 Boyas de Sonar</b>
+        <span>El número indica cuántos arrecifes ocultos rodean esa boya (en su cuadro 3×3). Acercarte dispara el radar y revela ese sector.</span>
+      </div>
+      <div class="wp-card">
+        <b>🌊 Corrientes y Espejos</b>
+        <span>Cruzar una corriente traslada tu destino <b>(ΔX, ΔY)</b>. Los faros espejo revelan el destino por simetría respecto al eje X o Y.</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" id="btnCloseHelp">Entendido, volver al mapa</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Resultado -->
+<div class="overlay" id="ovResult" role="dialog" aria-modal="true" aria-labelledby="resTitle">
+  <div class="modal">
+    <div class="modal-eyebrow" id="resEyebrow">Entrega completada</div>
+    <h2 id="resTitle">¡Paquete entregado!</h2>
+    <div class="stars-big" id="resStars"></div>
+    <p id="resMsg"></p>
+    <div class="stat-row">
+      <div class="stat-pill"><span class="k">Coordenadas</span><span class="v" id="resMoves">2 / 3</span></div>
+      <div class="stat-pill"><span class="k">Casco</span><span class="v" id="resLives">3 / 3</span></div>
+      <div class="stat-pill"><span class="k">Boya extra</span><span class="v" id="resBonus">—</span></div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="btnResAtlas">🗺️ Atlas</button>
+      <button type="button" class="btn-ghost" id="btnRetryModal">↺ Repetir</button>
+      <button type="button" class="btn-primary" id="btnNextModal" data-foco>Siguiente misión →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* =========================================================================
+     1. BIOMAS DE LOS 4 MUNDOS Y MEDALLAS DE CAPITÁN
+     ========================================================================= */
+  const WORLDS = [
+    {
+      id: 1, short: 'M1', shortTitle: 'Bahía', name: 'Mundo 1 · Bahía del Sol', title: 'Bahía del Sol',
+      desc: 'Primer cuadrante, rutas rectas y rodeos tácticos en aguas tropicales.',
+      seaStops: ['#18869a', '#0d5a6d', '#063342'],
+      waveColor: 'rgba(195,248,255,0.09)',
+      glintColor: 'rgba(255,248,210,0.19)',
+      gridColor: 'rgba(215,245,250,0.16)',
+      axisColor: 'rgba(247,217,151,0.82)',
+      islandSand: ['#f5db9e', '#c29954'],
+      islandVeg: ['#66ba62', '#296943'],
+      ambient: 'gulls'
+    },
+    {
+      id: 2, short: 'M2', shortTitle: 'Signos', name: 'Mundo 2 · Estrecho de los Signos', title: 'Estrecho de los Signos',
+      desc: 'Los 4 cuadrantes, números negativos y paradas de carga en el atardecer.',
+      seaStops: ['#34547c', '#1d3457', '#0d1a33'],
+      waveColor: 'rgba(255,204,152,0.09)',
+      glintColor: 'rgba(255,190,120,0.22)',
+      gridColor: 'rgba(255,224,195,0.14)',
+      axisColor: 'rgba(255,204,124,0.88)',
+      islandSand: ['#e8b684', '#9e6843'],
+      islandVeg: ['#59945c', '#244e3c'],
+      ambient: 'sunset'
+    },
+    {
+      id: 3, short: 'M3', shortTitle: 'Sonar', name: 'Mundo 3 · Niebla de Sonar', title: 'Niebla de Sonar',
+      desc: 'Arrecifes ocultos y boyas de sonar tipo buscaminas entre la bruma.',
+      seaStops: ['#1e4f5e', '#11323e', '#071a23'],
+      waveColor: 'rgba(165,232,240,0.075)',
+      glintColor: 'rgba(130,235,245,0.12)',
+      gridColor: 'rgba(175,230,240,0.15)',
+      axisColor: 'rgba(122,231,250,0.82)',
+      islandSand: ['#b2bdb8', '#6c7a78'],
+      islandVeg: ['#3c7a69', '#1c443c'],
+      ambient: 'fog'
+    },
+    {
+      id: 4, short: 'M4', shortTitle: 'Noche', name: 'Mundo 4 · Archipiélago Nocturno', title: 'Archipiélago Nocturno',
+      desc: 'Corrientes marinas, faros de simetría y navegación en Carta Completa.',
+      seaStops: ['#13294d', '#091731', '#030816'],
+      waveColor: 'rgba(115,205,255,0.08)',
+      glintColor: 'rgba(185,230,255,0.24)',
+      gridColor: 'rgba(145,205,255,0.14)',
+      axisColor: 'rgba(247,217,151,0.86)',
+      islandSand: ['#6c7a91', '#3b4559'],
+      islandVeg: ['#26616c', '#10343e'],
+      ambient: 'night'
+    }
+  ];
+
+  const MEDALS = [
+    { id: 'first_win',  icon: '⛵', name: 'Primer Zarpe',        desc: 'Completa tu primera entrega.' },
+    { id: 'w1_clear',   icon: '☀️', name: 'Piloto de la Bahía',  desc: 'Completa las 5 misiones del Mundo 1.' },
+    { id: 'w2_clear',   icon: '🧭', name: 'Señor de los Signos', desc: 'Domina los 4 cuadrantes del Mundo 2.' },
+    { id: 'w3_clear',   icon: '📡', name: 'Oído de Sonar',       desc: 'Supera la Niebla de Sonar (Mundo 3).' },
+    { id: 'w4_clear',   icon: '🌙', name: 'Capitán Nocturno',    desc: 'Conquista el Archipiélago Nocturno.' },
+    { id: 'streak_3',   icon: '🔥', name: 'Racha Impecable',     desc: 'Completa 3 entregas seguidas sin chocar.' },
+    { id: 'gold_5',     icon: '⭐', name: 'Correo Dorado',       desc: 'Recoge 5 boyas doradas distintas.' },
+    { id: 'stars_45',   icon: '🏆', name: 'Gran Cartógrafo',     desc: 'Reúne al menos 45 estrellas totales.' }
+  ];
+
+  /* =========================================================================
+     2. CAMPAÑA COMPLETA: 20 MISIONES VERIFICADAS
+     ========================================================================= */
+  const LEVELS = [
+    // MUNDO 1
+    {
+      id: 1, worldId: 1, name: 'M1: Primer Despacho',
+      brief: 'Lleva el paquete en línea recta hasta el <strong>muelle dorado</strong>. Lee primero <strong>X</strong> (horizontal) y luego <strong>Y</strong> (vertical).',
+      minX: 0, maxX: 8, minY: 0, maxY: 8,
+      start: { x: 1, y: 1 }, goal: { x: 6, y: 5 },
+      maxCoords: 2, parCoords: 1, bonus: null,
+      obstacles: [
+        { x: 2, y: 6, r: 0.85, kind: 'island', seed: 11 },
+        { x: 6, y: 2, r: 0.85, kind: 'reef',   seed: 23 }
+      ]
+    },
+    {
+      id: 2, worldId: 1, name: 'M2: El Arrecife Central',
+      brief: 'Una isla bloquea el paso directo. Planea un <strong>punto intermedio</strong> limpio y atraca en máximo <strong>3 coordenadas</strong> (óptimo: 2).',
+      minX: 0, maxX: 8, minY: 0, maxY: 8,
+      start: { x: 1, y: 2 }, goal: { x: 7, y: 6 },
+      maxCoords: 3, parCoords: 2, bonus: null,
+      obstacles: [
+        { x: 4, y: 4, r: 1.05, kind: 'island', seed: 37 },
+        { x: 2, y: 6, r: 0.78, kind: 'reef',   seed: 41 },
+        { x: 6, y: 2, r: 0.78, kind: 'reef',   seed: 53 }
+      ]
+    },
+    {
+      id: 3, worldId: 1, name: 'M3: Canal de las Palmeras',
+      brief: 'Dos islas cierran la diagonal. Pasa por la <strong>boya dorada</strong> en el camino para lograr las <strong>3 estrellas</strong>.',
+      minX: 0, maxX: 8, minY: 0, maxY: 8,
+      start: { x: 1, y: 1 }, goal: { x: 7, y: 7 },
+      maxCoords: 3, parCoords: 2, bonus: { x: 2, y: 6 },
+      obstacles: [
+        { x: 3, y: 3, r: 0.95, kind: 'island', seed: 61 },
+        { x: 5, y: 5, r: 0.95, kind: 'island', seed: 73 },
+        { x: 6, y: 2, r: 0.85, kind: 'reef',   seed: 89 }
+      ]
+    },
+    {
+      id: 4, worldId: 1, name: 'M4: Estrecho en Zigzag',
+      brief: 'El paso forma una <strong>S</strong> estrecha entre cuatro escollos. Busca por dónde se cuela tu lancha sin rozarlos, y mira dónde queda la <strong>boya dorada</strong>.',
+      minX: 0, maxX: 8, minY: 0, maxY: 8,
+      start: { x: 1, y: 7 }, goal: { x: 7, y: 1 },
+      maxCoords: 3, parCoords: 3, bonus: { x: 2, y: 2 },
+      obstacles: [
+        { x: 3, y: 7, r: 0.82, kind: 'island', seed: 101 },
+        { x: 3, y: 5, r: 0.82, kind: 'reef',   seed: 109 },
+        { x: 5, y: 3, r: 0.82, kind: 'reef',   seed: 113 },
+        { x: 5, y: 1, r: 0.82, kind: 'island', seed: 127 }
+      ]
+    },
+    {
+      id: 5, worldId: 1, name: 'M5: Travesía del Faro',
+      brief: 'Carta ampliada hasta <strong>10</strong>. Encuentra el canal libre que atraviesa el archipiélago de punta a punta.',
+      minX: 0, maxX: 10, minY: 0, maxY: 10,
+      start: { x: 1, y: 2 }, goal: { x: 9, y: 8 },
+      maxCoords: 3, parCoords: 2, bonus: { x: 2, y: 8 },
+      obstacles: [
+        { x: 4, y: 4, r: 1.00, kind: 'island', seed: 131 },
+        { x: 6, y: 6, r: 1.00, kind: 'island', seed: 139 },
+        { x: 3, y: 6, r: 0.85, kind: 'reef',   seed: 149 },
+        { x: 7, y: 4, r: 0.85, kind: 'reef',   seed: 157 },
+        { x: 6, y: 9, r: 0.82, kind: 'island', seed: 163 },
+        { x: 4, y: 1, r: 0.82, kind: 'reef',   seed: 173 },
+        { x: 9, y: 5, r: 0.78, kind: 'reef',   seed: 181 }
+      ]
+    },
+    // MUNDO 2
+    {
+      id: 6, worldId: 2, name: 'M6: Cruce del Origen',
+      brief: '¡Bienvenido a los <strong>4 cuadrantes</strong>! Sales del Cuadrante III con coordenadas negativas. Rodea la isla del origen <strong>(0, 0)</strong>.',
+      minX: -6, maxX: 6, minY: -6, maxY: 6,
+      start: { x: -4, y: -3 }, goal: { x: 4, y: 3 },
+      maxCoords: 3, parCoords: 2, bonus: { x: 0, y: 3 },
+      obstacles: [
+        { x: 0, y: 0, r: 1.05, kind: 'island', seed: 211 },
+        { x: -3, y: 2, r: 0.80, kind: 'reef',  seed: 223 },
+        { x: 3, y: -2, r: 0.80, kind: 'reef',  seed: 227 }
+      ]
+    },
+    {
+      id: 7, worldId: 2, name: 'M7: Cuadrante Sumergido',
+      brief: 'Navega desde el Cuadrante I hasta el <strong>Cuadrante III</strong> (ambos signos negativos). La boya del Cuadrante II marca un giro limpio.',
+      minX: -6, maxX: 6, minY: -6, maxY: 6,
+      start: { x: 5, y: 4 }, goal: { x: -4, y: -4 },
+      maxCoords: 3, parCoords: 2, bonus: { x: -4, y: 2 },
+      obstacles: [
+        { x: 1, y: 1, r: 0.95, kind: 'island', seed: 233 },
+        { x: -1, y: -1, r: 0.95, kind: 'reef', seed: 239 },
+        { x: 3, y: -3, r: 0.85, kind: 'island', seed: 241 }
+      ]
+    },
+    {
+      id: 8, worldId: 2, name: 'M8: Escala en el Eje',
+      brief: 'Tu lancha zarpa vacía. Primero recoge el paquete en el <strong>muelle de CARGA verde</strong> sobre el eje Y y luego llévalo a <strong>ENTREGA</strong>.',
+      minX: -6, maxX: 6, minY: -6, maxY: 6,
+      start: { x: -5, y: 3 }, pickup: { x: 0, y: -4 }, goal: { x: 5, y: 2 },
+      maxCoords: 3, parCoords: 2, bonus: null,
+      obstacles: [
+        { x: -1, y: 1, r: 0.90, kind: 'island', seed: 251 },
+        { x: 2, y: 1, r: 0.90, kind: 'island',  seed: 257 },
+        { x: 0, y: 4, r: 0.85, kind: 'reef',    seed: 263 }
+      ]
+    },
+    {
+      id: 9, worldId: 2, name: 'M9: Doble Carga del Sur',
+      brief: 'Recoge el correo en el <strong>Cuadrante III</strong> y esquiva los escollos para subir al Cuadrante II. Fija bien los signos antes de zarpar.',
+      minX: -6, maxX: 6, minY: -6, maxY: 6,
+      start: { x: 5, y: -4 }, pickup: { x: -4, y: -3 }, goal: { x: -2, y: 5 },
+      maxCoords: 4, parCoords: 3, bonus: { x: 0, y: 2 },
+      obstacles: [
+        { x: 1, y: -1, r: 0.90, kind: 'island', seed: 269 },
+        { x: -3, y: 1, r: 0.90, kind: 'reef',   seed: 271 },
+        { x: 3, y: 2, r: 0.85, kind: 'island',  seed: 277 },
+        { x: -1, y: -5, r: 0.82, kind: 'reef',  seed: 281 }
+      ]
+    },
+    {
+      id: 10, worldId: 2, name: 'M10: Cuatro Vientos',
+      brief: 'Cruza los <strong>4 cuadrantes</strong> en un solo despacho: recoge la carga en el <strong>Cuadrante IV</strong> y rodea por el este hasta el Cuadrante II.',
+      minX: -6, maxX: 6, minY: -6, maxY: 6,
+      start: { x: -5, y: -5 }, pickup: { x: 4, y: -3 }, goal: { x: -3, y: 5 },
+      maxCoords: 4, parCoords: 3, bonus: { x: 4, y: 3 },
+      obstacles: [
+        { x: -2, y: -1, r: 0.95, kind: 'reef',  seed: 283 },
+        { x: 1, y: -1, r: 0.95, kind: 'island', seed: 293 },
+        { x: -1, y: 2, r: 0.95, kind: 'island', seed: 307 },
+        { x: 1, y: 6, r: 0.85, kind: 'reef',    seed: 311 }
+      ]
+    },
+    // MUNDO 3
+    {
+      id: 11, worldId: 3, name: 'M11: Primer Eco de Sonar',
+      brief: 'Hay <strong>arrecifes sumergidos</strong> en la niebla. Cada <strong>boya de sonar</strong> indica cuántos peligros hay en su cuadro 3×3. ¡Sigue la boya con <strong>0</strong>!',
+      minX: -6, maxX: 6, minY: -6, maxY: 6,
+      start: { x: -5, y: 0 }, goal: { x: 5, y: 0 },
+      maxCoords: 3, parCoords: 2, bonus: { x: 0, y: -4 },
+      sonars: [{ x: -1, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -3 }],
+      obstacles: [
+        { x: 0, y: 0, r: 0.85, kind: 'reef', seed: 313, hidden: true },
+        { x: 0, y: 2, r: 0.85, kind: 'reef', seed: 317, hidden: true },
+        { x: -3, y: 3, r: 0.85, kind: 'island', seed: 331 },
+        { x: 3, y: 3, r: 0.85, kind: 'island',  seed: 337 }
+      ]
+    },
+    {
+      id: 12, worldId: 3, name: 'M12: Boya Engañosa',
+      brief: 'El sur marca múltiples ecos en el sonar, mientras el <strong>Cuadrante II</strong> está despejado. Lee los números del sonar antes de elegir el flanco.',
+      minX: -6, maxX: 6, minY: -6, maxY: 6,
+      start: { x: -5, y: -4 }, goal: { x: 5, y: 4 },
+      maxCoords: 3, parCoords: 2, bonus: { x: -3, y: 4 },
+      sonars: [{ x: 1, y: -1 }, { x: 3, y: -2 }, { x: -3, y: 3 }],
+      obstacles: [
+        { x: 0, y: 0, r: 0.85, kind: 'reef', seed: 347, hidden: true },
+        { x: 2, y: -2, r: 0.85, kind: 'reef', seed: 349, hidden: true },
+        { x: 4, y: -1, r: 0.85, kind: 'reef', seed: 353, hidden: true },
+        { x: -1, y: 2, r: 0.85, kind: 'island', seed: 359 },
+        { x: 2, y: 2, r: 0.85, kind: 'island',  seed: 367 }
+      ]
+    },
+    {
+      id: 13, worldId: 3, name: 'M13: Campo Minado',
+      brief: 'Una cadena de escollos ocultos cruza la diagonal principal. Deduce cuál cuadrante tiene paso limpio con las boyas de sonar.',
+      minX: -6, maxX: 6, minY: -6, maxY: 6,
+      start: { x: -5, y: 4 }, goal: { x: 5, y: -4 },
+      maxCoords: 3, parCoords: 2, bonus: { x: 4, y: 4 },
+      sonars: [{ x: -1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -3 }, { x: 4, y: 2 }],
+      obstacles: [
+        { x: -2, y: 2, r: 0.85, kind: 'reef', seed: 373, hidden: true },
+        { x: 0, y: 0, r: 0.85, kind: 'reef',  seed: 379, hidden: true },
+        { x: 2, y: -2, r: 0.85, kind: 'reef', seed: 383, hidden: true },
+        { x: -3, y: -3, r: 0.90, kind: 'island', seed: 389 },
+        { x: 0, y: -4, r: 0.85, kind: 'reef', seed: 397, hidden: true },
+        { x: 1, y: 2, r: 0.85, kind: 'island', seed: 401 }
+      ]
+    },
+    {
+      id: 14, worldId: 3, name: 'M14: Carga entre Brumas',
+      brief: 'Recoge el paquete en el norte <strong>(0, 5)</strong> y llévalo al sureste. Usa los corredores exteriores donde el sonar marca <strong>0</strong>.',
+      minX: -7, maxX: 7, minY: -7, maxY: 7,
+      start: { x: -6, y: -5 }, pickup: { x: 0, y: 5 }, goal: { x: 6, y: -5 },
+      maxCoords: 4, parCoords: 3, bonus: { x: 5, y: 4 },
+      sonars: [{ x: -2, y: 1 }, { x: -5, y: 2 }, { x: 2, y: -1 }, { x: 5, y: 2 }],
+      obstacles: [
+        { x: -3, y: 0, r: 0.90, kind: 'reef', seed: 409, hidden: true },
+        { x: -1, y: 1, r: 0.85, kind: 'reef', seed: 419, hidden: true },
+        { x: 3, y: 0, r: 0.90, kind: 'reef',  seed: 421, hidden: true },
+        { x: 2, y: -2, r: 0.85, kind: 'reef', seed: 431, hidden: true },
+        { x: 0, y: -3, r: 0.95, kind: 'island', seed: 433 }
+      ]
+    },
+    {
+      id: 15, worldId: 3, name: 'M15: El Paso del Radar',
+      brief: 'Dos barreras sumergidas bloquean el centro. Observa las cuatro boyas centrales en alerta y busca la ruta despejada por el norte.',
+      minX: -7, maxX: 7, minY: -7, maxY: 7,
+      start: { x: -6, y: 0 }, goal: { x: 6, y: 0 },
+      maxCoords: 4, parCoords: 2, bonus: { x: 0, y: 5 },
+      sonars: [{ x: -1, y: 1 }, { x: -1, y: -1 }, { x: 1, y: 1 }, { x: 1, y: -1 }, { x: 0, y: 4 }],
+      obstacles: [
+        { x: -2, y: 0, r: 0.85, kind: 'reef',  seed: 439, hidden: true },
+        { x: -2, y: 2, r: 0.85, kind: 'reef',  seed: 443, hidden: true },
+        { x: -2, y: -2, r: 0.85, kind: 'reef', seed: 449, hidden: true },
+        { x: 2, y: 0, r: 0.85, kind: 'reef',   seed: 457, hidden: true },
+        { x: 2, y: -2, r: 0.85, kind: 'reef',  seed: 461, hidden: true },
+        { x: 2, y: 2, r: 0.85, kind: 'reef',   seed: 463, hidden: true },
+        { x: 0, y: -5, r: 0.95, kind: 'island', seed: 467 }
+      ]
+    },
+    // MUNDO 4
+    {
+      id: 16, worldId: 4, name: 'M16: Corriente del Este',
+      brief: '<strong>Carta Completa:</strong> añade tus puntos y zarpa de corrido. Cruzar la corriente te traslada <strong>+3 en X</strong>. ¡Úsala a tu favor!',
+      minX: -7, maxX: 7, minY: -7, maxY: 7,
+      start: { x: -6, y: -4 }, goal: { x: 6, y: 4 },
+      maxCoords: 3, parCoords: 2, bonus: { x: 1, y: 4 },
+      mode: 'plan',
+      currents: [{ x1: -2, y1: -7, x2: 1, y2: 7, dx: 3, dy: 0, label: '+3 en X' }],
+      obstacles: [
+        { x: 0, y: 0, r: 1.00, kind: 'island',  seed: 479 },
+        { x: 3, y: -2, r: 0.90, kind: 'reef',   seed: 487 },
+        { x: -3, y: -1, r: 0.85, kind: 'reef',  seed: 491 }
+      ]
+    },
+    {
+      id: 17, worldId: 4, name: 'M17: Deriva del Norte',
+      brief: 'La corriente central empuja <strong>+3 en Y</strong>. Apunta por debajo de la boya dorada para que la deriva te deposite justo sobre ella.',
+      minX: -7, maxX: 7, minY: -7, maxY: 7,
+      start: { x: -6, y: 0 }, goal: { x: 6, y: 5 },
+      maxCoords: 3, parCoords: 2, bonus: { x: 2, y: 5 },
+      mode: 'plan',
+      currents: [{ x1: -7, y1: 1, x2: 7, y2: 4, dx: 0, dy: 3, label: '+3 en Y' }],
+      obstacles: [
+        { x: 0, y: 4, r: 0.90, kind: 'reef',    seed: 499 },
+        { x: 3, y: 1, r: 0.95, kind: 'island',  seed: 503 },
+        { x: -3, y: 3, r: 0.90, kind: 'island', seed: 509 }
+      ]
+    },
+    {
+      id: 18, worldId: 4, name: 'M18: Faro del Espejo Y',
+      brief: 'El muelle destino está oculto en la noche: se ubica en el punto <strong>simétrico respecto al eje Y</strong> del faro violeta en <strong>(−5, 4)</strong>.',
+      minX: -7, maxX: 7, minY: -7, maxY: 7,
+      start: { x: -6, y: -5 }, goal: { x: 5, y: 4 },
+      symmetry: { ref: { x: -5, y: 4 }, axis: 'Y' },
+      maxCoords: 3, parCoords: 2, bonus: { x: 0, y: -4 },
+      mode: 'plan',
+      obstacles: [
+        { x: -1, y: 0, r: 1.00, kind: 'island', seed: 521 },
+        { x: 1, y: 1, r: 1.00, kind: 'island',  seed: 523 },
+        { x: -3, y: 2, r: 0.85, kind: 'reef',   seed: 541 }
+      ]
+    },
+    {
+      id: 19, worldId: 4, name: 'M19: Reflejo y Corriente',
+      brief: 'Destino oculto: <strong>simétrico respecto al eje X</strong> del faro en <strong>(5, 4)</strong>. La corriente diagonal traslada <strong>(+2, −2)</strong>.',
+      minX: -7, maxX: 7, minY: -7, maxY: 7,
+      start: { x: -6, y: 5 }, goal: { x: 5, y: -4 },
+      symmetry: { ref: { x: 5, y: 4 }, axis: 'X' },
+      maxCoords: 3, parCoords: 2, bonus: { x: -1, y: -4 },
+      mode: 'plan',
+      currents: [{ x1: -4, y1: -3, x2: 0, y2: 1, dx: 2, dy: -2, label: '+2 X, −2 Y' }],
+      obstacles: [
+        { x: 0, y: 2, r: 0.95, kind: 'island',  seed: 547 },
+        { x: 3, y: 0, r: 0.95, kind: 'island',  seed: 557 },
+        { x: -4, y: -5, r: 0.85, kind: 'reef',  seed: 563 }
+      ]
+    },
+    {
+      id: 20, worldId: 4, name: 'M20: Gran Travesía Nocturna',
+      brief: 'La gran travesía: recoge la carga en <strong>(−5, 4)</strong>, aprovecha la corriente <strong>(+2, +2)</strong> evitando el sonar y atraca en el <strong>simétrico en Y</strong> de <strong>(−6, 5)</strong>.',
+      minX: -7, maxX: 7, minY: -7, maxY: 7,
+      start: { x: -6, y: -6 }, pickup: { x: -5, y: 4 }, goal: { x: 6, y: 5 },
+      symmetry: { ref: { x: -6, y: 5 }, axis: 'Y' },
+      maxCoords: 4, parCoords: 3, bonus: { x: 1, y: 5 },
+      mode: 'plan',
+      currents: [{ x1: -1, y1: -7, x2: 2, y2: 7, dx: 2, dy: 2, label: '+2 X, +2 Y' }],
+      sonars: [{ x: 1, y: 0 }, { x: 2, y: 2 }],
+      obstacles: [
+        { x: -2, y: -2, r: 0.95, kind: 'island', seed: 569 },
+        { x: 2, y: -1, r: 0.95, kind: 'island',  seed: 571 },
+        { x: 0, y: 0, r: 0.85, kind: 'reef',     seed: 577, hidden: true },
+        { x: 3, y: 3, r: 0.85, kind: 'reef',     seed: 587, hidden: true },
+        { x: -1, y: 5, r: 0.85, kind: 'island',  seed: 593 }
+      ]
+    },
+    {
+      id: 21, worldId: 4, name: 'M21: El Cuaderno Ajeno',
+      brief: 'Otra tripulación dejó este rumbo anotado y encalló en la isla. <strong>Conserva el muelle de entrega</strong> como último punto y corrige <strong>un solo número</strong> del punto de giro.',
+      minX: -7, maxX: 7, minY: -7, maxY: 7,
+      start: { x: -6, y: -5 }, goal: { x: 5, y: 4 },
+      maxCoords: 2, parCoords: 2, bonus: null,
+      mode: 'plan',
+      draft: [[-2, -1], [5, 4]],
+      obstacles: [
+        { x: 1, y: 1, r: 1.00, kind: 'island', seed: 601 },
+        { x: 3, y: 1, r: 0.95, kind: 'island', seed: 617 },
+        { x: -3, y: 2, r: 0.85, kind: 'reef',  seed: 607 },
+        { x: -2, y: 3, r: 0.85, kind: 'reef',  seed: 619 },
+        { x: 3, y: -3, r: 0.85, kind: 'reef',  seed: 613 },
+        { x: 0, y: -3, r: 0.85, kind: 'reef',  seed: 631 }
+      ]
+    }
+  ];
+
+  /* La colisión es la silueta que se dibuja, no un círculo más pequeño.
+     Estos dos números son los mismos con los que se pinta el cuerpo de la
+     isla y de la roca: si se cambia uno, cambia el otro. */
+  const SILUETA_ISLA = 0.98;
+  const SILUETA_ARRECIFE = 0.92;
+  const BLOB_N = 14, BLOB_MUESTRAS = 10;
+  const MAX_LIVES = 3;
+  const STORAGE_KEY = 'didaxis_rumbo_cartesiano_v3';
+
+  /* =========================================================================
+     3. AUDIO PROCEDURAL (Web Audio API + Motor suave)
+     ========================================================================= */
+  const SFX = (() => {
+    let ctx = null, enabled = true, engineNodes = null;
+    function ensure() {
+      if (!enabled) return null;
+      if (!ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) ctx = new AC();
+      }
+      if (ctx && ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    }
+    function tone(freq, dur, type = 'sine', gainVal = 0.11, slideTo = null, delay = 0) {
+      const c = ensure();
+      if (!c) return;
+      const now = c.currentTime + delay;
+      const osc = c.createOscillator(), g = c.createGain();
+      osc.type = type; osc.frequency.setValueAtTime(freq, now);
+      if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, now + dur);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.linearRampToValueAtTime(gainVal, now + 0.014);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+      osc.connect(g); g.connect(c.destination);
+      osc.start(now); osc.stop(now + dur + 0.03);
+    }
+    function noise(dur, gainVal = 0.16, cutoff = 650) {
+      const c = ensure();
+      if (!c) return;
+      const len = Math.floor(c.sampleRate * dur);
+      const buf = c.createBuffer(1, len, c.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.36));
+      const src = c.createBufferSource(); src.buffer = buf;
+      const filt = c.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = cutoff;
+      const g = c.createGain(); g.gain.value = gainVal;
+      src.connect(filt); filt.connect(g); g.connect(c.destination);
+      src.start();
+    }
+    function startEngine() {
+      const c = ensure();
+      if (!c || engineNodes) return;
+      const now = c.currentTime;
+      const osc = c.createOscillator(), lfo = c.createOscillator();
+      const lfoGain = c.createGain(), filt = c.createBiquadFilter(), master = c.createGain();
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(72, now);
+      lfo.frequency.setValueAtTime(11, now); lfoGain.gain.setValueAtTime(6, now);
+      lfo.connect(lfoGain); lfoGain.connect(osc.frequency);
+      filt.type = 'lowpass'; filt.frequency.setValueAtTime(220, now);
+      master.gain.setValueAtTime(0.0001, now); master.gain.linearRampToValueAtTime(0.038, now + 0.14);
+      osc.connect(filt); filt.connect(master); master.connect(c.destination);
+      osc.start(now); lfo.start(now);
+      engineNodes = { osc, lfo, master };
+    }
+    function stopEngine() {
+      if (!engineNodes || !ctx) return;
+      const { osc, lfo, master } = engineNodes;
+      engineNodes = null;
+      try {
+        const now = ctx.currentTime;
+        master.gain.cancelScheduledValues(now);
+        master.gain.setValueAtTime(Math.max(0.0001, master.gain.value), now);
+        master.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+        osc.stop(now + 0.16); lfo.stop(now + 0.16);
+      } catch {}
+    }
+    return {
+      get enabled() { return enabled; },
+      setEnabled(v) { enabled = !!v; if (!enabled) stopEngine(); },
+      toggle() { enabled = !enabled; if (!enabled) stopEngine(); return enabled; },
+      startEngine, stopEngine,
+      tap()    { tone(540, 0.045, 'triangle', 0.05, 640); },
+      sail()   { startEngine(); tone(320, 0.14, 'sine', 0.045, 430); },
+      beacon() { tone(587.3, 0.17, 'sine', 0.1, null, 0); tone(880, 0.24, 'triangle', 0.08, null, 0.07); },
+      pickup() { tone(440, 0.14, 'triangle', 0.11, null, 0); tone(659.25, 0.16, 'triangle', 0.11, null, 0.08); tone(880, 0.24, 'sine', 0.1, null, 0.16); },
+      bonus()  { tone(659.2, 0.13, 'triangle', 0.11, null, 0); tone(987.8, 0.15, 'triangle', 0.11, null, 0.07); tone(1318.5, 0.28, 'sine', 0.11, null, 0.14); },
+      sonar()  { tone(1240, 0.28, 'sine', 0.095, 1140, 0); tone(1240, 0.24, 'sine', 0.04, 1100, 0.22); },
+      drift()  { noise(0.35, 0.08, 950); tone(250, 0.34, 'sine', 0.08, 470); },
+      crash()  { stopEngine(); noise(0.36, 0.25, 580); tone(130, 0.28, 'sawtooth', 0.12, 48); },
+      medal()  { [587.3, 739.99, 880, 1174.66].forEach((f, i) => tone(f, 0.26, 'triangle', 0.095, null, i * 0.07)); },
+      win()    { stopEngine(); [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i === 3 ? 0.52 : 0.18, 'triangle', 0.11, null, i * 0.09)); },
+      lose()   { stopEngine(); [311.1, 277.2, 233.1].forEach((f, i) => tone(f, 0.25, 'sine', 0.095, null, i * 0.14)); }
+    };
+  })();
+
+  /* =========================================================================
+     4. MOTOR GEOMÉTRICO
+     ========================================================================= */
+  function rayCircleHit(ax, ay, bx, by, cx, cy, r) {
+    const dx = bx - ax, dy = by - ay, fx = ax - cx, fy = ay - cy;
+    const a = dx * dx + dy * dy;
+    if (a < 1e-9) return null;
+    const b = 2 * (fx * dx + fy * dy);
+    const c = (fx * fx + fy * fy) - r * r;
+    const disc = b * b - 4 * a * c;
+    if (disc < 0) return null;
+    const s = Math.sqrt(disc);
+    const t1 = (-b - s) / (2 * a), t2 = (-b + s) / (2 * a);
+    if (t1 >= 0 && t1 <= 1) return t1;
+    if (t1 < 0 && t2 >= 0) return 0;
+    return null;
+  }
+
+  function distPointSegment(px, py, ax, ay, bx, by) {
+    const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+    if (l2 < 1e-9) return Math.hypot(px - ax, py - ay);
+    const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / l2));
+    return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+  }
+
+  function segmentIntersectsRect(ax, ay, bx, by, x1, y1, x2, y2) {
+    const dx = bx - ax, dy = by - ay;
+    let t0 = 0, t1 = 1;
+    const checks = [[-dx, ax - x1], [dx, x2 - ax], [-dy, ay - y1], [dy, y2 - ay]];
+    for (const [p, q] of checks) {
+      if (Math.abs(p) < 1e-9) { if (q < 0) return false; }
+      else {
+        const r = q / p;
+        if (p < 0) { if (r > t1) return false; if (r > t0) t0 = r; }
+        else { if (r < t0) return false; if (r < t1) t1 = r; }
+      }
+    }
+    return t0 <= t1;
+  }
+
+  /* La silueta de cada obstáculo, en unidades del mundo y referida a su
+     centro. Se calcula una vez por semilla: son los mismos catorce radios y
+     las mismas curvas que traza el dibujo. */
+  const siluetas = new Map();
+  function siluetaDe(o) {
+    const clave = o.seed + '|' + o.kind + '|' + o.r;
+    let s = siluetas.get(clave);
+    if (s) return s;
+    const esc = o.kind === 'island' ? SILUETA_ISLA : SILUETA_ARRECIFE;
+    const rng = seededRand(o.seed), rad = [];
+    for (let i = 0; i < BLOB_N; i++) rad.push(0.84 + rng() * 0.28);
+    const P = rad.map((d, i) => {
+      const a = (i / BLOB_N) * Math.PI * 2, k = o.r * esc * d;
+      return [Math.cos(a) * k, Math.sin(a) * k];
+    });
+    const M = P.map((p, i) => {
+      const q = P[(i + 1) % BLOB_N];
+      return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+    });
+    const pol = [M[0]];
+    for (let i = 1; i < BLOB_N; i++) {
+      const c = P[i], a = M[i - 1], b = M[i];
+      for (let k = 1; k <= BLOB_MUESTRAS; k++) {
+        const t = k / BLOB_MUESTRAS, u = 1 - t;
+        pol.push([u * u * a[0] + 2 * u * t * c[0] + t * t * b[0],
+                  u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]]);
+      }
+    }
+    s = { pol, rmax: o.r * esc * Math.max.apply(null, rad) };
+    siluetas.set(clave, s);
+    return s;
+  }
+  function corteSegmentos(ax, ay, bx, by, cx, cy, dx2, dy2) {
+    const den = (bx - ax) * (dy2 - cy) - (by - ay) * (dx2 - cx);
+    if (Math.abs(den) < 1e-12) return null;
+    const t = ((cx - ax) * (dy2 - cy) - (cy - ay) * (dx2 - cx)) / den;
+    const u = ((cx - ax) * (by - ay) - (cy - ay) * (bx - ax)) / den;
+    return (t >= 0 && t <= 1 && u >= 0 && u <= 1) ? t : null;
+  }
+  function dentroDeSilueta(px, py, pol, cx, cy) {
+    let dentro = false;
+    for (let i = 0, j = pol.length - 1; i < pol.length; j = i++) {
+      const xi = pol[i][0] + cx, yi = pol[i][1] + cy;
+      const xj = pol[j][0] + cx, yj = pol[j][1] + cy;
+      if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) dentro = !dentro;
+    }
+    return dentro;
+  }
+  function testSegmentObstacles(ax, ay, bx, by, obstacles) {
+    let best = null;
+    for (let i = 0; i < obstacles.length; i++) {
+      const o = obstacles[i];
+      const s = siluetaDe(o);
+      if (distPointSegment(o.x, o.y, ax, ay, bx, by) > s.rmax) continue;
+      let t = dentroDeSilueta(ax, ay, s.pol, o.x, o.y) ? 0 : null;
+      if (t === null) {
+        const pol = s.pol;
+        for (let k = 0; k < pol.length; k++) {
+          const p = pol[k], q = pol[(k + 1) % pol.length];
+          const u = corteSegmentos(ax, ay, bx, by,
+                                   p[0] + o.x, p[1] + o.y, q[0] + o.x, q[1] + o.y);
+          if (u !== null && (t === null || u < t)) t = u;
+        }
+      }
+      if (t !== null && (!best || t < best.t)) {
+        best = { t, obstacle: o, hitX: ax + (bx - ax) * t, hitY: ay + (by - ay) * t };
+      }
+    }
+    return best;
+  }
+
+  function findTriggeredCurrent(ax, ay, bx, by, currents) {
+    if (!currents) return null;
+    for (const c of currents) {
+      if (segmentIntersectsRect(ax, ay, bx, by, c.x1, c.y1, c.x2, c.y2)) return c;
+    }
+    return null;
+  }
+
+  function getSonarCount(sx, sy, obstacles) {
+    let n = 0;
+    for (const o of obstacles) {
+      if (o.hidden && Math.max(Math.abs(o.x - sx), Math.abs(o.y - sy)) <= 1) n++;
+    }
+    return n;
+  }
+
+  function lerpAngle(a, b, t) {
+    let d = ((b - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+    return a + d * t;
+  }
+
+  function getQuadrant(x, y) {
+    if (x > 0 && y > 0) return 'Cuadrante I';
+    if (x < 0 && y > 0) return 'Cuadrante II';
+    if (x < 0 && y < 0) return 'Cuadrante III';
+    if (x > 0 && y < 0) return 'Cuadrante IV';
+    return 'un eje';
+  }
+
+  /* =========================================================================
+     5. PERSISTENCIA Y MEDALLAS
+     ========================================================================= */
+  function loadProgress() {
+    const base = { stars: {}, bonuses: {}, medals: [], lastLevelIdx: 0, streak: 0, bestStreak: 0, sound: true, guide: true, perfMode: false };
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return Object.assign(base, JSON.parse(raw));
+      const old = localStorage.getItem('didaxis_rumbo_cartesiano_v2');
+      if (old) {
+        const parsed = JSON.parse(old);
+        if (parsed && parsed.stars) base.stars = parsed.stars;
+      }
+    } catch {}
+    return base;
+  }
+  let progress = loadProgress();
+  function saveProgress() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch {}
+  }
+
+  let medalQueue = [], medalShowing = false;
+  function unlockMedal(id) {
+    if (progress.medals.includes(id)) return;
+    progress.medals.push(id);
+    saveProgress();
+    const m = MEDALS.find(x => x.id === id);
+    if (m) {
+      medalQueue.push(m);
+      if (!medalShowing) drainMedalToast();
+    }
+  }
+  function drainMedalToast() {
+    if (!medalQueue.length) { medalShowing = false; return; }
+    medalShowing = true;
+    const m = medalQueue.shift();
+    $('mtIcon').textContent = m.icon;
+    $('mtName').textContent = m.name;
+    SFX.medal();
+    $('medalToast').classList.add('show');
+    setTimeout(() => {
+      $('medalToast').classList.remove('show');
+      setTimeout(drainMedalToast, 450);
+    }, 3200);
+  }
+  function evaluateMedals() {
+    const totalStars = Object.values(progress.stars).reduce((a, b) => a + b, 0);
+    if (Object.keys(progress.stars).length >= 1) unlockMedal('first_win');
+    for (let w = 1; w <= 4; w++) {
+      const wLvls = LEVELS.filter(l => l.worldId === w);
+      if (wLvls.every(l => (progress.stars[l.id] || 0) > 0)) unlockMedal(`w${w}_clear`);
+    }
+    if (progress.streak >= 3) unlockMedal('streak_3');
+    if (Object.keys(progress.bonuses).length >= 5) unlockMedal('gold_5');
+    if (totalStars >= 45) unlockMedal('stars_45');
+  }
+
+  /* =========================================================================
+     6. ESTADO GLOBAL DEL JUEGO
+     ========================================================================= */
+  const state = {
+    levelIdx: Math.min(LEVELS.length - 1, Math.max(0, progress.lastLevelIdx || 0)),
+    level: LEVELS[0],
+    world: WORLDS[0],
+    lastBannerWorld: null,
+    lastFocusedAxis: 'x',
+    lives: MAX_LIVES,
+    movesUsed: 0,
+    path: [],
+    planned: [],
+    huecoPlan: null,
+    planQueue: [],
+    planStepIdx: 0,
+    revealedReefs: new Set(),
+    scannedSonars: new Set(),
+    goalRevealed: true,
+    hasPackage: true,
+    bonusCollected: false,
+    guideOn: progress.guide !== false,
+    perfMode: !!progress.perfMode,
+    status: 'idle',
+    boat: { x: 1, y: 1, angle: 0 },
+    anim: null,
+    crashMark: null,
+    floaters: [],
+    particles: [],
+    wake: [],
+    gulls: [],
+    starsBg: [],
+    fireflies: [],
+    shootingStar: null,
+    shake: 0,
+    time: 0,
+    toastTimer: null,
+    bannerTimer: null
+  };
+
+  /* =========================================================================
+     7. REFERENCIAS DOM
+     ========================================================================= */
+  const canvas = document.getElementById('sea');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
+
+  const elAppRoot = $('appRoot');
+  const elConsole = $('consolePanel');
+  const elWorldTabs = $('worldTabs');
+  const elStrip = $('missionStrip');
+  const elStarTotal = $('starTotal');
+  const elMobNavLabel = $('mobNavLabel');
+  const elMobStarTotal = $('mobStarTotal');
+  const elWorld = $('hudWorld');
+  const elMission = $('hudMission');
+  const elHearts = $('hudHearts');
+  const elMoves = $('hudMoves');
+  const elPos = $('hudPos');
+  const elCargo = $('cargoBadge');
+  const elToast = $('toast');
+  const elBriefTag = $('briefTag');
+  const elBriefMode = $('briefMode');
+  const elBriefBonus = $('briefBonus');
+  const elBriefText = $('briefText');
+  const elHelmPrompt = $('helmPrompt');
+  const elRange = $('rangeLabel');
+  const inX = $('inX');
+  const inY = $('inY');
+  const elSignRow = $('signRow');
+  const elSignCompact = $('btnSignCompact');
+  const elBtnAdd = $('btnAddPt');
+  const elBtnSail = $('btnSail');
+  const elPlanHint = $('planHint');
+  const elBtnClearPlan = $('btnClearPlan');
+  const elRouteTitle = $('routeTitle');
+  const elRouteChips = $('routeChips');
+  const elLegendList = $('legendList');
+  const elBtnGuide = $('btnGuide');
+  const elBtnSound = $('btnSound');
+  const elBtnPerf = $('btnPerf');
+
+  /* =========================================================================
+     8. INTERFAZ, ATLAS Y LEYENDA DINÁMICA
+     ========================================================================= */
+  function isValidInt(str) { return /^-?\d+$/.test(String(str).trim()); }
+  function isMobileLayout() { return window.innerWidth <= 860; }
+
+  function sanitizeCoordInput(el) {
+    const allowNeg = state.level.minX < 0 || state.level.minY < 0;
+    let v = el.value.replace(/[^\d-]/g, '');
+    if (!allowNeg) v = v.replace(/-/g, '');
+    else {
+      const neg = v.startsWith('-');
+      v = (neg ? '-' : '') + v.replace(/-/g, '');
+    }
+    const neg = v.startsWith('-');
+    el.value = (neg ? '-' : '') + v.replace('-', '').slice(0, 2);
+    updateInputButtons();
+  }
+
+  function showToast(msg, kind = '', ms = 3800) {
+    elToast.textContent = msg;
+    elToast.className = 'toast show' + (kind ? ' ' + kind : '');
+    clearTimeout(state.toastTimer);
+    state.toastTimer = setTimeout(() => elToast.classList.remove('show'), ms);
+  }
+
+  function showWorldBanner(w) {
+    if ($('ovSplash').classList.contains('on')) return;
+    $('wbEyebrow').textContent = `Mundo ${w.id} de 4`;
+    $('wbTitle').textContent = w.title;
+    $('wbSub').textContent = w.desc;
+    const b = $('worldBanner');
+    b.classList.add('show');
+    clearTimeout(state.bannerTimer);
+    state.bannerTimer = setTimeout(() => b.classList.remove('show'), 2000);
+  }
+
+  function renderSplashStats() {
+    const total = Object.values(progress.stars).reduce((a, b) => a + b, 0);
+    $('splashMissions').textContent = `${LEVELS.length} Misiones`;
+    $('splashStars').textContent = `${total} / ${LEVELS.length * 3}`;
+    $('splashMedals').textContent = `${progress.medals.length} / ${MEDALS.length}`;
+    $('btnStart').textContent = total > 0
+      ? `⛵ Continuar (Misión ${LEVELS[state.levelIdx].id})`
+      : '⛵ Comenzar travesía';
+  }
+
+  function renderAtlas() {
+    const total = Object.values(progress.stars).reduce((a, b) => a + b, 0);
+    $('atlasTotalStars').textContent = `★ ${total} / ${LEVELS.length * 3}`;
+
+    const grid = $('atlasGrid');
+    grid.innerHTML = '';
+    WORLDS.forEach(w => {
+      const lvls = LEVELS.filter(l => l.worldId === w.id);
+      const wStars = lvls.reduce((acc, l) => acc + (progress.stars[l.id] || 0), 0);
+      const maxW = lvls.length * 3;
+
+      const card = document.createElement('div');
+      card.className = `world-card w${w.id}`;
+      card.innerHTML = `
+        <div class="wc-head">
+          <div class="wc-title">${w.id}. ${w.title}</div>
+          <span class="wc-stars">★ ${wStars}/${maxW}</span>
+        </div>
+        <div class="wc-sub">${w.desc}</div>
+        <div class="wc-bar"><i style="width:${Math.round((wStars / maxW) * 100)}%"></i></div>
+        <div class="wc-missions"></div>
+      `;
+      const mWrap = card.querySelector('.wc-missions');
+      lvls.forEach(lv => {
+        const idx = LEVELS.findIndex(x => x.id === lv.id);
+        const st = progress.stars[lv.id] || 0;
+        const icons = [];
+        if (lv.pickup) icons.push('📦');
+        if (lv.sonars) icons.push('📡');
+        if (lv.currents) icons.push('🌊');
+        if (lv.symmetry) icons.push('◈');
+        if (lv.draft) icons.push('✎');
+        if (!icons.length && lv.bonus) icons.push('★');
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'wm-btn' + (idx === state.levelIdx ? ' current' : '') + (st > 0 ? ' done' : '');
+        btn.title = lv.name;
+        btn.innerHTML = `
+          <span class="wm-n">M${lv.id}</span>
+          <span class="wm-s ${st === 0 ? 'empty' : ''}">${st > 0 ? '★'.repeat(st) + '☆'.repeat(3 - st) : '☆☆☆'}</span>
+          <span class="wm-ic">${icons.slice(0, 2).join('') || '⛳'}</span>
+        `;
+        btn.addEventListener('click', () => {
+          SFX.tap();
+          $('ovAtlas').classList.remove('on');
+          $('ovSplash').classList.remove('on');
+          loadLevel(idx);
+        });
+        mWrap.appendChild(btn);
+      });
+      grid.appendChild(card);
+    });
+
+    $('medalsCount').textContent = `${progress.medals.length} / ${MEDALS.length} desbloqueadas`;
+    const mGrid = $('medalsGrid');
+    mGrid.innerHTML = '';
+    MEDALS.forEach(m => {
+      const ok = progress.medals.includes(m.id);
+      const item = document.createElement('div');
+      item.className = 'medal-item' + (ok ? ' unlocked' : '');
+      item.innerHTML = `<span class="mi-ic">${m.icon}</span><div><b>${m.name}</b><span>${m.desc}</span></div>`;
+      mGrid.appendChild(item);
+    });
+  }
+
+  function renderWorldAndMissionNav() {
+    const curW = state.level.worldId;
+    elWorldTabs.innerHTML = '';
+    WORLDS.forEach(w => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'w-tab' + (w.id === curW ? ' active' : '');
+      b.textContent = w.short;
+      b.title = w.name;
+      b.addEventListener('click', () => {
+        SFX.tap();
+        const firstIdx = LEVELS.findIndex(l => l.worldId === w.id);
+        if (firstIdx >= 0) loadLevel(firstIdx);
+      });
+      elWorldTabs.appendChild(b);
+    });
+
+    elStrip.innerHTML = '';
+    LEVELS.forEach((lv, idx) => {
+      if (lv.worldId !== curW) return;
+      const st = progress.stars[lv.id] || 0;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'm-pill' + (idx === state.levelIdx ? ' active' : '') + (st > 0 ? ' done' : '');
+      b.innerHTML = `<span>M${lv.id}</span>` + (st > 0 ? `<span class="st">${'★'.repeat(st)}</span>` : '');
+      b.title = lv.name;
+      b.addEventListener('click', () => { SFX.tap(); loadLevel(idx); });
+      elStrip.appendChild(b);
+    });
+
+    const total = Object.values(progress.stars).reduce((a, b) => a + b, 0);
+    elStarTotal.textContent = `★ ${total}/${LEVELS.length * 3}`;
+    elMobNavLabel.textContent = `M${state.level.id} · ${state.world.shortTitle} ▾`;
+    elMobStarTotal.textContent = `★${total}`;
+  }
+
+  function renderLegend() {
+    const lv = state.level;
+    const items = [];
+    if (lv.pickup) items.push({ bg: 'rgba(82,209,144,.2)', fg: '#6ff0ab', ic: '📦', txt: `<b>Muelle de Carga:</b> recoge aquí antes de entregar.` });
+    if (lv.bonus)  items.push({ bg: 'rgba(242,189,82,.2)', fg: '#f7d997', ic: '★', txt: `<b>Boya Dorada:</b> correo urgente para 3 estrellas.` });
+    if (lv.sonars && lv.sonars.length) items.push({ bg: 'rgba(11,192,216,.2)', fg: '#7ae7fa', ic: '2', txt: `<b>Boya Sonar:</b> cuenta arrecifes ocultos en su cuadro 3×3.` });
+    if (lv.currents && lv.currents.length) items.push({ bg: 'rgba(80,210,255,.2)', fg: '#9beeff', ic: '»', txt: `<b>Corriente:</b> traslada el punto final ${lv.currents.map(c => c.label).join(' / ')}.` });
+    if (lv.symmetry) items.push({ bg: 'rgba(183,148,255,.22)', fg: '#dfcfff', ic: '◈', txt: `<b>Faro Espejo:</b> destino simétrico en eje ${lv.symmetry.axis}.` });
+    if (lv.draft) items.push({ bg: 'rgba(255,196,112,.2)', fg: '#ffd79a', ic: '✎', txt: `<b>Cuaderno ajeno:</b> conserva el muelle y corrige un solo número del giro.` });
+    if (!items.length) {
+      items.push({ bg: 'rgba(247,217,151,.18)', fg: '#f7d997', ic: '⛳', txt: `<b>Muelle Dorado:</b> atraca dentro del límite de puntos.` });
+      items.push({ bg: 'rgba(98,179,94,.2)', fg: '#8be885', ic: '🏝', txt: `<b>Islas y Arrecifes:</b> evítalos al trazar tu recta.` });
+    }
+    elLegendList.innerHTML = '';
+    items.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'leg-item';
+      row.innerHTML = `<span class="leg-dot" style="background:${it.bg};color:${it.fg}">${it.ic}</span><span>${it.txt}</span>`;
+      elLegendList.appendChild(row);
+    });
+  }
+
+  function updateSignCompactLabel() {
+    elSignCompact.textContent = state.lastFocusedAxis === 'y' ? '±Y' : '±X';
+  }
+
+  function updateInputButtons() {
+    const lv = state.level;
+    const busy = state.status !== 'idle';
+    const valid = isValidInt(inX.value) && isValidInt(inY.value);
+    const isPlan = lv.mode === 'plan';
+    const mob = isMobileLayout();
+
+    if (isPlan) {
+      elBtnAdd.hidden = false;
+      elBtnClearPlan.hidden = state.planned.length === 0 || busy;
+    elBtnClearPlan.textContent = lv.draft ? 'Restaurar' : 'Limpiar';
+      const canAdd = !busy && valid && state.planned.length < lv.maxCoords;
+      elBtnAdd.disabled = !canAdd;
+      elBtnAdd.classList.toggle('pulse-cta', canAdd);
+      elBtnAdd.textContent = mob ? `+${state.planned.length + 1}` : `+ Añadir (${state.planned.length}/${lv.maxCoords})`;
+      elBtnSail.disabled = busy || (state.planned.length === 0 && !valid);
+      elBtnSail.textContent = mob ? '⛵' : `⛵ Zarpar (${state.planned.length})`;
+      elPlanHint.hidden = false;
+      elPlanHint.textContent = lv.draft
+        ? 'Quita el punto de giro, escribe el corregido con un solo número distinto y pulsa Zarpar'
+        : state.planned.length === 0
+          ? 'Paso 1: escribe (X, Y) y pulsa + Añadir'
+          : `Ruta lista (${state.planned.length}/${lv.maxCoords}) · añade otro o pulsa Zarpar`;
+    } else {
+      elBtnAdd.hidden = true;
+      elBtnAdd.classList.remove('pulse-cta');
+      elBtnClearPlan.hidden = true;
+      elPlanHint.hidden = true;
+      elBtnSail.disabled = busy || !valid;
+      elBtnSail.textContent = mob ? '⛵ Ir' : '⛵ Zarpar';
+    }
+    updateSignCompactLabel();
+  }
+
+  /* La carta, en palabras. Es la misma geometría que lee quien mira la
+     pantalla: posición, muelles, boyas, corrientes y obstáculos visibles. No
+     dice la solución, y respeta que en los faros espejo el muelle está oculto
+     a propósito: ahí se nombra el faro y el eje, que es el enunciado. */
+  function num(v) { return String(Math.round(v * 100) / 100).replace('.', ','); }
+  function describirCarta() {
+    const lv = state.level, p = [];
+    p.push(`carta de ${lv.minX} a ${lv.maxX} en X y de ${lv.minY} a ${lv.maxY} en Y`);
+    const cur = state.path[state.path.length - 1] || lv.start;
+    p.push(`lancha en (${cur.x}, ${cur.y})`);
+    if (lv.pickup && !state.hasPackage) p.push(`muelle de carga en (${lv.pickup.x}, ${lv.pickup.y})`);
+    if (state.goalRevealed) {
+      p.push(`muelle de entrega en (${lv.goal.x}, ${lv.goal.y})`);
+    } else if (lv.symmetry) {
+      p.push(`muelle de entrega oculto: es el simétrico del faro de (${lv.symmetry.ref.x}, ${lv.symmetry.ref.y}) respecto al eje ${lv.symmetry.axis}`);
+    }
+    if (lv.bonus && !state.bonusCollected) p.push(`boya dorada en (${lv.bonus.x}, ${lv.bonus.y})`);
+    (lv.sonars || []).forEach(sn => {
+      const n = getSonarCount(sn.x, sn.y, lv.obstacles);
+      p.push(`boya de sonar en (${sn.x}, ${sn.y}) que marca ${n} ${n === 1 ? 'arrecife oculto' : 'arrecifes ocultos'} en su cuadro de 3 por 3`);
+    });
+    (lv.currents || []).forEach(c => {
+      p.push(`corriente de X ${c.x1} a ${c.x2} e Y ${c.y1} a ${c.y2}, que traslada ${c.dx >= 0 ? '+' : ''}${c.dx} en X y ${c.dy >= 0 ? '+' : ''}${c.dy} en Y`);
+    });
+    lv.obstacles.forEach((o, i) => {
+      if (o.hidden && !state.revealedReefs.has(i)) return;
+      p.push(`${o.kind === 'island' ? 'isla' : 'arrecife'} en (${o.x}, ${o.y}) de ${num(o.r)} de radio`);
+    });
+    const usadas = lv.mode === 'plan' ? state.planned.length : state.movesUsed;
+    p.push(`quedan ${Math.max(0, lv.maxCoords - usadas)} de ${lv.maxCoords} coordenadas y ${state.lives} de ${MAX_LIVES} puntos de casco`);
+    return p.join('; ') + '.';
+  }
+
+  /* ── Foco de los diálogos ──────────────────────────────────────────────
+     Los cuatro se abren y se cierran desde ocho sitios distintos, así que en
+     vez de tocar cada uno se vigila la clase: al abrirse, el foco entra y se
+     queda dentro; al cerrarse el último, vuelve a donde estaba. */
+  const CAPAS = ['ovSplash', 'ovAtlas', 'ovHelp', 'ovResult'];
+  /* «a[href]», no «[href]»: el logo lleva un <use href="#..."> del SVG que
+     entraba en la lista sin poder recibir el foco, y se lo quedaba. */
+  const FOCABLES = 'button:not([disabled]), a[href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+  let focoPrevio = null;
+  function capaVisible() {
+    for (let i = CAPAS.length - 1; i >= 0; i--) {
+      const e = document.getElementById(CAPAS[i]);
+      if (e && e.classList.contains('on')) return e;
+    }
+    return null;
+  }
+  function focables(e) {
+    return Array.prototype.slice.call(e.querySelectorAll(FOCABLES))
+      .filter(x => x.offsetParent !== null || x === document.activeElement);
+  }
+  CAPAS.forEach(id => {
+    const e = document.getElementById(id);
+    if (!e) return;
+    new MutationObserver(() => {
+      const abierta = e.classList.contains('on');
+      if (abierta && !e.dataset.conFoco) {
+        e.dataset.conFoco = '1';
+        if (!focoPrevio) focoPrevio = document.activeElement;
+        /* Si el diálogo marca su acción principal, el foco va ahí: en el de
+           resultado el primer botón es «Atlas», y pulsar Enter abría el Atlas
+           en lugar de pasar a la misión siguiente. */
+        const f = e.querySelector('[data-foco]') || focables(e)[0];
+        if (f) setTimeout(() => { if (e.classList.contains('on')) f.focus(); }, 30);
+      } else if (!abierta && e.dataset.conFoco) {
+        delete e.dataset.conFoco;
+        const debajo = capaVisible();
+        if (debajo) {
+          /* Queda otro diálogo abierto: el foco entra en él, porque si no se
+             queda en el botón del que acaba de ocultarse. */
+          const f = debajo.querySelector('[data-foco]') || focables(debajo)[0];
+          if (f) setTimeout(() => f.focus(), 30);
+        } else {
+          const d = focoPrevio; focoPrevio = null;
+          if (d && d.focus && d.offsetParent !== null) d.focus();
+          /* Durante la navegación se suelta el foco de las casillas, así que
+             al cerrarse el resultado no había dónde volver y se quedaba en un
+             botón ya oculto. Se vuelve a donde se escribe. */
+          else if (!isMobileLayout()) inX.focus();
+        }
+      }
+    }).observe(e, { attributes: true, attributeFilter: ['class'] });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Tab') return;
+    const capa = capaVisible();
+    if (!capa) return;
+    const l = focables(capa);
+    if (!l.length) return;
+    const primero = l[0], ultimo = l[l.length - 1];
+    if (!capa.contains(document.activeElement)) { e.preventDefault(); primero.focus(); }
+    else if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
+  }, true);
+
+  function updateHUD() {
+    const lv = state.level;
+    const isPlan = lv.mode === 'plan';
+    const allowNeg = lv.minX < 0 || lv.minY < 0;
+
+    elConsole.classList.toggle('is-plan', isPlan);
+    elWorld.textContent = state.world.name;
+    elMission.textContent = lv.name;
+
+    const used = isPlan ? state.planned.length : state.movesUsed;
+    const rem = Math.max(0, lv.maxCoords - used);
+    elMoves.textContent = `${rem}/${lv.maxCoords}`;
+    elMoves.style.color = rem === 0 && state.status !== 'won' ? '#ff9d8f' : '';
+
+    elHearts.innerHTML = '';
+    for (let i = 0; i < MAX_LIVES; i++) {
+      const s = document.createElement('span');
+      s.className = 'heart' + (i >= state.lives ? ' lost' : '');
+      elHearts.appendChild(s);
+    }
+
+    const cur = state.path[state.path.length - 1] || lv.start;
+    elPos.textContent = `(${cur.x}, ${cur.y})`;
+
+    if (lv.pickup && !state.hasPackage) {
+      elCargo.textContent = `📦 Carga en (${lv.pickup.x}, ${lv.pickup.y})`;
+      elCargo.className = 'cargo-badge pending';
+    } else if (state.status === 'won') {
+      elCargo.textContent = '✅ Entregado';
+      elCargo.className = 'cargo-badge';
+    } else {
+      elCargo.textContent = '📦 Paquete a bordo';
+      elCargo.className = 'cargo-badge';
+    }
+
+    elBriefTag.textContent = `Encargo #${lv.id} · Máx ${lv.maxCoords} coord.`;
+    elBriefMode.hidden = !isPlan;
+    elBriefText.innerHTML = lv.brief;
+
+    if (lv.bonus) {
+      elBriefBonus.hidden = false;
+      elBriefBonus.textContent = state.bonusCollected ? '★ Boya recogida' : '★ Boya extra';
+      elBriefBonus.className = 'badge-pill' + (state.bonusCollected ? ' ok' : '');
+    } else {
+      elBriefBonus.hidden = true;
+    }
+
+    elHelmPrompt.textContent = isPlan ? 'Añadir punto a la carta' : 'Siguiente coordenada';
+    elRange.textContent = `X: ${lv.minX}..${lv.maxX} · Y: ${lv.minY}..${lv.maxY}`;
+    elSignRow.hidden = !allowNeg;
+    elSignCompact.classList.toggle('visible', allowNeg);
+
+    elRouteTitle.textContent = lv.draft ? 'Cuaderno de la otra tripulación (toca para quitar)'
+                              : isPlan ? 'Plan de navegación (toca para quitar)' : 'Carta de ruta';
+    elRouteChips.innerHTML = '';
+
+    if (isPlan) {
+      const sChip = document.createElement('span');
+      sChip.className = 'chip start';
+      sChip.textContent = `(${lv.start.x}, ${lv.start.y})`;
+      elRouteChips.appendChild(sChip);
+
+      state.planned.forEach((pt, idx) => {
+        const arr = document.createElement('span');
+        arr.className = 'chip arrow'; arr.textContent = '→';
+        elRouteChips.appendChild(arr);
+
+        const c = document.createElement('button');
+        c.type = 'button';
+        c.className = 'chip planned' + (pt.bad ? ' bad' : '');
+        c.innerHTML = `(${pt.x}, ${pt.y}) <span style="opacity:.65">×</span>`;
+        c.title = 'Quitar esta coordenada del plan';
+        c.disabled = state.status !== 'idle';
+        c.addEventListener('click', () => {
+          if (state.status !== 'idle') return;
+          SFX.tap();
+          /* En el cuaderno ajeno el punto tocado vuelve a las casillas y deja
+             su sitio reservado: si se quitara sin más, el corregido entraría
+             detrás del muelle y la ruta saldría al revés. */
+          if (lv.draft) {
+            state.huecoPlan = idx;
+            inX.value = String(pt.x);
+            inY.value = String(pt.y);
+          }
+          state.planned.splice(idx, 1);
+          updateHUD();
+          if (lv.draft && !isMobileLayout()) inX.focus();
+        });
+        elRouteChips.appendChild(c);
+      });
+    } else {
+      state.path.forEach((pt, idx) => {
+        if (idx > 0) {
+          const arr = document.createElement('span');
+          arr.className = 'chip arrow'; arr.textContent = '→';
+          elRouteChips.appendChild(arr);
+        }
+        const c = document.createElement('span');
+        c.className = 'chip' + (idx === 0 ? ' start' : '');
+        c.textContent = `(${pt.x}, ${pt.y})`;
+        elRouteChips.appendChild(c);
+      });
+    }
+
+    canvas.setAttribute('aria-label', describirCarta());
+
+    renderLegend();
+    renderWorldAndMissionNav();
+    updateInputButtons();
+  }
+
+  /* =========================================================================
+     9. CARGA DE MISIÓN, PLANIFICADOR Y DIAGNÓSTICO DE ERRORES
+     ========================================================================= */
+  function loadLevel(idx, silentBanner = false) {
+    SFX.stopEngine();
+    state.levelIdx = idx;
+    progress.lastLevelIdx = idx;
+    saveProgress();
+
+    const lv = LEVELS[idx];
+    const prevWorldId = state.lastBannerWorld;
+    state.level = lv;
+    state.world = WORLDS.find(w => w.id === lv.worldId) || WORLDS[0];
+    state.lives = MAX_LIVES;
+    state.movesUsed = 0;
+    state.path = [{ x: lv.start.x, y: lv.start.y }];
+    state.planned = (lv.draft || []).map(p => ({ x: p[0], y: p[1], bad: false }));
+    state.huecoPlan = null;
+    state.planQueue = [];
+    state.planStepIdx = 0;
+    state.revealedReefs = new Set();
+    state.scannedSonars = new Set();
+    state.goalRevealed = !lv.symmetry;
+    state.hasPackage = !lv.pickup;
+    state.bonusCollected = false;
+    state.status = 'idle';
+    state.anim = null;
+    state.crashMark = null;
+    state.floaters = [];
+    state.wake = [];
+    state.particles = [];
+    state.shake = 0;
+
+    inX.value = '';
+    inY.value = '';
+    state.lastFocusedAxis = 'x';
+
+    const aimTarget = lv.pickup || (lv.symmetry ? lv.symmetry.ref : lv.goal);
+    const ang = Math.atan2(-(aimTarget.y - lv.start.y), aimTarget.x - lv.start.x);
+    state.boat = { x: lv.start.x, y: lv.start.y, angle: ang };
+
+    $('ovResult').classList.remove('on');
+    elToast.classList.remove('show');
+    computeTransform();
+    updateHUD();
+
+    if (!silentBanner && prevWorldId !== lv.worldId) {
+      state.lastBannerWorld = lv.worldId;
+      showWorldBanner(state.world);
+    }
+  }
+
+  function addPlannedPoint() {
+    if (state.status !== 'idle') return;
+    const lv = state.level;
+    if (!isValidInt(inX.value) || !isValidInt(inY.value)) return;
+    const tx = parseInt(inX.value, 10) || 0;
+    const ty = parseInt(inY.value, 10) || 0;
+
+    if (tx < lv.minX || tx > lv.maxX || ty < lv.minY || ty > lv.maxY) {
+      SFX.crash();
+      showToast(`(${tx}, ${ty}) está fuera de la carta (X: ${lv.minX}..${lv.maxX}, Y: ${lv.minY}..${lv.maxY}).`, 'bad', 3400);
+      return;
+    }
+    if (state.planned.length >= lv.maxCoords) {
+      showToast(`Ya alcanzaste el máximo de ${lv.maxCoords} coordenadas en tu plan.`, '', 2600);
+      return;
+    }
+
+    SFX.tap();
+    state.planned.forEach(p => p.bad = false);
+    if (state.huecoPlan !== null && state.huecoPlan <= state.planned.length) {
+      state.planned.splice(state.huecoPlan, 0, { x: tx, y: ty, bad: false });
+      state.huecoPlan = null;
+    } else {
+      state.planned.push({ x: tx, y: ty, bad: false });
+    }
+    inX.value = '';
+    inY.value = '';
+    if (!isMobileLayout()) inX.focus();
+    updateHUD();
+  }
+
+  /* La regla del cuaderno ajeno: el último punto sigue siendo el muelle y
+     solo puede cambiar uno de los dos números del punto de giro. Cambiarlo
+     todo sería trazar una ruta nueva, que es otro ejercicio. */
+  function revisarCuaderno(lv) {
+    const d = lv.draft, p = state.planned;
+    if (p.length !== d.length)
+      return `El cuaderno trae ${d.length} puntos. Deja los ${d.length} y corrige un número del primero.`;
+    const fin = p[p.length - 1];
+    if (fin.x !== lv.goal.x || fin.y !== lv.goal.y)
+      return `El último punto tiene que seguir siendo el muelle de entrega, en (${lv.goal.x}, ${lv.goal.y}).`;
+    let cambios = 0;
+    for (let i = 0; i < d.length - 1; i++) {
+      if (p[i].x !== d[i][0]) cambios++;
+      if (p[i].y !== d[i][1]) cambios++;
+    }
+    if (cambios === 0)
+      return `Ese es el rumbo tal como lo anotaron, y acaba en la isla. Cambia uno de los dos números del punto de giro.`;
+    if (cambios > 1)
+      return `Cambiaste ${cambios} números del punto de giro. El cuaderno decía (${d[0][0]}, ${d[0][1]}): mueve solo uno.`;
+    return null;
+  }
+
+  function launchPlan() {
+    if (state.status !== 'idle') return;
+    const lv = state.level;
+    if (isValidInt(inX.value) && isValidInt(inY.value) && state.planned.length < lv.maxCoords) {
+      addPlannedPoint();
+    }
+    if (state.planned.length === 0) return;
+    if (lv.draft) {
+      const reparo = revisarCuaderno(lv);
+      if (reparo) { SFX.crash(); showToast(reparo, 'bad', 5200); return; }
+    }
+
+    state.movesUsed = 0;
+    state.path = [{ x: lv.start.x, y: lv.start.y }];
+    state.hasPackage = !lv.pickup;
+    state.bonusCollected = false;
+    state.boat.x = lv.start.x;
+    state.boat.y = lv.start.y;
+    state.crashMark = null;
+    state.planned.forEach(p => p.bad = false);
+    state.planQueue = state.planned.map(p => ({ x: p.x, y: p.y }));
+    state.planStepIdx = 0;
+    inX.blur(); inY.blur();
+    executeNextPlanLeg();
+  }
+
+  function executeNextPlanLeg() {
+    if (state.planStepIdx >= state.planQueue.length) {
+      SFX.stopEngine();
+      const last = state.path[state.path.length - 1];
+      state.status = 'idle';
+      SFX.lose();
+      showToast(diagnoseMiss(last.x, last.y), 'bad', 4800);
+      updateHUD();
+      return;
+    }
+    const nextPt = state.planQueue[state.planStepIdx];
+    startLegTo(nextPt.x, nextPt.y);
+  }
+
+  function attemptSingleSail() {
+    if (state.status !== 'idle') return;
+    const lv = state.level;
+    if (lv.mode === 'plan') { launchPlan(); return; }
+    if (!isValidInt(inX.value) || !isValidInt(inY.value)) return;
+    const tx = parseInt(inX.value, 10) || 0;
+    const ty = parseInt(inY.value, 10) || 0;
+    const cur = state.path[state.path.length - 1];
+
+    if (tx < lv.minX || tx > lv.maxX || ty < lv.minY || ty > lv.maxY) {
+      SFX.crash();
+      showToast(`(${tx}, ${ty}) está fuera de la carta. Usa X entre ${lv.minX} y ${lv.maxX}, Y entre ${lv.minY} y ${lv.maxY}.`, 'bad', 3600);
+      return;
+    }
+    if (tx === cur.x && ty === cur.y) {
+      showToast(`Tu lancha ya está en (${tx}, ${ty}). Escribe un punto diferente.`, '', 2800);
+      return;
+    }
+    inX.value = '';
+    inY.value = '';
+    inX.blur(); inY.blur();
+    startLegTo(tx, ty);
+  }
+
+  function startLegTo(tx, ty) {
+    const lv = state.level;
+    const cur = state.path[state.path.length - 1];
+    const hit = testSegmentObstacles(cur.x, cur.y, tx, ty, lv.obstacles);
+    const dist = Math.hypot(tx - cur.x, ty - cur.y);
+    const duration = Math.max(0.42, Math.min(1.42, dist * 0.19));
+
+    state.status = 'sailing';
+    updateInputButtons();
+    SFX.sail();
+
+    if (hit) {
+      const hitDur = Math.max(0.26, duration * Math.max(0.18, hit.t));
+      state.anim = {
+        type: 'crash',
+        ax: cur.x, ay: cur.y,
+        bx: hit.hitX, by: hit.hitY,
+        returnX: lv.mode === 'plan' ? lv.start.x : cur.x,
+        returnY: lv.mode === 'plan' ? lv.start.y : cur.y,
+        intendedX: tx, intendedY: ty,
+        t: 0, dur: hitDur,
+        reboundPhase: false,
+        obstacle: hit.obstacle,
+        isDriftCrash: false
+      };
+    } else {
+      const current = findTriggeredCurrent(cur.x, cur.y, tx, ty, lv.currents);
+      state.anim = {
+        type: 'move',
+        ax: cur.x, ay: cur.y,
+        bx: tx, by: ty,
+        t: 0, dur: duration,
+        current,
+        drifting: false
+      };
+    }
+  }
+
+  /* Los únicos puntos a los que tiene sentido mandar al jugador: el muelle de
+     carga si aún no lleva el paquete, el de entrega, y la boya si sigue ahí. */
+  function objetivosUtiles() {
+    const lv = state.level, out = [];
+    if (lv.pickup && !state.hasPackage) out.push({ p: lv.pickup, q: 'el muelle de carga' });
+    if (state.hasPackage || !lv.pickup) out.push({ p: lv.goal, q: 'el muelle de entrega' });
+    if (lv.bonus && !state.bonusCollected) out.push({ p: lv.bonus, q: 'la boya dorada' });
+    return out;
+  }
+  /* En los niveles de faro espejo el muelle es el enigma: se calcula, no se
+     lee. Ningún mensaje puede cantar sus coordenadas antes de tiempo. */
+  function sePuedeNombrar(p) {
+    return !(p === state.level.goal && !state.goalRevealed);
+  }
+  function conCoordenadas(o) {
+    return sePuedeNombrar(o.p) ? `${o.q} en (${o.p.x}, ${o.p.y})` : o.q;
+  }
+
+  function diagnoseCrash(tx, ty, cur, obs, isDrift = false) {
+    const lv = state.level;
+    if (isDrift) return `¡La corriente arrastró tu lancha hacia un obstáculo! Anticipa el desplazamiento al elegir tu punto.`;
+    if (obs && obs.hidden) return `¡Arrecife sumergido revelado en (${obs.x}, ${obs.y})! Usa los números de las boyas de sonar para esquivar la zona peligrosa.`;
+    /* Antes esta pista salía siempre que el punto invertido estuviera libre de
+       obstáculos: 109.497 veces en la campaña, y en el 99,2 % señalaba una
+       coordenada que no era nada. Ahora solo sale cuando invertir de verdad
+       lleva a donde el jugador quería ir. */
+    const invertido = objetivosUtiles().find(o => tx !== ty && o.p.x === ty && o.p.y === tx);
+    if (invertido) {
+      return `Escribiste (${tx}, ${ty}), que es ${conCoordenadas(invertido)} con la X y la Y cambiadas. Primero la horizontal, después la vertical.`;
+    }
+    if (lv.minX < 0) {
+      const tgt = (!state.hasPackage && lv.pickup) ? lv.pickup : lv.goal;
+      const dilo = sePuedeNombrar(tgt);
+      if (tx === -tgt.x && ty === tgt.y && tx !== 0)
+        return `Error de signo en X: (${tx}, ${ty}) está en el ${getQuadrant(tx, ty)}` +
+               (dilo ? `, pero buscas X = ${tgt.x}.` : `, al otro lado del eje Y.`);
+      if (tx === tgt.x && ty === -tgt.y && ty !== 0)
+        return `Error de signo en Y: (${tx}, ${ty}) está en el ${getQuadrant(tx, ty)}` +
+               (dilo ? `, pero buscas Y = ${tgt.y}.` : `, al otro lado del eje X.`);
+      if (tx === -tgt.x && ty === -tgt.y && (tx !== 0 || ty !== 0))
+        return `Invertiste ambos signos: (${tx}, ${ty}) está en el cuadrante opuesto (${getQuadrant(tx, ty)}).`;
+    }
+    return `¡Impacto rumbo a (${tx}, ${ty})! Pierdes 1 vida del casco.`;
+  }
+
+  function diagnoseMiss(fx, fy) {
+    const lv = state.level;
+    if (lv.symmetry) {
+      const ref = lv.symmetry.ref;
+      const wrongAxisPt = lv.symmetry.axis === 'Y' ? { x: ref.x, y: -ref.y } : { x: -ref.x, y: ref.y };
+      if (fx === wrongAxisPt.x && fy === wrongAxisPt.y) {
+        return `Reflejaste sobre el eje equivocado: llegaste a (${fx}, ${fy}), pero la simetría es respecto al eje ${lv.symmetry.axis}.`;
+      }
+      if (fx === -ref.x && fy === -ref.y) {
+        return `Cambiaste ambos signos (${fx}, ${fy}). En simetría respecto al eje ${lv.symmetry.axis}, solo cambia el signo de ${lv.symmetry.axis === 'Y' ? 'X' : 'Y'}.`;
+      }
+    }
+    if (fx === lv.goal.x && fy === lv.goal.y && !state.hasPackage && lv.pickup) {
+      return `¡Llegaste al muelle de entrega sin el paquete! Pasa primero por el muelle de CARGA en (${lv.pickup.x}, ${lv.pickup.y}).`;
+    }
+    if (fx !== fy && fx === lv.goal.y && fy === lv.goal.x) {
+      return state.goalRevealed
+        ? `¡Casi! Invertiste X e Y: terminaste en (${fx}, ${fy}) y el destino es (${lv.goal.x}, ${lv.goal.y}).`
+        : `¡Casi! Terminaste en (${fx}, ${fy}), que es el muelle con la X y la Y cambiadas.`;
+    }
+    return `Tu ruta terminó en (${fx}, ${fy}) sin completar la entrega. Ajusta tu plan y vuelve a zarpar.`;
+  }
+
+  function checkPickupsAndSonars(ax, ay, bx, by) {
+    const lv = state.level;
+    if (lv.pickup && !state.hasPackage && distPointSegment(lv.pickup.x, lv.pickup.y, ax, ay, bx, by) < 0.56) {
+      state.hasPackage = true;
+      SFX.pickup();
+      spawnConfetti(lv.pickup.x, lv.pickup.y, 14);
+      spawnRing(lv.pickup.x, lv.pickup.y, '#52d190');
+      spawnFloater(lv.pickup.x, lv.pickup.y, '📦 CARGADO', '#7cf0b4');
+      showToast('¡Paquete recogido! Ahora llévalo al muelle de entrega.', 'good', 2500);
+      updateHUD();
+    }
+    if (lv.bonus && !state.bonusCollected && distPointSegment(lv.bonus.x, lv.bonus.y, ax, ay, bx, by) < 0.56) {
+      state.bonusCollected = true;
+      SFX.bonus();
+      spawnConfetti(lv.bonus.x, lv.bonus.y, 16);
+      spawnRing(lv.bonus.x, lv.bonus.y, '#f7d997');
+      spawnFloater(lv.bonus.x, lv.bonus.y, '★ +BOYA', '#ffe394');
+      showToast('¡Boya dorada recogida! ★', 'good', 2200);
+      updateHUD();
+    }
+    if (lv.sonars) {
+      lv.sonars.forEach((sn, sIdx) => {
+        if (!state.scannedSonars.has(sIdx) && distPointSegment(sn.x, sn.y, ax, ay, bx, by) < 1.35) {
+          state.scannedSonars.add(sIdx);
+          SFX.sonar();
+          spawnRing(sn.x, sn.y, '#0bc0d8');
+          spawnFloater(sn.x, sn.y, '📡 RADAR', '#8ef0ff');
+          lv.obstacles.forEach((o, oIdx) => {
+            if (o.hidden && Math.max(Math.abs(o.x - sn.x), Math.abs(o.y - sn.y)) <= 1) {
+              state.revealedReefs.add(oIdx);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  function finishLeg(fx, fy) {
+    const lv = state.level;
+    state.movesUsed++;
+    state.path.push({ x: fx, y: fy });
+    state.boat.x = fx;
+    state.boat.y = fy;
+
+    if (fx === lv.goal.x && fy === lv.goal.y) {
+      if (state.hasPackage) {
+        state.goalRevealed = true;
+        state.status = 'won';
+        state.hasPackage = false;
+        SFX.win();
+        spawnConfetti(fx, fy, 40);
+        spawnFloater(fx, fy, '¡ENTREGADO!', '#ffe59c');
+        updateHUD();
+        setTimeout(openWinModal, 640);
+        return;
+      } else if (lv.mode !== 'plan') {
+        showToast(`¡Falta el paquete! Recógelo primero en el muelle verde (${lv.pickup.x}, ${lv.pickup.y}).`, 'bad', 3800);
+      }
+    }
+
+    if (lv.mode === 'plan') {
+      SFX.beacon();
+      spawnRing(fx, fy, '#0bc0d8');
+      state.planStepIdx++;
+      updateHUD();
+      setTimeout(executeNextPlanLeg, 220);
+      return;
+    }
+
+    SFX.stopEngine();
+
+    if (state.movesUsed >= lv.maxCoords) {
+      state.status = 'lost';
+      progress.streak = 0;
+      saveProgress();
+      SFX.lose();
+      updateHUD();
+      setTimeout(() => openLoseModal('coords', diagnoseMiss(fx, fy)), 520);
+      return;
+    }
+
+    SFX.beacon();
+    spawnRing(fx, fy, '#0bc0d8');
+    if (fx !== fy && fx === lv.goal.y && fy === lv.goal.x) {
+      showToast(`Llegaste a (${fx}, ${fy}), pero el muelle está en (${lv.goal.x}, ${lv.goal.y}). ¡Ojo con invertir X e Y!`, '', 4000);
+    } else if (!(fx === lv.goal.x && fy === lv.goal.y && !state.hasPackage)) {
+      /* Si una de las dos coordenadas ya coincide, decirlo: es el momento en
+         que basta una lectura para corregir, y callarlo deja al estudiante
+         comparando los dos números a la vez. */
+      const buscado = (lv.pickup && !state.hasPackage) ? lv.pickup : lv.goal;
+      const falta = lv.pickup && !state.hasPackage;
+      const ese = falta ? 'el muelle de carga' : 'el muelle';
+      const deEse = falta ? 'del muelle de carga' : 'del muelle';
+      let detalle;
+      if (fx === buscado.x && fy !== buscado.y)
+        detalle = `La columna X ya coincide con ${ese}: vuelve a leer su altura Y.`;
+      else if (fy === buscado.y && fx !== buscado.x)
+        detalle = `La altura Y ya coincide: sigue la columna ${deEse} hasta la escala X.`;
+      else
+        detalle = `Compara tu columna X y tu altura Y con las ${deEse}.`;
+      showToast(`Baliza en (${fx}, ${fy}). ${detalle} Quedan ${lv.maxCoords - state.movesUsed} coord.`, 'good', 3400);
+    }
+    state.status = 'idle';
+    updateHUD();
+    if (!isMobileLayout()) inX.focus();
+  }
+
+  function openWinModal() {
+    const lv = state.level;
+    let stars = 1;
+    if (state.lives === MAX_LIVES) {
+      stars = 2;
+      progress.streak = (progress.streak || 0) + 1;
+      progress.bestStreak = Math.max(progress.bestStreak || 0, progress.streak);
+    } else {
+      progress.streak = 0;
+    }
+    const bonusOk = !lv.bonus || state.bonusCollected;
+    if (state.lives === MAX_LIVES && state.movesUsed <= lv.parCoords && bonusOk) stars = 3;
+
+    if (lv.bonus && state.bonusCollected) progress.bonuses[lv.id] = true;
+    const prev = progress.stars[lv.id] || 0;
+    if (stars > prev) progress.stars[lv.id] = stars;
+    saveProgress();
+    evaluateMedals();
+    renderWorldAndMissionNav();
+
+    $('resEyebrow').textContent = `${state.world.name} · Misión ${lv.id}`;
+    $('resTitle').textContent = stars === 3 ? '¡Navegación impecable!' : '¡Paquete entregado!';
+    $('resStars').innerHTML = [1, 2, 3].map(n => `<span class="${n <= stars ? 'lit' : ''}">★</span>`).join('');
+
+    let msg = `Atracaste en (${lv.goal.x}, ${lv.goal.y}) usando ${state.movesUsed} ${state.movesUsed === 1 ? 'coordenada' : 'coordenadas'}.`;
+    if (stars < 3) {
+      const tips = [];
+      if (state.lives < MAX_LIVES) tips.push('sin chocar');
+      if (state.movesUsed > lv.parCoords) tips.push(`en ${lv.parCoords} coord.`);
+      if (lv.bonus && !state.bonusCollected) tips.push('recogiendo la boya dorada');
+      if (tips.length) msg += ` Para 3 estrellas, inténtalo ${tips.join(' y ')}.`;
+    } else if (state.levelIdx === LEVELS.length - 1) {
+      msg = '¡Completaste los 4 mundos de Rumbo Cartesiano! Eres capitán maestro del plano cartesiano.';
+    }
+    $('resMsg').textContent = msg;
+    $('resMoves').textContent = `${state.movesUsed} / ${lv.maxCoords}`;
+    $('resLives').textContent = `${state.lives} / ${MAX_LIVES}`;
+    $('resBonus').textContent = lv.bonus ? (state.bonusCollected ? '★ Recogida' : 'Pendiente') : 'N/A';
+
+    const btnNext = $('btnNextModal');
+    if (state.levelIdx < LEVELS.length - 1) {
+      btnNext.textContent = 'Siguiente misión →';
+      btnNext.onclick = () => { SFX.tap(); loadLevel(state.levelIdx + 1); };
+    } else {
+      btnNext.textContent = 'Abrir Atlas completo 🗺️';
+      btnNext.onclick = () => { SFX.tap(); $('ovResult').classList.remove('on'); openAtlas(); };
+    }
+    $('ovResult').classList.add('on');
+  }
+
+  function openLoseModal(reason, customMsg = '') {
+    const lv = state.level;
+    progress.streak = 0;
+    saveProgress();
+    $('resEyebrow').textContent = 'Travesía interrumpida';
+    $('resTitle').textContent = reason === 'lives' ? 'Casco averiado' : 'Límite de coordenadas agotado';
+    $('resStars').innerHTML = '<span>★</span><span>★</span><span>★</span>';
+    $('resMsg').textContent = customMsg || (reason === 'lives'
+      ? 'Tu lancha recibió 3 impactos. Observa bien los canales, boyas y corrientes antes de zarpar.'
+      : `Agotaste tus ${lv.maxCoords} coordenadas sin completar la entrega.`);
+    $('resMoves').textContent = `${state.movesUsed} / ${lv.maxCoords}`;
+    $('resLives').textContent = `${state.lives} / ${MAX_LIVES}`;
+    $('resBonus').textContent = lv.bonus ? (state.bonusCollected ? '★ Recogida' : 'Pendiente') : 'N/A';
+
+    const btnNext = $('btnNextModal');
+    btnNext.textContent = 'Intentar de nuevo ⛵';
+    btnNext.onclick = () => { SFX.tap(); loadLevel(state.levelIdx); };
+    $('ovResult').classList.add('on');
+  }
+
+  function openAtlas() {
+    renderAtlas();
+    $('ovAtlas').classList.add('on');
+  }
+
+  /* =========================================================================
+     10. PARTÍCULAS, TEXTOS FLOTANTES Y AMBIENTE
+     ========================================================================= */
+  function spawnFloater(gx, gy, text, color = '#f7d997') {
+    state.floaters.push({ x: gx, y: gy, text, color, life: 1.35, maxLife: 1.35 });
+  }
+  function spawnSplash(gx, gy, count = 20) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2, spd = 0.6 + Math.random() * 2.2;
+      state.particles.push({
+        x: gx, y: gy, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
+        life: 0.45 + Math.random() * 0.35, maxLife: 0.8, size: 3 + Math.random() * 4,
+        color: Math.random() < 0.35 ? '#ffd6a8' : '#e4fbff'
+      });
+    }
+  }
+  function spawnConfetti(gx, gy, count = 28) {
+    const pal = ['#f7d997', '#0bc0d8', '#52d190', '#b794ff', '#ffffff'];
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2, spd = 0.9 + Math.random() * 2.9;
+      state.particles.push({
+        x: gx, y: gy, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
+        life: 0.72 + Math.random() * 0.55, maxLife: 1.28, size: 3.5 + Math.random() * 4.5,
+        color: pal[i % pal.length]
+      });
+    }
+  }
+  function spawnRing(gx, gy, color) {
+    state.particles.push({ ring: true, x: gx, y: gy, life: 0.7, maxLife: 0.7, color });
+  }
+  function initAmbience() {
+    state.gulls = [
+      { x: 0.14, y: 0.22, vx: 0.017, vy: -0.004, phase: 0.4, scale: 0.88 },
+      { x: 0.75, y: 0.78, vx: -0.013, vy: -0.005, phase: 2.1, scale: 0.74 },
+      { x: 0.48, y: 0.12, vx: 0.011, vy: 0.003, phase: 4.0, scale: 0.66 }
+    ];
+    state.starsBg = Array.from({ length: 42 }, (_, i) => ({
+      x: ((i * 73.13) % 100) / 100, y: ((i * 41.79) % 100) / 100,
+      r: 0.75 + (i % 3) * 0.58, p: i * 1.15
+    }));
+    state.fireflies = Array.from({ length: 14 }, (_, i) => ({
+      x: ((i * 29.7) % 90 + 5) / 100, y: ((i * 53.3) % 86 + 7) / 100,
+      vx: (i % 2 === 0 ? 1 : -1) * (0.006 + (i % 4) * 0.002),
+      vy: -0.005 - (i % 3) * 0.002,
+      p: i * 1.7
+    }));
+  }
+
+  /* =========================================================================
+     11. RENDERER CANVAS 2D — 4 BIOMAS + LEGIBILIDAD MEJORADA
+     ========================================================================= */
+  let view = { w: 800, h: 600, scale: 50, ox: 400, oy: 300 };
+
+  function syncViewportHeight() {
+    if (window.visualViewport && isMobileLayout()) {
+      const vh = Math.round(window.visualViewport.height);
+      elAppRoot.style.height = vh + 'px';
+      const kbLikely = (window.innerHeight - vh) > 120;
+      document.body.classList.toggle('kb-open', kbLikely || document.activeElement === inX || document.activeElement === inY);
+    } else {
+      elAppRoot.style.height = '';
+      document.body.classList.remove('kb-open');
+    }
+    resizeCanvas();
+  }
+
+  function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    if (rect.width < 10 || rect.height < 10) return;
+    const dpr = state.perfMode ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    view.w = rect.width;
+    view.h = rect.height;
+    computeTransform();
+    updateInputButtons();
+  }
+
+  function computeTransform() {
+    const lv = state.level;
+    const cols = lv.maxX - lv.minX;
+    const rows = lv.maxY - lv.minY;
+    const mob = view.w < 540;
+    const kbOpen = document.body.classList.contains('kb-open');
+    const padTop = kbOpen ? 46 : (mob ? 52 : 66);
+    const padBot = kbOpen ? 24 : (mob ? 38 : 44);
+    const padLeft = mob ? 30 : 40;
+    const padRight = mob ? 16 : 26;
+    const availW = Math.max(100, view.w - padLeft - padRight);
+    const availH = Math.max(100, view.h - padTop - padBot);
+    const cell = Math.min(availW / cols, availH / rows);
+    const gridW = cell * cols;
+    const gridH = cell * rows;
+    view.scale = cell;
+    view.ox = padLeft + (availW - gridW) / 2 - lv.minX * cell;
+    view.oy = padTop + (availH - gridH) / 2 + lv.maxY * cell;
+  }
+
+  function toScreen(gx, gy) {
+    return { x: view.ox + gx * view.scale, y: view.oy - gy * view.scale };
+  }
+
+  function seededRand(seed) {
+    let s = seed % 2147483647;
+    if (s <= 0) s += 2147483646;
+    return () => (s = (s * 16807) % 2147483647) / 2147483647;
+  }
+
+  function drawRoundedRect(x, y, w, h, r) {
+    /* Sin acotar el radio, una píldora de 20 px de alto pedida con radio 99
+       cruzaba el trazo sobre sí mismo y pintaba una equis en lugar de la
+       caja. Afecta a todas las llamadas, no solo a los rótulos. */
+    r = Math.max(0, Math.min(r, w / 2, h / 2));
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function drawSeaBackground(t) {
+    const w = state.world;
+    const g = ctx.createRadialGradient(view.w * 0.34, view.h * 0.24, 24, view.w * 0.5, view.h * 0.5, Math.max(view.w, view.h) * 0.88);
+    g.addColorStop(0, w.seaStops[0]);
+    g.addColorStop(0.54, w.seaStops[1]);
+    g.addColorStop(1, w.seaStops[2]);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, view.w, view.h);
+
+    ctx.save();
+    if (w.id === 2 && !state.perfMode) {
+      const sg = ctx.createRadialGradient(view.w * 0.78, view.h * 0.14, 10, view.w * 0.78, view.h * 0.14, view.w * 0.55);
+      sg.addColorStop(0, 'rgba(255,176,96,0.22)');
+      sg.addColorStop(0.5, 'rgba(240,122,90,0.08)');
+      sg.addColorStop(1, 'rgba(240,122,90,0)');
+      ctx.fillStyle = sg;
+      ctx.fillRect(0, 0, view.w, view.h);
+    }
+
+    const waveStep = state.perfMode ? 52 : 34;
+    ctx.strokeStyle = w.waveColor;
+    ctx.lineWidth = 1.4;
+    for (let y = 20; y < view.h; y += waveStep) {
+      ctx.beginPath();
+      for (let x = 0; x <= view.w; x += 30) {
+        const wy = y + Math.sin(x * 0.018 + t * 1.1 + y * 0.08) * 3.1;
+        if (x === 0) ctx.moveTo(x, wy); else ctx.lineTo(x, wy);
+      }
+      ctx.stroke();
+    }
+
+    if (w.ambient === 'night') {
+      for (const st of state.starsBg) {
+        const a = 0.16 + 0.36 * (Math.sin(t * 2.2 + st.p) * 0.5 + 0.5);
+        ctx.fillStyle = `rgba(205,235,255,${a.toFixed(2)})`;
+        ctx.beginPath(); ctx.arc(st.x * view.w, st.y * view.h, st.r, 0, Math.PI * 2); ctx.fill();
+      }
+      if (state.shootingStar && !state.perfMode) {
+        const ss = state.shootingStar;
+        const p = ss.life / ss.maxLife;
+        ctx.strokeStyle = `rgba(220,245,255,${(p * 0.7).toFixed(2)})`;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(ss.x * view.w, ss.y * view.h);
+        ctx.lineTo((ss.x - ss.vx * 0.08) * view.w, (ss.y - ss.vy * 0.08) * view.h);
+        ctx.stroke();
+      }
+    } else if (!state.perfMode) {
+      ctx.fillStyle = w.glintColor;
+      for (let i = 0; i < 16; i++) {
+        const px = (i * 197.3) % view.w, py = (i * 131.7) % view.h;
+        const pulse = Math.sin(t * 2.1 + i * 1.7);
+        if (pulse > 0.35) {
+          const rw = 11 * (pulse - 0.35);
+          ctx.fillRect(px - rw, py, rw * 2, 1.8);
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawCartesianGrid() {
+    const lv = state.level;
+    const w = state.world;
+    const pMin = toScreen(lv.minX, lv.minY);
+    const pMax = toScreen(lv.maxX, lv.maxY);
+    const hasNeg = lv.minX < 0 || lv.minY < 0;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(4,16,24,0.18)';
+    ctx.fillRect(pMin.x, pMax.y, pMax.x - pMin.x, pMin.y - pMax.y);
+
+    // Bandas muy tenues cada 2 unidades para lectura rápida de filas y columnas
+    ctx.fillStyle = 'rgba(255,255,255,0.024)';
+    for (let x = lv.minX; x < lv.maxX; x++) {
+      if (Math.abs(x) % 2 === 0) {
+        const sx = toScreen(x, 0).x;
+        ctx.fillRect(sx, pMax.y, view.scale, pMin.y - pMax.y);
+      }
+    }
+    for (let y = lv.minY; y < lv.maxY; y++) {
+      if (Math.abs(y) % 2 === 0) {
+        const sy = toScreen(0, y + 1).y;
+        ctx.fillRect(pMin.x, sy, pMax.x - pMin.x, view.scale);
+      }
+    }
+
+    // Marcas de agua de cuadrantes en Mundos 2, 3 y 4
+    if (hasNeg) {
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const quads = [
+        { x: lv.maxX - 1.1, y: lv.maxY - 0.75, n: 'I',   s: '(+, +)' },
+        { x: lv.minX + 1.1, y: lv.maxY - 0.75, n: 'II',  s: '(−, +)' },
+        { x: lv.minX + 1.1, y: lv.minY + 0.85, n: 'III', s: '(−, −)' },
+        { x: lv.maxX - 1.1, y: lv.minY + 0.85, n: 'IV',  s: '(+, −)' }
+      ];
+      quads.forEach(q => {
+        const qp = toScreen(q.x, q.y);
+        ctx.font = '700 12px Georgia, serif';
+        ctx.fillStyle = 'rgba(244,234,213,0.18)';
+        ctx.fillText(q.n, qp.x, qp.y - 5);
+        if (view.scale >= 24) {
+          ctx.font = '600 9px system-ui, sans-serif';
+          ctx.fillStyle = 'rgba(244,234,213,0.14)';
+          ctx.fillText(q.s, qp.x, qp.y + 7);
+        }
+      });
+    }
+
+    // Cuadrícula y ejes principales
+    for (let x = lv.minX; x <= lv.maxX; x++) {
+      const sx = toScreen(x, 0).x;
+      const isSymAxis = lv.symmetry && lv.symmetry.axis === 'Y' && x === 0;
+      ctx.strokeStyle = isSymAxis ? '#c9a8ff' : (x === 0 ? w.axisColor : w.gridColor);
+      ctx.lineWidth = isSymAxis ? 3.2 : (x === 0 ? 2.4 : 1);
+      if (isSymAxis) ctx.setLineDash([7, 5]);
+      ctx.beginPath(); ctx.moveTo(sx, pMax.y); ctx.lineTo(sx, pMin.y); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    for (let y = lv.minY; y <= lv.maxY; y++) {
+      const sy = toScreen(0, y).y;
+      const isSymAxis = lv.symmetry && lv.symmetry.axis === 'X' && y === 0;
+      ctx.strokeStyle = isSymAxis ? '#c9a8ff' : (y === 0 ? w.axisColor : w.gridColor);
+      ctx.lineWidth = isSymAxis ? 3.2 : (y === 0 ? 2.4 : 1);
+      if (isSymAxis) ctx.setLineDash([7, 5]);
+      ctx.beginPath(); ctx.moveTo(pMin.x, sy); ctx.lineTo(pMax.x, sy); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Ticks de referencia cada 2 unidades en los ejes centrales (4 cuadrantes)
+    if (hasNeg) {
+      const orig = toScreen(0, 0);
+      ctx.strokeStyle = w.axisColor;
+      ctx.lineWidth = 1.6;
+      for (let x = lv.minX; x <= lv.maxX; x++) {
+        if (x !== 0 && Math.abs(x) % 2 === 0) {
+          const sx = toScreen(x, 0).x;
+          ctx.beginPath(); ctx.moveTo(sx, orig.y - 4); ctx.lineTo(sx, orig.y + 4); ctx.stroke();
+        }
+      }
+      for (let y = lv.minY; y <= lv.maxY; y++) {
+        if (y !== 0 && Math.abs(y) % 2 === 0) {
+          const sy = toScreen(0, y).y;
+          ctx.beginPath(); ctx.moveTo(orig.x - 4, sy); ctx.lineTo(orig.x + 4, sy); ctx.stroke();
+        }
+      }
+    }
+
+    // Guía sutil en el borde del eje cuando se escribe un número
+    const typedX = state.guideOn && isValidInt(inX.value) ? (parseInt(inX.value, 10) || 0) : null;
+    const typedY = state.guideOn && isValidInt(inY.value) ? (parseInt(inY.value, 10) || 0) : null;
+
+    if (typedX !== null && typedX >= lv.minX && typedX <= lv.maxX) {
+      const sx = toScreen(typedX, 0).x;
+      const baseY = hasNeg ? toScreen(0, 0).y : pMin.y;
+      ctx.strokeStyle = 'rgba(102,224,245,0.52)'; ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.moveTo(sx, baseY - 10); ctx.lineTo(sx, baseY + 10); ctx.stroke();
+    }
+    if (typedY !== null && typedY >= lv.minY && typedY <= lv.maxY) {
+      const sy = toScreen(0, typedY).y;
+      const baseX = hasNeg ? toScreen(0, 0).x : pMin.x;
+      ctx.strokeStyle = 'rgba(255,202,112,0.56)'; ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.moveTo(baseX - 10, sy); ctx.lineTo(baseX + 10, sy); ctx.stroke();
+    }
+
+    // Puntos en intersecciones
+    ctx.fillStyle = 'rgba(225,248,255,0.24)';
+    for (let x = lv.minX; x <= lv.maxX; x++) {
+      for (let y = lv.minY; y <= lv.maxY; y++) {
+        const p = toScreen(x, y);
+        ctx.beginPath(); ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // Etiquetas numéricas adaptadas a la densidad del mapa
+    const tight = view.scale < 25;
+    const fontSize = Math.max(9.5, Math.min(13.5, view.scale * (tight ? 0.42 : 0.28)));
+    ctx.font = `700 ${fontSize}px system-ui, sans-serif`;
+
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for (let x = lv.minX; x <= lv.maxX; x++) {
+      const p = toScreen(x, lv.minY);
+      const hi = typedX === x;
+      if (hi) {
+        ctx.fillStyle = 'rgba(11,192,216,0.34)';
+        ctx.beginPath(); ctx.arc(p.x, p.y + (tight ? 11 : 14), tight ? 8.5 : 10.5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = hi ? '#8cf0ff' : (x === 0 ? '#ffe4a3' : 'rgba(244,234,213,0.88)');
+      ctx.fillText(String(x), p.x, p.y + (tight ? 5 : 7));
+    }
+
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    for (let y = lv.minY; y <= lv.maxY; y++) {
+      const p = toScreen(lv.minX, y);
+      const hi = typedY === y;
+      if (hi) {
+        ctx.fillStyle = 'rgba(247,217,151,0.3)';
+        ctx.beginPath(); ctx.arc(p.x - (tight ? 12 : 15), p.y, tight ? 8.5 : 10.5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = hi ? '#ffe199' : (y === 0 ? '#ffe4a3' : 'rgba(244,234,213,0.88)');
+      ctx.fillText(String(y), p.x - (tight ? 6 : 9), p.y);
+    }
+
+    // Letras X y Y
+    const xAxisY = toScreen(0, 0).y;
+    const yAxisX = toScreen(0, 0).x;
+    ctx.font = `800 ${tight ? 11 : 13}px Georgia, serif`;
+    ctx.fillStyle = '#66e0f5'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText('X', pMax.x + (tight ? 5 : 8), xAxisY);
+    ctx.fillStyle = '#ffca70'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText('Y', yAxisX, pMax.y - (tight ? 3 : 6));
+
+    const orig = toScreen(0, 0);
+    drawCompassMark(orig.x, orig.y, Math.min(12, view.scale * 0.27));
+    ctx.restore();
+  }
+
+  function drawCompassMark(x, y, r) {
+    ctx.save(); ctx.translate(x, y);
+    ctx.fillStyle = 'rgba(247,217,151,0.2)';
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const a = (i * Math.PI) / 4, rad = i % 2 === 0 ? r : r * 0.36;
+      const px = Math.cos(a) * rad, py = Math.sin(a) * rad;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(247,217,151,0.5)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawCurrents(t) {
+    const currents = state.level.currents;
+    if (!currents) return;
+    ctx.save();
+    for (const c of currents) {
+      const p1 = toScreen(c.x1, c.y2);
+      const p2 = toScreen(c.x2, c.y1);
+      const rw = p2.x - p1.x, rh = p2.y - p1.y;
+
+      drawRoundedRect(p1.x, p1.y, rw, rh, 10);
+      ctx.fillStyle = 'rgba(56, 204, 245, 0.17)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(110, 232, 255, 0.54)';
+      ctx.lineWidth = 1.6; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+
+      const ang = Math.atan2(-c.dy, c.dx);
+      const cx = p1.x + rw / 2, cy = p1.y + rh / 2;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(p1.x, p1.y, rw, rh); ctx.clip();
+      ctx.translate(cx, cy); ctx.rotate(ang);
+      const flow = (t * 30) % 24;
+      ctx.strokeStyle = 'rgba(165, 245, 255, 0.68)';
+      ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      for (let ox = -rw; ox <= rw; ox += 24) {
+        for (let oy = -rh * 0.45; oy <= rh * 0.45; oy += 26) {
+          const fx = ox + flow;
+          ctx.beginPath();
+          ctx.moveTo(fx - 5, oy - 5); ctx.lineTo(fx + 2, oy); ctx.lineTo(fx - 5, oy + 5);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+    }
+    ctx.restore();
+  }
+
+  /* El rótulo de la corriente se pinta aparte, después de las islas: ahora que
+     los canales cruzan toda la carta, un arrecife encima lo tapaba. */
+  function drawCurrentLabels() {
+    const currents = state.level.currents;
+    if (!currents) return;
+    ctx.save();
+    ctx.font = '800 10.5px system-ui, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const c of currents) {
+      const p1 = toScreen(c.x1, c.y2), p2 = toScreen(c.x2, c.y1);
+      const cx = (p1.x + p2.x) / 2, cy = (p1.y + p2.y) / 2;
+      const txt = '🌊 ' + c.label;
+      const tw = ctx.measureText(txt).width + 12;
+      drawRoundedRect(cx - tw / 2, cy - 10, tw, 20, 99);
+      ctx.fillStyle = 'rgba(6, 24, 38, 0.92)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(110, 232, 255, 0.66)'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = '#9beeff';
+      ctx.fillText(txt, cx, cy + 0.5);
+    }
+    ctx.restore();
+  }
+
+  function drawSonars(t) {
+    const lv = state.level;
+    if (!lv.sonars) return;
+    ctx.save();
+    lv.sonars.forEach((sn, idx) => {
+      const p = toScreen(sn.x, sn.y);
+      const count = getSonarCount(sn.x, sn.y, lv.obstacles);
+      const scanned = state.scannedSonars.has(idx);
+      const r = Math.max(8.5, Math.min(14, view.scale * 0.3));
+
+      const boxTL = toScreen(sn.x - 1.35, sn.y + 1.35);
+      const boxBR = toScreen(sn.x + 1.35, sn.y - 1.35);
+      ctx.strokeStyle = count === 0 ? 'rgba(82,209,144,0.32)' : 'rgba(245,183,76,0.3)';
+      ctx.lineWidth = 1.2; ctx.setLineDash([4, 4]);
+      ctx.strokeRect(boxTL.x, boxTL.y, boxBR.x - boxTL.x, boxBR.y - boxTL.y);
+      ctx.setLineDash([]);
+
+      if (!state.perfMode) {
+        const sweepA = t * 1.6 + idx * 1.4;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(sweepA);
+        const sg = ctx.createRadialGradient(0, 0, r * 0.5, 0, 0, view.scale * 1.15);
+        sg.addColorStop(0, count === 0 ? 'rgba(82,209,144,0.22)' : 'rgba(245,183,76,0.2)');
+        sg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = sg;
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, view.scale * 1.15, 0, 0.55); ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+
+      const pulse = (t * 0.8 + idx * 0.33) % 1;
+      ctx.strokeStyle = count === 0
+        ? `rgba(82,209,144,${(1 - pulse) * 0.55})`
+        : `rgba(245,183,76,${(1 - pulse) * 0.55})`;
+      ctx.lineWidth = 1.7;
+      ctx.beginPath(); ctx.arc(p.x, p.y, r + pulse * view.scale * 0.9, 0, Math.PI * 2); ctx.stroke();
+
+      ctx.fillStyle = scanned ? '#14495a' : '#0b2936';
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = count === 0 ? '#52d190' : (count === 1 ? '#5bd8f5' : '#f5b74c');
+      ctx.lineWidth = 2.2; ctx.stroke();
+
+      ctx.fillStyle = count === 0 ? '#8ef5be' : (count === 1 ? '#a4f0ff' : '#ffd87a');
+      ctx.font = `900 ${Math.round(r * 1.22)}px system-ui, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(count), p.x, p.y + 0.5);
+    });
+    ctx.restore();
+  }
+
+  function drawSymmetryBeacon(t) {
+    const sym = state.level.symmetry;
+    if (!sym) return;
+    const p = toScreen(sym.ref.x, sym.ref.y);
+    const r = Math.max(9, Math.min(15, view.scale * 0.28));
+
+    ctx.save(); ctx.translate(p.x, p.y);
+    ctx.save(); ctx.rotate(t * 1.15);
+    const lg = ctx.createRadialGradient(0, 0, 2, 0, 0, r * 3.8);
+    lg.addColorStop(0, 'rgba(183,148,255,0.46)');
+    lg.addColorStop(1, 'rgba(183,148,255,0)');
+    ctx.fillStyle = lg;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, r * 3.8, -0.35, 0.35); ctx.closePath(); ctx.fill();
+    ctx.restore();
+
+    ctx.fillStyle = '#382266'; ctx.strokeStyle = '#d8c2ff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#f3e8ff';
+    ctx.font = `800 ${Math.round(r * 1.1)}px system-ui, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('◈', 0, 0.5);
+
+    ctx.font = '800 9px system-ui, sans-serif'; ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#e5d4ff';
+    ctx.fillText(`FARO (${sym.ref.x},${sym.ref.y})`, 0, -r - 4);
+    ctx.restore();
+  }
+
+  function drawObstacle(o, idx, t) {
+    if (o.hidden && !state.revealedReefs.has(idx)) return;
+
+    const p = toScreen(o.x, o.y);
+    const r = o.r * view.scale;
+    const rng = seededRand(o.seed);
+    const w = state.world;
+    const pts = [];
+    const n = 14;
+    for (let i = 0; i < n; i++) pts.push({ a: (i / n) * Math.PI * 2, rad: r * (0.84 + rng() * 0.28) });
+
+    function traceBlob(scaleMul) {
+      ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        const c = pts[i], nx = pts[(i + 1) % n];
+        const x1 = p.x + Math.cos(c.a) * c.rad * scaleMul, y1 = p.y + Math.sin(c.a) * c.rad * scaleMul;
+        const x2 = p.x + Math.cos(nx.a) * nx.rad * scaleMul, y2 = p.y + Math.sin(nx.a) * nx.rad * scaleMul;
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        if (i === 0) ctx.moveTo(mx, my); else ctx.quadraticCurveTo(x1, y1, mx, my);
+      }
+      ctx.closePath();
+    }
+
+    ctx.save();
+    traceBlob(1.24 + Math.sin(t * 2.2 + o.seed) * 0.03);
+    ctx.fillStyle = o.hidden ? 'rgba(240,101,83,0.18)' : 'rgba(98,235,232,0.14)';
+    ctx.fill();
+
+    /* Este contorno es el límite del peligro, así que se traza en la misma
+       escala con la que choca y no late: un borde que se mueve no se puede
+       leer. El halo de fuera sí sigue latiendo, porque es decoración. */
+    const escCol = o.kind === 'island' ? SILUETA_ISLA : SILUETA_ARRECIFE;
+    traceBlob(escCol);
+    ctx.strokeStyle = o.hidden ? 'rgba(255,176,160,0.92)' : 'rgba(246,253,255,0.8)';
+    ctx.lineWidth = 2.2; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+
+    ctx.save(); ctx.translate(3, 5); traceBlob(0.95);
+    ctx.fillStyle = 'rgba(3,14,22,0.44)'; ctx.fill(); ctx.restore();
+
+    if (o.kind === 'island') {
+      traceBlob(0.98);
+      const sg = ctx.createRadialGradient(p.x - r * 0.25, p.y - r * 0.25, r * 0.1, p.x, p.y, r);
+      sg.addColorStop(0, w.islandSand[0]); sg.addColorStop(1, w.islandSand[1]);
+      ctx.fillStyle = sg; ctx.fill();
+
+      traceBlob(0.7);
+      const vg = ctx.createRadialGradient(p.x - r * 0.2, p.y - r * 0.2, r * 0.08, p.x, p.y, r * 0.75);
+      vg.addColorStop(0, w.islandVeg[0]); vg.addColorStop(1, w.islandVeg[1]);
+      ctx.fillStyle = vg; ctx.fill();
+
+      drawPalm(p.x - r * 0.18, p.y - r * 0.1, r * 0.34, t + o.seed);
+      drawPalm(p.x + r * 0.2, p.y + r * 0.12, r * 0.26, t * 0.9 + o.seed + 2);
+    } else {
+      traceBlob(0.92);
+      const rg = ctx.createRadialGradient(p.x - r * 0.2, p.y - r * 0.25, r * 0.05, p.x, p.y, r);
+      rg.addColorStop(0, o.hidden ? '#a66864' : '#82969e');
+      rg.addColorStop(0.6, o.hidden ? '#663438' : '#4a5c66');
+      rg.addColorStop(1, '#253038');
+      ctx.fillStyle = rg; ctx.fill();
+
+      traceBlob(0.54);
+      ctx.fillStyle = 'rgba(225,240,245,0.22)'; ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawPalm(x, y, size, phase) {
+    ctx.save(); ctx.translate(x, y);
+    const sway = Math.sin(phase * 1.4) * 0.08;
+    for (let i = 0; i < 6; i++) {
+      ctx.save(); ctx.rotate((i / 6) * Math.PI * 2 + sway);
+      ctx.fillStyle = i % 2 === 0 ? '#7ed36b' : '#4a9e52';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(size * 0.55, -size * 0.24, size, 0);
+      ctx.quadraticCurveTo(size * 0.55, size * 0.24, 0, 0);
+      ctx.fill(); ctx.restore();
+    }
+    ctx.fillStyle = '#5a3d20';
+    ctx.beginPath(); ctx.arc(0, 0, Math.max(1.8, size * 0.14), 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawDock(gx, gy, kind, t) {
+    if (kind === 'goal' && !state.goalRevealed) return;
+    if (kind === 'pickup' && state.hasPackage) {
+      const p = toScreen(gx, gy);
+      ctx.save(); ctx.translate(p.x, p.y);
+      ctx.fillStyle = 'rgba(82,209,144,0.25)';
+      ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#8ef5be'; ctx.font = '800 9.5px system-ui, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('✓', 0, 0.5);
+      ctx.restore();
+      return;
+    }
+
+    const p = toScreen(gx, gy);
+    const s = Math.max(9.5, Math.min(18, view.scale * 0.35));
+    ctx.save(); ctx.translate(p.x, p.y);
+
+    if (kind === 'goal' || kind === 'pickup') {
+      const pulse = (Math.sin(t * 3.2) + 1) * 0.5;
+      ctx.strokeStyle = kind === 'goal'
+        ? `rgba(247,217,151,${0.34 + pulse * 0.45})`
+        : `rgba(82,209,144,${0.36 + pulse * 0.45})`;
+      ctx.lineWidth = 2.2;
+      ctx.beginPath(); ctx.arc(0, 0, s * (1.28 + pulse * 0.26), 0, Math.PI * 2); ctx.stroke();
+    }
+
+    ctx.fillStyle = 'rgba(0,0,0,0.36)';
+    ctx.fillRect(-s * 0.8 + 2, -s * 0.65 + 3, s * 1.6, s * 1.3);
+
+    ctx.fillStyle = kind === 'goal' ? '#a87038' : (kind === 'pickup' ? '#2c7a57' : '#735336');
+    ctx.strokeStyle = kind === 'goal' ? '#f7d997' : (kind === 'pickup' ? '#7cf0b4' : '#d5b282');
+    ctx.lineWidth = 1.7;
+    drawRoundedRect(-s * 0.8, -s * 0.65, s * 1.6, s * 1.3, 4);
+    ctx.fill(); ctx.stroke();
+
+    if (kind === 'goal' || kind === 'pickup') {
+      ctx.fillStyle = kind === 'goal' ? '#f7d997' : '#a8f7cd';
+      ctx.fillRect(-s * 0.32, -s * 0.32, s * 0.64, s * 0.64);
+      ctx.strokeStyle = '#3b240b'; ctx.lineWidth = 1.3;
+      ctx.strokeRect(-s * 0.32, -s * 0.32, s * 0.64, s * 0.64);
+      ctx.beginPath();
+      ctx.moveTo(0, -s * 0.32); ctx.lineTo(0, s * 0.32);
+      ctx.moveTo(-s * 0.32, 0); ctx.lineTo(s * 0.32, 0);
+      ctx.stroke();
+
+      const lbl = kind === 'goal' ? 'ENTREGA' : 'CARGA';
+      ctx.font = `800 ${view.scale < 25 ? 8.5 : 9.5}px system-ui, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillStyle = '#06151c'; ctx.fillText(lbl, 1, -s * 0.85 + 1);
+      ctx.fillStyle = kind === 'goal' ? '#ffe5a3' : '#9ff7c7';
+      ctx.fillText(lbl, 0, -s * 0.85);
+    } else {
+      ctx.font = `750 ${view.scale < 25 ? 8 : 9}px system-ui, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillStyle = '#bdf3d5'; ctx.fillText('SALIDA', 0, s * 0.82);
+    }
+    ctx.restore();
+  }
+
+  function drawBonusBuoy(b, t) {
+    if (!b || state.bonusCollected) return;
+    const p = toScreen(b.x, b.y);
+    const bob = Math.sin(t * 3.8) * 2.2;
+    const r = Math.max(7.5, Math.min(12.5, view.scale * 0.25));
+
+    ctx.save(); ctx.translate(p.x, p.y + bob);
+    ctx.strokeStyle = `rgba(247,217,151,${0.26 + (Math.sin(t * 4) + 1) * 0.25})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, r * 1.45, 0, Math.PI * 2); ctx.stroke();
+
+    const bg = ctx.createRadialGradient(-r * 0.3, -r * 0.3, 1, 0, 0, r);
+    bg.addColorStop(0, '#fff4cc'); bg.addColorStop(0.55, '#f2bd52'); bg.addColorStop(1, '#a96e17');
+    ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fff5d6'; ctx.lineWidth = 1.3; ctx.stroke();
+
+    ctx.fillStyle = '#3a2204';
+    ctx.font = `900 ${Math.round(r * 1.25)}px system-ui, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('★', 0, 0.5);
+    ctx.restore();
+  }
+
+  function drawRoutePath() {
+    ctx.save();
+    if (state.path.length >= 2) {
+      ctx.strokeStyle = 'rgba(11,192,216,0.84)';
+      ctx.lineWidth = 2.6;
+      ctx.setLineDash([7, 6]); ctx.lineCap = 'round';
+      ctx.beginPath();
+      state.path.forEach((pt, idx) => {
+        const s = toScreen(pt.x, pt.y);
+        if (idx === 0) ctx.moveTo(s.x, s.y); else ctx.lineTo(s.x, s.y);
+      });
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    if (state.anim && state.anim.type === 'move') {
+      const a = toScreen(state.anim.ax, state.anim.ay);
+      const b = toScreen(state.boat.x, state.boat.y);
+      ctx.strokeStyle = state.anim.drifting ? '#9beeff' : 'rgba(247,217,151,0.9)';
+      ctx.lineWidth = 2.8; ctx.setLineDash([5, 5]);
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    if (state.crashMark && state.crashMark.life > 0) {
+      const cm = state.crashMark;
+      const s = toScreen(cm.x, cm.y);
+      ctx.globalAlpha = Math.min(1, cm.life / 0.8);
+      ctx.strokeStyle = '#ff7b6b'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(s.x - 7, s.y - 7); ctx.lineTo(s.x + 7, s.y + 7);
+      ctx.moveTo(s.x + 7, s.y - 7); ctx.lineTo(s.x - 7, s.y + 7);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    for (let i = 1; i < state.path.length; i++) {
+      const s = toScreen(state.path[i].x, state.path[i].y);
+      ctx.fillStyle = '#0bc0d8';
+      ctx.beginPath(); ctx.arc(s.x, s.y, 4.4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.4; ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* El plan, dibujado sobre la carta antes de zarpar. En Carta Completa los
+     puntos se escribían a ciegas y no se veían en el plano hasta soltar
+     amarras; en la misión del cuaderno ajeno, además, ver por dónde pasa el
+     rumbo anotado es el ejercicio entero. */
+  function drawPlannedRoute() {
+    const lv = state.level;
+    if (lv.mode !== 'plan' || state.status !== 'idle' || !state.planned.length) return;
+    const pts = [lv.start].concat(state.planned);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(190,158,255,0.8)';
+    ctx.lineWidth = 2.4; ctx.setLineDash([4, 6]); ctx.lineCap = 'round';
+    ctx.beginPath();
+    pts.forEach((pt, i) => {
+      const p = toScreen(pt.x, pt.y);
+      if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y);
+    });
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '800 10px system-ui, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    state.planned.forEach((pt, i) => {
+      const p = toScreen(pt.x, pt.y);
+      ctx.fillStyle = pt.bad ? '#f06553' : '#c8a9ff';
+      ctx.beginPath(); ctx.arc(p.x, p.y, 7.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(8,14,32,0.92)'; ctx.lineWidth = 1.8; ctx.stroke();
+      ctx.fillStyle = '#17102c';
+      ctx.fillText(String(i + 1), p.x, p.y + 0.5);
+    });
+    ctx.restore();
+  }
+
+  function drawWake() {
+    ctx.save();
+    const isNight = state.world.id === 4;
+    for (const w of state.wake) {
+      const s = toScreen(w.x, w.y);
+      const alpha = (w.life / w.maxLife) * (isNight ? 0.68 : 0.52);
+      ctx.fillStyle = isNight ? `rgba(115,240,255,${alpha.toFixed(3)})` : `rgba(225,252,255,${alpha.toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, w.r * (1.35 - (w.life / w.maxLife) * 0.5), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawBoat(t) {
+    const p = toScreen(state.boat.x, state.boat.y);
+    const sz = Math.max(11, Math.min(20, view.scale * 0.38));
+    const bob = state.status === 'idle' ? Math.sin(t * 3.1) * 1.5 : 0;
+
+    ctx.save(); ctx.translate(p.x, p.y + bob); ctx.rotate(state.boat.angle);
+
+    if (state.world.id === 4) {
+      const hl = ctx.createRadialGradient(sz, 0, 2, sz, 0, sz * 3.8);
+      hl.addColorStop(0, 'rgba(255,244,195,0.36)');
+      hl.addColorStop(1, 'rgba(255,244,195,0)');
+      ctx.fillStyle = hl;
+      ctx.beginPath(); ctx.moveTo(sz * 0.9, 0); ctx.arc(sz * 0.9, 0, sz * 3.8, -0.42, 0.42); ctx.closePath(); ctx.fill();
+    }
+
+    if (state.status === 'sailing') {
+      ctx.strokeStyle = state.world.id === 4 ? 'rgba(130,245,255,0.62)' : 'rgba(235,252,255,0.58)';
+      ctx.lineWidth = 1.7; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(sz * 1.05, 0); ctx.lineTo(-sz * 0.5, -sz * 0.85);
+      ctx.moveTo(sz * 1.05, 0); ctx.lineTo(-sz * 0.5, sz * 0.85);
+      ctx.stroke();
+    }
+
+    ctx.save(); ctx.translate(2, 4); ctx.fillStyle = 'rgba(0,10,16,0.42)';
+    ctx.beginPath();
+    ctx.moveTo(sz * 1.15, 0);
+    ctx.quadraticCurveTo(sz * 0.4, -sz * 0.65, -sz * 0.9, -sz * 0.52);
+    ctx.lineTo(-sz * 0.9, sz * 0.52);
+    ctx.quadraticCurveTo(sz * 0.4, sz * 0.65, sz * 1.15, 0);
+    ctx.closePath(); ctx.fill(); ctx.restore();
+
+    ctx.fillStyle = '#f8f2e4'; ctx.strokeStyle = '#c84b39'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(sz * 1.15, 0);
+    ctx.quadraticCurveTo(sz * 0.4, -sz * 0.62, -sz * 0.88, -sz * 0.48);
+    ctx.lineTo(-sz * 0.88, sz * 0.48);
+    ctx.quadraticCurveTo(sz * 0.4, sz * 0.62, sz * 1.15, 0);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#b98249';
+    ctx.beginPath();
+    ctx.moveTo(sz * 0.72, 0);
+    ctx.quadraticCurveTo(sz * 0.25, -sz * 0.38, -sz * 0.7, -sz * 0.32);
+    ctx.lineTo(-sz * 0.7, sz * 0.32);
+    ctx.quadraticCurveTo(sz * 0.25, sz * 0.38, sz * 0.72, 0);
+    ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = '#4ad7f0';
+    ctx.beginPath();
+    ctx.moveTo(sz * 0.38, -sz * 0.24);
+    ctx.quadraticCurveTo(sz * 0.52, 0, sz * 0.38, sz * 0.24);
+    ctx.lineTo(sz * 0.14, sz * 0.26);
+    ctx.quadraticCurveTo(sz * 0.24, 0, sz * 0.14, -sz * 0.26);
+    ctx.closePath(); ctx.fill();
+
+    if (state.hasPackage) {
+      ctx.fillStyle = '#f5c768'; ctx.strokeStyle = '#6c4314'; ctx.lineWidth = 1.2;
+      ctx.fillRect(-sz * 0.56, -sz * 0.22, sz * 0.46, sz * 0.44);
+      ctx.strokeRect(-sz * 0.56, -sz * 0.22, sz * 0.46, sz * 0.44);
+    }
+
+    const wave = Math.sin(t * 10) * 2.4;
+    ctx.strokeStyle = '#ffd483'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-sz * 0.86, 0); ctx.quadraticCurveTo(-sz * 1.15, wave, -sz * 1.38, -wave * 0.5); ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawAmbienceOverlay(t) {
+    if (state.perfMode) return;
+    const amb = state.world.ambient;
+    if (amb === 'gulls' || amb === 'sunset') {
+      ctx.save();
+      ctx.strokeStyle = amb === 'sunset' ? 'rgba(255,220,185,0.5)' : 'rgba(245,252,255,0.52)';
+      ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+      for (const g of state.gulls) {
+        const x = g.x * view.w, y = g.y * view.h;
+        const flap = Math.sin(t * 4.5 + g.phase) * 4 * g.scale;
+        const wing = 8 * g.scale;
+        ctx.beginPath();
+        ctx.moveTo(x - wing, y - flap);
+        ctx.quadraticCurveTo(x - wing * 0.4, y - 4 * g.scale, x, y);
+        ctx.quadraticCurveTo(x + wing * 0.4, y - 4 * g.scale, x + wing, y - flap);
+        ctx.stroke();
+      }
+      ctx.restore();
+    } else if (amb === 'fog') {
+      ctx.save();
+      for (let i = 0; i < 4; i++) {
+        const fx = ((t * (10 + i * 3) + i * 260) % (view.w + 340)) - 170;
+        const fy = view.h * (0.18 + i * 0.21);
+        const fg = ctx.createRadialGradient(fx, fy, 15, fx, fy, 175);
+        fg.addColorStop(0, 'rgba(190,228,235,0.12)');
+        fg.addColorStop(1, 'rgba(190,228,235,0)');
+        ctx.fillStyle = fg;
+        ctx.fillRect(fx - 175, fy - 125, 350, 250);
+      }
+      ctx.restore();
+    } else if (amb === 'night') {
+      ctx.save();
+      for (const ff of state.fireflies) {
+        const pulse = 0.25 + 0.75 * (Math.sin(t * 3.1 + ff.p) * 0.5 + 0.5);
+        const x = ff.x * view.w, y = ff.y * view.h;
+        ctx.fillStyle = `rgba(255,228,140,${(pulse * 0.75).toFixed(2)})`;
+        ctx.beginPath(); ctx.arc(x, y, 2.2, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+
+  function drawParticlesAndFloaters() {
+    ctx.save();
+    for (const pt of state.particles) {
+      const s = toScreen(pt.x, pt.y);
+      const ratio = pt.life / pt.maxLife;
+      if (pt.ring) {
+        ctx.strokeStyle = pt.color;
+        ctx.globalAlpha = ratio * 0.85;
+        ctx.lineWidth = 2.4;
+        ctx.beginPath(); ctx.arc(s.x, s.y, (1 - ratio) * view.scale * 0.8 + 6, 0, Math.PI * 2); ctx.stroke();
+      } else {
+        ctx.globalAlpha = Math.max(0, ratio);
+        ctx.fillStyle = pt.color;
+        ctx.beginPath(); ctx.arc(s.x, s.y, pt.size * (0.4 + ratio * 0.6), 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    ctx.font = '800 12px system-ui, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const fl of state.floaters) {
+      const s = toScreen(fl.x, fl.y);
+      const u = 1 - fl.life / fl.maxLife;
+      const dy = -14 - u * 34;
+      ctx.globalAlpha = Math.min(1, fl.life * 2.2);
+      ctx.fillStyle = 'rgba(4,14,20,0.85)';
+      ctx.fillText(fl.text, s.x + 1, s.y + dy + 1);
+      ctx.fillStyle = fl.color;
+      ctx.fillText(fl.text, s.x, s.y + dy);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  /* =========================================================================
+     12. BUCLE DE SIMULACIÓN (60 FPS)
+     ========================================================================= */
+  let lastTs = 0;
+  function step(ts) {
+    const dt = Math.min(0.05, lastTs ? (ts - lastTs) / 1000 : 0.016);
+    lastTs = ts;
+    state.time += dt;
+    updateSimulation(dt);
+    renderScene();
+    requestAnimationFrame(step);
+  }
+
+  function updateSimulation(dt) {
+    for (const g of state.gulls) {
+      g.x += g.vx * dt; g.y += g.vy * dt;
+      if (g.x > 1.1) g.x = -0.1; if (g.x < -0.1) g.x = 1.1;
+      if (g.y < -0.1) g.y = 1.1; if (g.y > 1.1) g.y = -0.1;
+    }
+    for (const ff of state.fireflies) {
+      ff.x += ff.vx * dt; ff.y += ff.vy * dt;
+      if (ff.x > 0.98) ff.x = 0.02; if (ff.x < 0.02) ff.x = 0.98;
+      if (ff.y < 0.05) ff.y = 0.95;
+    }
+    if (state.world.ambient === 'night' && !state.perfMode) {
+      if (!state.shootingStar && Math.random() < dt * 0.22) {
+        state.shootingStar = { x: 0.2 + Math.random() * 0.7, y: 0.05 + Math.random() * 0.25, vx: 0.32, vy: 0.14, life: 0.7, maxLife: 0.7 };
+      } else if (state.shootingStar) {
+        state.shootingStar.x += state.shootingStar.vx * dt;
+        state.shootingStar.y += state.shootingStar.vy * dt;
+        state.shootingStar.life -= dt;
+        if (state.shootingStar.life <= 0) state.shootingStar = null;
+      }
+    }
+
+    for (let i = state.wake.length - 1; i >= 0; i--) {
+      state.wake[i].life -= dt;
+      if (state.wake[i].life <= 0) state.wake.splice(i, 1);
+    }
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+      const p = state.particles[i];
+      p.life -= dt;
+      if (!p.ring) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.94; p.vy *= 0.94; }
+      if (p.life <= 0) state.particles.splice(i, 1);
+    }
+    for (let i = state.floaters.length - 1; i >= 0; i--) {
+      state.floaters[i].life -= dt;
+      if (state.floaters[i].life <= 0) state.floaters.splice(i, 1);
+    }
+    if (state.crashMark) {
+      state.crashMark.life -= dt;
+      if (state.crashMark.life <= 0) state.crashMark = null;
+    }
+    if (state.shake > 0) state.shake = Math.max(0, state.shake - dt * 28);
+
+    if (state.lives === 1 && state.status !== 'won' && Math.random() < dt * 4) {
+      state.particles.push({
+        x: state.boat.x, y: state.boat.y,
+        vx: (Math.random() - 0.5) * 0.25, vy: 0.45,
+        life: 0.7, maxLife: 0.7, size: 3.5, color: 'rgba(200,210,215,0.45)'
+      });
+    }
+
+    const a = state.anim;
+    if (!a) return;
+
+    a.t += dt;
+    const u = Math.min(1, a.t / a.dur);
+    const ease = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+
+    if (a.type === 'move') {
+      const nx = a.ax + (a.bx - a.ax) * ease;
+      const ny = a.ay + (a.by - a.ay) * ease;
+      const targetAngle = Math.atan2(-(a.by - a.ay), a.bx - a.ax);
+      state.boat.angle = lerpAngle(state.boat.angle, targetAngle, Math.min(1, dt * 14));
+      state.boat.x = nx; state.boat.y = ny;
+
+      if (Math.random() < (state.perfMode ? 0.3 : 0.68)) {
+        state.wake.push({ x: nx, y: ny, r: 4.3, life: 0.65, maxLife: 0.65 });
+      }
+
+      if (u >= 1) {
+        checkPickupsAndSonars(a.ax, a.ay, a.bx, a.by);
+        if (a.current && !a.drifting) {
+          const lv = state.level;
+          const dx = a.current.dx, dy = a.current.dy;
+          const fx = a.bx + dx, fy = a.by + dy;
+          SFX.drift();
+          spawnFloater(a.bx, a.by, `🌊 ${a.current.label}`, '#9beeff');
+          showToast(`🌊 Corriente marina: deriva de (${dx >= 0 ? '+' : ''}${dx}, ${dy >= 0 ? '+' : ''}${dy}) hacia (${fx}, ${fy})`, '', 2600);
+
+          const outOfBounds = fx < lv.minX || fx > lv.maxX || fy < lv.minY || fy > lv.maxY;
+          const driftHit = testSegmentObstacles(a.bx, a.by, fx, fy, lv.obstacles);
+          if (driftHit || outOfBounds) {
+            const hx = driftHit ? driftHit.hitX : Math.max(lv.minX, Math.min(lv.maxX, fx));
+            const hy = driftHit ? driftHit.hitY : Math.max(lv.minY, Math.min(lv.maxY, fy));
+            state.anim = {
+              type: 'crash', ax: a.bx, ay: a.by, bx: hx, by: hy,
+              returnX: lv.mode === 'plan' ? lv.start.x : a.ax,
+              returnY: lv.mode === 'plan' ? lv.start.y : a.ay,
+              intendedX: fx, intendedY: fy, t: 0, dur: 0.42,
+              reboundPhase: false, obstacle: driftHit ? driftHit.obstacle : null, isDriftCrash: true
+            };
+          } else {
+            state.anim = {
+              type: 'move', ax: a.bx, ay: a.by, bx: fx, by: fy,
+              t: 0, dur: 0.55, current: null, drifting: true
+            };
+          }
+          return;
+        }
+        const fx = a.bx, fy = a.by;
+        state.anim = null;
+        finishLeg(fx, fy);
+      }
+    } else if (a.type === 'crash') {
+      if (!a.reboundPhase) {
+        const nx = a.ax + (a.bx - a.ax) * u;
+        const ny = a.ay + (a.by - a.ay) * u;
+        const targetAngle = Math.atan2(-(a.by - a.ay), a.bx - a.ax);
+        state.boat.angle = lerpAngle(state.boat.angle, targetAngle, Math.min(1, dt * 16));
+        state.boat.x = nx; state.boat.y = ny;
+        if (Math.random() < 0.55) state.wake.push({ x: nx, y: ny, r: 4, life: 0.55, maxLife: 0.55 });
+
+        if (u >= 1) {
+          SFX.crash();
+          state.shake = 10;
+          state.crashMark = { x: a.bx, y: a.by, life: 2.6 };
+          spawnSplash(a.bx, a.by, 24);
+          spawnRing(a.bx, a.by, '#f06553');
+          spawnFloater(a.bx, a.by, '💥 −1 CASCO', '#ff998a');
+          state.lives = Math.max(0, state.lives - 1);
+
+          if (a.obstacle && a.obstacle.hidden) {
+            const idx = state.level.obstacles.indexOf(a.obstacle);
+            if (idx >= 0) state.revealedReefs.add(idx);
+          }
+          if (state.level.mode === 'plan' && state.planned[state.planStepIdx]) {
+            state.planned[state.planStepIdx].bad = true;
+          }
+
+          const cur = state.path[state.path.length - 1];
+          showToast(diagnoseCrash(a.intendedX, a.intendedY, cur, a.obstacle, a.isDriftCrash), 'bad', 4800);
+          updateHUD();
+
+          a.reboundPhase = true;
+          a.t = 0;
+          a.dur = 0.52;
+        }
+      } else {
+        const rx = a.returnX !== undefined ? a.returnX : a.ax;
+        const ry = a.returnY !== undefined ? a.returnY : a.ay;
+        state.boat.x = a.bx + (rx - a.bx) * ease;
+        state.boat.y = a.by + (ry - a.by) * ease;
+
+        if (u >= 1) {
+          state.boat.x = rx; state.boat.y = ry;
+          state.anim = null;
+          if (state.level.mode === 'plan') {
+            state.path = [{ x: state.level.start.x, y: state.level.start.y }];
+            state.movesUsed = 0;
+            state.hasPackage = !state.level.pickup;
+            state.bonusCollected = false;
+          }
+          if (state.lives <= 0) {
+            state.status = 'lost';
+            SFX.lose();
+            updateHUD();
+            setTimeout(() => openLoseModal('lives'), 420);
+          } else {
+            state.status = 'idle';
+            updateHUD();
+          }
+        }
+      }
+    }
+  }
+
+  function renderScene() {
+    ctx.save();
+    if (state.shake > 0.2) {
+      ctx.translate((Math.random() - 0.5) * state.shake, (Math.random() - 0.5) * state.shake);
+    }
+
+    drawSeaBackground(state.time);
+    drawCurrents(state.time);
+    drawCartesianGrid();
+    drawRoutePath();
+    drawWake();
+
+    const lv = state.level;
+    drawDock(lv.start.x, lv.start.y, 'start', state.time);
+    if (lv.pickup) drawDock(lv.pickup.x, lv.pickup.y, 'pickup', state.time);
+    drawDock(lv.goal.x, lv.goal.y, 'goal', state.time);
+    drawBonusBuoy(lv.bonus, state.time);
+    drawSymmetryBeacon(state.time);
+    drawSonars(state.time);
+    lv.obstacles.forEach((o, idx) => drawObstacle(o, idx, state.time));
+    drawPlannedRoute();
+    drawCurrentLabels();
+
+    drawBoat(state.time);
+    drawParticlesAndFloaters();
+    drawAmbienceOverlay(state.time);
+    ctx.restore();
+  }
+
+  /* =========================================================================
+     13. EVENTOS NATIVOS, TECLADO MÓVIL Y CONTROLES
+     ========================================================================= */
+  inX.addEventListener('input', () => sanitizeCoordInput(inX));
+  inY.addEventListener('input', () => sanitizeCoordInput(inY));
+
+  inX.addEventListener('focus', () => {
+    state.lastFocusedAxis = 'x';
+    updateSignCompactLabel();
+    if (isMobileLayout()) {
+      document.body.classList.add('kb-open');
+      setTimeout(syncViewportHeight, 120);
+    }
+  });
+  inY.addEventListener('focus', () => {
+    state.lastFocusedAxis = 'y';
+    updateSignCompactLabel();
+    if (isMobileLayout()) {
+      document.body.classList.add('kb-open');
+      setTimeout(syncViewportHeight, 120);
+    }
+  });
+
+  function onInputBlur() {
+    setTimeout(() => {
+      if (document.activeElement !== inX && document.activeElement !== inY) {
+        document.body.classList.remove('kb-open');
+        syncViewportHeight();
+      }
+    }, 100);
+  }
+  inX.addEventListener('blur', onInputBlur);
+  inY.addEventListener('blur', onInputBlur);
+
+  function toggleSign(inputEl) {
+    if (state.status !== 'idle') return;
+    SFX.tap();
+    const v = inputEl.value;
+    inputEl.value = v.startsWith('-') ? v.slice(1) : '-' + v;
+    updateInputButtons();
+    inputEl.focus();
+  }
+  $('btnSignX').addEventListener('click', () => toggleSign(inX));
+  $('btnSignY').addEventListener('click', () => toggleSign(inY));
+  elSignCompact.addEventListener('pointerdown', e => e.preventDefault()); // Mantener foco y teclado abierto al cambiar signo en móvil
+  elSignCompact.addEventListener('click', () => {
+    const target = state.lastFocusedAxis === 'y' ? inY : inX;
+    toggleSign(target);
+  });
+
+  inX.addEventListener('keydown', e => {
+    if (e.key === ',' || e.key === ' ' || e.key === 'ArrowRight') {
+      e.preventDefault(); inY.focus(); inY.select();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (isValidInt(inX.value) && !isValidInt(inY.value)) { inY.focus(); }
+      else if (state.level.mode === 'plan') { addPlannedPoint(); }
+      else { attemptSingleSail(); }
+    }
+  });
+
+  inY.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft' && inY.selectionStart === 0) {
+      e.preventDefault(); inX.focus();
+    } else if (e.key === 'Backspace' && inY.value === '') {
+      inX.focus();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (state.level.mode === 'plan') {
+        if (isValidInt(inX.value) && isValidInt(inY.value)) addPlannedPoint();
+        else if (state.planned.length > 0) launchPlan();
+      } else {
+        attemptSingleSail();
+      }
+    }
+  });
+
+  window.addEventListener('keydown', e => {
+    /* Las teclas siguen el orden visual: los diálogos están por encima de la
+       portada, así que se atiende primero al de arriba. Antes se salía en la
+       portada y Escape nunca llegaba al Atlas abierto sobre ella. */
+    const capa = capaVisible();
+    if (capa) {
+      const sobreBoton = document.activeElement && document.activeElement.tagName === 'BUTTON';
+      if (capa.id === 'ovResult') { if (e.key === 'Enter' && !sobreBoton) $('btnNextModal').click(); return; }
+      if (capa.id === 'ovHelp')   { if (e.key === 'Escape' || (e.key === 'Enter' && !sobreBoton)) $('ovHelp').classList.remove('on'); return; }
+      if (capa.id === 'ovAtlas')  { if (e.key === 'Escape') $('ovAtlas').classList.remove('on'); return; }
+      if (capa.id === 'ovSplash') {
+        if ((e.key === 'Enter' || e.key === ' ') && !sobreBoton) { e.preventDefault(); $('btnStart').click(); }
+        return;
+      }
+      return;
+    }
+    if (document.activeElement === inX || document.activeElement === inY) return;
+    if (/^\d$/.test(e.key) || (e.key === '-' && state.level.minX < 0)) {
+      inX.focus();
+    } else if (e.key === 'Enter' && state.level.mode === 'plan' && state.planned.length > 0) {
+      e.preventDefault(); launchPlan();
+    } else if (e.key.toLowerCase() === 'r') {
+      loadLevel(state.levelIdx, true);
+    } else if (e.key.toLowerCase() === 'a') {
+      openAtlas();
+    }
+  });
+
+  elBtnAdd.addEventListener('click', addPlannedPoint);
+  elBtnSail.addEventListener('click', attemptSingleSail);
+  elBtnClearPlan.addEventListener('click', () => {
+    if (state.status !== 'idle') return;
+    SFX.tap();
+    const d = state.level.draft;
+    state.planned = d ? d.map(p => ({ x: p[0], y: p[1], bad: false })) : [];
+    state.huecoPlan = null;
+    updateHUD();
+  });
+  $('btnReset').addEventListener('click', () => { SFX.tap(); loadLevel(state.levelIdx, true); });
+  $('btnHudReset').addEventListener('click', () => { SFX.tap(); loadLevel(state.levelIdx, true); });
+  $('btnRetryModal').addEventListener('click', () => { SFX.tap(); loadLevel(state.levelIdx, true); });
+
+  $('btnStart').addEventListener('click', () => {
+    SFX.tap();
+    $('ovSplash').classList.remove('on');
+    state.lastBannerWorld = state.world.id;
+    showWorldBanner(state.world);
+    if (!isMobileLayout()) inX.focus();
+  });
+  $('btnSplashAtlas').addEventListener('click', () => { SFX.tap(); openAtlas(); });
+  $('btnAtlas').addEventListener('click', () => { SFX.tap(); openAtlas(); });
+  $('btnMobAtlas').addEventListener('click', () => { SFX.tap(); openAtlas(); });
+  $('btnResAtlas').addEventListener('click', () => { SFX.tap(); $('ovResult').classList.remove('on'); openAtlas(); });
+  $('btnCloseAtlas').addEventListener('click', () => { SFX.tap(); $('ovAtlas').classList.remove('on'); });
+
+  $('btnHelp').addEventListener('click', () => { SFX.tap(); $('ovHelp').classList.add('on'); });
+  $('btnCloseHelp').addEventListener('click', () => { SFX.tap(); $('ovHelp').classList.remove('on'); });
+
+  elBtnSound.addEventListener('click', () => {
+    const on = SFX.toggle();
+    progress.sound = on; saveProgress();
+    elBtnSound.setAttribute('aria-pressed', String(on));
+    elBtnSound.textContent = on ? '🔊' : '🔇';
+    if (on) SFX.tap();
+  });
+
+  elBtnGuide.addEventListener('click', () => {
+    SFX.tap(); state.guideOn = !state.guideOn;
+    progress.guide = state.guideOn; saveProgress();
+    elBtnGuide.setAttribute('aria-pressed', String(state.guideOn));
+  });
+
+  elBtnPerf.addEventListener('click', () => {
+    SFX.tap(); state.perfMode = !state.perfMode;
+    progress.perfMode = state.perfMode; saveProgress();
+    elBtnPerf.setAttribute('aria-pressed', String(state.perfMode));
+    resizeCanvas();
+    showToast(state.perfMode ? 'Modo Aula activado (gráficos ligeros).' : 'Gráficos completos activados.', '', 2200);
+  });
+
+  $('btnFs').addEventListener('click', () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+    else document.exitFullscreen?.().catch(() => {});
+  });
+
+  window.addEventListener('resize', syncViewportHeight);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', syncViewportHeight);
+  }
+
+  /* =========================================================================
+     14. ARRANQUE E INICIALIZACIÓN DE PREFERENCIAS
+     ========================================================================= */
+  SFX.setEnabled(progress.sound !== false);
+  elBtnSound.setAttribute('aria-pressed', String(SFX.enabled));
+  elBtnSound.textContent = SFX.enabled ? '🔊' : '🔇';
+  elBtnGuide.setAttribute('aria-pressed', String(state.guideOn));
+  elBtnPerf.setAttribute('aria-pressed', String(state.perfMode));
+
+  initAmbience();
+  loadLevel(state.levelIdx, true);
+  /* La portada ya está abierta al cargar, así que el observador no la ve
+     abrirse: el foco entra aquí. */
+  if ($('ovSplash').classList.contains('on')) {
+    $('ovSplash').dataset.conFoco = '1';
+    setTimeout(() => $('btnStart').focus(), 60);
+  }
+  renderSplashStats();
+  syncViewportHeight();
+  requestAnimationFrame(step);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La senda del arquero — Didaxis Lab</title>
+<meta name="description" content="Juego de tiro con arco donde la flecha vuela según una función cuadrática. Coloca las constantes, libra los obstáculos y clava la diana. Veinte niveles para 8.º y 9.º. Funciona sin conexión.">
+<meta name="author" content="Héctor Enrique Banquez Buendía">
+<style>
+  :root{
+    --tinta:#0B1428; --marfil:#F6F1E6; --oro:#FFC94A; --oro-suave:#FFE39A;
+    --cian:#0BC0D8; --cian-hondo:#0E7888; --rojo:#E0504A; --verde:#3FAE7A;
+    --panel:#111A2E; --panel-alto:#1A2440; --borde:#2C3A5C; --gris:#9DA9C4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:#070C19;color:var(--marfil);line-height:1.5;
+    -webkit-font-smoothing:antialiased;min-height:100vh;
+  }
+  button{font:inherit;}
+  .sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+
+  /* ===================== PORTADA ===================== */
+  .portada{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:4px;padding:28px 20px;text-align:center;position:relative;overflow:hidden;}
+  .portada canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+  .portada > *{position:relative;z-index:1;}
+  .marca{display:inline-flex;align-items:center;gap:9px;margin-bottom:16px;opacity:.85;}
+  .marca svg{width:26px;height:26px;}
+  .marca span{font-weight:800;font-size:15px;letter-spacing:-.01em;}
+  .portada h1{font-size:clamp(38px,8vw,70px);font-weight:900;line-height:1.02;letter-spacing:-.03em;
+    text-shadow:0 6px 30px rgba(0,0,0,.6);}
+  .portada h1 em{font-style:normal;color:var(--oro);}
+  .portada .sub{font-size:clamp(15px,2.4vw,19px);color:#CBD6EC;max-width:46ch;margin-top:14px;}
+  .portada .ecu{font-size:clamp(17px,3vw,24px);font-weight:800;color:var(--cian);margin-top:18px;
+    font-variant-numeric:tabular-nums;letter-spacing:.02em;}
+  .btn-grande{margin-top:28px;background:linear-gradient(180deg,#FFD35E,#F0A32A);color:#2A1A00;
+    font-size:19px;font-weight:900;padding:17px 40px;border:0;border-radius:14px;cursor:pointer;
+    box-shadow:0 6px 0 #B9761A,0 14px 34px rgba(240,163,42,.34);transition:transform .12s,filter .12s;}
+  .btn-grande:hover{filter:brightness(1.07);} .btn-grande:active{transform:translateY(2px);box-shadow:0 4px 0 #B9761A;}
+  .portada .pie{margin-top:30px;font-size:12.5px;color:#64739A;}
+  .portada .pie a{color:#8795BA;}
+
+  /* ===================== MAPA ===================== */
+  .mapa{max-width:1000px;margin:0 auto;padding:26px 18px 50px;}
+  .mapa-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:22px;}
+  .mapa-top h2{font-size:26px;font-weight:900;letter-spacing:-.02em;}
+  .total{font-size:14px;color:var(--gris);font-variant-numeric:tabular-nums;}
+  .total b{color:var(--oro);font-size:19px;}
+  .acto-bloque{margin-bottom:26px;}
+  .acto-cab{display:flex;align-items:baseline;gap:11px;margin-bottom:11px;flex-wrap:wrap;}
+  .acto-num{font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--cian);}
+  .acto-tit{font-size:19px;font-weight:800;}
+  .acto-desc{font-size:13.5px;color:var(--gris);}
+  .niveles{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;}
+  @media (max-width:640px){ .niveles{grid-template-columns:repeat(2,1fr);} }
+  .tarjeta{position:relative;background:var(--panel);border:1px solid var(--borde);border-radius:13px;
+    padding:13px 13px 11px;cursor:pointer;text-align:left;color:inherit;min-height:104px;
+    display:flex;flex-direction:column;justify-content:space-between;gap:7px;transition:.15s;}
+  .tarjeta:hover{border-color:var(--cian-hondo);transform:translateY(-2px);background:var(--panel-alto);}
+  .tarjeta .n{font-size:11px;font-weight:800;color:var(--gris);letter-spacing:.08em;}
+  .tarjeta .t{font-size:14.5px;font-weight:700;line-height:1.25;}
+  .tarjeta .e{display:flex;gap:3px;}
+  .tarjeta .e svg{width:15px;height:15px;}
+  .tarjeta.hecho{border-color:rgba(255,201,74,.45);}
+
+  /* ===================== PARTIDA ===================== */
+/* La columna derecha se mide por lo que de verdad necesita. Medido en el
+   propio archivo, estrechando el panel hasta que la ecuación se parte: el acto
+   1 aguanta hasta 348 px, el 3 hasta 352 y el 4, con sus tres casillas, pide
+   414. Ese es el mínimo, porque partir la ecuación en dos líneas es lo único
+   que no puede pasar aquí. Lo demás del ancho se lo queda la escena.
+
+   La fila es «auto», no «1fr»: así mide lo que mide la escena y el panel se
+   iguala a ella, en vez de estirarse hasta el borde de la ventana. */
+  .juego{margin:0 auto;padding:12px;display:grid;
+    grid-template-columns:minmax(0,1fr) clamp(416px,27vw,448px);
+    grid-template-rows:auto;gap:12px;align-items:stretch;align-content:center;
+    min-height:100vh;min-height:100dvh;}
+  @media (max-width:980px){
+    .juego{grid-template-columns:minmax(0,1fr);min-height:0;align-items:start;
+      align-content:start;}
+  }
+  /* La escena la dimensiona ajustarLienzo() por la altura que queda libre, y
+     se centra en su celda. La proporción vive aquí para que el primer pintado
+     y el teléfono no dependan de ese cálculo. */
+  .escena{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 18px 46px rgba(0,0,0,.55);
+    background:#0D1430;width:100%;aspect-ratio:1000/600;}
+  .escena canvas{display:block;width:100%;height:100%;}
+  .hud{position:absolute;inset:0;pointer-events:none;padding:11px 13px;
+    display:flex;flex-direction:column;justify-content:flex-start;gap:8px;}
+  .hud-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .hud-izq{display:flex;align-items:center;gap:10px;}
+  .volver{pointer-events:auto;background:rgba(10,16,36,.72);border:1px solid rgba(255,255,255,.15);
+    color:var(--marfil);border-radius:9px;min-width:44px;min-height:44px;cursor:pointer;font-size:17px;
+    display:inline-flex;align-items:center;justify-content:center;}
+  .volver:hover{background:rgba(11,192,216,.22);border-color:var(--cian);}
+  .acto{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--oro-suave);text-shadow:0 2px 8px rgba(0,0,0,.85);}
+  .nivel-nom{font-size:18px;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.9);}
+  .estrellas{display:flex;gap:4px;}
+  .estrellas svg{width:21px;height:21px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.75));}
+  .hud-hueco{flex:1;}
+  .aviso{max-width:min(620px,92%);text-align:center;pointer-events:auto;
+    background:rgba(9,15,33,.93);border:1px solid var(--borde);border-radius:11px;
+    padding:10px 15px;font-size:14px;opacity:0;transform:translateY(9px);
+    transition:opacity .26s,transform .26s;}
+  .aviso.visible{opacity:1;transform:none;}
+  .aviso.ok{border-color:var(--verde);background:rgba(14,44,32,.95);}
+  .aviso.fallo{border-color:var(--rojo);background:rgba(52,19,19,.95);}
+  .aviso b{color:var(--oro);}
+  .aviso .sig{margin-top:9px;background:var(--verde);color:#06241A;border:0;border-radius:9px;
+    padding:9px 18px;font-weight:800;font-size:14px;cursor:pointer;min-height:40px;}
+
+  .panel{background:var(--panel);border:1px solid var(--borde);border-radius:14px;
+    padding:15px 16px;box-shadow:0 14px 34px rgba(0,0,0,.4);
+    display:flex;flex-direction:column;min-height:0;}
+  .consigna{font-size:14px;margin-bottom:10px;}
+  .pista{font-size:13px;color:var(--oro-suave);background:rgba(255,201,74,.09);
+    border-left:3px solid var(--oro);border-radius:0 7px 7px 0;padding:8px 11px;margin-bottom:11px;}
+  .pista[hidden]{display:none;}
+  /* La ecuación se queda con el alto sobrante y se centra en él: es lo que el
+     estudiante mira y toca, así que es lo que merece el espacio libre. */
+  .ecu{background:var(--panel-alto);border:1px solid var(--borde);border-radius:11px;
+    padding:14px 11px;margin-bottom:11px;text-align:center;
+    flex:0 1 auto;display:flex;flex-direction:column;justify-content:center;gap:4px;
+    max-height:none;}
+  @media (max-width:980px){ .ecu{display:block;} }
+  /* En pantalla de ordenador la ecuación se agranda: son las casillas que el
+     estudiante escribe y pulsa decenas de veces por nivel, y el alto sobra. */
+  /* Dos grupos: arriba el problema (consigna y ecuación), abajo los mandos.
+     El alto que sobra queda en un solo hueco entre ellos, no repartido en
+     cuatro, que era lo que hacía que nada pareciera agrupado. */
+  @media (min-width:981px){
+    .ecu{flex:0 0 auto;padding:20px 12px;}
+    /* Las casillas crecen de alto, no de ancho: a lo ancho, el acto 4 lleva
+       tres y la ecuación se partiría en dos líneas. */
+    .campo input{height:56px;font-size:20px;}
+    .campo .et{font-size:11px;}
+    .pasos button{width:38px;height:38px;}
+    .traductor{font-size:13px;margin-top:13px;}
+    .consigna{font-size:15px;line-height:1.5;}
+    .acciones{margin-top:auto;}
+  }
+  .ecu-linea{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;
+    font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;}
+  .sup{font-size:12px;vertical-align:super;}
+  .campo{display:inline-flex;flex-direction:column;align-items:center;gap:3px;margin:0 1px;}
+  .campo input{width:72px;height:44px;text-align:center;font:inherit;font-size:18px;font-weight:800;
+    color:var(--oro);background:#0A1122;border:2px solid var(--cian-hondo);border-radius:9px;
+    font-variant-numeric:tabular-nums;}
+  .campo input:focus{outline:none;border-color:var(--cian);box-shadow:0 0 0 3px rgba(11,192,216,.22);}
+  .campo input:disabled{color:var(--gris);border-color:var(--borde);background:#0E1526;}
+  .campo input.mal{border-color:#E0504A;color:#FFB3AE;}
+  .campo input.mal:focus{box-shadow:0 0 0 3px rgba(224,80,74,.26);}
+  .aviso-campo{margin:8px 0 0;font-size:12px;font-weight:600;color:#FFB3AE;text-align:center;}
+  .campo .et{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--gris);}
+  .pasos{display:flex;gap:4px;}
+  .pasos button{width:36px;height:36px;font-size:16px;font-weight:800;color:var(--marfil);
+    background:#17213A;border:1px solid var(--borde);border-radius:7px;cursor:pointer;}
+  .pasos button:hover{background:#1F2C4C;border-color:var(--cian-hondo);}
+  .traductor{font-size:12px;color:var(--gris);margin-top:10px;font-variant-numeric:tabular-nums;}
+  .tiros{margin-top:11px;display:none;flex-direction:column;min-height:0;}
+  .tiros h3{font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--gris);margin-bottom:6px;}
+  .tiros ol{list-style:none;display:flex;flex-direction:column;gap:5px;overflow:hidden;}
+  .tiros li{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    font-size:12.5px;background:var(--panel-alto);border:1px solid var(--borde);
+    border-radius:8px;padding:7px 10px;font-variant-numeric:tabular-nums;}
+  .tiros .val{color:var(--marfil);font-weight:700;white-space:nowrap;}
+  .tiros .val i{color:var(--gris);font-style:normal;font-weight:700;
+    display:inline-block;min-width:1.2em;text-align:right;margin-right:7px;
+    border-right:1px solid var(--borde);padding-right:7px;}
+  .tiros .res{color:var(--oro-suave);text-align:right;}
+  .tiros li.ok{border-color:rgba(63,174,122,.55);}
+  .tiros li.ok .res{color:#7FD3A8;}
+  .tiros .vacio{font-size:12.5px;color:var(--gris);line-height:1.5;}
+  @media (min-width:981px){ .tiros{display:flex;flex:1 1 auto;} }
+  .traductor b{color:var(--cian);font-weight:700;}
+  .acciones{display:flex;gap:8px;}
+  .btn{flex:1;font-size:15px;font-weight:800;cursor:pointer;min-height:50px;border-radius:11px;border:0;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,filter .12s;}
+  .btn:active{transform:translateY(1px);}
+  .btn-tirar{background:linear-gradient(180deg,#FFD35E,#F0A32A);color:#2A1A00;
+    box-shadow:0 5px 0 #B9761A,0 10px 20px rgba(240,163,42,.28);}
+  .btn-tirar:hover{filter:brightness(1.07);}
+  .btn-tirar:disabled{filter:grayscale(.75);cursor:default;box-shadow:0 5px 0 #4A4A4A;}
+  .btn-visor{flex:0 0 auto;padding:0 14px;background:#17213A;color:var(--marfil);border:1px solid var(--borde);}
+  .btn-visor[aria-pressed="true"]{background:rgba(11,192,216,.17);border-color:var(--cian);color:var(--cian);}
+  .btn-visor:disabled{opacity:.42;cursor:default;}
+  .btn svg{width:18px;height:18px;}
+  .barra{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:11px;
+    padding-top:10px;border-top:1px solid var(--borde);font-size:12px;color:var(--gris);
+    font-variant-numeric:tabular-nums;}
+  .barra b{color:var(--marfil);}
+  .nav{display:flex;gap:5px;}
+  .nav button{font-size:12.5px;font-weight:700;color:var(--gris);background:#17213A;
+    border:1px solid var(--borde);border-radius:8px;padding:0 12px;cursor:pointer;min-height:40px;}
+  .nav button:hover:not(:disabled){color:var(--marfil);border-color:var(--cian-hondo);}
+  .nav button:disabled{opacity:.35;cursor:default;}
+  /* ---------- Mandos de la escena ---------- */
+  .mandos{display:flex;gap:6px;pointer-events:auto;
+    position:absolute;left:14px;bottom:14px;z-index:4;}
+  /* En el teléfono el lienzo mide unos 230 px: los mandos bajan a su propia
+     fila para no taparle al arquero ni a la regla de distancias. */
+  @media (max-width:980px){
+    .mandos{position:static;justify-content:center;margin:9px 0 1px;gap:10px;}
+    .mandos .icono{width:46px;height:46px;background:var(--panel);border-color:var(--borde);}
+    .mandos .icono svg{width:20px;height:20px;}
+  }
+  .icono{background:rgba(10,16,36,.72);border:1px solid rgba(255,255,255,.15);
+    color:var(--marfil);border-radius:9px;width:40px;height:40px;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;transition:.15s;}
+  .icono:hover{background:rgba(11,192,216,.22);border-color:var(--cian);}
+  .icono svg{width:18px;height:18px;}
+  .icono[aria-pressed="false"]{opacity:.55;}
+  .hud-pie{display:flex;align-items:flex-end;justify-content:center;}
+  .col-escena{position:relative;min-width:0;margin:auto;max-width:100%;}
+  @media (max-width:980px){ .col-escena{margin:0;} }
+
+  /* ---------- Ayuda ---------- */
+  .velo{position:fixed;inset:0;background:rgba(4,8,18,.82);z-index:50;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+    backdrop-filter:blur(3px);}
+  .modal{background:var(--panel);border:1px solid var(--borde);border-radius:16px;
+    max-width:560px;width:100%;max-height:92vh;display:flex;flex-direction:column;
+    box-shadow:0 24px 60px rgba(0,0,0,.6);overflow:hidden;}
+  .modal-cab{padding:20px 22px 12px;}
+  .modal h2{font-size:21px;font-weight:900;margin-bottom:3px;}
+  .modal .sub{font-size:13px;color:var(--gris);}
+  .modal-cuerpo{padding:0 22px;overflow-y:auto;scrollbar-width:thin;
+    scrollbar-color:var(--borde) transparent;}
+  .modal-cuerpo::-webkit-scrollbar{width:6px;}
+  .modal-cuerpo::-webkit-scrollbar-thumb{background:var(--borde);border-radius:3px;}
+  .regla{display:flex;gap:11px;align-items:flex-start;margin-bottom:12px;}
+  .regla .ico{flex:0 0 auto;width:32px;height:32px;border-radius:9px;
+    background:rgba(11,192,216,.14);border:1px solid rgba(11,192,216,.3);
+    display:flex;align-items:center;justify-content:center;color:var(--cian);}
+  .regla .ico svg{width:16px;height:16px;}
+  .regla h3{font-size:14.5px;font-weight:800;margin-bottom:1px;}
+  .regla p{font-size:13px;color:var(--gris);line-height:1.45;}
+  .regla p b{color:var(--oro-suave);font-weight:700;}
+  .modal-pie{padding:12px 22px 18px;border-top:1px solid var(--borde);
+    background:var(--panel);flex:0 0 auto;}
+  .modal .cerrar{width:100%;background:var(--panel-alto);color:var(--marfil);
+    border:1px solid var(--borde);border-radius:11px;min-height:48px;font-weight:800;
+    font-size:15px;cursor:pointer;}
+  .modal .cerrar:hover{border-color:var(--cian);background:rgba(11,192,216,.14);}
+  @media (max-width:520px){
+    .modal-cab{padding:16px 17px 10px;} .modal-cuerpo{padding:0 17px;}
+    .modal-pie{padding:10px 17px 14px;} .velo{padding:12px;}
+  }
+
+  /* ---------- Mapa ---------- */
+  .acto-estrellas{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--oro);
+    font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .tarjeta.siguiente{border-color:var(--cian);box-shadow:0 0 0 1px var(--cian),0 8px 22px rgba(11,192,216,.22);}
+  .tarjeta .marca-sig{position:absolute;top:9px;right:9px;font-size:9.5px;font-weight:800;
+    letter-spacing:.09em;text-transform:uppercase;color:#06242B;background:var(--cian);
+    border-radius:999px;padding:2px 7px;}
+  .mapa-acciones{display:flex;gap:9px;flex-wrap:wrap;align-items:center;}
+  .btn-cont{background:linear-gradient(180deg,#FFD35E,#F0A32A);color:#2A1A00;border:0;
+    border-radius:11px;padding:0 22px;min-height:48px;font-size:15px;font-weight:900;cursor:pointer;
+    box-shadow:0 4px 0 #B9761A;}
+  .btn-cont:hover{filter:brightness(1.07);}
+
+  /* ---------- Pie del panel ---------- */
+  .barra-2{display:flex;gap:7px;margin-top:9px;}
+  .barra-2 button{flex:1;font-size:12.5px;font-weight:700;color:var(--gris);background:#17213A;
+    border:1px solid var(--borde);border-radius:9px;min-height:42px;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+  .barra-2 button:hover:not(:disabled){color:var(--marfil);border-color:var(--cian-hondo);}
+  .barra-2 button:disabled{opacity:.33;cursor:default;}
+  .barra-2 svg{width:14px;height:14px;}
+
+  .portada-acciones{display:flex;gap:11px;flex-wrap:wrap;justify-content:center;margin-top:28px;}
+  .btn-sec{background:rgba(246,241,230,.08);color:var(--marfil);border:1px solid rgba(246,241,230,.22);
+    border-radius:14px;padding:17px 26px;font-size:16px;font-weight:800;cursor:pointer;}
+  .btn-sec:hover{background:rgba(11,192,216,.16);border-color:var(--cian);}
+  .portada-mandos{position:absolute;top:16px;right:16px;z-index:2;display:flex;gap:7px;}
+
+  [hidden]{display:none !important;}
+  @media (prefers-reduced-motion:reduce){ *{transition:none !important;} }
+</style>
+</head>
+<body>
+
+<!-- ===================== PORTADA ===================== -->
+<section class="portada" id="vPortada">
+  <canvas id="fondoPortada" aria-hidden="true"></canvas>
+  <div class="portada-mandos">
+    <button class="icono" id="btnAyuda3" title="Cómo se juega" aria-label="Cómo se juega">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.8 2.3-2.8 4"/><path d="M12 17.5h.01"/></svg>
+    </button>
+  </div>
+  <span class="marca">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <line x1="22" y1="22" x2="78" y2="78" stroke="#F6F1E6" stroke-width="12" stroke-linecap="round"/>
+      <line x1="78" y1="22" x2="22" y2="78" stroke="#F6F1E6" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+      <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+    </svg><span>Didaxis Lab</span>
+  </span>
+  <h1>La senda<br>del <em>arquero</em></h1>
+  <p class="sub">Tu flecha vuela por una parábola. Coloca las constantes, libra lo que se interponga y clava la diana.</p>
+  <p class="ecu">y = a(x − h)² + k</p>
+  <div class="portada-acciones">
+    <button class="btn-grande" id="btnEmpezar" style="margin-top:0;">Empezar la senda</button>
+    <button class="btn-sec" id="btnSeguirPartida" hidden>Seguir donde lo dejé</button>
+  </div>
+  <p class="pie">20 niveles · 4 actos · funciona sin conexión<br>Didaxis Lab · CC BY 4.0</p>
+</section>
+
+<!-- ===================== MAPA ===================== -->
+<section class="mapa" id="vMapa" hidden>
+  <div class="mapa-top">
+    <div>
+      <h2>La senda</h2>
+      <span class="total"><b id="totEstrellas">0</b> de 60 estrellas</span>
+    </div>
+    <div class="mapa-acciones">
+      <button class="icono" id="btnAyuda2" title="Cómo se juega" aria-label="Cómo se juega">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.8 2.3-2.8 4"/><path d="M12 17.5h.01"/></svg>
+      </button>
+      <button class="btn-cont" id="btnContinuar">Continuar</button>
+    </div>
+  </div>
+  <div id="mapaActos"></div>
+  <p id="mapaRemate" style="text-align:center;margin-top:20px;font-size:15px;color:var(--oro-suave);"></p>
+  <p style="text-align:center;margin-top:26px;">
+    <button class="nav" id="btnReiniciarTodo" style="font-size:12.5px;color:#6D7A99;background:none;border:0;cursor:pointer;min-height:44px;">Reiniciar todo el progreso</button>
+  </p>
+</section>
+
+<!-- ===================== PARTIDA ===================== -->
+<section class="juego" id="vJuego" hidden>
+  <div class="col-escena">
+  <div class="escena">
+    <canvas id="lienzo" width="1000" height="600" aria-label="Escenario del tiro"></canvas>
+    <div class="hud">
+      <div class="hud-top">
+        <div class="hud-izq">
+          <button class="volver" id="btnMapa" title="Volver a la senda" aria-label="Volver a la senda">◀</button>
+          <div>
+            <div class="acto" id="hudActo"></div>
+            <div class="nivel-nom" id="hudNivel"></div>
+          </div>
+        </div>
+        <div class="estrellas" id="hudEstrellas" aria-label="Estrellas del nivel"></div>
+      </div>
+      <div class="hud-hueco"></div>
+      <div class="hud-pie">
+        <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mandos" id="mandos">
+    <button class="icono" id="btnAyuda" title="Cómo se juega" aria-label="Cómo se juega">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.8 2.3-2.8 4"/><path d="M12 17.5h.01"/></svg>
+    </button>
+    <button class="icono" id="btnSonido" title="Silenciar" aria-pressed="true" aria-label="Sonido">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path id="ondaSon" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path id="cruzSon" d="M22 9l-6 6M16 9l6 6" style="display:none"/></svg>
+    </button>
+    <button class="icono" id="btnPantalla" title="Pantalla completa" aria-label="Pantalla completa">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    </button>
+  </div>
+  </div>
+  <div class="panel">
+    <p class="consigna" id="consigna"></p>
+    <div class="ecu">
+      <div class="ecu-linea" id="ecuLinea"></div>
+      <div class="traductor" id="traductor"></div>
+      <p class="aviso-campo" id="avisoCampo" role="status" hidden></p>
+    </div>
+    <div class="tiros" id="tiros" aria-live="polite">
+      <h3>Tus tiros en este nivel</h3>
+      <div id="tirosCuerpo"></div>
+    </div>
+    <p class="pista" id="pista" hidden></p>
+    <div class="acciones">
+      <button class="btn btn-tirar" id="btnTirar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M3 21L21 3M21 3h-6M21 3v6"/></svg>
+        <span>Disparar</span>
+      </button>
+      <button class="btn btn-visor" id="btnVisor" aria-pressed="false" title="Enseña la trayectoria antes de disparar, pero el tiro deja de ser limpio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        <span id="txtVisor">Visor · 3</span>
+      </button>
+    </div>
+    <div class="barra">
+      <span>Nivel <b id="mNivel">1</b> de 20 · tiros: <b id="mDisparos">0</b></span>
+      <span id="mEstrNivel"></span>
+    </div>
+    <div class="barra-2">
+      <button id="btnAnt" title="Nivel anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>Anterior</span>
+      </button>
+      <button id="btnLimpiar" title="Borra los tiros anteriores y empieza el nivel de cero">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>
+        <span>Reiniciar</span>
+      </button>
+      <button id="btnSig" title="Nivel siguiente">
+        <span>Siguiente</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+<div class="velo" id="vAyuda" hidden role="dialog" aria-modal="true" aria-labelledby="tAyuda">
+  <div class="modal">
+    <div class="modal-cab">
+      <h2 id="tAyuda">Cómo se juega</h2>
+      <p class="sub">Tu flecha vuela por una parábola. Tú escribes sus constantes.</p>
+    </div>
+    <div class="modal-cuerpo">
+      <div class="regla">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 21L21 3M21 3h-6M21 3v6"/></svg></span>
+        <div><h3>Escribe y dispara</h3>
+        <p>Cambia las casillas con <b>−</b> y <b>+</b> y pulsa <b>Disparar</b>. Fallar no cuesta nada. Rozar justo el borde de un techo o un muro cuenta como pasar.</p></div>
+      </div>
+      <div class="regla">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span>
+        <div><h3>El visor, con cuentagotas</h3>
+        <p>Enseña el vuelo <b>solo hasta el punto más alto</b>, nunca dónde cae, y un instante. Tienes <b>tres por nivel</b>.</p></div>
+      </div>
+      <div class="regla">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.3l6.6-.9z" fill="currentColor"/></svg></span>
+        <div><h3>Las tres estrellas</h3>
+        <p><b>3</b> al primer tiro y sin visor. <b>2</b> con visor o al segundo. <b>1</b> si cuesta más. Puedes volver y mejorar.</p></div>
+      </div>
+      <div class="regla">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 17c4-9 14-9 18 0" stroke-dasharray="3 3"/><circle cx="3" cy="17" r="1.6" fill="currentColor"/></svg></span>
+        <div><h3>Los fallos se quedan dibujados</h3>
+        <p>Míralos juntos: enseñan cómo mueve la curva la constante que cambiaste. <b>Reiniciar</b> los borra.</p></div>
+      </div>
+      <div class="regla">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"/></svg></span>
+        <div><h3>La línea de abajo</h3>
+        <p>Es <b>la misma parábola escrita de otra forma</b>. No hace falta para jugar; enseña que las tres formas son la misma curva.</p></div>
+      </div>
+    </div>
+    <div class="modal-pie">
+      <button class="cerrar" id="btnCerrarAyuda">Entendido</button>
+    </div>
+  </div>
+</div>
+<div class="sr" id="srLive" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+const NIVELES = [
+  {acto:1,nombre:"El primer tiro",forma:"vertice",arquero:{x:0,y:0},mundo:{w:22,h:13},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:14,paso:0.5,ini:3}],dianas:[{x:14,y:0,r:0.9}],muros:[],doseles:[],aros:[],consigna:"La flecha sale del suelo y tiene que caer en la diana. Coloca el vértice donde creas que debe ir.",pista:"Si sale del suelo y vuelve al suelo, el vértice queda justo a la mitad: la parábola es simétrica."},
+  {acto:1,nombre:"Más lejos",forma:"vertice",arquero:{x:0,y:0},mundo:{w:26,h:13},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:14,paso:0.5,ini:3}],dianas:[{x:20,y:0,r:0.9}],muros:[],doseles:[],aros:[],consigna:"La misma idea, pero la diana está más lejos. ¿Dónde va ahora el vértice?",pista:"La flecha cae siempre en 2h. Si quieres que caiga en 20, haz la cuenta al revés."},
+  {acto:1,nombre:"Bajo el dosel",forma:"vertice",arquero:{x:0,y:0},mundo:{w:20,h:13},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:14,paso:0.5,ini:7}],dianas:[{x:12,y:0,r:0.9}],muros:[],doseles:[{x0:0.0,x1:30.0,y:5}],aros:[],consigna:"Las ramas no dejan pasar por encima de los 5 m. La distancia la manda la diana; la altura, el dosel.",pista:"h ya está decidida por la diana. Ahora baja k hasta que la flecha quepa debajo de las ramas."},
+  {acto:1,nombre:"Rasante",forma:"vertice",arquero:{x:0,y:0},mundo:{w:24,h:13},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:14,paso:0.5,ini:6}],dianas:[{x:18,y:0,r:0.9}],muros:[],doseles:[{x0:0.0,x1:30.0,y:4}],aros:[],consigna:"Dosel más bajo y diana más lejos: el tiro tiene que ir muy tenso.",pista:"Con h = 9 la flecha cae en 18. Con el dosel a 4 m, a k le queda muy poco margen."},
+  {acto:1,nombre:"El aro del claro",forma:"vertice",arquero:{x:0,y:0},mundo:{w:22,h:13},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:14,paso:0.5,ini:3}],dianas:[{x:16,y:0,r:0.9}],muros:[],doseles:[],aros:[{x:8,y:6,r:1.1}],consigna:"Hay que pasar por el aro y caer en la diana. Fíjate dónde está el aro.",pista:"El aro está justo en la mitad del camino, que es donde va el vértice. Así que el aro te dice h y k a la vez."},
+  {acto:2,nombre:"La empalizada",forma:"vertice",arquero:{x:0,y:0},mundo:{w:22,h:13},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:14,paso:0.5,ini:3}],dianas:[{x:16,y:0,r:0.9}],muros:[{x:7,y0:0.0,y1:5,ancho:0.6}],doseles:[],aros:[],consigna:"Una empalizada de 5 m se interpone. Pásale por encima y clava la flecha en la diana.",pista:"La diana fija h = 8. Sube k hasta que la curva libre los 5 m del muro."},
+  {acto:2,nombre:"Torre de vigía",forma:"vertice",arquero:{x:0,y:0},mundo:{w:30,h:15},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:15,paso:0.5,ini:3}],dianas:[{x:24,y:0,r:0.9}],muros:[{x:10,y0:0.0,y1:7,ancho:0.6}],doseles:[],aros:[],consigna:"Muro más alto y diana más lejos. El vértice tiene que ir muy arriba.",pista:"h = 12 por la diana. Para librar 7 m en x = 10, k tiene que pasar de 7."},
+  {acto:2,nombre:"Dos murallas",forma:"vertice",arquero:{x:0,y:0},mundo:{w:26,h:15},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:15,paso:0.5,ini:3}],dianas:[{x:20,y:0,r:0.9}],muros:[{x:6,y0:0.0,y1:4,ancho:0.6},{x:14,y0:0.0,y1:6,ancho:0.6}],doseles:[],aros:[],consigna:"Dos muros, uno bajo y otro alto. Solo el segundo decide cuánto hay que subir.",pista:"Prueba primero con el muro alto: si libras ese, el bajo cae por su propio peso."},
+  {acto:2,nombre:"La tronera",forma:"vertice",arquero:{x:0,y:0},mundo:{w:28,h:16},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:16,paso:0.5,ini:3}],dianas:[{x:22,y:0,r:0.9}],muros:[{x:10,y0:0.0,y1:5,ancho:0.6},{x:10,y0:8,y1:16,ancho:0.6}],doseles:[],aros:[],consigna:"Hay un hueco en la muralla, entre los 5 y los 8 m. La flecha tiene que pasar justo por ahí.",pista:"Ahora k tiene techo y suelo: ni muy baja ni muy alta. Con h = 11, la altura en el muro es casi k."},
+  {acto:2,nombre:"Entre el muro y el cielo",forma:"vertice",arquero:{x:0,y:0},mundo:{w:26,h:15},campos:[{k:"h",et:"h · distancia",min:1,max:24,paso:0.5,ini:5},{k:"k",et:"k · altura",min:0.5,max:15,paso:0.5,ini:3}],dianas:[{x:20,y:0,r:0.9}],muros:[{x:8,y0:0.0,y1:6,ancho:0.6}],doseles:[{x0:0.0,x1:30.0,y:9}],aros:[],consigna:"Por encima del muro, por debajo del dosel. El margen es estrecho.",pista:"Primero h por la diana. Después busca una k que esté por encima de 6 en el muro y por debajo de 9 en el vértice."},
+  {acto:3,nombre:"Dónde toca el suelo",forma:"raices",arquero:{x:0,y:0},mundo:{w:24,h:13},campos:[{k:"r",et:"r · dónde cae",min:2,max:28,paso:0.5,ini:10},{k:"a",et:"a · tensión",min:-0.15,max:-0.01,paso:0.01,ini:-0.1}],dianas:[{x:15,y:0,r:0.9}],muros:[],doseles:[],aros:[],consigna:"Ahora escribes las raíces: los dos puntos donde la flecha toca el suelo. El primero es tu propio pie. Prueba varias tensiones y fíjate en algo: cambian la altura del vuelo, no dónde cae.",pista:"La flecha sale de 0 y cae en r. Si quieres que caiga en la diana, r es exactamente eso."},
+  {acto:3,nombre:"Vuelo tenso",forma:"raices",arquero:{x:0,y:0},mundo:{w:24,h:9},campos:[{k:"r",et:"r · dónde cae",min:2,max:28,paso:0.5,ini:10},{k:"a",et:"a · tensión",min:-0.15,max:-0.01,paso:0.01,ini:-0.1}],dianas:[{x:18,y:0,r:0.9}],muros:[{x:3,y0:0.0,y1:1,ancho:0.6}],doseles:[{x0:0.0,x1:30.0,y:4}],aros:[],consigna:"Una roca de 1 m justo delante y el dosel a 4 m. El tiro no puede ir ni muy raso ni muy alto.",pista:"r ya la sabes por la diana. La roca descarta las tensiones suaves; el dosel, las fuertes. Entre las dos queda un grupo pequeño."},
+  {acto:3,nombre:"El aro del vado",forma:"raices",arquero:{x:0,y:0},mundo:{w:26,h:13},campos:[{k:"r",et:"r · dónde cae",min:2,max:28,paso:0.5,ini:10},{k:"a",et:"a · tensión",min:-0.15,max:-0.01,paso:0.01,ini:-0.1}],dianas:[{x:20,y:0,r:0.9}],muros:[],doseles:[],aros:[{x:10,y:5,r:1.1}],consigna:"El aro está en la mitad del vuelo. Elige la raíz por la diana y la tensión por el aro.",pista:"Con r = 20 el punto más alto cae en x = 10, justo donde está el aro. Busca una a que lo deje cerca de 5 m."},
+  {acto:3,nombre:"Salto de roca",forma:"raices",arquero:{x:0,y:0},mundo:{w:22,h:10},campos:[{k:"r",et:"r · dónde cae",min:2,max:28,paso:0.5,ini:10},{k:"a",et:"a · tensión",min:-0.15,max:-0.01,paso:0.01,ini:-0.1}],dianas:[{x:16,y:0,r:0.9}],muros:[{x:4,y0:0.0,y1:3,ancho:0.6}],doseles:[{x0:0.0,x1:30.0,y:6}],aros:[],consigna:"Una roca de 3 m muy cerca, y el dosel a 6 m. Hay que subir rápido pero no demasiado.",pista:"Prueba tensiones fuertes: la roca obliga a subir pronto y el dosel marca el límite. Busca una que cumpla las dos cosas."},
+  {acto:3,nombre:"El paso largo",forma:"raices",arquero:{x:0,y:0},mundo:{w:32,h:10},campos:[{k:"r",et:"r · dónde cae",min:2,max:28,paso:0.5,ini:10},{k:"a",et:"a · tensión",min:-0.15,max:-0.01,paso:0.01,ini:-0.1}],dianas:[{x:26,y:0,r:0.9}],muros:[{x:20,y0:0.0,y1:2,ancho:0.6}],doseles:[{x0:0.0,x1:30.0,y:6}],aros:[],consigna:"El vuelo más largo del acto: un muro bajo al final y el techo a 6 m. Toca ir lejos y raso.",pista:"Primero r por la diana. Después busca una tensión suave que todavía pase por encima del muro en x = 20."},
+  {acto:4,nombre:"Desde la torre",forma:"general",arquero:{x:0,y:6},mundo:{w:26,h:16},campos:[{k:"a",et:"a",min:-0.2,max:-0.01,paso:0.01,ini:-0.1},{k:"b",et:"b",min:0.0,max:3.0,paso:0.1,ini:0.5},{k:"c",et:"c · tu altura",min:6,max:6,paso:0,ini:6,fijo:true}],dianas:[{x:20,y:0,r:0.9}],muros:[],doseles:[],aros:[],consigna:"Disparas desde 6 m de altura, así que c ya está puesto: es tu altura. Ajusta a y b.",pista:"El truco de la mitad del camino ya no sirve. Prueba a = −0,05 y sube b hasta llegar a la diana."},
+  {acto:4,nombre:"Techo de nubes",forma:"general",arquero:{x:0,y:8},mundo:{w:26,h:18},campos:[{k:"a",et:"a",min:-0.2,max:-0.01,paso:0.01,ini:-0.1},{k:"b",et:"b",min:0.0,max:3.0,paso:0.1,ini:0.5},{k:"c",et:"c · tu altura",min:8,max:8,paso:0,ini:8,fijo:true}],dianas:[{x:20,y:0,r:0.9}],muros:[],doseles:[{x0:0.0,x1:30.0,y:12}],aros:[],consigna:"Desde más alto todavía, pero con un techo a 12 m. Hay varias formas de llegar a la diana; no todas caben.",pista:"Las parejas (a, b) que llegan a 20 forman una familia. Descarta las que suben demasiado."},
+  {acto:4,nombre:"El vuelo largo",forma:"general",arquero:{x:0,y:5},mundo:{w:30,h:16},campos:[{k:"a",et:"a",min:-0.2,max:-0.01,paso:0.01,ini:-0.1},{k:"b",et:"b",min:0.0,max:3.0,paso:0.1,ini:0.5},{k:"c",et:"c · tu altura",min:5,max:5,paso:0,ini:5,fijo:true}],dianas:[{x:25,y:0,r:0.9}],muros:[],doseles:[],aros:[],consigna:"Torre más baja y diana más lejos: toca abrir la curva.",pista:"Cuanto más cerca de cero esté a, más lejos llega la flecha antes de caer."},
+  {acto:4,nombre:"La brecha",forma:"general",arquero:{x:0,y:6},mundo:{w:26,h:17},campos:[{k:"a",et:"a",min:-0.2,max:-0.01,paso:0.01,ini:-0.15},{k:"b",et:"b",min:0.0,max:3.0,paso:0.1,ini:0.5},{k:"c",et:"c · tu altura",min:6,max:6,paso:0,ini:6,fijo:true}],dianas:[{x:20,y:0,r:0.9}],muros:[{x:12,y0:0.0,y1:7,ancho:0.6}],doseles:[{x0:0.0,x1:30.0,y:13}],aros:[],consigna:"Muro a mitad de camino y techo arriba. Entre los dos queda un pasillo estrecho.",pista:"Las parejas que llegan a la diana forman una familia. Quédate con una que pase por encima de 7 en x = 12 sin tocar el techo."},
+  {acto:4,nombre:"El último arco",forma:"general",arquero:{x:0,y:4},mundo:{w:26,h:15},campos:[{k:"a",et:"a",min:-0.2,max:-0.01,paso:0.01,ini:-0.1},{k:"b",et:"b",min:0.0,max:3.0,paso:0.1,ini:0.5},{k:"c",et:"c · tu altura",min:4,max:4,paso:0,ini:4,fijo:true}],dianas:[{x:20,y:0,r:0.9}],muros:[],doseles:[],aros:[{x:8,y:7.2,r:1.1}],consigna:"El tiro final: por el aro y a la diana, desde la torre más baja.",pista:"Primero encuentra las parejas que llegan a 20. Entre ellas, no todas pasan por el aro."},
+];
+/* ===================== TEMAS POR ACTO ===================== */
+const ACTOS = [
+  { n:1, tit:'El claro', desc:'Encuentra el vértice. La flecha cae en 2h.',
+    cielo:['#1E2A55','#E8743B'], montes:'#2A3862', suelo:'#101830',
+    sol:{x:772,y:392,r:34,col:'255,238,195'}, deco:'arboles' },
+  { n:2, tit:'La muralla', desc:'El vértice, acorralado entre muros y cielo.',
+    cielo:['#1E3C6B','#6FA6C9'], montes:'#2E4873', suelo:'#15213A',
+    sol:{x:820,y:150,r:28,col:'255,250,225'}, deco:'almenas' },
+  { n:3, tit:'El vado', desc:'Escribe las raíces: dónde toca el suelo.',
+    cielo:['#1A1038','#D9553F'], montes:'#3A2450', suelo:'#140E28',
+    sol:{x:700,y:410,r:40,col:'255,210,150'}, deco:'rocas' },
+  { n:4, tit:'La atalaya', desc:'Disparas desde lo alto: c es tu altura.',
+    cielo:['#070C22','#2B3A72'], montes:'#121A3A', suelo:'#090E1E',
+    sol:{x:810,y:120,r:26,col:'226,238,255'}, deco:'estrellas' }
+];
+function tema(a){ return ACTOS[a-1]; }
+
+/* ===================== ESTADO ===================== */
+const CLAVE = 'didaxis_senda_arquero_v1';
+const CLAVE_CFG = 'didaxis_senda_arquero_cfg';
+let sonido = true;
+const lienzo = document.getElementById('lienzo');
+let bucleVivo = false;
+function despertar(){ if (!bucleVivo){ bucleVivo = true; requestAnimationFrame(bucle); } }
+const ctx = lienzo.getContext('2d');
+let nivel = 0, vals = {}, volando = false;
+let visorHasta = 0, cargasVisor = 3;      // revelado momentáneo, no interruptor
+const VISOR_CARGAS = 3, VISOR_MS = 1600;
+let fantasmas = [], disparosNivel = 0, usoVisor = false;
+let estrellas = new Array(NIVELES.length).fill(0);
+let flecha = null, particulas = [], sacudida = 0, animId = null, listo = false;
+let serieVuelo = 0;
+const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const N = () => NIVELES[nivel];
+const fmt = v => (Math.round(v*1000)/1000).toString().replace('.',',');
+const fmtD = v => (Math.round(v*10)/10).toString().replace('.',',');   // distancias
+/* Nada de lo que entra aquí viene de fuera, pero el texto que se arma a mano
+   y se mete con innerHTML se escapa igual: es la costumbre la que protege. */
+const esc = t => String(t == null ? '' : t).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+/* El traductor redondea a tres decimales: cuando el valor exacto no es ese,
+   lo dice con ≈ en vez de afirmar una igualdad que no se cumple. */
+const redondea = (...vs) => vs.some(v => Math.abs(v - Math.round(v*1000)/1000) > 1e-9);
+const igual = (...vs) => redondea(...vs) ? '≈' : '=';
+
+function guardar(){ try{ localStorage.setItem(CLAVE, JSON.stringify(estrellas)); }catch(e){} }
+function guardarCfg(){ try{ localStorage.setItem(CLAVE_CFG, JSON.stringify({sonido:sonido})); }catch(e){} }
+function cargarCfg(){
+  try{ const c = JSON.parse(localStorage.getItem(CLAVE_CFG));
+       if (c && typeof c.sonido === 'boolean') sonido = c.sonido; }catch(e){}
+}
+function cargar(){
+  try{
+    const d = JSON.parse(localStorage.getItem(CLAVE));
+    if (Array.isArray(d)) d.forEach((v,i)=>{ if (i<estrellas.length && typeof v==='number' && v>=0 && v<=3) estrellas[i]=v; });
+  }catch(e){}
+}
+
+/* ===================== MATEMÁTICA DEL TIRO =====================
+   Las tres formas conviven. En vértice y en raíces la apertura «a»
+   no es libre: sale de obligar a que la curva pase por el arco.
+   ================================================================ */
+function coef(){
+  const n = N(), y0 = n.arquero.y;
+  if (n.forma === 'vertice'){
+    const h = vals.h || 1, k = vals.k;
+    const a = (y0 - k) / (h*h);
+    return { a:a, b:-2*a*h, c:a*h*h + k, h:h, k:k };
+  }
+  if (n.forma === 'raices'){
+    const r = vals.r, a = vals.a;
+    return { a:a, b:-a*r, c:0, h:r/2, k:-a*r*r/4, r1:0, r2:r };
+  }
+  const a = vals.a, b = vals.b, c = vals.c;
+  return { a:a, b:b, c:c, h:(a ? -b/(2*a) : 0), k:(a ? c - b*b/(4*a) : c) };
+}
+/* ctx.roundRect no existe en los Chrome y Safari anteriores a 2022, que es
+   lo que puede haber en una sala de cómputo: sin reserva, el nivel entero deja
+   de pintarse. */
+function rectRedondo(x, y, an, al, r){
+  if (ctx.roundRect){ ctx.roundRect(x, y, an, al, r); return; }
+  const k = Math.min(r, an/2, al/2);
+  ctx.moveTo(x+k, y);
+  ctx.lineTo(x+an-k, y);         ctx.quadraticCurveTo(x+an, y, x+an, y+k);
+  ctx.lineTo(x+an, y+al-k);      ctx.quadraticCurveTo(x+an, y+al, x+an-k, y+al);
+  ctx.lineTo(x+k, y+al);         ctx.quadraticCurveTo(x, y+al, x, y+al-k);
+  ctx.lineTo(x, y+k);            ctx.quadraticCurveTo(x, y, x+k, y);
+  ctx.closePath();
+}
+const yEn = x => { const q = coef(); return q.a*x*x + q.b*x + q.c; };
+const pendEn = x => { const q = coef(); return 2*q.a*x + q.b; };
+
+/* ===================== PROYECCIÓN ===================== */
+const W = 1000, H = 600, MARGEN_X = 68, SUELO_Y = 508;
+const px = x => MARGEN_X + x * ((W - MARGEN_X - 44) / N().mundo.w);
+const py = y => SUELO_Y - y * ((SUELO_Y - 66) / N().mundo.h);
+let Fx = 1;
+function ajustarLienzo(){
+  /* En el ordenador manda la altura: la escena se queda con todo lo que el
+     panel no necesita, hasta donde la ventana da de alto. Antes se dimensionaba
+     por el ancho con un tope de 1280 px, y por eso medía 775x465 lo mismo en un
+     portátil que en un monitor grande. */
+  const col = document.querySelector('.col-escena'), juego = document.querySelector('.juego'),
+        panel = document.querySelector('.panel');
+  if (col && juego && panel){
+    if (window.innerWidth > 980 && !document.getElementById('vJuego').hidden){
+      const cs = getComputedStyle(juego);
+      const libreAn = juego.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)
+                    - panel.offsetWidth - 12;
+      /* La altura sale de la ventana, no del contenedor: el contenedor crece
+         con la escena, y medirlo a él realimentaría el cálculo. */
+      const libreAl = document.documentElement.clientHeight
+                    - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      const an = Math.max(320, Math.min(libreAn, Math.floor(libreAl * (W/H)), 1600));
+      col.style.width = an + 'px';
+      col.style.height = Math.round(an * (H/W)) + 'px';
+    } else {
+      col.style.width = ''; col.style.height = '';
+    }
+  }
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const anchoCss = lienzo.clientWidth || W;
+  Fx = Math.max(1, Math.min(2.1, 620 / Math.max(260, anchoCss)));
+  lienzo.width = Math.round(anchoCss*dpr);
+  lienzo.height = Math.round(anchoCss*(H/W)*dpr);
+  ctx.setTransform(dpr*anchoCss/W, 0, 0, dpr*anchoCss/W, 0, 0);
+}
+
+/* ===================== DIBUJO DEL MUNDO ===================== */
+function montes(base, altura, color, semilla){
+  ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(-20, base);
+  let x = -20, s = semilla;
+  while (x < W+40){
+    s = (s*9301 + 49297) % 233280;
+    const paso = 72 + (s/233280)*118, alt = altura*(0.45 + (s/233280)*0.75);
+    ctx.lineTo(x + paso/2, base - alt); x += paso; ctx.lineTo(x, base - alt*0.2);
+  }
+  ctx.lineTo(W+40, base+70); ctx.lineTo(-20, base+70); ctx.closePath(); ctx.fill();
+}
+function decorado(t){
+  if (t.deco === 'estrellas'){
+    let s = 7919;
+    ctx.fillStyle = 'rgba(246,241,230,.75)';
+    for (let i=0;i<90;i++){
+      s = (s*9301+49297)%233280; const X = (s/233280)*W;
+      s = (s*9301+49297)%233280; const Y = (s/233280)*(SUELO_Y-120);
+      s = (s*9301+49297)%233280; const r = 0.5 + (s/233280)*1.5;
+      ctx.globalAlpha = 0.25 + (s/233280)*0.65;
+      ctx.beginPath(); ctx.arc(X,Y,r,0,7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (t.deco === 'arboles'){
+    let s = 4211;
+    for (let i=0;i<16;i++){
+      s = (s*9301+49297)%233280; const X = (s/233280)*W;
+      s = (s*9301+49297)%233280; const alt = 26 + (s/233280)*34;
+      ctx.fillStyle = 'rgba(10,16,34,.72)';
+      ctx.beginPath(); ctx.moveTo(X, SUELO_Y-alt); ctx.lineTo(X-alt*0.33, SUELO_Y+4);
+      ctx.lineTo(X+alt*0.33, SUELO_Y+4); ctx.closePath(); ctx.fill();
+    }
+  }
+  if (t.deco === 'almenas'){
+    ctx.fillStyle = 'rgba(16,26,50,.6)';
+    for (let X=-10; X<W+20; X+=46){ ctx.fillRect(X, SUELO_Y-18, 26, 22); }
+    ctx.fillRect(0, SUELO_Y-6, W, 10);
+  }
+  if (t.deco === 'rocas'){
+    let s = 1777;
+    for (let i=0;i<12;i++){
+      s = (s*9301+49297)%233280; const X = (s/233280)*W;
+      s = (s*9301+49297)%233280; const r = 9 + (s/233280)*20;
+      ctx.fillStyle = 'rgba(12,8,26,.7)';
+      ctx.beginPath(); ctx.ellipse(X, SUELO_Y+2, r, r*0.6, 0, Math.PI, 0); ctx.fill();
+    }
+  }
+}
+function dibujarFondo(){
+  const n = N(), t = tema(n.acto);
+  const g = ctx.createLinearGradient(0,0,0,SUELO_Y);
+  g.addColorStop(0, t.cielo[0]); g.addColorStop(.74, t.cielo[1]);
+  g.addColorStop(1, n.acto===2 ? '#9CC4DC' : (n.acto===4 ? '#43558F' : '#F0A86A'));
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,SUELO_Y+2);
+  if (n.acto === 4) decorado(t);
+  ctx.save(); ctx.globalAlpha=.85;
+  const sg = ctx.createRadialGradient(t.sol.x,t.sol.y,8,t.sol.x,t.sol.y,t.sol.r*5.4);
+  sg.addColorStop(0,'rgba('+t.sol.col+',.9)'); sg.addColorStop(1,'rgba('+t.sol.col+',0)');
+  ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(t.sol.x,t.sol.y,t.sol.r*5.4,0,7); ctx.fill(); ctx.restore();
+  ctx.fillStyle = 'rgba('+t.sol.col+',.9)';
+  ctx.beginPath(); ctx.arc(t.sol.x,t.sol.y,t.sol.r,0,7); ctx.fill();
+  montes(SUELO_Y-16, 86, 'rgba(255,255,255,.05)', 77);
+  montes(SUELO_Y-4, 62, t.montes, 1337);
+  montes(SUELO_Y+6, 38, t.suelo, 909);
+  ctx.fillStyle = t.suelo; ctx.fillRect(0, SUELO_Y, W, H-SUELO_Y);
+  if (n.acto !== 4) decorado(t);
+  ctx.strokeStyle = 'rgba(255,201,74,.22)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0,SUELO_Y); ctx.lineTo(W,SUELO_Y); ctx.stroke();
+  ctx.fillStyle = 'rgba(246,241,230,.42)';
+  ctx.font = '700 ' + Math.round(12*Fx) + 'px system-ui, sans-serif';
+  ctx.textAlign='center';
+  const pasoX = Fx > 1.5 ? 8 : 4;          // en pantalla pequeña, menos marcas
+  for (let m=pasoX; m<=n.mundo.w; m+=pasoX){
+    const X=px(m); ctx.fillRect(X-1,SUELO_Y,2,Math.round(7*Fx));
+    ctx.fillText(m+' m', X, SUELO_Y + Math.round(23*Fx));
+  }
+  ctx.textAlign='right';
+  const pasoY = Fx > 1.5 ? 8 : 4;
+  for (let m=pasoY; m<=n.mundo.h; m+=pasoY){
+    const Y=py(m); ctx.fillRect(MARGEN_X-10,Y-1,7,2);
+    ctx.fillText(m, MARGEN_X-14, Y+Math.round(4*Fx));
+  }
+}
+function rotulo(txt, X, Y, col){
+  ctx.save();
+  const fs = Math.round(12*Fx);
+  ctx.font='800 ' + fs + 'px system-ui,sans-serif'; ctx.textAlign='center';
+  const an = ctx.measureText(txt).width + 12*Fx, al = Math.round(17*Fx);
+  ctx.fillStyle='rgba(9,15,33,.82)';
+  ctx.beginPath(); rectRedondo(X-an/2, Y-al+4, an, al, 8*Fx); ctx.fill();
+  ctx.fillStyle = col || '#FFE39A'; ctx.fillText(txt, X, Y);
+  ctx.restore();
+}
+function dibujarObstaculos(){
+  const n = N();
+  (n.doseles||[]).forEach(d=>{
+    const Y = py(d.y), X0 = px(Math.max(0,d.x0)), X1 = px(Math.min(n.mundo.w, d.x1));
+    const g = ctx.createLinearGradient(0,0,0,Y);
+    g.addColorStop(0,'rgba(10,20,14,.62)'); g.addColorStop(1,'rgba(14,32,20,.28)');
+    ctx.fillStyle = g; ctx.fillRect(X0, 0, X1-X0, Y);
+    ctx.strokeStyle='rgba(120,200,150,.55)'; ctx.lineWidth=2.5; ctx.setLineDash([9,7]);
+    ctx.beginPath(); ctx.moveTo(X0,Y); ctx.lineTo(X1,Y); ctx.stroke(); ctx.setLineDash([]);
+    rotulo('techo ' + fmt(d.y) + ' m', (X0+X1)/2, Y+22, '#A8E6C0');
+  });
+  (n.muros||[]).forEach(m=>{
+    const hermanos = (n.muros||[]).filter(o=> Math.abs(o.x - m.x) < 0.01);
+    const tronera = hermanos.length > 1;
+    const x0=px(m.x-m.ancho/2), x1=px(m.x+m.ancho/2), yT=py(m.y1), yB=py(m.y0);
+    const g = ctx.createLinearGradient(x0,0,x1,0);
+    g.addColorStop(0,'#28334E'); g.addColorStop(.5,'#3F4E72'); g.addColorStop(1,'#1F2840');
+    ctx.fillStyle=g; ctx.fillRect(x0,yT,x1-x0,yB-yT);
+    ctx.fillStyle='rgba(0,0,0,.28)';
+    for (let yy=yT+14; yy<yB; yy+=17) ctx.fillRect(x0,yy,x1-x0,2);
+    if (!tronera){
+      ctx.fillStyle='#4E5D80'; ctx.fillRect(x0-5,yT-9,(x1-x0)+10,9);
+      rotulo(fmt(m.y1)+' m', (x0+x1)/2, yT-16);
+    } else {
+      // borde del hueco: un dintel marcado, sin almena
+      ctx.fillStyle='#5A6A90';
+      ctx.fillRect(x0-4, m.y0 > 0 ? yB - 6 : yT, (x1-x0)+8, 6);
+    }
+  });
+  // un solo rótulo para el hueco de la tronera
+  const porX = {};
+  (n.muros||[]).forEach(m=>{ (porX[m.x] = porX[m.x] || []).push(m); });
+  Object.keys(porX).forEach(kx=>{
+    const g2 = porX[kx]; if (g2.length < 2) return;
+    const techo = Math.min.apply(null, g2.filter(m=>m.y0>0).map(m=>m.y0));
+    const suelo = Math.max.apply(null, g2.filter(m=>m.y0===0).map(m=>m.y1));
+    const X = px(parseFloat(kx));
+    rotulo('hueco ' + fmt(suelo) + '–' + fmt(techo) + ' m', X, py((suelo+techo)/2), '#9BE9F4');
+  });
+  (n.aros||[]).forEach((a,i)=>{
+    const X=px(a.x), Y=py(a.y), R=Math.max(13, a.r*((W-MARGEN_X-44)/n.mundo.w)*0.82);
+    ctx.save();
+    ctx.strokeStyle='rgba(11,192,216,.35)'; ctx.lineWidth=9;
+    ctx.beginPath(); ctx.ellipse(X,Y,R*0.42,R,0,0,7); ctx.stroke();
+    ctx.strokeStyle='#0BC0D8'; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.ellipse(X,Y,R*0.42,R,0,0,7); ctx.stroke();
+    ctx.strokeStyle='rgba(11,192,216,.3)'; ctx.lineWidth=2; ctx.setLineDash([4,5]);
+    ctx.beginPath(); ctx.moveTo(X,Y+R); ctx.lineTo(X,py(0)); ctx.stroke();
+    ctx.restore();
+    rotulo('aro ('+fmt(a.x)+', '+fmt(a.y)+')', X, Y-R-10, '#9BE9F4');
+  });
+  n.dianas.forEach(d=>{
+    const X=px(d.x), Y=py(d.y), esc = (W - MARGEN_X - 44)/n.mundo.w;
+    const rx = Math.max(16, d.r * esc), ry = rx * 0.33;
+    ctx.save(); ctx.translate(X, Y);
+    // el círculo pintado en el suelo es, exactamente, la zona que cuenta
+    [[1,'#F6F1E6'],[0.72,'#E0504A'],[0.44,'#F6F1E6'],[0.2,'#E0504A']].forEach(([f,c])=>{
+      ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(0,0,rx*f,ry*f,0,0,7); ctx.fill();
+    });
+    ctx.strokeStyle='rgba(10,16,34,.55)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.ellipse(0,0,rx,ry,0,0,7); ctx.stroke();
+    // banderín, para verla de lejos
+    ctx.fillStyle='#2A2018'; ctx.fillRect(-1.5,-30,3,30);
+    ctx.fillStyle='#E0504A';
+    ctx.beginPath(); ctx.moveTo(1.5,-30); ctx.lineTo(17,-25); ctx.lineTo(1.5,-20); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    rotulo('diana ' + fmt(d.x) + ' m', X, Y - 38, '#FFB3AE');
+  });
+}
+/* Distancia, en píxeles, de los pies del arquero a su arco con la escala 1,45.
+   El personaje se planta a esa distancia POR DEBAJO del punto de lanzamiento,
+   de modo que la flecha nace exactamente en el arco. */
+const ALTO_ARCO = 58;
+/* El arco tiene que estar en la línea del suelo, porque de ahí sale la flecha
+   y de ahí salen los 2h del acto 1. Eso deja el cuerpo por debajo de esa línea,
+   y cortarlo en seco hacía que el arquero pareciera enterrado hasta el pecho.
+   Asomar hacia arriba no se puede: taparía el campo. Así que se cava.
+
+   Un hoyo se reconoce por dos cosas: el fondo, más claro, y el borde de
+   delante, que tapa. Por eso va en dos piezas, una antes de la figura y otra
+   después. */
+function fondoPuesto(X){
+  const t = tema(N().acto), rx = 62, piso = SUELO_Y + 70;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(X-rx, SUELO_Y);
+  ctx.bezierCurveTo(X-rx+10, piso-6, X+rx-10, piso-6, X+rx, SUELO_Y);
+  ctx.closePath();
+  const g = ctx.createLinearGradient(0, SUELO_Y, 0, piso);
+  g.addColorStop(0, t.montes); g.addColorStop(.55, t.suelo); g.addColorStop(1, '#04060D');
+  ctx.fillStyle = g; ctx.fill();
+  // vetas de tierra en la pared del fondo
+  ctx.strokeStyle = 'rgba(0,0,0,.22)'; ctx.lineWidth = 1.5;
+  for (let i = 1; i <= 3; i++){
+    const yy = SUELO_Y + 12*i, d = rx - 9*i;
+    ctx.beginPath(); ctx.moveTo(X-d, yy); ctx.lineTo(X+d, yy); ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(0,0,0,.5)';
+  ctx.beginPath(); ctx.ellipse(X, SUELO_Y + ALTO_ARCO + 2, 19, 5, 0, 0, 7); ctx.fill();
+  ctx.restore();
+}
+function labioPuesto(X){
+  const t = tema(N().acto), rx = 62, caida = 24;
+  const filo = (a,b)=>{ ctx.moveTo(X-rx, SUELO_Y);
+    ctx.bezierCurveTo(X-rx+18, SUELO_Y+caida, X+rx-18, SUELO_Y+caida, X+rx, SUELO_Y); };
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(X-rx-40, SUELO_Y); ctx.lineTo(X-rx, SUELO_Y);
+  ctx.bezierCurveTo(X-rx+18, SUELO_Y+caida, X+rx-18, SUELO_Y+caida, X+rx, SUELO_Y);
+  ctx.lineTo(X+rx+40, SUELO_Y); ctx.lineTo(X+rx+40, H); ctx.lineTo(X-rx-40, H);
+  ctx.closePath();
+  ctx.fillStyle = t.suelo; ctx.fill();
+  // apenas un filo, del color de la tierra aclarado: el borde está delante,
+  // no es un adorno. Con el dorado de la línea del suelo parecía un cuenco.
+  ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 2;
+  ctx.beginPath(); filo(); ctx.stroke();
+  ctx.restore();
+}
+function dibujarArquero(){
+  const n = N(), X = px(n.arquero.x), Y = py(n.arquero.y);
+  const Ypies = Y + ALTO_ARCO;
+  if (n.arquero.y > 0){
+    const tx = X-27, th = SUELO_Y - Ypies;
+    ctx.fillStyle='#18223E'; ctx.fillRect(tx, Ypies, 54, th);
+    ctx.fillStyle='#232F52'; ctx.fillRect(tx-8, Ypies-10, 70, 12);
+    ctx.fillStyle='rgba(0,0,0,.3)';
+    for (let yy=Ypies+18; yy<SUELO_Y; yy+=19) ctx.fillRect(tx, yy, 54, 2);
+    // la cota c marca la altura del arco, que es de donde sale la flecha
+    ctx.save(); ctx.strokeStyle='rgba(255,227,154,.5)'; ctx.lineWidth=1.5;
+    ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(X-38,Y); ctx.lineTo(X+54,Y);
+    ctx.stroke(); ctx.restore();
+    rotulo('c = '+fmt(n.arquero.y)+' m', X, Ypies + th/2, '#FFE39A');
+  }
+  const ang = Math.atan(pendEn(0.001));
+  if (n.arquero.y === 0) fondoPuesto(X);
+  ctx.save();
+  if (n.arquero.y === 0){
+    ctx.beginPath(); ctx.rect(0, 0, W, SUELO_Y + 66); ctx.clip();
+  }
+  ctx.translate(X, Ypies); ctx.scale(1.45,1.45);
+  ctx.fillStyle = '#070D1C';
+  ctx.beginPath(); ctx.moveTo(-9,0); ctx.lineTo(-4,-22); ctx.lineTo(3,-22); ctx.lineTo(9,0);
+  ctx.lineTo(4,0); ctx.lineTo(0,-13); ctx.lineTo(-4,0); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-34,8.5,13,0,0,7); ctx.fill();
+  ctx.beginPath(); ctx.arc(0,-51,7.2,0,7); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-6,-56); ctx.lineTo(7,-60); ctx.lineTo(8,-52); ctx.lineTo(-5,-49);
+  ctx.closePath(); ctx.fill();
+  ctx.save(); ctx.translate(2,-40); ctx.rotate(-ang);
+  ctx.strokeStyle='#C98B3A'; ctx.lineWidth=4; ctx.lineCap='round';
+  ctx.beginPath(); ctx.arc(10,0,26,-1.25,1.25); ctx.stroke();
+  const tens = volando ? 0 : 10;
+  ctx.strokeStyle='rgba(246,241,230,.75)'; ctx.lineWidth=1.6;
+  ctx.beginPath();
+  ctx.moveTo(10+26*Math.cos(-1.25), 26*Math.sin(-1.25));
+  ctx.lineTo(10-tens, 0);
+  ctx.lineTo(10+26*Math.cos(1.25), 26*Math.sin(1.25)); ctx.stroke();
+  if (!volando){
+    ctx.strokeStyle='#FFC94A'; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(10-tens,0); ctx.lineTo(44,0); ctx.stroke();
+    ctx.fillStyle='#FFC94A'; ctx.beginPath();
+    ctx.moveTo(50,0); ctx.lineTo(42,-4); ctx.lineTo(42,4); ctx.closePath(); ctx.fill();
+  }
+  ctx.strokeStyle='#070D1C'; ctx.lineWidth=5.5;
+  ctx.beginPath(); ctx.moveTo(-2,4); ctx.lineTo(9,0); ctx.stroke();
+  ctx.restore(); ctx.restore();
+  if (n.arquero.y === 0) labioPuesto(X);
+}
+/* Hasta dónde enseña el visor: del arco al punto más alto, ni un metro más.
+   Allí la curva aún no ha dicho dónde cae, pero sí cómo abre. */
+function topeVisor(){
+  const n = N(), q = coef();
+  if (visorLlegaACima()) return q.h;
+  return n.mundo.w * 0.4;
+}
+/* Con b = 0 el vértice cae en la salida, y con el vértice fuera del escenario
+   tampoco se ve: en esos casos el visor enseña un trozo y lo dice así, en vez
+   de rotular «punto más alto» un punto cualquiera. */
+function visorLlegaACima(){
+  const n = N(), q = coef();
+  return q.a < 0 && q.h > n.arquero.x && q.h <= n.mundo.w;
+}
+function curva(estilo, ancho, guion, hasta){
+  const n = N(), tope = (hasta === undefined) ? n.mundo.w : hasta;
+  ctx.save(); ctx.strokeStyle=estilo; ctx.lineWidth=ancho;
+  if (guion) ctx.setLineDash(guion);
+  ctx.beginPath(); let pr = true;
+  for (let x = n.arquero.x; x <= tope; x += 0.1){
+    const y = yEn(x);
+    if (y < 0){ if (!pr) break; else continue; }
+    const Y = py(y);
+    pr ? (ctx.moveTo(px(x),Y), pr=false) : ctx.lineTo(px(x),Y);
+  }
+  ctx.stroke(); ctx.restore();
+}
+let caidaFuera = 0;
+function dibujarCaidaFuera(){
+  if (!caidaFuera) return;
+  const Y = py(0), X = W - 26;
+  ctx.save();
+  ctx.fillStyle='rgba(224,80,74,.9)';
+  ctx.beginPath(); ctx.moveTo(X+12, Y-9); ctx.lineTo(X-6, Y-18); ctx.lineTo(X-6, Y); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  rotulo('cayó en ' + fmt(caidaFuera) + ' m', X - 46, Y - 26, '#FFB3AE');
+}
+function dibujarFantasmas(){
+  fantasmas.forEach((f,i)=>{
+    ctx.save(); ctx.setLineDash([5,5]); ctx.lineWidth=3.2;
+    ctx.strokeStyle='rgba(20,14,4,'+(0.10+0.05*i)+')';
+    ctx.beginPath(); let pr0=true;
+    f.forEach(p=>{ const X=px(p[0]),Y=py(p[1]); pr0?(ctx.moveTo(X,Y),pr0=false):ctx.lineTo(X,Y); });
+    ctx.stroke();
+    ctx.strokeStyle='rgba(255,226,150,'+(0.30+0.14*i)+')'; ctx.lineWidth=1.9;
+    ctx.beginPath(); let pr=true;
+    f.forEach(p=>{ const X=px(p[0]),Y=py(p[1]); pr?(ctx.moveTo(X,Y),pr=false):ctx.lineTo(X,Y); });
+    ctx.stroke(); ctx.restore();
+  });
+}
+function dibujarFlecha(){
+  if (!flecha) return;
+  ctx.save(); ctx.strokeStyle='rgba(255,201,74,.42)'; ctx.lineWidth=2.2;
+  ctx.beginPath(); let pr=true;
+  flecha.estela.forEach(p=>{ const X=px(p[0]),Y=py(p[1]); pr?(ctx.moveTo(X,Y),pr=false):ctx.lineTo(X,Y); });
+  ctx.stroke(); ctx.restore();
+  ctx.save(); ctx.translate(px(flecha.x), py(flecha.y)); ctx.rotate(-Math.atan2(flecha.vy, flecha.vx));
+  ctx.strokeStyle='#FFC94A'; ctx.lineWidth=2.6; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(-17,0); ctx.lineTo(13,0); ctx.stroke();
+  ctx.fillStyle='#FFE39A'; ctx.beginPath(); ctx.moveTo(19,0); ctx.lineTo(11,-4); ctx.lineTo(11,4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='rgba(246,241,230,.8)'; ctx.beginPath();
+  ctx.moveTo(-17,0); ctx.lineTo(-23,-5); ctx.lineTo(-19,0); ctx.lineTo(-23,5); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function pintar(){
+  if (!listo) return;
+  ctx.save();
+  if (sacudida > 0.01){ ctx.translate((Math.random()-.5)*sacudida*13,(Math.random()-.5)*sacudida*13); sacudida*=0.88; }
+  dibujarFondo();
+  dibujarFantasmas();
+  const quedaVisor = visorHasta - Date.now();
+  if (quedaVisor > 0 && !volando){
+    const tope = topeVisor(), fade = Math.min(1, quedaVisor/400);
+    ctx.save(); ctx.globalAlpha = fade;
+    curva('rgba(0,0,0,.28)', 5, null, tope);
+    curva('rgba(90,240,255,.95)', 2.6, [8,6], tope);
+    const Xf = px(tope), Yf = py(yEn(tope));
+    ctx.fillStyle='#5AF0FF';
+    ctx.beginPath(); ctx.arc(Xf, Yf, 5, 0, 7); ctx.fill();
+    ctx.restore();
+    ctx.save(); ctx.globalAlpha = fade;
+    rotulo(visorLlegaACima() ? 'punto más alto' : 'hasta aquí', Xf, Yf - 14, '#9BE9F4');
+    ctx.restore();
+  }
+  dibujarObstaculos(); dibujarArquero(); dibujarFlecha(); dibujarCaidaFuera();
+  particulas.forEach(p=>{ ctx.save(); ctx.globalAlpha=Math.max(0,p.vida); ctx.fillStyle=p.col;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); ctx.restore(); });
+  ctx.restore();
+}
+
+/* ===================== SONIDO (sintetizado, sin archivos) ===================== */
+let AC = null;
+const audio = () => {
+  if (!sonido) return null;
+  if (!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  return AC;
+};
+function ruido(dur, filtro, vol){
+  const ac = audio(); if (!ac) return;
+  const n = Math.floor(ac.sampleRate*dur), buf = ac.createBuffer(1,n,ac.sampleRate), d = buf.getChannelData(0);
+  for (let i=0;i<n;i++) d[i] = (Math.random()*2-1)*Math.pow(1-i/n,2);
+  const s = ac.createBufferSource(); s.buffer = buf;
+  const f = ac.createBiquadFilter(); f.type='bandpass'; f.frequency.value=filtro; f.Q.value=1.1;
+  const g = ac.createGain(); g.gain.value=vol;
+  s.connect(f); f.connect(g); g.connect(ac.destination); s.start();
+}
+function tono(f1,f2,dur,vol,tipo){
+  const ac = audio(); if (!ac) return;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = tipo || 'triangle';
+  o.frequency.setValueAtTime(f1, ac.currentTime);
+  o.frequency.exponentialRampToValueAtTime(Math.max(40,f2), ac.currentTime+dur);
+  g.gain.setValueAtTime(vol, ac.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur);
+  o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+dur+.02);
+}
+const sfxTiro    = () => { tono(320,90,.16,.15); ruido(.2,1800,.09); };
+const sfxImpacto = () => { tono(150,52,.18,.18,'sine'); ruido(.14,600,.12); };
+const sfxAcierto = () => { [523,659,784,1047].forEach((f,i)=> setTimeout(()=>tono(f,f,.17,.12,'sine'), i*95)); };
+const sfxFallo   = () => { tono(200,130,.26,.1,'sawtooth'); };
+const sfxAro     = () => { tono(1200,1600,.1,.1,'sine'); };
+
+/* ===================== SIMULACIÓN =====================
+   Sin paso de muestreo, porque el paso decidía el veredicto: un vértice
+   de 5,00 m bajo un dosel de 5 m daba diana con un paso y choque con el
+   otro, y el nivel 4 rechazaba aquí la solución que su propia pista
+   señala. Ahora el aterrizaje es la raíz positiva; el techo y los muros
+   se deciden con el máximo y el mínimo de la parábola en el intervalo
+   del obstáculo; los aros, con el mínimo exacto de la distancia.
+
+   Convención única, la misma que verifica los niveles fuera del juego:
+   rozar un borde exacto pasa. Quien escribe k = 5 bajo un dosel de 5 m
+   ha hecho bien la cuenta y merece la diana.
+   ======================================================= */
+const EPS = 1e-9;
+
+function rangoY(a,b,c,x0,x1){
+  if (x1 < x0) return null;
+  const ys = [a*x0*x0+b*x0+c, a*x1*x1+b*x1+c], xv = -b/(2*a);
+  if (xv >= x0 && xv <= x1) ys.push(a*xv*xv+b*xv+c);
+  return [Math.min.apply(null,ys), Math.max.apply(null,ys)];
+}
+function cortesY(a,b,c,val,x0,x1){
+  const d = b*b - 4*a*(c-val);
+  if (d < 0) return [];
+  const s = Math.sqrt(d);
+  return [(-b+s)/(2*a), (-b-s)/(2*a)].sort((p,q)=>p-q)
+         .filter(x => x >= x0-EPS && x <= x1+EPS);
+}
+function cubica(A,B,C,D){
+  if (Math.abs(A) < 1e-14){
+    if (Math.abs(B) < 1e-14) return Math.abs(C) < 1e-14 ? [] : [-D/C];
+    const di = C*C - 4*B*D;
+    if (di < 0) return [];
+    const s = Math.sqrt(di);
+    return [(-C+s)/(2*B), (-C-s)/(2*B)];
+  }
+  const b = B/A, c = C/A, d = D/A;
+  const p = c - b*b/3, q = 2*b*b*b/27 - b*c/3 + d;
+  const di = q*q/4 + p*p*p/27;
+  if (di > 0){
+    const s = Math.sqrt(di);
+    return [Math.cbrt(-q/2+s) + Math.cbrt(-q/2-s) - b/3];
+  }
+  if (Math.abs(di) < 1e-18){
+    const u = Math.cbrt(-q/2);
+    return [2*u - b/3, -u - b/3];
+  }
+  const r = Math.sqrt(-p*p*p/27);
+  const fi = Math.acos(Math.max(-1, Math.min(1, -q/(2*r))));
+  const m = 2*Math.sqrt(-p/3);
+  return [0,1,2].map(k => m*Math.cos((fi + 2*Math.PI*k)/3) - b/3);
+}
+function distAro(a,b,c,aro,x0,x1){
+  if (x1 <= x0) return Infinity;
+  const f = x => { const dy = a*x*x+b*x+c-aro.y; return (x-aro.x)*(x-aro.x) + dy*dy; };
+  let mejor = Math.min(f(x0), f(x1));
+  const raices = cubica(4*a*a, 6*a*b, 2 + 2*b*b + 4*a*(c-aro.y), 2*(b*(c-aro.y) - aro.x));
+  for (let i = 0; i < raices.length; i++){
+    const x = raices[i];
+    if (x >= x0 && x <= x1) mejor = Math.min(mejor, f(x));
+  }
+  return Math.sqrt(mejor);
+}
+function simular(){
+  const n = N(), q = coef(), a = q.a, b = q.b, c = q.c, xa = n.arquero.x;
+  const vacio = { pts:[], fin:'suelo', x:xa, y:0, obj:null, aros:new Set(), pend:0, cae:xa };
+  if (!(a < 0)) return vacio;
+  const disc = b*b - 4*a*c;
+  if (disc < 0) return vacio;
+  const xcae = (-b - Math.sqrt(disc)) / (2*a);
+  if (!(xcae > xa)) return vacio;
+
+  const estorbos = [];
+  for (const m of (n.muros||[])){
+    const x0 = Math.max(xa, m.x - m.ancho/2), x1 = Math.min(xcae, m.x + m.ancho/2);
+    const rg = rangoY(a,b,c,x0,x1);
+    if (!rg) continue;
+    if (rg[0] < m.y1 - EPS && rg[1] > m.y0 + EPS){
+      const yi = a*x0*x0+b*x0+c;
+      const cand = (yi > m.y0 + EPS && yi < m.y1 - EPS) ? [x0] : [];
+      cand.push.apply(cand, cortesY(a,b,c,m.y0,x0,x1));
+      cand.push.apply(cand, cortesY(a,b,c,m.y1,x0,x1));
+      estorbos.push({ x: cand.length ? Math.min.apply(null,cand) : x0, fin:'muro', obj:m });
+    }
+  }
+  for (const d of (n.doseles||[])){
+    const x0 = Math.max(xa, d.x0), x1 = Math.min(xcae, d.x1);
+    const rg = rangoY(a,b,c,x0,x1);
+    if (!rg) continue;
+    if (rg[1] > d.y + EPS){
+      const cand = cortesY(a,b,c,d.y,x0,x1);
+      estorbos.push({ x: cand.length ? Math.min.apply(null,cand) : x0, fin:'dosel', obj:d });
+    }
+  }
+  estorbos.sort((p,r)=> p.x - r.x);
+  const xfin = estorbos.length ? estorbos[0].x : xcae;
+
+  const aros = new Set();
+  (n.aros||[]).forEach((ar,i)=>{
+    if (distAro(a,b,c,ar,xa,xfin) <= ar.r + EPS) aros.add(i);
+  });
+
+  /* La traza es solo para dibujar: el veredicto ya está decidido arriba.
+     El número de puntos sigue el largo del vuelo para que la flecha
+     mantenga su velocidad en los tiros cortos y en los largos. */
+  const pasos = Math.max(8, Math.min(2000, Math.ceil((xfin - xa) / 0.03)));
+  const pts = [];
+  for (let i = 0; i <= pasos; i++){
+    const x = xa + (xfin - xa) * i / pasos;
+    pts.push([x, Math.max(0, a*x*x + b*x + c)]);
+  }
+  const cerrar = (fin, x, y, obj) =>
+    ({ pts:pts, fin:fin, x:x, y:y, obj:obj, aros:aros, pend:2*a*x + b, cae:xcae });
+
+  if (estorbos.length){
+    const e = estorbos[0];
+    return cerrar(e.fin, e.x, a*e.x*e.x + b*e.x + c, e.obj);
+  }
+  if (xcae > n.mundo.w*3 + 40) return cerrar('fuera', xcae, 0, null);
+  for (const d of n.dianas)
+    if (Math.abs(xcae - d.x) <= d.r + EPS) return cerrar('diana', xcae, 0, d);
+  return cerrar('suelo', xcae, 0, null);
+}
+function faltanAros(r){
+  const n = N(); const falta = [];
+  (n.aros||[]).forEach((a,i)=>{ if (!r.aros.has(i)) falta.push(a); });
+  return falta;
+}
+
+/* ===================== DIAGNÓSTICO =====================
+   Nunca dice «fallaste». Dice qué pasó y en el idioma de la
+   constante que el estudiante acaba de mover.
+   ======================================================== */
+function consejo(dir){
+  const f = N().forma;
+  if (f === 'vertice') return dir > 0
+    ? 'La flecha cae en <b>2h</b>: reduce <b>h</b>.'
+    : 'La flecha cae en <b>2h</b>: aumenta <b>h</b>.';
+  if (f === 'raices') return dir > 0
+    ? 'La raíz lejana <b>r</b> es justo donde cae: bájala.'
+    : 'La raíz lejana <b>r</b> es justo donde cae: súbela.';
+  return dir > 0 ? 'Acorta el vuelo: baja <b>b</b> o haz <b>a</b> más negativa.'
+                 : 'Alarga el vuelo: sube <b>b</b> o acerca <b>a</b> a cero.';
+}
+function diagnosticar(r){
+  const n = N(), d = n.dianas[0], falta = faltanAros(r);
+  if (r.fin === 'diana' && !falta.length){
+    const desv = Math.abs(r.x - r.obj.x);
+    return { ok:true, msg: desv <= r.obj.r*0.34 ? '¡En el centro!'
+           : '¡Diana! A <b>' + fmtD(desv) + ' m</b> del centro.' };
+  }
+  if (r.fin === 'diana' && falta.length)
+    return { ok:false, msg:'Clavaste la diana, pero la flecha <b>no pasó por el aro</b> de ('
+      + fmt(falta[0].x) + ', ' + fmt(falta[0].y) + '). Ajusta la curva para que lo cruce sin perder el blanco.' };
+  if (r.fin === 'muro'){
+    if (r.obj.y0 > 0) return { ok:false, msg:'La flecha dio en el <b>dintel</b> de la tronera, a '
+      + fmtD(r.y) + ' m. El hueco empieza en ' + fmtD(r.obj.y0) + ' m: tiene que entrar por debajo de esa altura.' };
+    /* Importa si tocó subiendo o bajando: antes siempre decía «al bajar», y en
+       el acto 2 aconsejaba correr el vértice, que es justo lo que hace perder
+       la diana, porque ahí h la manda el blanco. */
+    const hueco = r.obj.y1 - r.y, subiendo = r.pend > 0;
+    const subir = n.forma === 'vertice' ? 'Le falta altura ahí: sube <b>k</b>.'
+                : n.forma === 'raices'  ? 'Le falta altura ahí: haz <b>a</b> más negativa y el tiro subirá más.'
+                                        : 'Le falta altura ahí: sube <b>b</b> para salir con más ángulo.';
+    const tarde = n.forma === 'vertice' ? 'Su punto más alto queda antes del muro: sube <b>k</b>.'
+                : n.forma === 'raices'  ? 'Cae demasiado pronto: haz <b>a</b> más negativa.'
+                                        : 'Cae demasiado pronto: acerca <b>a</b> a cero o sube <b>b</b>.';
+    const donde = subiendo ? 'Todavía subía cuando tocó el muro' : 'Ya venía bajando cuando tocó el muro';
+    const consejoM = subiendo ? subir : tarde;
+    if (hueco < 0.45) return { ok:false, msg:'<b>Por un pelo.</b> ' + donde + ', a <b>'
+      + fmtD(hueco) + ' m</b> del borde. ' + consejoM };
+    return { ok:false, msg: donde + ', <b>' + fmtD(hueco) + ' m por debajo</b> del borde. ' + consejoM };
+  }
+  if (r.fin === 'dosel'){
+    const q = coef(), lim = r.obj.y;
+    /* El máximo del vuelo, no el vértice de la parábola: con b = 0 y el tiro
+       desde una torre, el punto más alto es la propia salida. */
+    const cima = rangoY(q.a, q.b, q.c, n.arquero.x, r.cae)[1];
+    const sobra = Math.round((cima - lim)*10)/10;
+    return { ok:false, msg:'Tocaste el techo en el metro <b>' + fmtD(r.x) + '</b>. '
+      + 'Tu punto más alto llega a <b>' + fmtD(cima) + ' m</b> y el techo no pasa de <b>' + fmtD(lim) + ' m</b>'
+      + (sobra > 0 ? ': te sobran <b>' + fmtD(sobra) + ' m</b>. ' : '. ')
+      + (n.forma === 'vertice' ? 'Baja <b>k</b>, que es justo esa altura.'
+        : n.forma === 'raices' ? 'Acerca <b>a</b> a cero para que el tiro vaya más tenso.'
+        : 'Baja <b>b</b>, o haz <b>a</b> más negativa para cerrar la curva.') };
+  }
+  if (r.fin === 'suelo'){
+    const dist = r.x - d.x, t = fmtD(Math.abs(dist));
+    const lejos = r.x > n.mundo.w
+      ? ' Cay\u00f3 en el metro <b>' + fmtD(r.x) + '</b>, fuera del escenario.' : '';
+    return { ok:false, msg: dist < 0
+      ? 'Cayó <b>' + t + ' m antes</b> de la diana. ' + consejo(-1)
+      : 'Pasó por encima de la diana y se fue <b>' + t + ' m</b> más allá.' + lejos + ' ' + consejo(1) };
+  }
+  return { ok:false, msg:'La flecha no llega a caer dentro del alcance del tiro. Revisa los valores.' };
+}
+
+/* ===================== REGISTRO DE TIROS =====================
+   Cada fila va con una de las curvas fantasma del lienzo: cuatro, las mismas
+   que se dibujan. Lo que se guarda son los números con los que se tiró, que es
+   lo que hacía falta para leer las curvas. */
+let tiros = [];
+function resumenTiro(r){
+  if (!r) return 'valores imposibles';
+  const n = N(), falta = faltanAros(r);
+  if (r.fin === 'diana' && !falta.length) return '¡diana!';
+  if (r.fin === 'diana') return 'sin pasar el aro';
+  if (r.fin === 'dosel') return 'tocó el techo';
+  if (r.fin === 'muro') return r.obj.y0 > 0 ? 'dio en el dintel' : 'dio en el muro';
+  if (r.fin === 'fuera') return 'fuera del escenario';
+  const d = r.x - n.dianas[0].x;
+  return fmtD(Math.abs(d)) + (d < 0 ? ' m antes' : ' m de más');
+}
+function anotarTiro(r){
+  const n = N();
+  const val = n.campos.filter(c=> !c.fijo).map(c=> c.k + ' ' + fmt(vals[c.k])).join(' · ');
+  tiros.unshift({ n: disparosNivel, val: val, res: resumenTiro(r),
+                  ok: r && r.fin === 'diana' && !faltanAros(r).length });
+  if (tiros.length > 4) tiros.pop();
+  pintarTiros();
+}
+function pintarTiros(){
+  const c = document.getElementById('tirosCuerpo');
+  if (!c) return;
+  if (!tiros.length){
+    c.innerHTML = '<p class="vacio">Cada tiro queda anotado aquí y dibujado en el escenario. '
+                + 'Míralos juntos: enseñan cómo mueve la curva la constante que cambiaste.</p>';
+    return;
+  }
+  c.innerHTML = '<ol>' + tiros.map(t=>
+    '<li' + (t.ok ? ' class="ok"' : '') + '><span class="val"><i>' + t.n + '</i>  '
+    + esc(t.val) + '</span><span class="res">' + esc(t.res) + '</span></li>').join('') + '</ol>';
+}
+
+/* ===================== DISPARO ===================== */
+function disparar(){
+  if (volando) return;
+  const r = simular();
+  if (r.pts.length < 4) return;
+  volando = true; disparosNivel++;
+  activarTirar();
+  document.getElementById('mDisparos').textContent = disparosNivel;
+  avisar('', null); caidaFuera = 0; sfxTiro();
+  const pts = r.pts, fin = pts.length-1;
+  let i = 0, arosSonados = new Set();
+  const vel = reduce ? fin : Math.max(2, Math.round(fin/74));
+  const serie = ++serieVuelo;
+  flecha = { x:pts[0][0], y:pts[0][1], vx:1, vy:pendEn(pts[0][0]), estela:[] };
+  (function paso(){
+    if (serie !== serieVuelo || !flecha) return;
+    i = Math.min(fin, i+vel);
+    const p = pts[i], ant = pts[Math.max(0,i-2)];
+    flecha.x=p[0]; flecha.y=p[1]; flecha.vx=p[0]-ant[0]; flecha.vy=p[1]-ant[1];
+    flecha.estela.push([p[0],p[1]]);
+    if (flecha.estela.length > 28) flecha.estela.shift();
+    (N().aros||[]).forEach((a,j)=>{
+      if (!arosSonados.has(j) && r.aros.has(j) && p[0] >= a.x){ arosSonados.add(j); sfxAro(); }
+    });
+    tick(); pintar();
+    if (i < fin){ animId = requestAnimationFrame(paso); return; }
+    terminar(r, serie);
+  })();
+}
+function terminar(r, serie){
+  if (serie !== serieVuelo) return;
+  const dg = diagnosticar(r), p = r.pts[r.pts.length-1];
+  caidaFuera = (r.fin === 'suelo' && r.x > N().mundo.w) ? Math.round(r.x*10)/10 : 0;
+  sacudida = 1; despertar(); sfxImpacto();
+  reventar(px(p[0]), py(p[1]), dg.ok ? '#3FAE7A' : '#E0504A');
+  fantasmas.push(r.pts.filter((_,i)=> i%4===0));
+  anotarTiro(r);
+  if (fantasmas.length > 4) fantasmas.shift();
+  setTimeout(()=>{
+    if (serie !== serieVuelo) return;
+    volando = false; flecha = null;
+    activarTirar();
+    if (dg.ok){
+      // 3 estrellas: a la primera y sin visor · 2: en dos tiros · 1: a partir del tercero
+      const e = (disparosNivel === 1 && !usoVisor) ? 3 : (disparosNivel <= 2 ? 2 : 1);
+      if (e > estrellas[nivel]){ estrellas[nivel] = e; guardar(); }
+      sfxAcierto();
+      /* Desde el mapa se puede entrar a cualquier nivel, así que resolver el
+         número 20 no significa haber terminado la senda. Se cuenta. */
+      const ultimo = nivel === NIVELES.length-1;
+      const hechos = estrellas.filter(v=> v > 0).length;
+      const suma = estrellas.reduce((t,v)=> t+v, 0);
+      const maxEstr = NIVELES.length*3;
+      const completa = hechos === NIVELES.length;
+      let cierre = '';
+      if (completa)
+        cierre = suma === maxEstr
+          ? '<br><b>Senda completa con las ' + maxEstr + ' estrellas.</b> No se puede hacer mejor.'
+          : '<br><b>Senda completa:</b> los ' + NIVELES.length + ' niveles resueltos, '
+            + suma + ' de ' + maxEstr + ' estrellas. Los tiros limpios suben esa cuenta.';
+      else if (ultimo)
+        cierre = '<br>Último nivel superado. Te quedan <b>' + (NIVELES.length - hechos)
+               + '</b> niveles por resolver en la senda.';
+      const vuelve = ultimo || completa;
+      avisar(dg.msg + ' · <b>' + e + ' de 3 estrellas</b>'
+        + (e < 3 ? ' — el tiro limpio, al primer intento y sin visor, vale 3.' : ' — tiro limpio.')
+        + cierre
+        + '<br><button class="sig" id="btnSeguir">' + (vuelve ? 'Volver a la senda' : 'Siguiente nivel →') + '</button>', 'ok');
+      const bs = document.getElementById('btnSeguir');
+      if (bs) bs.addEventListener('click', ()=> vuelve ? irMapa() : cargarNivel(nivel+1));
+    } else { sfxFallo(); avisar(dg.msg, 'fallo'); }
+    refrescar(); pintar();
+  }, 430);
+}
+function reventar(X,Y,col){
+  despertar();
+  for (let i=0;i<26;i++){
+    const a = Math.random()*Math.PI*2, v = 1.6+Math.random()*4.6;
+    particulas.push({x:X,y:Y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1.6,
+      r:1.2+Math.random()*2.6,vida:1,col:Math.random()<.4?col:'#FFC94A'});
+  }
+}
+function tick(){
+  particulas = particulas.filter(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.26; p.vida-=0.026; return p.vida>0; });
+}
+
+/* ===================== INTERFAZ ===================== */
+function svgEstrella(on){
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.3l6.6-.9z" fill="'
+    + (on?'#FFC94A':'rgba(246,241,230,.16)') + '" stroke="' + (on?'#FFC94A':'rgba(246,241,230,.3)')
+    + '" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+}
+function avisar(html, clase){
+  const el = document.getElementById('aviso');
+  el.className = 'aviso' + (clase?' '+clase:'') + (html?' visible':'');
+  el.innerHTML = html;
+  if (html) document.getElementById('srLive').textContent = html.replace(/<[^>]+>/g,' ');
+}
+/* Un solo sitio decide si se puede disparar: el botón se apagaba y se
+   encendía en tres lugares y ninguno miraba si las casillas tenían un número
+   utilizable. */
+let camposListos = true;
+const fmtCampo = v => String(Math.round(v*1000)/1000);
+
+function valeCampo(c, el){
+  const t = String(el.value).trim().replace(',','.');
+  if (t === '') return false;
+  const v = parseFloat(t);
+  if (isNaN(v)) return false;
+  return v >= c.min - 1e-9 && v <= c.max + 1e-9;
+}
+function revisarCampos(){
+  const n = N();
+  let todo = true, fuera = false;
+  n.campos.forEach(c=>{
+    const el = document.getElementById('in_'+c.k);
+    if (!el || c.fijo) return;
+    const ok = valeCampo(c, el);
+    el.classList.toggle('mal', !ok);
+    el.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    if (!ok){ todo = false; if (String(el.value).trim() !== '') fuera = true; }
+  });
+  camposListos = todo;
+  const av = document.getElementById('avisoCampo');
+  if (av){
+    av.hidden = todo;
+    av.textContent = todo ? '' : (fuera
+      ? 'Ese número queda fuera del rango de la casilla. Mira el mínimo y el máximo que admite.'
+      : 'Falta un número en una casilla.');
+  }
+  activarTirar();
+}
+function activarTirar(){
+  const bt = document.getElementById('btnTirar');
+  if (bt) bt.disabled = volando || !camposListos;
+}
+
+/* El lienzo decía solo «Escenario del tiro». Quien no lo ve necesita la
+   geometría: dónde está la diana, los aros, los muros y el techo. Son datos
+   del enunciado, no la respuesta. */
+function describirEscena(){
+  const n = N(), p = [];
+  p.push('arquero en el metro ' + fmt(n.arquero.x)
+    + (n.arquero.y > 0 ? ', a ' + fmtD(n.arquero.y) + ' metros de altura' : ', a ras de suelo'));
+  n.dianas.forEach(d=> p.push('diana en el metro ' + fmt(d.x)
+    + ', de ' + fmtD(d.r*2) + ' metros de ancho'));
+  (n.aros||[]).forEach(a=> p.push('aro centrado en el metro ' + fmt(a.x)
+    + ' a ' + fmt(a.y) + ' metros de altura, de ' + fmtD(a.r) + ' metros de radio'));
+  (n.muros||[]).forEach(m=> p.push(m.y0 > 0
+    ? 'bloque de muralla en el metro ' + fmt(m.x) + ', desde ' + fmtD(m.y0) + ' hasta ' + fmtD(m.y1) + ' metros'
+    : 'muro en el metro ' + fmt(m.x) + ', de ' + fmtD(m.y1) + ' metros de alto'));
+  (n.doseles||[]).forEach(d=> p.push('techo de ramas a ' + fmtD(d.y) + ' metros'));
+  p.push('el escenario mide ' + fmt(n.mundo.w) + ' metros de ancho');
+  return p.join('; ') + '.';
+}
+
+function construirCampos(){
+  const n = N(), linea = document.getElementById('ecuLinea'), m = {};
+  n.campos.forEach(c=> m[c.k] = c);
+  const campo = c => '<span class="campo"><input type="number" id="in_'+c.k+'" value="'+c.ini+'" '
+    + 'min="'+c.min+'" max="'+c.max+'" step="'+(c.paso||0.1)+'" '+(c.fijo?'disabled ':'')
+    + 'aria-label="'+c.et+'" inputmode="decimal">'
+    + '<span class="et">'+c.et+'</span>'
+    + (c.fijo?'':'<span class="pasos"><button type="button" data-menos="'+c.k+'" aria-label="Bajar '+c.k+'">−</button>'
+      + '<button type="button" data-mas="'+c.k+'" aria-label="Subir '+c.k+'">+</button></span>') + '</span>';
+  let html = '';
+  if (n.forma === 'vertice')
+    html = '<span>y = a(x −</span>' + campo(m.h) + '<span>)<span class="sup">2</span> +</span>' + campo(m.k);
+  else if (n.forma === 'raices')
+    html = '<span>y =</span>' + campo(m.a) + '<span>· x · (x −</span>' + campo(m.r) + '<span>)</span>';
+  else
+    html = '<span>y =</span>' + campo(m.a) + '<span>x<span class="sup">2</span> +</span>'
+         + campo(m.b) + '<span>x +</span>' + campo(m.c);
+  linea.innerHTML = html;
+  n.campos.forEach(c=>{
+    vals[c.k] = c.ini;
+    const el = document.getElementById('in_'+c.k);
+    /* Mientras escribe no se le corrige el número: eso impediría teclear «1»
+       camino de «18». Al salir de la casilla se devuelve el valor que el motor
+       va a usar de verdad, para que la casilla y el tiro no digan cosas
+       distintas. Con la casilla vacía antes se conservaba el valor anterior en
+       silencio y Disparar seguía activo. */
+    el.addEventListener('input', ()=>{
+      const v = parseFloat(String(el.value).replace(',','.'));
+      if (!isNaN(v)) vals[c.k] = Math.min(c.max, Math.max(c.min, v));
+      revisarCampos(); refrescar(); pintar();
+    });
+    const asentar = ()=>{
+      const v = parseFloat(String(el.value).replace(',','.'));
+      if (!isNaN(v)) vals[c.k] = Math.min(c.max, Math.max(c.min, v));
+      el.value = fmtCampo(vals[c.k]);
+      revisarCampos(); refrescar(); pintar();
+    };
+    el.addEventListener('change', asentar);
+    el.addEventListener('blur', asentar);
+  });
+  revisarCampos();
+  linea.querySelectorAll('[data-mas],[data-menos]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const k = b.dataset.mas || b.dataset.menos, c = m[k], sg = b.dataset.mas ? 1 : -1;
+      vals[k] = Math.min(c.max, Math.max(c.min, Math.round((vals[k]+sg*c.paso)*1000)/1000));
+      document.getElementById('in_'+k).value = vals[k];
+      refrescar(); pintar();
+    });
+  });
+}
+function refrescar(){
+  const n = N(), q = coef();
+  document.getElementById('hudActo').textContent = 'Acto ' + n.acto + ' · ' + tema(n.acto).tit;
+  document.getElementById('hudNivel').textContent = n.nombre;
+  document.getElementById('consigna').textContent = n.consigna;
+  let tr;
+  if (n.forma === 'vertice')
+    tr = 'En forma general: <b>y ' + igual(q.a,q.b,q.c) + ' ' + fmt(q.a) + 'x² + ' + fmt(q.b) + 'x'
+       + (Math.abs(q.c) > 0.004 ? ' + ' + fmt(q.c) : '') + '</b>';
+  else if (n.forma === 'raices')
+    tr = 'Vértice en <b>(' + fmt(q.h) + ', ' + fmt(q.k) + ')</b> · general: <b>y '
+       + igual(q.a,q.b) + ' ' + fmt(q.a) + 'x² + ' + fmt(q.b) + 'x</b>';
+  else
+    tr = 'En forma de vértice: <b>y ' + igual(q.a,q.h,q.k) + ' ' + fmt(q.a) + '(x − ' + fmt(q.h) + ')² + ' + fmt(q.k) + '</b>';
+  document.getElementById('traductor').innerHTML = tr;
+  lienzo.setAttribute('aria-label', 'Escenario del tiro. ' + describirEscena());
+  document.getElementById('hudEstrellas').innerHTML = [0,1,2].map(i=> svgEstrella(estrellas[nivel] > i)).join('');
+  const bv = document.getElementById('btnVisor'), tv = document.getElementById('txtVisor');
+  bv.disabled = cargasVisor <= 0;
+  bv.setAttribute('aria-pressed', (visorHasta > Date.now()) ? 'true' : 'false');
+  tv.textContent = cargasVisor > 0 ? ('Visor · ' + cargasVisor) : 'Sin visor';
+  bv.title = cargasVisor > 0
+    ? 'Enseña un instante el vuelo, solo hasta el punto más alto. Te quedan ' + cargasVisor + ' en este nivel y el tiro deja de ser limpio.'
+    : 'Has gastado los tres visores de este nivel.';
+  document.getElementById('btnAnt').disabled = nivel === 0;
+  document.getElementById('btnSig').disabled = nivel === NIVELES.length-1;
+  document.getElementById('mNivel').textContent = nivel + 1;
+  document.getElementById('btnLimpiar').disabled = disparosNivel === 0 && cargasVisor === VISOR_CARGAS;
+  const me = document.getElementById('mEstrNivel');
+  me.innerHTML = estrellas[nivel]
+    ? '<b style="color:var(--oro)">' + estrellas[nivel] + ' ★</b> conseguidas'
+    : '<span style="color:var(--gris)">sin resolver</span>';
+  const pista = document.getElementById('pista');
+  if (disparosNivel >= 2 && estrellas[nivel] === 0){ pista.hidden = false; pista.textContent = '💡 ' + n.pista; }
+  else pista.hidden = true;
+}
+function cargarNivel(i){
+  nivel = i; vals = {}; fantasmas = []; disparosNivel = 0; usoVisor = false;
+  tiros = []; pintarTiros();
+  caidaFuera = 0;
+  serieVuelo++;                                   // invalida cualquier vuelo en curso
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  visorHasta = 0; cargasVisor = VISOR_CARGAS;
+  particulas = []; flecha = null; volando = false; listo = true;
+  document.getElementById('mDisparos').textContent = '0';
+  verVista('juego'); avisar('', null);
+  construirCampos(); refrescar(); ajustarLienzo(); pintar();
+}
+
+/* ===================== MAPA ===================== */
+function pintarMapa(){
+  const cont = document.getElementById('mapaActos');
+  cont.innerHTML = ACTOS.map(a=>{
+    const idx = NIVELES.map((n,i)=>({n:n,i:i})).filter(o=> o.n.acto === a.n);
+    const sig = proximoNivel();
+    const tarjetas = idx.map(o=>
+      '<button class="tarjeta' + (estrellas[o.i] ? ' hecho' : '') + (o.i === sig ? ' siguiente' : '') + '" data-ir="' + o.i + '">'
+      + (o.i === sig ? '<span class="marca-sig">' + (estrellas[o.i] ? 'A mejorar' : 'Aquí vas') + '</span>' : '')
+      + '<span class="n">NIVEL ' + (o.i+1) + '</span>'
+      + '<span class="t">' + o.n.nombre + '</span>'
+      + '<span class="e">' + [0,1,2].map(j=> svgEstrella(estrellas[o.i] > j)).join('') + '</span>'
+      + '</button>').join('');
+    const gana = idx.reduce((t,o)=> t + estrellas[o.i], 0);
+    return '<div class="acto-bloque"><div class="acto-cab">'
+      + '<span class="acto-num">Acto ' + a.n + '</span><span class="acto-tit">' + a.tit + '</span>'
+      + '<span class="acto-desc">' + a.desc + '</span>'
+      + '<span class="acto-estrellas">' + gana + ' / ' + (idx.length*3) + ' ★</span></div>'
+      + '<div class="niveles">' + tarjetas + '</div></div>';
+  }).join('');
+  cont.querySelectorAll('[data-ir]').forEach(b=>
+    b.addEventListener('click', ()=> cargarNivel(parseInt(b.dataset.ir,10))));
+  const tot = estrellas.reduce((a,b)=>a+b,0);
+  document.getElementById('totEstrellas').textContent = tot;
+  const sig2 = proximoNivel(), bc = document.getElementById('btnContinuar');
+  const resueltos = estrellas.filter(v=>v>0).length;
+  bc.textContent = sig2 < 0 ? 'Volver a jugar'
+                 : (resueltos === 0 ? 'Empezar' : (estrellas[sig2] ? 'Mejorar nivel ' + (sig2+1) : 'Continuar'));
+  document.getElementById('mapaRemate').innerHTML = sig2 < 0
+    ? '<strong>Senda completa.</strong> Tres estrellas en los veinte niveles.'
+    : '';
+}
+function proximoNivel(){
+  for (let i = 0; i < NIVELES.length; i++) if (!estrellas[i]) return i;
+  let peor = -1, min = 4;                     // todo resuelto: el más flojo
+  for (let i = 0; i < NIVELES.length; i++) if (estrellas[i] < min){ min = estrellas[i]; peor = i; }
+  return min < 3 ? peor : -1;                 // -1 = senda bordada
+}
+function verVista(cual){
+  ['Portada','Mapa','Juego'].forEach(v=>
+    document.getElementById('v'+v).hidden = (v.toLowerCase() !== cual));
+  if (cual !== 'juego') listo = false;
+  if (cual === 'portada' && reanudarPortada) reanudarPortada();
+}
+function irMapa(){ pintarMapa(); verVista('mapa'); window.scrollTo(0,0); }
+
+/* ===================== FONDO DE LA PORTADA ===================== */
+/* ===================== PORTADA ANIMADA =====================
+   Un arquero que carga y dispara cada pocos segundos, estrellas que
+   titilan, pavesas que suben y cordilleras con un leve desplazamiento.
+   Con «movimiento reducido» se pinta un solo fotograma y se detiene.
+   =========================================================== */
+let portadaViva = false, reanudarPortada = null;
+function fondoPortada(){
+  const c = document.getElementById('fondoPortada'), g = c.getContext('2d');
+  let w = 0, hh = 0, t0 = performance.now();
+  const estrellas2 = [], pavesas = [];
+  let fase = 'espera', faseT = 0, trazo = [], tiros = 0;
+
+  function medir(){
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    w = c.clientWidth; hh = c.clientHeight;
+    c.width = Math.round(w*dpr); c.height = Math.round(hh*dpr);
+    g.setTransform(dpr,0,0,dpr,0,0);
+    estrellas2.length = 0;
+    let s = 7919;
+    for (let i=0;i<120;i++){
+      s=(s*9301+49297)%233280; const X=(s/233280)*w;
+      s=(s*9301+49297)%233280; const Y=(s/233280)*hh*0.66;
+      s=(s*9301+49297)%233280; const r=.5+(s/233280)*1.4;
+      s=(s*9301+49297)%233280;
+      estrellas2.push({x:X,y:Y,r:r,f:0.4+(s/233280)*1.9,d:(s/233280)*6.3});
+    }
+  }
+
+  function cordillera(base, amp, col, semilla, desl){
+    g.fillStyle = col; g.beginPath(); g.moveTo(-60, base);
+    let x = -60, s = semilla;
+    while (x < w+80){
+      s=(s*9301+49297)%233280;
+      const paso = 90+(s/233280)*130, alt = amp*(.5+(s/233280));
+      g.lineTo(x+paso/2+desl, base-alt); x += paso; g.lineTo(x+desl, base-alt*.2);
+    }
+    g.lineTo(w+80, hh); g.lineTo(-60, hh); g.closePath(); g.fill();
+  }
+
+  function arquero(gx, gy, esc, tension, soltando){
+    g.save(); g.translate(gx, gy); g.scale(esc, esc);
+    g.fillStyle = '#07060F';
+    g.beginPath(); g.moveTo(-9,0); g.lineTo(-4,-22); g.lineTo(3,-22); g.lineTo(9,0);
+    g.lineTo(4,0); g.lineTo(0,-13); g.lineTo(-4,0); g.closePath(); g.fill();
+    g.beginPath(); g.ellipse(0,-34,8.5,13,0,0,7); g.fill();
+    g.beginPath(); g.arc(0,-51,7.2,0,7); g.fill();
+    g.beginPath(); g.moveTo(-6,-56); g.lineTo(7,-60); g.lineTo(8,-52); g.lineTo(-5,-49); g.closePath(); g.fill();
+    g.save(); g.translate(2,-40); g.rotate(-0.72);
+    const curva = 26 + tension*3;
+    g.strokeStyle='#C98B3A'; g.lineWidth=4; g.lineCap='round';
+    g.beginPath(); g.arc(10,0,curva,-1.25,1.25); g.stroke();
+    const tira = 2 + tension*11;
+    g.strokeStyle='rgba(246,241,230,.75)'; g.lineWidth=1.6;
+    g.beginPath();
+    g.moveTo(10+curva*Math.cos(-1.25), curva*Math.sin(-1.25));
+    g.lineTo(10-tira, 0);
+    g.lineTo(10+curva*Math.cos(1.25), curva*Math.sin(1.25)); g.stroke();
+    if (!soltando){
+      g.strokeStyle='#FFC94A'; g.lineWidth=2.4;
+      g.beginPath(); g.moveTo(10-tira,0); g.lineTo(46,0); g.stroke();
+      g.fillStyle='#FFC94A'; g.beginPath();
+      g.moveTo(52,0); g.lineTo(44,-4); g.lineTo(44,4); g.closePath(); g.fill();
+    }
+    g.strokeStyle='#07060F'; g.lineWidth=5.5; g.lineCap='round';
+    g.beginPath(); g.moveTo(-2,4); g.lineTo(9,0); g.stroke();
+    g.restore(); g.restore();
+  }
+
+  function fotograma(ahora){
+    if (document.getElementById('vPortada').hidden){ portadaViva = false; return; }
+    const t = (ahora - t0)/1000;
+
+    const gr = g.createLinearGradient(0,0,0,hh);
+    gr.addColorStop(0,'#0A1024'); gr.addColorStop(.58,'#2A2152'); gr.addColorStop(1,'#B9553C');
+    g.fillStyle = gr; g.fillRect(0,0,w,hh);
+
+    g.fillStyle='rgba(246,241,230,1)';
+    estrellas2.forEach(e=>{
+      g.globalAlpha = 0.18 + 0.52*(0.5 + 0.5*Math.sin(t*e.f + e.d));
+      g.beginPath(); g.arc(e.x, e.y, e.r, 0, 7); g.fill();
+    });
+    g.globalAlpha = 1;
+
+    const lunaX = w*.78, lunaY = hh*.26;
+    const lg = g.createRadialGradient(lunaX,lunaY,4,lunaX,lunaY,120);
+    lg.addColorStop(0,'rgba(255,236,200,.5)'); lg.addColorStop(1,'rgba(255,220,170,0)');
+    g.fillStyle = lg; g.beginPath(); g.arc(lunaX,lunaY,120,0,7); g.fill();
+    g.fillStyle='rgba(255,236,206,.95)'; g.beginPath(); g.arc(lunaX,lunaY,27,0,7); g.fill();
+
+    const vaiven = Math.sin(t*0.12)*10;
+    cordillera(hh*.86, hh*.10, '#1B1838', 311, vaiven*0.5);
+    cordillera(hh*.93, hh*.07, '#120F26', 977, vaiven);
+
+    // pavesas que suben
+    if (pavesas.length < 26 && Math.random() < 0.3)
+      pavesas.push({x:Math.random()*w, y:hh+8, v:.25+Math.random()*.7,
+                    r:.7+Math.random()*1.6, a:.1+Math.random()*.45, d:Math.random()*6.3});
+    for (let i=pavesas.length-1; i>=0; i--){
+      const p = pavesas[i]; p.y -= p.v; p.x += Math.sin(t*0.7 + p.d)*0.35;
+      if (p.y < hh*0.42){ pavesas.splice(i,1); continue; }
+      g.globalAlpha = p.a * Math.min(1, (hh-p.y)/90);
+      g.fillStyle = '#FFBE63'; g.beginPath(); g.arc(p.x,p.y,p.r,0,7); g.fill();
+    }
+    g.globalAlpha = 1;
+
+    // el arquero: espera, tensa, suelta
+    const px0 = w*.11, py0 = hh*.88, esc = Math.max(1.1, Math.min(2.1, w/620));
+    faseT += 1/60;
+    let tension = 0, soltando = false;
+    if (fase === 'espera'){ if (faseT > 2.4){ fase='tensa'; faseT=0; } }
+    else if (fase === 'tensa'){
+      tension = Math.min(1, faseT/0.85);
+      if (faseT > 0.95){ fase='vuela'; faseT=0; trazo=[]; tiros++; }
+    } else {
+      soltando = true;
+      const dur = 2.1, u = Math.min(1, faseT/dur);
+      const x0 = px0 + 34*esc, y0 = py0 - 40*esc;
+      const x1 = w*1.06, cima = hh*(0.30 + ((tiros%3)*0.06));
+      const X = x0 + (x1-x0)*u;
+      const a = (y0 - cima)/Math.pow((x0+x1)/2 - x0, 2);
+      const Y = a*Math.pow(X - (x0+x1)/2, 2) + cima;
+      trazo.push([X,Y]); if (trazo.length > 70) trazo.shift();
+      if (faseT > dur + 0.5){ fase='espera'; faseT=0; trazo=[]; }
+      if (u < 1){
+        g.save(); g.translate(X, Y);
+        const dx = 1, dy = 2*a*(X-(x0+x1)/2);
+        g.rotate(Math.atan2(dy,dx));
+        g.strokeStyle='#FFC94A'; g.lineWidth=2.6; g.lineCap='round';
+        g.beginPath(); g.moveTo(-18,0); g.lineTo(13,0); g.stroke();
+        g.fillStyle='#FFE39A'; g.beginPath();
+        g.moveTo(19,0); g.lineTo(11,-4); g.lineTo(11,4); g.closePath(); g.fill();
+        g.restore();
+      }
+    }
+    if (trazo.length > 1){
+      g.save(); g.lineWidth=2; g.setLineDash([7,8]);
+      g.strokeStyle='rgba(255,201,74,.42)';
+      g.beginPath(); trazo.forEach((p,i)=> i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));
+      g.stroke(); g.restore();
+    }
+    arquero(px0, py0, esc, tension, soltando);
+
+    requestAnimationFrame(fotograma);
+  }
+
+  function estatico(){
+    const gr = g.createLinearGradient(0,0,0,hh);
+    gr.addColorStop(0,'#0A1024'); gr.addColorStop(.58,'#2A2152'); gr.addColorStop(1,'#B9553C');
+    g.fillStyle = gr; g.fillRect(0,0,w,hh);
+    g.fillStyle='rgba(246,241,230,.7)';
+    estrellas2.forEach(e=>{ g.beginPath(); g.arc(e.x,e.y,e.r,0,7); g.fill(); });
+    g.fillStyle='rgba(255,236,206,.95)';
+    g.beginPath(); g.arc(w*.78,hh*.26,27,0,7); g.fill();
+    cordillera(hh*.86, hh*.10, '#1B1838', 311, 0);
+    cordillera(hh*.93, hh*.07, '#120F26', 977, 0);
+    arquero(w*.11, hh*.88, Math.max(1.1, Math.min(2.1, w/620)), 1, false);
+  }
+
+  medir();
+  window.addEventListener('resize', ()=>{ medir(); if (reduce) estatico(); });
+  reanudarPortada = ()=>{
+    if (portadaViva || reduce) return;
+    portadaViva = true; requestAnimationFrame(fotograma);
+  };
+  if (reduce) estatico(); else reanudarPortada();
+}
+
+/* ===================== ARRANQUE ===================== */
+document.getElementById('btnTirar').addEventListener('click', disparar);
+document.getElementById('btnVisor').addEventListener('click', function(){
+  if (cargasVisor <= 0 || volando) return;
+  cargasVisor--; usoVisor = true; visorHasta = Date.now() + VISOR_MS; despertar();
+  refrescar(); pintar();
+});
+document.getElementById('btnMapa').addEventListener('click', irMapa);
+
+function pintarSonido(){
+  const b = document.getElementById('btnSonido');
+  b.setAttribute('aria-pressed', sonido ? 'true' : 'false');
+  b.title = sonido ? 'Silenciar' : 'Activar el sonido';
+  document.getElementById('ondaSon').style.display = sonido ? '' : 'none';
+  document.getElementById('cruzSon').style.display = sonido ? 'none' : '';
+}
+document.getElementById('btnSonido').addEventListener('click', ()=>{
+  sonido = !sonido; guardarCfg(); pintarSonido();
+  if (sonido) tono(880,1100,.1,.1,'sine');
+});
+
+document.getElementById('btnPantalla').addEventListener('click', function(){
+  try{
+    if (document.fullscreenElement) document.exitFullscreen();
+    else (document.documentElement.requestFullscreen || function(){}).call(document.documentElement);
+  }catch(e){}
+  setTimeout(()=>{ ajustarLienzo(); pintar(); }, 260);
+});
+document.addEventListener('fullscreenchange', ()=> setTimeout(()=>{ ajustarLienzo(); pintar(); }, 120));
+
+/* El diálogo movía el foco dentro pero no lo retenía: con el tabulador se
+   salía al fondo de la página, que está tapado, y al cerrar el foco se perdía
+   en el documento en vez de volver al botón que lo abrió. */
+let devolverFoco = null;
+function abrirAyuda(e){
+  devolverFoco = (e && e.currentTarget) || document.activeElement;
+  document.getElementById('vAyuda').hidden = false;
+  document.getElementById('btnCerrarAyuda').focus();
+}
+function cerrarAyuda(){
+  document.getElementById('vAyuda').hidden = true;
+  if (devolverFoco && devolverFoco.focus) devolverFoco.focus();
+  devolverFoco = null;
+}
+document.addEventListener('keydown', e=>{
+  if (e.key !== 'Tab') return;
+  const velo = document.getElementById('vAyuda');
+  if (velo.hidden) return;
+  const foco = velo.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if (!foco.length) return;
+  const uno = foco[0], otro = foco[foco.length-1];
+  if (e.shiftKey && document.activeElement === uno){ e.preventDefault(); otro.focus(); }
+  else if (!e.shiftKey && document.activeElement === otro){ e.preventDefault(); uno.focus(); }
+});
+['btnAyuda','btnAyuda2','btnAyuda3'].forEach(id=>
+  document.getElementById(id).addEventListener('click', abrirAyuda));
+document.getElementById('btnCerrarAyuda').addEventListener('click', cerrarAyuda);
+document.getElementById('vAyuda').addEventListener('click', e=>{
+  if (e.target === document.getElementById('vAyuda')) cerrarAyuda();
+});
+
+document.getElementById('btnLimpiar').addEventListener('click', ()=> cargarNivel(nivel));
+function irAlProximo(){ const i = proximoNivel(); cargarNivel(i < 0 ? 0 : i); }
+document.getElementById('btnContinuar').addEventListener('click', irAlProximo);
+document.getElementById('btnSeguirPartida').addEventListener('click', ()=>{ audio(); irAlProximo(); });
+document.getElementById('btnAnt').addEventListener('click', ()=> cargarNivel(Math.max(0, nivel-1)));
+document.getElementById('btnSig').addEventListener('click', ()=> cargarNivel(Math.min(NIVELES.length-1, nivel+1)));
+document.getElementById('btnEmpezar').addEventListener('click', ()=>{ audio(); irMapa(); });
+let armado = null;
+document.getElementById('btnReiniciarTodo').addEventListener('click', function(){
+  if (armado){ clearTimeout(armado); armado = null;
+    estrellas = new Array(NIVELES.length).fill(0); guardar(); pintarMapa();
+    this.textContent = 'Reiniciar todo el progreso'; return; }
+  this.textContent = 'Pulsa otra vez para borrarlo todo';
+  armado = setTimeout(()=>{ armado = null; this.textContent = 'Reiniciar todo el progreso'; }, 5000);
+});
+window.addEventListener('resize', ()=>{ ajustarLienzo(); pintar(); });
+document.addEventListener('keydown', e=>{
+  if (!document.getElementById('vAyuda').hidden){
+    if (e.key === 'Escape'){ e.preventDefault(); cerrarAyuda(); }
+    return;
+  }
+  if (e.key === '?' || (e.key === 'h' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName))){
+    e.preventDefault(); abrirAyuda(); return;
+  }
+  if (document.getElementById('vJuego').hidden) return;
+  if (e.key === 'Enter' && !volando && document.activeElement.tagName !== 'BUTTON'){ e.preventDefault(); disparar(); }
+  if (e.key === 'Escape') irMapa();
+});
+
+cargar(); cargarCfg(); pintarSonido(); fondoPortada(); pintarMapa();
+if (estrellas.some(v=>v>0)) document.getElementById('btnSeguirPartida').hidden = false;
+let visorVivo = false;
+/* Antes pedía un fotograma por cada refresco de pantalla para no hacer nada
+   en la mayoría de ellos. Ahora duerme y lo despierta quien anima. */
+function bucle(){
+  const hayVisor = visorHasta > Date.now();
+  if (visorVivo && !hayVisor){ visorVivo = false; refrescar(); pintar(); }
+  if (hayVisor) visorVivo = true;
+  const algo = particulas.length || sacudida > 0.01 || hayVisor;
+  if (algo){ tick(); pintar(); }
+  if (algo || visorVivo) requestAnimationFrame(bucle);
+  else bucleVivo = false;
+}
+})();
+</script>
+</body>
+</html>
