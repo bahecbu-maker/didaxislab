@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rumbo Cartesiano — vista en miniatura</title>
+<style>
+  /* Ocupa por completo el contenedor donde se inserte (portal o iframe). */
+  html,body{margin:0;height:100%;background:#063342;overflow:hidden}
+  #mini{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="mini" aria-label="Lancha navegando por coordenadas en el plano cartesiano"></canvas>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   RUMBO CARTESIANO — miniatura en bucle
+   Travesía en dos tramos sobre los 4 cuadrantes: la píldora superior
+   marca la coordenada (X, Y), los ejes iluminan sus guías y la lancha
+   esquiva el archipiélago central recogiendo la boya dorada antes de
+   atracar en el muelle de entrega.
+   ═══════════════════════════════════════════════════════════════════════ */
+const W = 960, H = 600;                      // lienzo virtual 16:10
+const cv = document.getElementById('mini');
+const ctx = cv.getContext('2d');
+const lento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function ajustar(){
+  const d = Math.min(2, devicePixelRatio || 1);
+  const r = cv.getBoundingClientRect();
+  cv.width  = Math.max(1, Math.round(r.width  * d));
+  cv.height = Math.max(1, Math.round(r.height * d));
+  const e = Math.max(r.width / W, r.height / H) * d;
+  ctx.setTransform(e, 0, 0, e, (cv.width - W*e)/2, (cv.height - H*e)/2);
+}
+addEventListener('resize', ajustar);
+
+/* ── Plano cartesiano (X: -5..5, Y: -3..3) ─────────────────────────── */
+const MIN_X = -5, MAX_X = 5, MIN_Y = -3, MAX_Y = 3;
+const CELL = 72, OX = 480, OY = 326;
+const toS = (gx, gy) => ({ x: OX + gx * CELL, y: OY - gy * CELL });
+
+const START = { x: -4, y: -2 };
+const MID   = { x: -2, y:  2 };
+const GOAL  = { x:  4, y:  1 };
+
+const OBSTACLES = [
+  { x:  0, y: -1, r: 0.88, kind: 'island', seed: 37 },
+  { x:  3, y: -1, r: 0.78, kind: 'island', seed: 73 },
+  { x: -2, y: -2, r: 0.64, kind: 'reef',   seed: 41 }
+];
+
+const GULLS = [
+  { x: 0.16, y: 0.24, vx:  0.022, vy: -0.004, phase: 0.4, scale: 0.92 },
+  { x: 0.78, y: 0.78, vx: -0.017, vy: -0.005, phase: 2.2, scale: 0.78 }
+];
+
+/* ── Utilidades geométricas (mismo estilo que el juego) ────────────── */
+function seededRand(seed){
+  let s = seed % 2147483647;
+  if(s <= 0) s += 2147483646;
+  return () => (s = (s * 16807) % 2147483647) / 2147483647;
+}
+function lerpAngle(a, b, t){
+  const d = ((b - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+  return a + d * t;
+}
+function easeInOut(u){
+  return u < 0.5 ? 2*u*u : 1 - Math.pow(-2*u + 2, 2)/2;
+}
+function rr(x, y, w, h, r){
+  r = Math.max(0, Math.min(r, w/2, h/2));
+  ctx.beginPath();
+  ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r); ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h); ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r); ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y); ctx.closePath();
+}
+
+// Precalcular siluetas orgánicas de islas y arrecifes
+const BLOBS = OBSTACLES.map(o => {
+  const rng = seededRand(o.seed), n = 14, r = o.r * CELL, pts = [];
+  for(let i=0;i<n;i++) pts.push({ a:(i/n)*Math.PI*2, rad: r*(0.84 + rng()*0.28) });
+  return { o, pts, n, r };
+});
+
+/* ── Línea de tiempo del bucle (7.6 s) ─────────────────────────────── */
+const CICLO = 7.6;
+// Arranca en t = 1.35 s para que el primer fotograma siempre tenga acción
+let tCiclo = 1.35, reloj = 1.35;
+let boat = { x: START.x, y: START.y, angle: Math.atan2(-(MID.y - START.y), MID.x - START.x) };
+let wake = [], particles = [], floaters = [];
+let buoyHit = false, goalHit = false;
+
+function spawnConfetti(gx, gy, count){
+  const pal = ['#f7d997','#0bc0d8','#52d190','#ffffff'];
+  for(let i=0;i<count;i++){
+    const a = Math.random()*Math.PI*2, spd = 0.8 + Math.random()*2.4;
+    particles.push({
+      x:gx, y:gy, vx:Math.cos(a)*spd, vy:Math.sin(a)*spd,
+      life:0.7 + Math.random()*0.45, maxLife:1.15, size:4 + Math.random()*4,
+      color:pal[i % pal.length]
+    });
+  }
+}
+function spawnRing(gx, gy, color){
+  particles.push({ ring:true, x:gx, y:gy, life:0.75, maxLife:0.75, color });
+}
+function spawnFloater(gx, gy, text, color){
+  floaters.push({ x:gx, y:gy, text, color, life:1.35, maxLife:1.35 });
+}
+
+/* ── Actualización ─────────────────────────────────────────────────── */
+function actualizar(dt){
+  reloj += dt;
+  const prevT = tCiclo;
+  tCiclo = (tCiclo + dt) % CICLO;
+
+  // Reinicio limpio al cerrar el ciclo
+  if(tCiclo < prevT){
+    buoyHit = false;
+    goalHit = false;
+    wake = [];
+    boat.x = START.x; boat.y = START.y;
+    boat.angle = Math.atan2(-(MID.y - START.y), MID.x - START.x);
+  }
+
+  for(const g of GULLS){
+    g.x += g.vx * dt; g.y += g.vy * dt;
+    if(g.x > 1.1) g.x = -0.1; if(g.x < -0.1) g.x = 1.1;
+    if(g.y < -0.1) g.y = 1.1; if(g.y > 1.1) g.y = -0.1;
+  }
+
+  let sailing = false;
+  if(tCiclo < 1.1){
+    boat.x = START.x; boat.y = START.y;
+    const ang = Math.atan2(-(MID.y - START.y), MID.x - START.x);
+    boat.angle = lerpAngle(boat.angle, ang, Math.min(1, dt*8));
+  } else if(tCiclo < 2.6){
+    sailing = true;
+    const u = easeInOut((tCiclo - 1.1) / 1.5);
+    boat.x = START.x + (MID.x - START.x) * u;
+    boat.y = START.y + (MID.y - START.y) * u;
+    const ang = Math.atan2(-(MID.y - START.y), MID.x - START.x);
+    boat.angle = lerpAngle(boat.angle, ang, Math.min(1, dt*14));
+  } else if(tCiclo < 3.7){
+    if(!buoyHit){
+      buoyHit = true;
+      spawnConfetti(MID.x, MID.y, 18);
+      spawnRing(MID.x, MID.y, '#f7d997');
+      spawnFloater(MID.x, MID.y, '★ (−2, 2)', '#ffe59c');
+    }
+    boat.x = MID.x; boat.y = MID.y;
+    const ang = Math.atan2(-(GOAL.y - MID.y), GOAL.x - MID.x);
+    boat.angle = lerpAngle(boat.angle, ang, Math.min(1, dt*7));
+  } else if(tCiclo < 5.5){
+    sailing = true;
+    const u = easeInOut((tCiclo - 3.7) / 1.8);
+    boat.x = MID.x + (GOAL.x - MID.x) * u;
+    boat.y = MID.y + (GOAL.y - MID.y) * u;
+    const ang = Math.atan2(-(GOAL.y - MID.y), GOAL.x - MID.x);
+    boat.angle = lerpAngle(boat.angle, ang, Math.min(1, dt*14));
+  } else {
+    if(!goalHit){
+      goalHit = true;
+      spawnConfetti(GOAL.x, GOAL.y, 32);
+      spawnRing(GOAL.x, GOAL.y, '#52d190');
+      spawnFloater(GOAL.x, GOAL.y, '¡ENTREGADO!', '#9ff7c7');
+    }
+    boat.x = GOAL.x; boat.y = GOAL.y;
+  }
+
+  if(sailing && Math.random() < 0.72){
+    wake.push({ x:boat.x, y:boat.y, r:5.5, life:0.7, maxLife:0.7 });
+  }
+
+  for(let i=wake.length-1; i>=0; i--){
+    wake[i].life -= dt;
+    if(wake[i].life <= 0) wake.splice(i, 1);
+  }
+  for(let i=particles.length-1; i>=0; i--){
+    const p = particles[i];
+    p.life -= dt;
+    if(!p.ring){ p.x += p.vx*dt; p.y += p.vy*dt; p.vx *= 0.94; p.vy *= 0.94; }
+    if(p.life <= 0) particles.splice(i, 1);
+  }
+  for(let i=floaters.length-1; i>=0; i--){
+    floaters[i].life -= dt;
+    if(floaters[i].life <= 0) floaters.splice(i, 1);
+  }
+}
+
+/* ── Dibujo del escenario ──────────────────────────────────────────── */
+function dibujarMar(){
+  const g = ctx.createRadialGradient(W*0.34, H*0.24, 30, W*0.5, H*0.5, W*0.86);
+  g.addColorStop(0, '#18869a');
+  g.addColorStop(0.54, '#0d5a6d');
+  g.addColorStop(1, '#063342');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(195,248,255,0.09)';
+  ctx.lineWidth = 1.6;
+  for(let y=22; y<H; y+=36){
+    ctx.beginPath();
+    for(let x=0; x<=W; x+=32){
+      const wy = y + Math.sin(x*0.017 + reloj*1.15 + y*0.07) * 3.4;
+      x ? ctx.lineTo(x, wy) : ctx.moveTo(x, wy);
+    }
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = 'rgba(255,248,210,0.18)';
+  for(let i=0;i<16;i++){
+    const px = (i*197.3) % W, py = (i*131.7) % H;
+    const pulse = Math.sin(reloj*2.1 + i*1.7);
+    if(pulse > 0.35){
+      const rw = 12 * (pulse - 0.35);
+      ctx.fillRect(px - rw, py, rw*2, 2);
+    }
+  }
+}
+
+function objetivoActual(){
+  if(tCiclo < 2.6) return { pt: MID,  alpha: 1,                  guia: tCiclo < 1.35 ? 1 : Math.max(0, 1 - (tCiclo-1.35)/0.5) };
+  if(tCiclo < 7.0) return { pt: GOAL, alpha: 1,                  guia: (tCiclo >= 2.7 && tCiclo < 4.0) ? 1 : Math.max(0, 1 - Math.abs(tCiclo-3.35)/1.0) };
+  return                  { pt: GOAL, alpha: Math.max(0, (CICLO - tCiclo)/0.6), guia: 0 };
+}
+
+function dibujarPlano(obj){
+  const pMin = toS(MIN_X, MIN_Y), pMax = toS(MAX_X, MAX_Y);
+  const fade = tCiclo > 7.0 ? Math.max(0, (CICLO - tCiclo)/0.6) : 1;
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(4,16,24,0.18)';
+  ctx.fillRect(pMin.x, pMax.y, pMax.x - pMin.x, pMin.y - pMax.y);
+
+  // Bandas alternas sutiles
+  ctx.fillStyle = 'rgba(255,255,255,0.025)';
+  for(let x=MIN_X; x<MAX_X; x++){
+    if(Math.abs(x) % 2 === 0){
+      ctx.fillRect(toS(x, 0).x, pMax.y, CELL, pMin.y - pMax.y);
+    }
+  }
+
+  // Marcas de agua de cuadrantes
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const quads = [
+    { x:  4.2, y:  2.45, n: 'I' },
+    { x: -4.2, y:  2.45, n: 'II' },
+    { x: -4.2, y: -2.45, n: 'III' },
+    { x:  4.2, y: -2.45, n: 'IV' }
+  ];
+  ctx.font = '700 20px Georgia, serif';
+  ctx.fillStyle = 'rgba(244,234,213,0.15)';
+  quads.forEach(q => { const p = toS(q.x, q.y); ctx.fillText(q.n, p.x, p.y); });
+
+  // Cuadrícula y ejes
+  for(let x=MIN_X; x<=MAX_X; x++){
+    const sx = toS(x, 0).x;
+    ctx.strokeStyle = x === 0 ? 'rgba(247,217,151,0.85)' : 'rgba(215,245,250,0.16)';
+    ctx.lineWidth = x === 0 ? 3 : 1.2;
+    ctx.beginPath(); ctx.moveTo(sx, pMax.y); ctx.lineTo(sx, pMin.y); ctx.stroke();
+  }
+  for(let y=MIN_Y; y<=MAX_Y; y++){
+    const sy = toS(0, y).y;
+    ctx.strokeStyle = y === 0 ? 'rgba(247,217,151,0.85)' : 'rgba(215,245,250,0.16)';
+    ctx.lineWidth = y === 0 ? 3 : 1.2;
+    ctx.beginPath(); ctx.moveTo(pMin.x, sy); ctx.lineTo(pMax.x, sy); ctx.stroke();
+  }
+
+  // Intersecciones
+  ctx.fillStyle = 'rgba(225,248,255,0.28)';
+  for(let x=MIN_X; x<=MAX_X; x++){
+    for(let y=MIN_Y; y<=MAX_Y; y++){
+      const p = toS(x, y);
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  // Líneas de proyección desde los ejes hacia la coordenada objetivo
+  if(obj.guia > 0.02){
+    const tgt = toS(obj.pt.x, obj.pt.y);
+    const onX = toS(obj.pt.x, MIN_Y);
+    const onY = toS(MIN_X, obj.pt.y);
+    ctx.save();
+    ctx.globalAlpha = obj.guia * fade * 0.85;
+    ctx.lineWidth = 3;
+    ctx.setLineDash([8, 6]);
+    ctx.strokeStyle = '#66e0f5';
+    ctx.beginPath(); ctx.moveTo(onX.x, onX.y); ctx.lineTo(tgt.x, tgt.y); ctx.stroke();
+    ctx.strokeStyle = '#ffca70';
+    ctx.beginPath(); ctx.moveTo(onY.x, onY.y); ctx.lineTo(tgt.x, tgt.y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  // Números de los ejes (grandes y legibles al escalarse en tarjeta)
+  ctx.font = '800 20px system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for(let x=MIN_X; x<=MAX_X; x++){
+    const p = toS(x, MIN_Y);
+    const hi = x === obj.pt.x && fade > 0.2;
+    if(hi){
+      ctx.fillStyle = 'rgba(11,192,216,0.36)';
+      ctx.beginPath(); ctx.arc(p.x, p.y + 22, 16, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle = hi ? '#9af2ff' : (x === 0 ? '#ffe4a3' : 'rgba(244,234,213,0.9)');
+    ctx.fillText(x < 0 ? '−' + Math.abs(x) : String(x), p.x, p.y + 11);
+  }
+
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(let y=MIN_Y; y<=MAX_Y; y++){
+    const p = toS(MIN_X, y);
+    const hi = y === obj.pt.y && fade > 0.2;
+    if(hi){
+      ctx.fillStyle = 'rgba(247,217,151,0.32)';
+      ctx.beginPath(); ctx.arc(p.x - 24, p.y, 16, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle = hi ? '#ffe59c' : (y === 0 ? '#ffe4a3' : 'rgba(244,234,213,0.9)');
+    ctx.fillText(y < 0 ? '−' + Math.abs(y) : String(y), p.x - 14, p.y);
+  }
+
+  // Letras X y Y
+  ctx.font = '800 22px Georgia, serif';
+  ctx.fillStyle = '#66e0f5'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText('X', pMax.x + 14, OY);
+  ctx.fillStyle = '#ffca70'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+  ctx.fillText('Y', OX, pMax.y - 10);
+
+  // Rosa de los vientos en (0, 0)
+  ctx.save(); ctx.translate(OX, OY);
+  ctx.fillStyle = 'rgba(247,217,151,0.24)';
+  ctx.beginPath();
+  for(let i=0;i<8;i++){
+    const a = i*Math.PI/4, rad = i%2===0 ? 15 : 5.5;
+    i ? ctx.lineTo(Math.cos(a)*rad, Math.sin(a)*rad) : ctx.moveTo(Math.cos(a)*rad, Math.sin(a)*rad);
+  }
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(247,217,151,0.6)'; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.restore();
+  ctx.restore();
+}
+
+function dibujarPalmera(x, y, size, phase){
+  ctx.save(); ctx.translate(x, y);
+  const sway = Math.sin(phase*1.4) * 0.08;
+  for(let i=0;i<6;i++){
+    ctx.save(); ctx.rotate((i/6)*Math.PI*2 + sway);
+    ctx.fillStyle = i%2===0 ? '#7ed36b' : '#4a9e52';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(size*0.55, -size*0.24, size, 0);
+    ctx.quadraticCurveTo(size*0.55,  size*0.24, 0, 0);
+    ctx.fill(); ctx.restore();
+  }
+  ctx.fillStyle = '#5a3d20';
+  ctx.beginPath(); ctx.arc(0, 0, Math.max(2.5, size*0.14), 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function dibujarObstaculos(){
+  for(const b of BLOBS){
+    const { o, pts, n, r } = b;
+    const p = toS(o.x, o.y);
+    const trace = mul => {
+      ctx.beginPath();
+      for(let i=0;i<n;i++){
+        const c = pts[i], nx = pts[(i+1)%n];
+        const x1 = p.x + Math.cos(c.a)*c.rad*mul,  y1 = p.y + Math.sin(c.a)*c.rad*mul;
+        const x2 = p.x + Math.cos(nx.a)*nx.rad*mul, y2 = p.y + Math.sin(nx.a)*nx.rad*mul;
+        const mx = (x1+x2)/2, my = (y1+y2)/2;
+        i ? ctx.quadraticCurveTo(x1, y1, mx, my) : ctx.moveTo(mx, my);
+      }
+      ctx.closePath();
+    };
+
+    ctx.save();
+    trace(1.24 + Math.sin(reloj*2.2 + o.seed)*0.03);
+    ctx.fillStyle = 'rgba(98,235,232,0.14)'; ctx.fill();
+
+    trace(o.kind === 'island' ? 0.98 : 0.92);
+    ctx.strokeStyle = 'rgba(246,253,255,0.78)';
+    ctx.lineWidth = 2.4; ctx.setLineDash([7, 5]); ctx.stroke(); ctx.setLineDash([]);
+
+    ctx.save(); ctx.translate(4, 6); trace(0.95);
+    ctx.fillStyle = 'rgba(3,14,22,0.44)'; ctx.fill(); ctx.restore();
+
+    if(o.kind === 'island'){
+      trace(0.98);
+      const sg = ctx.createRadialGradient(p.x-r*0.25, p.y-r*0.25, r*0.1, p.x, p.y, r);
+      sg.addColorStop(0, '#f5db9e'); sg.addColorStop(1, '#c29954');
+      ctx.fillStyle = sg; ctx.fill();
+
+      trace(0.7);
+      const vg = ctx.createRadialGradient(p.x-r*0.2, p.y-r*0.2, r*0.08, p.x, p.y, r*0.75);
+      vg.addColorStop(0, '#66ba62'); vg.addColorStop(1, '#296943');
+      ctx.fillStyle = vg; ctx.fill();
+
+      dibujarPalmera(p.x - r*0.18, p.y - r*0.1,  r*0.35, reloj + o.seed);
+      dibujarPalmera(p.x + r*0.22, p.y + r*0.12, r*0.27, reloj*0.9 + o.seed + 2);
+    } else {
+      trace(0.92);
+      const rg = ctx.createRadialGradient(p.x-r*0.2, p.y-r*0.25, r*0.05, p.x, p.y, r);
+      rg.addColorStop(0, '#82969e'); rg.addColorStop(0.6, '#4a5c66'); rg.addColorStop(1, '#253038');
+      ctx.fillStyle = rg; ctx.fill();
+      trace(0.54); ctx.fillStyle = 'rgba(225,240,245,0.22)'; ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function dibujarMuelle(pt, esMeta){
+  const p = toS(pt.x, pt.y), s = 22;
+  ctx.save(); ctx.translate(p.x, p.y);
+  if(esMeta){
+    const pulse = (Math.sin(reloj*3.2) + 1) * 0.5;
+    ctx.strokeStyle = `rgba(247,217,151,${0.35 + pulse*0.45})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, 0, s*(1.28 + pulse*0.25), 0, Math.PI*2); ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(0,0,0,0.36)';
+  ctx.fillRect(-s*0.8 + 3, -s*0.65 + 4, s*1.6, s*1.3);
+
+  ctx.fillStyle = esMeta ? '#a87038' : '#735336';
+  ctx.strokeStyle = esMeta ? '#f7d997' : '#d5b282';
+  ctx.lineWidth = 2.2;
+  rr(-s*0.8, -s*0.65, s*1.6, s*1.3, 6);
+  ctx.fill(); ctx.stroke();
+
+  if(esMeta){
+    ctx.fillStyle = '#f7d997';
+    ctx.fillRect(-s*0.32, -s*0.32, s*0.64, s*0.64);
+    ctx.strokeStyle = '#3b240b'; ctx.lineWidth = 1.6;
+    ctx.strokeRect(-s*0.32, -s*0.32, s*0.64, s*0.64);
+    ctx.beginPath();
+    ctx.moveTo(0, -s*0.32); ctx.lineTo(0, s*0.32);
+    ctx.moveTo(-s*0.32, 0); ctx.lineTo(s*0.32, 0);
+    ctx.stroke();
+
+    ctx.font = '800 14px system-ui, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#06151c'; ctx.fillText('ENTREGA', 1, -s*0.95 + 1);
+    ctx.fillStyle = '#ffe5a3'; ctx.fillText('ENTREGA', 0, -s*0.95);
+  } else {
+    ctx.font = '800 13px system-ui, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillStyle = '#bdf3d5'; ctx.fillText('SALIDA', 0, s*0.9);
+  }
+  ctx.restore();
+}
+
+function dibujarBoya(){
+  if(buoyHit) return;
+  const p = toS(MID.x, MID.y), r = 16;
+  const bob = Math.sin(reloj*3.8) * 3;
+  ctx.save(); ctx.translate(p.x, p.y + bob);
+  ctx.strokeStyle = `rgba(247,217,151,${0.28 + (Math.sin(reloj*4)+1)*0.25})`;
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(0, 0, r*1.48, 0, Math.PI*2); ctx.stroke();
+
+  const bg = ctx.createRadialGradient(-r*0.3, -r*0.3, 1, 0, 0, r);
+  bg.addColorStop(0, '#fff4cc'); bg.addColorStop(0.55, '#f2bd52'); bg.addColorStop(1, '#a96e17');
+  ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#fff5d6'; ctx.lineWidth = 1.6; ctx.stroke();
+
+  ctx.fillStyle = '#3a2204';
+  ctx.font = '900 20px system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('★', 0, 1);
+  ctx.restore();
+}
+
+function dibujarRuta(){
+  const fade = tCiclo > 7.0 ? Math.max(0, (CICLO - tCiclo)/0.6) : 1;
+  ctx.save();
+  ctx.globalAlpha = fade;
+  ctx.lineCap = 'round';
+
+  // Tramo 1 recorrido
+  if(tCiclo >= 1.1){
+    const a = toS(START.x, START.y);
+    const b = tCiclo < 2.6 ? toS(boat.x, boat.y) : toS(MID.x, MID.y);
+    ctx.strokeStyle = tCiclo < 2.6 ? 'rgba(247,217,151,0.92)' : 'rgba(11,192,216,0.9)';
+    ctx.lineWidth = 4; ctx.setLineDash([10, 8]);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // Tramo 2 recorrido
+  if(tCiclo >= 3.7){
+    const a = toS(MID.x, MID.y);
+    const b = tCiclo < 5.5 ? toS(boat.x, boat.y) : toS(GOAL.x, GOAL.y);
+    ctx.strokeStyle = tCiclo < 5.5 ? 'rgba(247,217,151,0.92)' : 'rgba(11,192,216,0.9)';
+    ctx.lineWidth = 4; ctx.setLineDash([10, 8]);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // Baliza en el punto intermedio tras llegar
+  if(tCiclo >= 2.6){
+    const m = toS(MID.x, MID.y);
+    ctx.fillStyle = '#0bc0d8';
+    ctx.beginPath(); ctx.arc(m.x, m.y, 7, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.2; ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function dibujarEstela(){
+  ctx.save();
+  for(const w of wake){
+    const s = toS(w.x, w.y);
+    const a = (w.life / w.maxLife) * 0.55;
+    ctx.fillStyle = `rgba(225,252,255,${a.toFixed(3)})`;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, w.r*(1.35 - (w.life/w.maxLife)*0.5), 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function dibujarLancha(){
+  const fade = tCiclo > 7.0 ? Math.max(0, (CICLO - tCiclo)/0.6) : 1;
+  const p = toS(boat.x, boat.y), sz = 25;
+  const sailing = (tCiclo >= 1.1 && tCiclo < 2.6) || (tCiclo >= 3.7 && tCiclo < 5.5);
+  const bob = sailing ? 0 : Math.sin(reloj*3.1)*2;
+
+  ctx.save();
+  ctx.globalAlpha = fade;
+  ctx.translate(p.x, p.y + bob);
+  ctx.rotate(boat.angle);
+
+  if(sailing){
+    ctx.strokeStyle = 'rgba(235,252,255,0.62)';
+    ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(sz*1.05, 0); ctx.lineTo(-sz*0.5, -sz*0.85);
+    ctx.moveTo(sz*1.05, 0); ctx.lineTo(-sz*0.5,  sz*0.85);
+    ctx.stroke();
+  }
+
+  // Sombra
+  ctx.save(); ctx.translate(3, 5); ctx.fillStyle = 'rgba(0,10,16,0.42)';
+  ctx.beginPath();
+  ctx.moveTo(sz*1.15, 0);
+  ctx.quadraticCurveTo(sz*0.4, -sz*0.65, -sz*0.9, -sz*0.52);
+  ctx.lineTo(-sz*0.9, sz*0.52);
+  ctx.quadraticCurveTo(sz*0.4,  sz*0.65, sz*1.15, 0);
+  ctx.closePath(); ctx.fill(); ctx.restore();
+
+  // Casco
+  ctx.fillStyle = '#f8f2e4'; ctx.strokeStyle = '#c84b39'; ctx.lineWidth = 2.6;
+  ctx.beginPath();
+  ctx.moveTo(sz*1.15, 0);
+  ctx.quadraticCurveTo(sz*0.4, -sz*0.62, -sz*0.88, -sz*0.48);
+  ctx.lineTo(-sz*0.88, sz*0.48);
+  ctx.quadraticCurveTo(sz*0.4,  sz*0.62, sz*1.15, 0);
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  // Cubierta
+  ctx.fillStyle = '#b98249';
+  ctx.beginPath();
+  ctx.moveTo(sz*0.72, 0);
+  ctx.quadraticCurveTo(sz*0.25, -sz*0.38, -sz*0.7, -sz*0.32);
+  ctx.lineTo(-sz*0.7, sz*0.32);
+  ctx.quadraticCurveTo(sz*0.25,  sz*0.38, sz*0.72, 0);
+  ctx.closePath(); ctx.fill();
+
+  // Parabrisas
+  ctx.fillStyle = '#4ad7f0';
+  ctx.beginPath();
+  ctx.moveTo(sz*0.38, -sz*0.24);
+  ctx.quadraticCurveTo(sz*0.52, 0, sz*0.38, sz*0.24);
+  ctx.lineTo(sz*0.14, sz*0.26);
+  ctx.quadraticCurveTo(sz*0.24, 0, sz*0.14, -sz*0.26);
+  ctx.closePath(); ctx.fill();
+
+  // Paquete a bordo hasta la entrega
+  if(!goalHit){
+    ctx.fillStyle = '#f5c768'; ctx.strokeStyle = '#6c4314'; ctx.lineWidth = 1.6;
+    ctx.fillRect(-sz*0.56, -sz*0.22, sz*0.46, sz*0.44);
+    ctx.strokeRect(-sz*0.56, -sz*0.22, sz*0.46, sz*0.44);
+  }
+
+  // Banderín de popa
+  const wave = Math.sin(reloj*10)*3;
+  ctx.strokeStyle = '#ffd483'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-sz*0.86, 0);
+  ctx.quadraticCurveTo(-sz*1.15, wave, -sz*1.38, -wave*0.5); ctx.stroke();
+  ctx.restore();
+}
+
+function dibujarEfectos(){
+  ctx.save();
+  for(const pt of particles){
+    const s = toS(pt.x, pt.y), r = pt.life / pt.maxLife;
+    if(pt.ring){
+      ctx.strokeStyle = pt.color;
+      ctx.globalAlpha = r * 0.85;
+      ctx.lineWidth = 3.2;
+      ctx.beginPath(); ctx.arc(s.x, s.y, (1-r)*CELL*0.95 + 10, 0, Math.PI*2); ctx.stroke();
+    } else {
+      ctx.globalAlpha = Math.max(0, r);
+      ctx.fillStyle = pt.color;
+      ctx.beginPath(); ctx.arc(s.x, s.y, pt.size*(0.4 + r*0.6), 0, Math.PI*2); ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.font = '900 22px system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for(const fl of floaters){
+    const s = toS(fl.x, fl.y), u = 1 - fl.life/fl.maxLife, dy = -26 - u*42;
+    ctx.globalAlpha = Math.min(1, fl.life*2);
+    ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(4,14,20,0.9)'; ctx.lineWidth = 6;
+    ctx.strokeText(fl.text, s.x, s.y + dy);
+    ctx.fillStyle = fl.color;
+    ctx.fillText(fl.text, s.x, s.y + dy);
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+function dibujarGaviotas(){
+  ctx.save();
+  ctx.strokeStyle = 'rgba(245,252,255,0.48)';
+  ctx.lineWidth = 2; ctx.lineCap = 'round';
+  for(const g of GULLS){
+    const x = g.x*W, y = g.y*H;
+    const flap = Math.sin(reloj*4.4 + g.phase)*4.5*g.scale;
+    const wing = 10*g.scale;
+    ctx.beginPath();
+    ctx.moveTo(x - wing, y - flap);
+    ctx.quadraticCurveTo(x - wing*0.4, y - 4.5*g.scale, x, y);
+    ctx.quadraticCurveTo(x + wing*0.4, y - 4.5*g.scale, x + wing, y - flap);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* ── Píldora de coordenada activa (esquina superior derecha) ────────── */
+function dibujarPildora(obj){
+  const bx = W - 252, by = 24, bw = 224, bh = 58;
+  const xTxt = obj.pt.x < 0 ? '−' + Math.abs(obj.pt.x) : String(obj.pt.x);
+  const yTxt = obj.pt.y < 0 ? '−' + Math.abs(obj.pt.y) : String(obj.pt.y);
+
+  ctx.save();
+  ctx.globalAlpha = obj.alpha;
+  rr(bx, by, bw, bh, 14);
+  ctx.fillStyle = 'rgba(6, 22, 29, 0.88)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(247, 217, 151, 0.58)'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Etiqueta pequeña a la izquierda
+  ctx.font = '800 13px system-ui, sans-serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(154,182,192,0.92)';
+  ctx.fillText('RUMBO', bx + 16, by + bh/2 + 1);
+
+  // Coordenada (X, Y) con el mismo código de color que la consola
+  const cx = bx + 148, cy = by + bh/2 + 1;
+  ctx.font = '900 32px system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(244,234,213,0.55)'; ctx.fillText('(', cx - 48, cy - 1);
+  ctx.fillStyle = '#66e0f5';                 ctx.fillText(xTxt, cx - 22, cy);
+  ctx.fillStyle = '#e4b55f';                 ctx.fillText(',', cx + 4, cy + 2);
+  ctx.fillStyle = '#ffca70';                 ctx.fillText(yTxt, cx + 28, cy);
+  ctx.fillStyle = 'rgba(244,234,213,0.55)'; ctx.fillText(')', cx + 52, cy - 1);
+  ctx.restore();
+}
+
+function dibujar(){
+  const obj = objetivoActual();
+  dibujarMar();
+  dibujarPlano(obj);
+  dibujarRuta();
+  dibujarEstela();
+  dibujarMuelle(START, false);
+  dibujarMuelle(GOAL, true);
+  dibujarBoya();
+  dibujarObstaculos();
+  dibujarLancha();
+  dibujarEfectos();
+  dibujarGaviotas();
+  dibujarPildora(obj);
+
+  // Viñeta suave en los bordes
+  const v = ctx.createRadialGradient(W/2, H*0.48, H*0.45, W/2, H*0.48, W*0.82);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(3,14,22,0.42)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+
+/* ── Bucle con pausa inteligente para la rejilla de 6 juegos ─────────── */
+let activo = true, raf = 0, previo = performance.now();
+
+function bucle(ahora){
+  if(!activo){ raf = 0; return; }
+  const dt = Math.min(0.05, (ahora - previo)/1000);
+  previo = ahora;
+  actualizar(dt);
+  dibujar();
+  raf = requestAnimationFrame(bucle);
+}
+function reanudar(){
+  if(lento || activo) return;
+  activo = true;
+  previo = performance.now();
+  if(!raf) raf = requestAnimationFrame(bucle);
+}
+function pausar(){
+  activo = false;
+  if(raf){ cancelAnimationFrame(raf); raf = 0; }
+}
+
+addEventListener('message', e => {
+  if(e.data && e.data.type === 'didaxis-preview'){
+    e.data.active ? reanudar() : pausar();
+  }
+});
+document.addEventListener('visibilitychange', () => {
+  document.hidden ? pausar() : reanudar();
+});
+
+ajustar();
+if(lento){
+  // Fotograma representativo a mitad del segundo tramo
+  tCiclo = 4.65; buoyHit = true;
+  actualizar(0.016);
+  dibujar();
+} else {
+  actualizar(0.016);
+  dibujar();
+  raf = requestAnimationFrame(bucle);
+}
+</script>
+</body>
+</html>
