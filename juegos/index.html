@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juegos — Didaxis Lab</title>
+<meta name="description" content="Seis juegos matemáticos donde la operación es la mecánica: enteros, deducción numérica, plano cartesiano, geometría 3D y funciones. Abiertos, sin cuentas y sin conexión.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><line x1='22' y1='22' x2='78' y2='78' stroke='%231B2A5A' stroke-width='12' stroke-linecap='round'/><line x1='78' y1='22' x2='22' y2='78' stroke='%231B2A5A' stroke-width='12' stroke-linecap='round'/><circle cx='20' cy='20' r='15' fill='%230BC0D8'/><circle cx='80' cy='20' r='15' fill='%230BC0D8'/><circle cx='80' cy='80' r='15' fill='%230BC0D8'/><circle cx='20' cy='80' r='15' fill='%230BC0D8'/></svg>">
+
+<style>
+  /* Mismos testigos de diseño que el resto del sitio */
+  :root{
+    --navy:#1B2A5A; --navy-dark:#0F1C3F; --cyan:#0BC0D8; --cyan-soft:#E2F7FA;
+    --ink:#1B2A5A; --muted:#5B6B82; --line:#E6E9EF; --bg:#FAFBFC; --panel:#FFFFFF;
+    --grid:rgba(11,192,216,0.06); --radius:16px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --shadow-lg:0 12px 40px rgba(22,36,58,.12); --maxw:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--navy);text-decoration:none;}
+  h1,h2,h3{letter-spacing:-.02em;color:var(--navy);}
+  [hidden]{display:none !important;}
+
+  /* ── Barra superior (misma estructura y comportamiento que la portada) ── */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:30;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:13px 22px;display:flex;
+    align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;min-height:44px;flex:0 0 auto;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .nav{display:flex;align-items:center;gap:22px;}
+  .nav a{font-size:14.5px;font-weight:600;color:var(--muted);
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav a:hover{color:var(--navy);}
+  .nav a[aria-current="page"]{color:var(--navy);}
+  .nav .nav-cta{color:#fff;background:var(--navy);padding:8px 15px;border-radius:9px;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav .nav-cta:hover{background:var(--navy-dark);color:#fff;}
+
+  /* ── Encabezado de página ── */
+  .page-head{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:28px 28px;}
+  .page-head-inner{max-width:var(--maxw);margin:0 auto;padding:50px 22px 42px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .page-head h1{font-size:clamp(32px,5vw,46px);line-height:1.08;font-weight:800;}
+  .page-head p{margin-top:14px;font-size:clamp(16px,2.2vw,18px);color:var(--muted);max-width:62ch;}
+  .head-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+  .head-chips span{font-size:12.5px;font-weight:600;color:var(--navy);background:var(--cyan-soft);
+    border:1px solid #CDEDF3;padding:5px 12px;border-radius:999px;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:34px 22px 48px;}
+
+  /* ── Barra de filtros editorial ── */
+  .catalog-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    flex-wrap:wrap;margin-bottom:26px;}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;}
+  .filter-btn{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+    font-family:inherit;font-size:13.5px;font-weight:700;color:var(--muted);
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;
+    padding:8px 15px;transition:background .16s,border-color .16s,color .16s;}
+  .filter-btn:hover{border-color:var(--cyan);color:var(--navy);}
+  .filter-btn .count{display:inline-flex;align-items:center;justify-content:center;
+    min-width:20px;height:20px;padding:0 6px;border-radius:999px;font-size:11.5px;
+    font-weight:800;background:#EEF2F7;color:var(--muted);transition:background .16s,color .16s;}
+  .filter-btn[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .filter-btn[aria-pressed="true"] .count{background:rgba(255,255,255,.18);color:#fff;}
+  .catalog-count{font-size:13.5px;font-weight:600;color:var(--muted);}
+
+  /* ── Rejilla editorial 2×3 ── */
+  .games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:stretch;}
+
+  .game{display:flex;flex-direction:column;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;
+    transition:box-shadow .2s,border-color .2s,transform .2s;}
+  .game:hover{box-shadow:var(--shadow-lg);border-color:#D4DAE6;transform:translateY(-2px);}
+
+  /* La vista previa es el juego mismo en movimiento, no una captura */
+  .stage{position:relative;aspect-ratio:16/10;background:#07081A;overflow:hidden;flex:0 0 auto;}
+  .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;}
+  .stage-tag{position:absolute;left:12px;top:12px;z-index:2;pointer-events:none;
+    display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;
+    background:rgba(6,10,26,.62);border:1px solid rgba(255,255,255,.20);backdrop-filter:blur(6px);
+    font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#EAF6FF;}
+  .stage-tag i{width:6px;height:6px;border-radius:50%;background:#4ADE80;font-style:normal;
+    box-shadow:0 0 8px 2px rgba(74,222,128,.7);}
+
+  .game-body{display:flex;flex-direction:column;flex:1 1 auto;padding:22px 24px 24px;}
+  .game-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    flex-wrap:wrap;margin-bottom:10px;}
+  .chip{display:inline-block;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--navy);}
+  .level-tag{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.01em;}
+
+  .game-body h2{font-size:clamp(21px,2.4vw,25px);font-weight:800;line-height:1.18;}
+  .game-body > p{margin-top:9px;color:var(--muted);font-size:14.5px;line-height:1.58;}
+
+  .facts{margin-top:16px;border-top:1px solid var(--line);}
+  .facts div{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.48;}
+  .facts dt{flex:0 0 86px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--muted);padding-top:2px;}
+  .facts dd{color:var(--ink);}
+
+  /* ── Par de acciones: jugar (principal) e incrustar (secundaria) ── */
+  .acciones{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:auto;padding-top:20px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:700;
+    padding:12px 22px;border-radius:11px;transition:.18s;border:0;cursor:pointer;
+    background:var(--navy);color:#fff;}
+  .btn:hover{background:var(--navy-dark);color:#fff;transform:translateY(-2px);}
+  .btn svg{width:16px;height:16px;}
+  .btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;
+    font-family:inherit;font-size:14.5px;font-weight:700;color:var(--navy);
+    background:#fff;border:1px solid var(--line);padding:11px 17px;border-radius:11px;
+    transition:.18s;}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-soft);}
+  .btn-ghost svg{width:16px;height:16px;}
+
+  /* ── Ventana con el código de incrustado ── */
+  #dlg-incrustar{position:fixed;margin:auto;width:min(560px,92vw);border:1px solid var(--line);
+    border-radius:var(--radius);padding:28px 28px 24px;box-shadow:var(--shadow-lg);
+    color:var(--ink);background:var(--panel);}
+  #dlg-incrustar::backdrop{background:rgba(15,28,63,.42);backdrop-filter:blur(3px);}
+  #dlg-incrustar h3{font-size:21px;font-weight:800;padding-right:28px;}
+  .dlg-intro{margin-top:10px;color:var(--muted);font-size:14.5px;}
+  .dlg-lbl{display:block;margin-top:18px;margin-bottom:7px;font-size:11.5px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  #dlg-codigo{width:100%;font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;
+    font-size:12.5px;line-height:1.55;color:#22314F;background:#F4F7FA;
+    border:1px solid var(--line);border-radius:10px;padding:12px 14px;resize:vertical;}
+  #dlg-codigo:focus{outline:2px solid var(--cyan);outline-offset:1px;}
+  .dlg-tip{margin-top:10px;font-size:13px;color:var(--muted);}
+  .dlg-tip code,.dlg-tip em{font-family:ui-monospace,Consolas,monospace;font-style:normal;
+    background:#EEF2F7;padding:1px 5px;border-radius:4px;font-size:12px;}
+  .dlg-acciones{display:flex;gap:10px;align-items:center;margin-top:20px;flex-wrap:wrap;}
+  .dlg-acciones form{display:contents;}
+  .dlg-cerrar-x{position:absolute;top:14px;right:14px;}
+  .dlg-cerrar-x button{cursor:pointer;border:0;background:transparent;color:var(--muted);
+    font-size:17px;line-height:1;padding:6px;border-radius:8px;}
+  .dlg-cerrar-x button:hover{color:var(--navy);background:#EEF2F7;}
+
+  /* ── Nota para el aula ── */
+  .aula{background:var(--panel);border-top:1px solid var(--line);}
+  .aula-inner{max-width:var(--maxw);margin:0 auto;padding:44px 22px 50px;}
+  .aula h2{font-size:clamp(22px,3.2vw,28px);font-weight:800;}
+  .aula > .aula-inner > p{margin-top:10px;color:var(--muted);max-width:64ch;}
+  .aula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(226px,1fr));gap:24px;margin-top:26px;}
+  .aula-grid > div{padding-top:15px;border-top:2px solid var(--cyan);}
+  .aula-grid h3{font-size:16.5px;font-weight:800;}
+  .aula-grid p{margin-top:6px;color:var(--muted);font-size:14.5px;}
+
+  footer{border-top:1px solid var(--line);background:var(--panel);}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:30px 22px;display:flex;
+    align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);}
+  .foot-inner .row{display:flex;align-items:center;gap:9px;}
+  .foot-inner .logo-mark{width:24px;height:24px;}
+  .foot-inner .name{font-weight:800;font-size:15px;color:var(--navy);}
+
+  a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:8px;}
+
+  @media (max-width:860px){
+    .games-grid{grid-template-columns:1fr;gap:22px;}
+    .game-body{padding:22px 22px 24px;}
+  }
+  @media (max-width:760px){
+    .topbar-inner{flex-wrap:wrap;gap:10px 0;padding:11px 18px 12px;}
+    .nav{width:100%;gap:0 16px;flex-wrap:wrap;justify-content:space-between;}
+    .nav a{font-size:14px;min-height:40px;display:inline-flex;align-items:center;}
+    .nav .nav-cta{display:none;}
+    .page-head-inner{padding:38px 18px 34px;}
+    .wrap{padding:26px 18px 40px;}
+  }
+  @media (max-width:560px){
+    .facts dt{flex-basis:78px;}
+    .acciones .btn,.acciones .btn-ghost{flex:1 1 132px;}
+    .catalog-count{width:100%;}
+  }
+  @media (max-width:380px){
+    .nav{gap:0 10px;}
+    .nav a{font-size:13.3px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .game:hover,.btn:hover{transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/" aria-label="Didaxis Lab — inicio">
+      <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+        <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+        <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+      </svg>
+      <span class="name">Didaxis Lab</span>
+    </a>
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="/#recursos">Recursos</a>
+      <a href="/juegos/" aria-current="page">Juegos</a>
+      <a href="/#por-que">Por qué</a>
+      <a href="/#fundamentacion">Fundamentación</a>
+      <a href="/autor/">El autor</a>
+      <a class="nav-cta" href="/#proyecto">El proyecto</a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="page-head-inner">
+    <span class="eyebrow">Didaxis Lab</span>
+    <h1>Juegos</h1>
+    <p>En estos juegos la matemática no va encima: es la mecánica. Cada reto exige operar,
+       ubicar, plegar o modelar para avanzar: si el número no cuadra, la escena responde y
+       muestra por qué.</p>
+    <div class="head-chips">
+      <span>6 juegos abiertos</span>
+      <span>Se abren en el navegador</span>
+      <span>Funcionan sin conexión</span>
+      <span>Sin cuentas ni datos personales</span>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+
+  <div class="catalog-bar">
+    <div class="filters" role="group" aria-label="Filtrar juegos por área">
+      <button class="filter-btn" type="button" data-filtro="todos" aria-pressed="true">
+        Todos <span class="count">6</span>
+      </button>
+      <button class="filter-btn" type="button" data-filtro="numeros" aria-pressed="false">
+        Números y lógica <span class="count">2</span>
+      </button>
+      <button class="filter-btn" type="button" data-filtro="geometria" aria-pressed="false">
+        Geometría <span class="count">2</span>
+      </button>
+      <button class="filter-btn" type="button" data-filtro="funciones" aria-pressed="false">
+        Funciones <span class="count">2</span>
+      </button>
+    </div>
+    <span class="catalog-count" id="catalog-count" role="status" aria-live="polite">Mostrando 6 juegos</span>
+  </div>
+
+  <div class="games-grid">
+
+    <!-- ─── 1. Guardianes del Cero ─── -->
+    <article class="game" data-cat="numeros">
+      <div class="stage" style="background:#07071A;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-cero.html" title="Vista previa de Guardianes del Cero"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Números enteros</span>
+          <span class="level-tag">7.° en adelante</span>
+        </div>
+        <h2>Guardianes del Cero</h2>
+        <p>Los invasores son números negativos y cada torre suma una cantidad fija. Un invasor
+           solo cae cuando su valor llega <strong>exactamente a cero</strong>. Al −12 lo cierra
+           antes una torre de +5 que tres de +1: elegir la torre es hacer la cuenta.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Opuesto aditivo, suma y resta de enteros, ley de signos y jerarquía de operaciones</dd></div>
+          <div><dt>Al terminar</dt><dd>Informe por tipo de operación, descargable en CSV</dd></div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="guardianes-del-cero.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="guardianes-del-cero.html" data-nombre="Guardianes del Cero">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 2. Misión Número Secreto ─── -->
+    <article class="game" data-cat="numeros">
+      <div class="stage" style="background:#07081A;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-secreto.html" title="Vista previa de Misión Número Secreto"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Deducción numérica</span>
+          <span class="level-tag">5.° a 8.°</span>
+        </div>
+        <h2>Misión Número Secreto</h2>
+        <p>Cada personaje guarda un número y suelta una pista: es par, es múltiplo de 5, es mayor
+           que 10. Ninguna basta por sí sola; cruzadas dejan un único candidato. Hay calculadora
+           y bloc de notas para llevar el rastro del razonamiento.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Divisibilidad y múltiplos, paridad, desigualdades y razonamiento por descarte</dd></div>
+          <div><dt>Formato</dt><dd>Se juega en vertical desde el celular</dd></div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="mision-numero-secreto.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="mision-numero-secreto.html" data-nombre="Misión Número Secreto" data-alto="680">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 3. Rumbo Cartesiano ─── -->
+    <article class="game" data-cat="geometria">
+      <div class="stage" style="background:#063342;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-rumbo.html" title="Vista previa de Rumbo Cartesiano"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Plano cartesiano</span>
+          <span class="level-tag">6.° a 9.°</span>
+        </div>
+        <h2>Rumbo Cartesiano</h2>
+        <p>Traza coordenadas <strong>(X, Y)</strong> para llevar paquetes por cuatro archipiélagos
+           con arrecifes, boyas de sonar tipo buscaminas, corrientes que trasladan tu punto final
+           y faros de simetría. Si el signo o el orden fallan, el diagnóstico explica el desvío.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Cuatro cuadrantes, traslaciones por corrientes, simetría axial y deducción por sonar</dd></div>
+          <div><dt>Recorrido</dt><dd>21 misiones en 4 mundos, con atlas de estrellas e insignias</dd></div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="rumbo-cartesiano.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="rumbo-cartesiano.html" data-nombre="Rumbo Cartesiano">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 4. El último pliegue ─── -->
+    <article class="game" data-cat="geometria">
+      <div class="stage" style="background:#081E20;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-pliegue.html" title="Vista previa de El último pliegue"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Geometría 3D</span>
+          <span class="level-tag">6.° a 9.°</span>
+        </div>
+        <h2>El último pliegue</h2>
+        <p>Acompaña a un zorro de papel doblando desarrollos planos por sus bisagras para cerrar
+           cubos, prismas y pirámides u orientar rampas. Cada cuerpo plegado con precisión enciende
+           el farol del escenario y abre paso al siguiente reto.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Desarrollos planos, ángulos de plegado, cubos, prismas, pirámides y orientación espacial</dd></div>
+          <div><dt>Recorrido</dt><dd>18 retos de geometría repartidos en 3 mundos</dd></div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="el-ultimo-pliegue.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="el-ultimo-pliegue.html" data-nombre="El último pliegue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 5. La senda del arquero ─── -->
+    <article class="game" data-cat="funciones">
+      <div class="stage" style="background:#101830;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-arquero.html" title="Vista previa de La senda del arquero"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Función cuadrática</span>
+          <span class="level-tag">8.° y 9.°</span>
+        </div>
+        <h2>La senda del arquero</h2>
+        <p>Tu flecha vuela según una parábola y tú colocas sus constantes para librar muros,
+           doseles y pasar por aros hasta clavar la diana. Los tiros fallidos quedan dibujados
+           como curvas fantasma para leer qué mueve cada parámetro.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Forma de vértice, forma factorizada por raíces y forma general de la cuadrática</dd></div>
+          <div><dt>Recorrido</dt><dd>20 niveles en 4 actos, con traductor entre formas y visor limitado</dd></div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="senda-del-arquero.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="senda-del-arquero.html" data-nombre="La senda del arquero">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- ─── 6. Guardianes del Claro ─── -->
+    <article class="game" data-cat="funciones">
+      <div class="stage" style="background:#07081A;">
+        <span class="stage-tag"><i></i>Vista previa</span>
+        <iframe src="mini/mini-claro.html" title="Vista previa de Guardianes del Claro"
+                loading="lazy" scrolling="no" tabindex="-1"></iframe>
+      </div>
+      <div class="game-body">
+        <div class="game-meta">
+          <span class="chip">Funciones</span>
+          <span class="level-tag">9.° a 11.°</span>
+        </div>
+        <h2>Guardianes del Claro</h2>
+        <p>Cada noche baja una criatura distinta y el explorador solo trae rastros: huellas,
+           plumas, sonidos. Hay que identificar la especie en las Crónicas del Bosque y evaluar
+           su función en la noche de hoy. Si el número no cuadra, la empalizada cae.</p>
+        <dl class="facts">
+          <div><dt>Contenido</dt><dd>Evaluación de funciones lineales, cuadráticas y exponenciales: nueve especies, nueve patrones</dd></div>
+          <div><dt>Al terminar</dt><dd>Registro noche a noche que separa el error de cálculo del error de identificación</dd></div>
+        </dl>
+        <div class="acciones">
+          <a class="btn" href="guardianes-del-claro.html">
+            Jugar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn-ghost" type="button" data-incrustar="guardianes-del-claro.html" data-nombre="Guardianes del Claro">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>
+            Incrustar
+          </button>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</main>
+
+<dialog id="dlg-incrustar" aria-labelledby="dlg-titulo">
+  <form method="dialog" class="dlg-cerrar-x"><button aria-label="Cerrar">✕</button></form>
+  <h3 id="dlg-titulo">Incrustar <span id="dlg-nombre"></span></h3>
+  <p class="dlg-intro">Copia este código y pégalo como <strong>HTML</strong> en Moodle, Google Sites,
+     WordPress o tu plataforma. El juego se carga desde didaxislab.com, así que si se corrige algo
+     tus estudiantes lo reciben sin que tengas que volver a pegar nada.</p>
+  <label class="dlg-lbl" for="dlg-codigo">Código</label>
+  <textarea id="dlg-codigo" rows="5" readonly spellcheck="false"></textarea>
+  <p class="dlg-tip">Ajusta <code>height</code> si lo quieres más alto o más bajo. En Moodle usa el
+     botón <em>&lt;/&gt;</em> del editor para pegar en modo código.</p>
+  <div class="dlg-acciones">
+    <button type="button" id="dlg-copiar" class="btn">Copiar código</button>
+    <form method="dialog"><button type="submit" class="btn-ghost">Cerrar</button></form>
+  </div>
+</dialog>
+
+<section class="aula">
+  <div class="aula-inner">
+    <h2>Cómo entran al aula</h2>
+    <p>Los juegos siguen las mismas reglas que los laboratorios: un archivo, sin instalación
+       y sin pedirle nada al estudiante.</p>
+    <div class="aula-grid">
+      <div>
+        <h3>Un archivo, sin instalación</h3>
+        <p>Cada juego es un solo HTML. Se abre con doble clic o se sube a la plataforma del colegio como cualquier recurso.</p>
+      </div>
+      <div>
+        <h3>Sin conexión y sin cuentas</h3>
+        <p>No cargan nada desde internet ni piden registro. Funcionan en un aula sin red y no recogen datos del estudiante.</p>
+      </div>
+      <div>
+        <h3>El error también enseña</h3>
+        <p>Cuando la respuesta falla, el juego explica qué razonamiento llevó a esa cifra, no solo que es incorrecta.</p>
+      </div>
+      <div>
+        <h3>Progreso y evidencia</h3>
+        <p>Según el juego, el estudiante guarda estrellas y misiones en su navegador o descarga un informe con su desempeño.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <div class="row">
+      <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+        <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+        <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+      </svg>
+      <span class="name">Didaxis Lab</span>
+    </div>
+    <span>© 2026 Didaxis Lab · Héctor Banquez · CC BY 4.0</span>
+  </div>
+</footer>
+
+<script>
+/* 1. Ventana de incrustado: arma el <iframe> con la dirección absoluta real,
+      así el código sirve igual en el sitio publicado que en pruebas locales. */
+(function(){
+  const dlg    = document.getElementById('dlg-incrustar');
+  const salida = document.getElementById('dlg-codigo');
+  const nombre = document.getElementById('dlg-nombre');
+  const copiar = document.getElementById('dlg-copiar');
+  if(!dlg) return;
+
+  const fragmento = (url, titulo, alto) =>
+`<iframe src="${url}"
+        title="${titulo} — Didaxis Lab"
+        width="100%" height="${alto}"
+        style="border:0;border-radius:12px"
+        allowfullscreen loading="lazy"></iframe>`;
+
+  document.querySelectorAll('[data-incrustar]').forEach(b => {
+    b.addEventListener('click', () => {
+      const url  = new URL(b.dataset.incrustar, location.href).href;
+      const alto = b.dataset.alto || 640;
+      nombre.textContent = b.dataset.nombre;
+      salida.value = fragmento(url, b.dataset.nombre, alto);
+      copiar.textContent = 'Copiar código';
+      copiar.disabled = false;
+      dlg.showModal();
+      salida.scrollTop = 0;
+    });
+  });
+
+  copiar.addEventListener('click', async () => {
+    salida.select();
+    try{
+      await navigator.clipboard.writeText(salida.value);
+      copiar.textContent = 'Copiado ✓';
+    }catch(e){
+      copiar.textContent = 'Copia el texto seleccionado';
+    }
+    copiar.disabled = true;
+    setTimeout(() => { copiar.textContent = 'Copiar código'; copiar.disabled = false; }, 2600);
+  });
+
+  dlg.addEventListener('click', e => { if(e.target === dlg) dlg.close(); });
+})();
+
+/* 2. Filtros por área y pausa inteligente de las 6 vistas previas */
+(function(){
+  const tarjetas = Array.from(document.querySelectorAll('.game'));
+  const botones  = Array.from(document.querySelectorAll('.filter-btn'));
+  const contador = document.getElementById('catalog-count');
+  const etiquetas = {
+    todos: '',
+    numeros: ' en Números y lógica',
+    geometria: ' en Geometría',
+    funciones: ' en Funciones'
+  };
+
+  // Estado de visibilidad en pantalla por cada tarjeta
+  const enPantalla = new WeakMap();
+  const notificar = card => {
+    const iframe = card.querySelector('.stage iframe');
+    if(!iframe || !iframe.contentWindow) return;
+    const activo = !document.hidden && !card.hidden && (enPantalla.get(card) !== false);
+    try{
+      iframe.contentWindow.postMessage({ type: 'didaxis-preview', active: activo }, '*');
+    }catch(e){}
+  };
+
+  if('IntersectionObserver' in window){
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        enPantalla.set(entry.target, entry.isIntersecting);
+        notificar(entry.target);
+      });
+    }, { threshold: 0.12 });
+    tarjetas.forEach(card => obs.observe(card));
+  }
+
+  tarjetas.forEach(card => {
+    const iframe = card.querySelector('.stage iframe');
+    if(iframe) iframe.addEventListener('load', () => notificar(card));
+  });
+
+  document.addEventListener('visibilitychange', () => tarjetas.forEach(notificar));
+
+  botones.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.filtro;
+      botones.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      let visibles = 0;
+      tarjetas.forEach(card => {
+        const mostrar = (cat === 'todos' || card.dataset.cat === cat);
+        card.hidden = !mostrar;
+        if(mostrar) visibles++;
+        notificar(card);
+      });
+      if(contador){
+        const suf = etiquetas[cat] || '';
+        contador.textContent = `Mostrando ${visibles} ${visibles === 1 ? 'juego' : 'juegos'}${suf}`;
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
