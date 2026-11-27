@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Didaxis Lab — Laboratorios y juegos interactivos de matemáticas, abiertos</title>
+<meta name="description" content="Siete laboratorios y seis juegos matemáticos interactivos, abiertos y gratuitos para profesores y estudiantes. Manipula, explora y aprende sin conexión. Alineados a los DBA de Colombia y listos para incrustar en Moodle.">
+
+<!-- ============ METADATOS ============ -->
+<link rel="canonical" href="https://didaxislab.com/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="author" content="Héctor Enrique Banquez Buendía">
+<meta name="keywords" content="simuladores de matemáticas, juegos de matemáticas, recursos educativos abiertos, fracciones, área, perímetro, teorema de Pitágoras, función cuadrática, plano cartesiano, poliedros, Saber 11, ICFES, DBA, Moodle, matemáticas, Colombia">
+<meta name="theme-color" content="#1B2A5A">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Didaxis Lab">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Didaxis Lab — Laboratorios y juegos interactivos de matemáticas">
+<meta property="og:description" content="Matemática que se manipula: 7 laboratorios y 6 juegos interactivos, abiertos, descargables y listos para tu clase.">
+<meta property="og:url" content="https://didaxislab.com/">
+<meta property="og:image" content="https://didaxislab.com/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Didaxis Lab — Simuladores y juegos interactivos de matemáticas">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Didaxis Lab — Laboratorios y juegos interactivos de matemáticas">
+<meta name="twitter:description" content="Matemática que se manipula: 7 laboratorios y 6 juegos interactivos, abiertos, descargables y listos para tu clase.">
+<meta name="twitter:image" content="https://didaxislab.com/og-home.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://didaxislab.com/#website",
+      "name": "Didaxis Lab",
+      "url": "https://didaxislab.com/",
+      "description": "Laboratorios y juegos interactivos de matemáticas, abiertos y gratuitos para profesores y estudiantes.",
+      "inLanguage": "es-CO",
+      "publisher": { "@id": "https://didaxislab.com/#autor" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://didaxislab.com/#autor",
+      "name": "Héctor Enrique Banquez Buendía",
+      "alternateName": "Héctor Banquez",
+      "jobTitle": "Docente de matemáticas e investigador en educación matemática",
+      "description": "Docente de matemáticas y estadística, doctorando en Educación Matemática y magíster en Recursos Digitales Aplicados a la Educación. Investiga la argumentación matemática mediada por tecnología.",
+      "url": "https://didaxislab.com/autor/",
+      "identifier": "https://orcid.org/0009-0007-6705-0407",
+      "knowsAbout": ["Educación matemática", "Argumentación matemática", "Recursos educativos digitales", "Inteligencia artificial en educación"],
+      "sameAs": [
+        "https://orcid.org/0009-0007-6705-0407",
+        "https://www.linkedin.com/in/hectorbanquez"
+      ]
+    },
+    {
+      "@type": "Collection",
+      "@id": "https://didaxislab.com/#coleccion",
+      "name": "Laboratorios interactivos de Didaxis Lab",
+      "description": "Colección de simuladores de matemáticas de archivo único, con guía docente y evaluación formativa, alineados a los Derechos Básicos de Aprendizaje de Colombia.",
+      "url": "https://didaxislab.com/recursos/",
+      "inLanguage": "es-CO",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "isAccessibleForFree": true,
+      "creator": { "@id": "https://didaxislab.com/#autor" },
+      "citation": [
+        { "@id": "https://doi.org/10.5281/zenodo.24509602" },
+        { "@id": "https://doi.org/10.5281/zenodo.24509193" }
+      ],
+      "hasPart": [
+        {
+          "@type": "LearningResource",
+          "name": "Fracciones Vivas",
+          "url": "https://didaxislab.com/recursos/fracciones-vivas/",
+          "description": "Cuatro representaciones sincronizadas de una misma fracción: región circular, barra, conjunto discreto y recta numérica.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 3.º a 7.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Interpretar la fracción como relación parte-todo, como cociente y como punto de la recta numérica.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento numérico: fracciones y equivalencias" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Área vs Perímetro",
+          "url": "https://didaxislab.com/recursos/area-vs-perimetro/",
+          "description": "Deformación de un rectángulo con perímetro constante para constatar que el área varía de forma independiente.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 3.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Describir y argumentar relaciones entre el perímetro y el área de una figura cuando se fija una de las dos medidas.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento métrico: relación entre perímetro y área" },
+            { "@type": "AlignmentObject", "alignmentType": "assesses", "educationalFramework": "Saber 11 (ICFES)", "targetName": "Competencia de argumentación" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Pitágoras Interactivo",
+          "url": "https://didaxislab.com/recursos/pitagoras/",
+          "description": "Equivalencia entre las áreas de los cuadrados construidos sobre los lados de un triángulo rectángulo, con ruptura de la hipótesis del ángulo recto.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 7.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Reconocer y justificar la relación entre las medidas de los lados de un triángulo rectángulo por equivalencia de áreas.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento métrico-espacial: teorema de Pitágoras" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Función Cuadrática",
+          "url": "https://didaxislab.com/recursos/funcion-cuadratica/",
+          "description": "Efecto de los parámetros a, b y c sobre la parábola, el vértice, las raíces y el eje de simetría.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 9.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Identificar y analizar la relación entre los parámetros de una función cuadrática y su representación gráfica.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento variacional: función cuadrática" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Círculo Unitario y Ondas",
+          "url": "https://didaxislab.com/recursos/circulo-ondas/",
+          "description": "Tránsito del movimiento circular a la función periódica: cómo el giro genera el seno, el coseno y la tangente.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 10.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Comprender las razones trigonométricas a partir del círculo unitario y modelar fenómenos periódicos.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento variacional: funciones trigonométricas" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Poliedros y Redes 3D",
+          "url": "https://didaxislab.com/recursos/poliedros-redes-3d/",
+          "description": "Plegado y desplegado de sólidos entre tres dimensiones y su red plana, con los once desarrollos del cubo y la relación entre caras, vértices y aristas.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 5.º a 8.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Relacionar un sólido con sus desarrollos planos y reconocer que C + V − A vale 2 en los poliedros cerrados sin agujeros, y no en los demás.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento espacial: cuerpos y sus desarrollos planos (DBA 6 de 5.º y DBA 4 de 6.º)" },
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Procedimientos inductivos y puesta a prueba de conjeturas (DBA 9 de 8.º)" }
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Azar y Probabilidad",
+          "url": "https://didaxislab.com/recursos/azar-probabilidad/",
+          "description": "Contraste entre probabilidad teórica y frecuencia relativa en series largas, con monedas, dados, árboles y ruletas.",
+          "learningResourceType": "Simulación interactiva",
+          "educationalLevel": "Grados 6.º a 10.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" },
+          "teaches": "Comparar la probabilidad teórica con la frecuencia relativa observada y reconocer la ley de los grandes números.",
+          "educationalAlignment": [
+            { "@type": "AlignmentObject", "alignmentType": "teaches", "educationalFramework": "Derechos Básicos de Aprendizaje de Matemáticas v2 (MEN, Colombia)", "targetName": "Pensamiento aleatorio: probabilidad teórica y frecuencial" }
+          ]
+        }
+      ]
+    },
+    {
+      "@type": "Collection",
+      "@id": "https://didaxislab.com/#juegos-coleccion",
+      "name": "Juegos matemáticos de Didaxis Lab",
+      "description": "Seis juegos matemáticos abiertos de archivo único donde la operación, la coordenada, el pliegue o la función son la mecánica central.",
+      "url": "https://didaxislab.com/juegos/",
+      "inLanguage": "es-CO",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "isAccessibleForFree": true,
+      "creator": { "@id": "https://didaxislab.com/#autor" },
+      "hasPart": [
+        {
+          "@type": "LearningResource",
+          "name": "Rumbo Cartesiano",
+          "url": "https://didaxislab.com/juegos/rumbo-cartesiano.html",
+          "description": "21 misiones en 4 mundos para dominar el plano cartesiano, los cuatro cuadrantes, traslaciones por corrientes, simetría axial y deducción por sonar.",
+          "learningResourceType": "Juego educativo interactivo",
+          "educationalLevel": "Grados 6.º a 9.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" }
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Guardianes del Claro",
+          "url": "https://didaxislab.com/juegos/guardianes-del-claro.html",
+          "description": "Identificación de patrones y evaluación de funciones lineales, cuadráticas y exponenciales para defender la aldea noche a noche.",
+          "learningResourceType": "Juego educativo interactivo",
+          "educationalLevel": "Grados 9.º a 11.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" }
+        },
+        {
+          "@type": "LearningResource",
+          "name": "El último pliegue",
+          "url": "https://didaxislab.com/juegos/el-ultimo-pliegue.html",
+          "description": "18 retos en 3 mundos de geometría espacial para plegar desarrollos planos de cubos, prismas, pirámides y orientar rampas.",
+          "learningResourceType": "Juego educativo interactivo",
+          "educationalLevel": "Grados 6.º a 9.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" }
+        },
+        {
+          "@type": "LearningResource",
+          "name": "La senda del arquero",
+          "url": "https://didaxislab.com/juegos/senda-del-arquero.html",
+          "description": "20 niveles en 4 actos de tiro con arco donde la flecha sigue una función cuadrática en forma de vértice, factorizada y general.",
+          "learningResourceType": "Juego educativo interactivo",
+          "educationalLevel": "Grados 8.º y 9.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" }
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Guardianes del Cero",
+          "url": "https://didaxislab.com/juegos/guardianes-del-cero.html",
+          "description": "Juego de defensa con números enteros donde cada torre suma una cantidad fija para neutralizar invasores negativos exactamente en cero.",
+          "learningResourceType": "Juego educativo interactivo",
+          "educationalLevel": "Grado 7.º en adelante",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" }
+        },
+        {
+          "@type": "LearningResource",
+          "name": "Misión Número Secreto",
+          "url": "https://didaxislab.com/juegos/mision-numero-secreto.html",
+          "description": "Deducción numérica por descarte cruzando pistas de divisibilidad, múltiplos, paridad y desigualdades.",
+          "learningResourceType": "Juego educativo interactivo",
+          "educationalLevel": "Grados 5.º a 8.º",
+          "inLanguage": "es-CO",
+          "isAccessibleForFree": true,
+          "license": "https://creativecommons.org/licenses/by/4.0/",
+          "author": { "@id": "https://didaxislab.com/#autor" }
+        }
+      ]
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "https://doi.org/10.5281/zenodo.24509602",
+      "name": "Didaxis Lab. Matemática que se manipula: fundamentación teórica, didáctica y técnica de un laboratorio abierto de matemáticas interactivas para el aula colombiana",
+      "version": "1.1",
+      "datePublished": "2026",
+      "inLanguage": "es",
+      "identifier": "https://doi.org/10.5281/zenodo.24509602",
+      "url": "https://doi.org/10.5281/zenodo.24509602",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "publisher": "Zenodo",
+      "author": { "@id": "https://didaxislab.com/#autor" },
+      "about": { "@id": "https://didaxislab.com/#coleccion" }
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "https://doi.org/10.5281/zenodo.24509193",
+      "name": "Didaxis Lab. Marco de calidad de los recursos",
+      "version": "2.0",
+      "datePublished": "2026",
+      "inLanguage": "es",
+      "identifier": "https://doi.org/10.5281/zenodo.24509193",
+      "url": "https://doi.org/10.5281/zenodo.24509193",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "publisher": "Zenodo",
+      "author": { "@id": "https://didaxislab.com/#autor" },
+      "about": { "@id": "https://didaxislab.com/#coleccion" }
+    }
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --navy:#1B2A5A; --navy-dark:#0F1C3F; --cyan:#0BC0D8; --cyan-soft:#E2F7FA;
+    --cyan-deep:#0E7888; --amber:#C77B12; --amber-ink:#9A3412; --amber-soft:#FBF1DF;
+    --ink:#1B2A5A; --muted:#5B6B82; --line:#E6E9EF; --bg:#FAFBFC; --panel:#FFFFFF;
+    --grid:rgba(11,192,216,0.06); --radius:16px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --shadow-lg:0 12px 40px rgba(22,36,58,.12); --maxw:1080px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--navy);text-decoration:none;}
+  h1,h2,h3{letter-spacing:-.02em;color:var(--navy);}
+  section{scroll-margin-top:78px;}
+
+  /* ---------- Topbar ---------- */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:30;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;min-height:44px;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .nav{display:flex;align-items:center;gap:22px;}
+  .nav a{font-size:14.5px;font-weight:600;color:var(--muted);
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav a:hover{color:var(--navy);}
+  .nav .nav-cta{color:#fff;background:var(--navy);padding:8px 15px;border-radius:9px;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav .nav-cta:hover{background:var(--navy-dark);color:#fff;}
+  @media (max-width:760px){
+    .topbar-inner{flex-wrap:wrap;gap:10px 0;padding:11px 18px 12px;}
+    .nav{width:100%;gap:0 16px;flex-wrap:wrap;justify-content:space-between;}
+    .nav a{font-size:14px;min-height:40px;display:inline-flex;align-items:center;}
+    .nav .nav-cta{display:none;}
+  }
+  @media (max-width:380px){ .nav a{font-size:13.3px;gap:0 10px;} }
+
+  /* ---------- Hero vivo en 2 columnas ---------- */
+  .hero{position:relative;overflow:hidden;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:28px 28px;}
+  .hero-inner{max-width:var(--maxw);margin:0 auto;padding:56px 22px 54px;
+    display:grid;grid-template-columns:1.02fr .98fr;gap:36px;align-items:center;}
+  .hero-copy{min-width:0;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .hero h1{font-size:clamp(36px,5.2vw,56px);line-height:1.06;font-weight:800;max-width:13ch;}
+  .hero .lead{margin-top:18px;font-size:clamp(16.5px,2.1vw,19px);color:var(--muted);max-width:48ch;}
+  .hero-cta{margin-top:26px;display:flex;gap:11px;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15.5px;font-weight:700;padding:13px 22px;border-radius:11px;transition:.18s;}
+  .btn-primary{color:#fff;background:var(--navy);}
+  .btn-primary:hover{background:var(--navy-dark);transform:translateY(-1px);}
+  .btn-ghost{color:var(--navy);background:var(--panel);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+
+  /* Objeto matemático manipulable del Hero */
+  .hero-lab{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-lg);overflow:hidden;min-width:0;}
+  .hero-lab-top{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:11px 15px;border-bottom:1px solid var(--line);background:#F8FBFD;flex-wrap:wrap;}
+  .hero-lab-tag{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--navy);}
+  .hero-lab-tag i{width:7px;height:7px;border-radius:50%;background:var(--cyan);
+    box-shadow:0 0 0 3px rgba(11,192,216,.22);font-style:normal;}
+  .hero-eq{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--navy);
+    font-variant-numeric:tabular-nums;}
+  .hero-canvas-wrap{position:relative;background:#FAFEFF;border-bottom:1px solid var(--line);}
+  .hero-svg{display:block;width:100%;height:auto;aspect-ratio:420/242;cursor:grab;touch-action:none;user-select:none;}
+  .hero-svg.dragging{cursor:grabbing;}
+  .hero-svg:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px;}
+  .hero-drag-hint{position:absolute;left:12px;top:11px;font-size:11px;font-weight:700;
+    color:var(--navy);background:rgba(255,255,255,.92);border:1px solid var(--line);
+    border-radius:999px;padding:3px 10px;pointer-events:none;transition:opacity .3s;}
+  .hero-lab[data-touched="1"] .hero-drag-hint{opacity:0;}
+
+  @keyframes heroPulse{
+    0%{r:11;opacity:.45;}
+    100%{r:22;opacity:0;}
+  }
+  .hero-halo{animation:heroPulse 2.2s ease-out infinite;}
+  .hero-lab[data-touched="1"] .hero-halo{animation:none;opacity:0;}
+
+  .hero-lab-bar{display:flex;align-items:center;gap:12px;padding:11px 15px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);background:#FFFFFF;}
+  .hero-ctrl{display:flex;align-items:center;gap:8px;flex:1 1 170px;min-width:0;}
+  .hero-ctrl label{font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap;
+    font-variant-numeric:tabular-nums;}
+  .hero-ctrl label b{color:var(--navy);}
+  .hero-ctrl input[type="range"]{flex:1;min-width:70px;accent-color:var(--cyan);cursor:pointer;height:24px;}
+  .hero-roots{font-size:12px;font-weight:700;color:var(--amber-ink);background:var(--amber-soft);
+    border:1px solid #EFDCBC;border-radius:999px;padding:3px 10px;white-space:nowrap;}
+  .hero-roots.none{color:var(--muted);background:#EEF2F7;border-color:var(--line);}
+  .hero-reset{font:inherit;font-size:12px;font-weight:700;color:var(--muted);background:transparent;
+    border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer;transition:.15s;}
+  .hero-reset:hover{border-color:var(--cyan);color:var(--navy);background:var(--cyan-soft);}
+  .hero-lab-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    padding:9px 15px;font-size:12px;color:var(--muted);background:#F8FBFD;}
+  .hero-lab-foot a{font-weight:700;color:var(--cyan-deep);}
+  .hero-lab-foot a:hover{color:var(--navy);}
+
+  @media (max-width:900px){
+    .hero-inner{grid-template-columns:1fr;gap:28px;padding:44px 22px 42px;}
+    .hero h1{max-width:16ch;}
+    .hero .lead{max-width:58ch;}
+  }
+
+  /* ---------- Cifras ---------- */
+  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel);}
+  .stats-inner{max-width:var(--maxw);margin:0 auto;padding:20px 22px;display:grid;
+    grid-template-columns:repeat(5,1fr);gap:14px;}
+  .stat{display:flex;flex-direction:column;gap:1px;}
+  .stat b{font-size:23px;font-weight:800;line-height:1.1;color:var(--navy);font-variant-numeric:tabular-nums;}
+  .stat span{font-size:12.5px;color:var(--muted);line-height:1.35;}
+  @media (max-width:760px){ .stats-inner{grid-template-columns:repeat(3,1fr);gap:16px 12px;} .stat:last-child{grid-column:span 3;} }
+  @media (max-width:420px){ .stats-inner{grid-template-columns:repeat(2,1fr);} .stat:last-child{grid-column:span 2;} }
+
+  /* ---------- Secciones ---------- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:60px 22px;}
+  .sec-head{margin-bottom:24px;}
+  .sec-head h2{font-size:clamp(26px,3.6vw,34px);font-weight:800;}
+  .sec-head p{margin-top:10px;color:var(--muted);font-size:16px;max-width:64ch;}
+
+  /* ---------- Filtros ---------- */
+  .filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px 8px;margin-bottom:22px;
+    padding-bottom:18px;border-bottom:1px solid var(--line);}
+  .fgroup{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+  .filters .flabel{font-size:13px;font-weight:700;color:var(--muted);margin-right:2px;}
+  .fbtn{font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);background:var(--panel);
+    border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;transition:.16s;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .fbtn:hover{border-color:var(--cyan);color:var(--navy);}
+  .fbtn[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .fsep{width:1px;height:22px;background:var(--line);margin:0 6px;}
+  .fcount{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  @media (max-width:720px){ .filters{gap:12px 8px;} .fgroup{width:100%;}
+    .fcount{margin-left:0;width:100%;} .fsep{display:none;} }
+
+  /* ---------- Catálogo ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:600px){ .grid{grid-template-columns:1fr;} }
+  .card{position:relative;display:flex;flex-direction:column;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+    transition:box-shadow .18s,border-color .18s;}
+  .card:hover{box-shadow:var(--shadow-lg);border-color:#D4DAE6;}
+  .card[hidden]{display:none;}
+
+  /* La portada es interactiva: queda por encima del enlace extendido */
+  .cover{position:relative;z-index:2;height:158px;background:#F4FAFB;
+    border-bottom:1px solid var(--line);cursor:ew-resize;touch-action:pan-y;
+    display:block;overflow:hidden;}
+  .cover[data-preview="azar"]{cursor:pointer;}
+  .cover svg{display:block;width:100%;height:100%;}
+  .cover:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px;}
+  .hint{position:absolute;right:9px;top:9px;font-size:10.5px;font-weight:700;letter-spacing:.03em;
+    color:var(--navy);background:rgba(255,255,255,.86);border:1px solid var(--line);
+    border-radius:999px;padding:3px 9px;pointer-events:none;transition:opacity .3s;}
+  .cover[data-touched="1"] .hint{opacity:0;}
+
+  .card-body{padding:17px 20px 20px;display:flex;flex-direction:column;flex:1;}
+  .chip{align-self:flex-start;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--navy);margin-bottom:10px;}
+  .card-body h3{font-size:20px;font-weight:800;line-height:1.2;}
+  .card-link{color:var(--navy);}
+  .card-link::after{content:"";position:absolute;inset:0;z-index:1;}
+  .card:hover .card-link{color:var(--cyan-deep);}
+  .card-body p{margin-top:8px;color:var(--muted);font-size:14.5px;flex:1;}
+  .card-foot{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .card-grades{font-size:12.5px;font-weight:600;color:var(--muted);background:#EEF1F6;padding:4px 10px;border-radius:7px;}
+  .card-open{font-size:14.5px;font-weight:700;color:var(--navy);display:inline-flex;align-items:center;gap:5px;}
+  .card:hover .card-open{color:var(--cyan-deep);}
+  .catalog-note{margin-top:24px;font-size:14px;color:var(--muted);text-align:center;}
+  .catalog-note a{font-weight:700;color:var(--cyan-deep);border-bottom:1px solid rgba(11,192,216,.45);}
+  .catalog-note a:hover{color:var(--navy);border-bottom-color:var(--navy);}
+  .empty{display:none;padding:40px 4px;text-align:center;color:var(--muted);font-size:15px;}
+  .empty.on{display:block;}
+
+  /* ---------- Juegos ---------- */
+  .games-wrap{padding:10px 0 18px;}
+  .games-band{position:relative;overflow:hidden;border-radius:var(--radius);
+    background:linear-gradient(135deg,#15234A 0%,#1B2A5A 52%,#122048 100%);
+    display:grid;grid-template-columns:1.02fr .98fr;gap:26px;align-items:center;
+    padding:38px 8px 38px 38px;box-shadow:var(--shadow-lg);}
+  .games-band::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(11,192,216,.07) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(11,192,216,.07) 1px,transparent 1px);
+    background-size:30px 30px;
+    -webkit-mask-image:radial-gradient(ellipse at 30% 50%,#000 10%,transparent 72%);
+            mask-image:radial-gradient(ellipse at 30% 50%,#000 10%,transparent 72%);}
+  .games-copy{position:relative;z-index:2;max-width:52ch;}
+  .games-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:#8FD9E8;margin-bottom:12px;}
+  .games-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .games-band h2{color:#fff;font-size:clamp(24px,3.4vw,33px);line-height:1.14;font-weight:800;}
+  .games-band > .games-copy > p{margin-top:12px;color:rgba(223,233,247,.80);font-size:15.5px;}
+  .games-topics{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .games-topics li{font-size:12.5px;font-weight:600;color:#DDF4F9;
+    background:rgba(11,192,216,.16);border:1px solid rgba(11,192,216,.34);
+    padding:5px 12px;border-radius:999px;}
+  .games-btn{display:inline-flex;align-items:center;gap:9px;margin-top:24px;
+    background:var(--cyan);color:#08243C;font-weight:800;font-size:15.5px;
+    padding:13px 22px;border-radius:11px;transition:.18s;}
+  .games-btn:hover{background:#3ED6E8;color:#08243C;transform:translateY(-2px);}
+  .games-btn svg{width:16px;height:16px;}
+  .games-note{margin-top:14px;font-size:12.5px;color:rgba(200,215,235,.80);}
+
+  .games-fan{position:relative;z-index:1;height:250px;min-width:0;}
+  .fan-card{position:absolute;top:50%;left:6%;width:76%;aspect-ratio:16/9;
+    border-radius:13px;overflow:hidden;display:block;
+    border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 34px rgba(4,10,26,.5);
+    transition:transform .38s cubic-bezier(.22,1,.36,1);}
+  .fan-card svg{width:100%;height:100%;display:block;}
+  .fan-1{transform:translateY(-50%) rotate(-4deg);z-index:3;}
+  .fan-2{transform:translate(9%,-56%) rotate(4.5deg);z-index:2;}
+  .fan-3{transform:translate(17%,-62%) rotate(12deg);z-index:1;}
+  .games-band:hover .fan-1{transform:translate(-3%,-46%) rotate(-8deg);}
+  .games-band:hover .fan-2{transform:translate(11%,-58%) rotate(5deg);}
+  .games-band:hover .fan-3{transform:translate(24%,-68%) rotate(16deg);}
+
+  @media (max-width:900px){
+    .games-band{grid-template-columns:1fr;padding:32px 24px 26px;gap:6px;}
+    .games-copy{max-width:none;}
+    .games-fan{height:210px;margin-top:14px;}
+    .fan-card{width:64%;left:2%;}
+  }
+  @media (max-width:560px){
+    .games-fan{height:170px;}
+    .fan-card{width:72%;}
+    .games-btn{width:100%;justify-content:center;}
+  }
+
+  /* ---------- Rutas de aula (Simulador + Juego) ---------- */
+  .routes-wrap{padding:18px 0 60px;}
+  .routes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media (max-width:880px){ .routes-grid{grid-template-columns:1fr;} }
+  .route-card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);padding:22px 22px 20px;box-shadow:var(--shadow);}
+  .route-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+  .route-tag{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--navy);}
+  .route-grade{font-size:12px;font-weight:700;color:var(--muted);}
+  .route-card h3{font-size:18.5px;font-weight:800;line-height:1.22;}
+  .route-card > p{margin-top:7px;font-size:14px;color:var(--muted);}
+  .route-steps{list-style:none;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+    display:flex;flex-direction:column;gap:9px;counter-reset:r;}
+  .route-steps li{position:relative;padding-left:28px;font-size:13.5px;color:var(--ink);counter-increment:r;}
+  .route-steps li::before{content:counter(r);position:absolute;left:0;top:2px;width:19px;height:19px;
+    border-radius:50%;background:#EEF2F7;color:var(--navy);font-size:11px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;}
+  .route-steps a{font-weight:700;color:var(--navy);border-bottom:1px solid rgba(11,192,216,.5);}
+  .route-steps a:hover{color:var(--cyan-deep);border-bottom-color:var(--cyan-deep);}
+  .route-steps span{display:block;font-size:12px;color:var(--muted);}
+
+  /* ---------- Features ---------- */
+  .features{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px 34px;}
+  @media (max-width:820px){ .feat-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:540px){ .feat-grid{grid-template-columns:1fr;} }
+  .feat{display:flex;gap:14px;align-items:flex-start;}
+  .feat-ico{flex:0 0 auto;width:42px;height:42px;border-radius:11px;background:var(--cyan-soft);
+    display:flex;align-items:center;justify-content:center;color:var(--navy);}
+  .feat-ico svg{width:22px;height:22px;}
+  .feat h3{font-size:16.5px;font-weight:700;margin-bottom:3px;}
+  .feat p{font-size:14px;color:var(--muted);}
+
+  /* ---------- Incrustar ---------- */
+  .embed{display:grid;grid-template-columns:1fr 1.15fr;gap:34px;align-items:start;}
+  .embed > *{min-width:0;}
+  .codebox{min-width:0;}
+  @media (max-width:820px){ .embed{grid-template-columns:1fr;gap:22px;} }
+  .embed-copy p{color:var(--muted);font-size:15.5px;margin-top:10px;}
+  .embed-steps{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:11px;counter-reset:s;}
+  .embed-steps li{position:relative;padding-left:32px;font-size:14.5px;color:var(--ink);counter-increment:s;}
+  .embed-steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:21px;height:21px;
+    border-radius:50%;background:var(--cyan-soft);color:var(--navy);font-size:11.5px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;}
+  .codebox{background:var(--navy-dark);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);}
+  .codebox-top{display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.1);}
+  .codebox-top select{flex:1;min-width:0;font:inherit;font-size:13.5px;font-weight:600;color:#DCE9F7;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;
+    padding:7px 9px;cursor:pointer;min-height:44px;}
+  .codebox-top select option,.codebox-top select optgroup{color:#12203f;background:#fff;}
+  .copybtn{font:inherit;font-size:13px;font-weight:700;color:#08243C;background:var(--cyan);
+    border:0;border-radius:8px;padding:8px 13px;cursor:pointer;transition:.16s;white-space:nowrap;
+    min-height:44px;}
+  .copybtn:hover{background:#3ED6E8;}
+  .copybtn.done{background:#8FE6C0;}
+  .codebox pre{margin:0;padding:15px 14px 17px;overflow-x:auto;}
+  .codebox code{font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#BFE9F2;white-space:pre;}
+  .embed-note{margin-top:12px;font-size:13px;color:var(--muted);}
+
+  /* ---------- Capa académica ---------- */
+  .academic{background:var(--panel);border-top:1px solid var(--line);}
+  .acad-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:34px;align-items:start;}
+  @media (max-width:860px){ .acad-grid{grid-template-columns:1fr;gap:26px;} }
+  .acad-copy p{font-size:16px;color:var(--muted);margin-top:11px;max-width:60ch;}
+  .acad-list{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:2px;}
+  .acad-list a{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:12px 4px;border-bottom:1px solid var(--line);font-size:15px;font-weight:600;color:var(--navy);}
+  .acad-list a:first-child{border-top:1px solid var(--line);}
+  .acad-list a:hover{color:var(--cyan-deep);}
+  .acad-list .meta{font-size:12.5px;font-weight:600;color:var(--muted);}
+  .acad-feedback{margin-top:14px;font-size:14.5px;color:var(--muted);}
+  .acad-feedback a{font-weight:700;color:var(--navy);border-bottom:1px solid var(--cyan);}
+  .acad-feedback a:hover{color:var(--cyan-deep);}
+  .citebox{background:var(--amber-soft);border:1px solid #EFDCBC;border-radius:14px;padding:18px 18px 16px;}
+  .citebox h3{font-size:15px;font-weight:800;margin-bottom:4px;}
+  .citebox .cite-sub{font-size:13px;color:var(--muted);margin-bottom:13px;}
+  .citebox blockquote{font-family:var(--mono);font-size:12.5px;line-height:1.75;color:#4A3A20;
+    background:rgba(255,255,255,.7);border-radius:9px;padding:13px 13px;margin-bottom:13px;
+    word-break:break-word;}
+  .citebox .copybtn{background:var(--amber-ink);color:#fff;}
+  .citebox .copybtn:hover{background:#7C2A0E;}
+  .citebox .copybtn.done{background:#6F8F4F;}
+  .doi-note{margin-top:11px;font-size:12px;color:#6F5A33;}
+
+  /* ---------- Proyecto ---------- */
+  .about{max-width:740px;}
+  .about p{font-size:16.5px;color:var(--ink);margin-bottom:14px;}
+  .about .muted{color:var(--muted);font-size:15px;}
+  .about a{color:var(--navy);font-weight:600;border-bottom:1px solid var(--cyan);}
+  .thesis{margin:26px 0 22px;padding:18px 0 18px 22px;border-left:3px solid var(--cyan);
+    font-size:19px;line-height:1.45;font-weight:600;color:var(--navy);max-width:46ch;}
+
+  /* ---------- Firma del proyecto ---------- */
+  .signature{display:flex;gap:20px;align-items:flex-start;margin-top:26px;padding-top:22px;
+    border-top:1px solid var(--line);}
+  .signature img{width:92px;height:92px;border-radius:50%;object-fit:cover;flex:0 0 auto;
+    border:1px solid var(--line);}
+  .signature .sig-body{min-width:0;}
+  .signature .sig-name{font-size:16.5px;font-weight:800;color:var(--navy);}
+  .signature .sig-role{font-size:14px;color:var(--muted);margin-top:2px;}
+  .signature .sig-more{display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+    font-size:14.5px;font-weight:700;color:var(--navy);min-height:44px;}
+  .signature .sig-more:hover{color:var(--cyan-deep);}
+  @media (max-width:520px){ .signature{gap:14px;} .signature img{width:72px;height:72px;} }
+  .cite-pick{width:100%;font:inherit;font-size:13.5px;font-weight:600;color:var(--navy);
+    background:rgba(255,255,255,.75);border:1px solid #EFDCBC;border-radius:8px;
+    padding:9px;margin-bottom:11px;cursor:pointer;min-height:44px;}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);background:var(--panel);}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:34px 22px;display:flex;
+    align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .foot-brand{display:flex;flex-direction:column;gap:8px;max-width:320px;}
+  .foot-brand .row{display:flex;align-items:center;gap:9px;}
+  .foot-brand .logo-mark{width:26px;height:26px;}
+  .foot-brand .name{font-weight:800;font-size:17px;color:var(--navy);}
+  .foot-brand small{color:var(--muted);font-size:13px;line-height:1.5;}
+  .foot-links{display:flex;gap:44px;flex-wrap:wrap;}
+  .foot-col h4{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .foot-col a{display:block;font-size:14px;color:var(--ink);margin-bottom:7px;}
+  .foot-col a:hover{color:var(--cyan-deep);}
+  .foot-bottom{border-top:1px solid var(--line);}
+  .foot-bottom div{max-width:var(--maxw);margin:0 auto;padding:16px 22px;display:flex;justify-content:space-between;
+    gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);}
+
+  a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none!important;}
+    .hero-halo{animation:none;opacity:0;}
+    .fan-card{transition:none;} .games-btn:hover{transform:none;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= TOPBAR ================= -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="Didaxis Lab — inicio">
+        <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="/recursos/">Recursos</a>
+        <a href="/juegos/">Juegos</a>
+        <a href="#por-que">Por qué</a>
+        <a href="#fundamentacion">Fundamentación</a>
+        <a href="/autor/">El autor</a>
+        <a class="nav-cta" href="#recursos">Explorar</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= HERO VIVO ================= -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow">Recursos educativos abiertos</span>
+        <h1>Matemática que se manipula.</h1>
+        <p class="lead">Laboratorios y juegos interactivos de matemáticas — abiertos, gratuitos y sin registro.
+           Pensados para explorar, conjeturar y argumentar en clase, sin conexión o incrustados en Moodle.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#recursos">Ver laboratorios →</a>
+          <a class="btn btn-ghost" href="/juegos/">Explorar 6 juegos</a>
+        </div>
+      </div>
+
+      <!-- Objeto matemático manipulable desde el primer segundo -->
+      <div class="hero-lab" id="heroLab">
+        <div class="hero-lab-top">
+          <span class="hero-lab-tag"><i></i>Prueba aquí · Parábola viva</span>
+          <span class="hero-eq" id="heroEq">y = 0,5(x − 1)² − 2</span>
+        </div>
+        <div class="hero-canvas-wrap">
+          <svg class="hero-svg" id="heroSvg" viewBox="0 0 420 242" tabindex="0" role="application"
+               aria-label="Gráfica interactiva de parábola: arrastra el vértice con el cursor o usa las flechas del teclado para mover h y k">
+            <defs><clipPath id="heroClip"><rect x="10" y="10" width="400" height="222" rx="6"/></clipPath></defs>
+            <g id="heroGrid" stroke="#DCECF0" stroke-width="1"></g>
+            <g stroke="#92CFD9" stroke-width="1.8">
+              <line x1="10" y1="138" x2="410" y2="138"/>
+              <line x1="210" y1="10" x2="210" y2="232"/>
+            </g>
+            <g font-family="inherit" font-size="10" font-weight="700" fill="#7D8FA8">
+              <text x="403" y="132" text-anchor="end">x</text>
+              <text x="217" y="21">y</text>
+            </g>
+            <g clip-path="url(#heroClip)">
+              <line id="heroAxis" x1="242" y1="10" x2="242" y2="232" stroke="#0BC0D8" stroke-width="1.5" stroke-dasharray="4 4" opacity=".65"/>
+              <path id="heroCurve" d="" fill="none" stroke="#1B2A5A" stroke-width="3.2" stroke-linecap="round"/>
+              <circle id="heroR1" cx="-20" cy="138" r="5" fill="#C77B12" stroke="#FFFFFF" stroke-width="2" visibility="hidden"/>
+              <circle id="heroR2" cx="-20" cy="138" r="5" fill="#C77B12" stroke="#FFFFFF" stroke-width="2" visibility="hidden"/>
+            </g>
+            <g id="heroVertex">
+              <circle class="hero-halo" cx="242" cy="194" r="13" fill="#0BC0D8"/>
+              <circle cx="242" cy="194" r="7.5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2.4"/>
+              <rect id="heroTagBg" x="253" y="182" width="58" height="21" rx="6" fill="rgba(27,42,90,.92)"/>
+              <text id="heroTagTxt" x="282" y="196" text-anchor="middle" font-family="inherit" font-size="11" font-weight="700" fill="#FFFFFF">(1, −2)</text>
+            </g>
+          </svg>
+          <span class="hero-drag-hint">Arrastra el punto cian</span>
+        </div>
+        <div class="hero-lab-bar">
+          <div class="hero-ctrl">
+            <label for="heroA">Apertura <b id="heroAVal">a = 0,5</b></label>
+            <input id="heroA" type="range" min="-1.2" max="1.2" step="0.1" value="0.5" aria-label="Apertura a de la parábola">
+          </div>
+          <span class="hero-roots" id="heroRoots">2 raíces reales</span>
+          <button class="hero-reset" type="button" id="heroReset" title="Volver al estado inicial">Reiniciar</button>
+        </div>
+        <div class="hero-lab-foot">
+          <span>Mueve el vértice o cambia <strong>a</strong> y mira las raíces.</span>
+          <a href="/recursos/funcion-cuadratica/">Abrir laboratorio completo →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CIFRAS ================= -->
+  <section class="stats" aria-label="El proyecto en cifras">
+    <div class="stats-inner">
+      <div class="stat"><b data-count="7">7</b><span>laboratorios<br>publicados</span></div>
+      <div class="stat"><b data-count="6">6</b><span>juegos<br>matemáticos</span></div>
+      <div class="stat"><b data-count="5">5</b><span>pensamientos<br>matemáticos</span></div>
+      <div class="stat"><b>3.º&nbsp;a&nbsp;11.º</b><span>cobertura<br>por grados</span></div>
+      <div class="stat"><b data-count="0">0</b><span>cuentas, cobros o<br>datos personales</span></div>
+    </div>
+  </section>
+
+  <!-- ================= CATÁLOGO ================= -->
+  <section id="recursos" class="wrap">
+    <div class="sec-head">
+      <h2>Laboratorios interactivos</h2>
+      <p>Cada uno trae el simulador, preguntas tipo Saber 11 con retroalimentación y una guía docente
+         descargable. Las portadas de abajo funcionan: arrástralas para ver de qué se trata antes de entrar.</p>
+    </div>
+
+    <div class="filters" role="group" aria-label="Filtrar laboratorios">
+      <div class="fgroup">
+        <span class="flabel">Pensamiento</span>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="todos" aria-pressed="true">Todos</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="numerico" aria-pressed="false">Numérico</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="espacial" aria-pressed="false">Espacial</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="metrico" aria-pressed="false">Métrico</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="variacional" aria-pressed="false">Variacional</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="aleatorio" aria-pressed="false">Aleatorio</button>
+      </div>
+      <span class="fsep" aria-hidden="true"></span>
+      <div class="fgroup">
+        <span class="flabel">Grados</span>
+        <button class="fbtn" type="button" data-filter="grado" data-value="todos" aria-pressed="true">Todos</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="3" aria-pressed="false">3.º a 5.º</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="6" aria-pressed="false">6.º a 9.º</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="10" aria-pressed="false">10.º y 11.º</button>
+      </div>
+      <span class="fcount" id="fcount" role="status" aria-live="polite">7 de 7 laboratorios</span>
+    </div>
+
+    <div class="grid" id="grid">
+
+      <!-- Fracciones Vivas -->
+      <article class="card" data-pensamiento="numerico" data-min="3" data-max="7">
+        <div class="cover" data-preview="fracciones" tabindex="0" role="slider"
+             aria-label="Vista previa de Fracciones Vivas: cambia el numerador"
+             aria-valuemin="0" aria-valuemax="8" aria-valuenow="5" aria-valuetext="cinco octavos">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g class="pv-pie" transform="translate(56,80)"></g>
+            <circle cx="56" cy="80" r="41" fill="none" stroke="#1B2A5A" stroke-width="2.4"/>
+            <g font-family="inherit" text-anchor="middle" fill="#1B2A5A" font-weight="800">
+              <text class="pv-num" x="132" y="72" font-size="27">5</text>
+              <text class="pv-den" x="132" y="110" font-size="27">8</text>
+            </g>
+            <line x1="116" y1="80" x2="148" y2="80" stroke="#1B2A5A" stroke-width="2.6" stroke-linecap="round"/>
+            <g class="pv-bar" transform="translate(172,46)"></g>
+            <line x1="172" y1="112" x2="284" y2="112" stroke="#9FD9E4" stroke-width="2"/>
+            <g class="pv-ticks"></g>
+            <circle class="pv-dot" cx="242" cy="112" r="5.5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <g font-size="9.5" fill="#5B6B82" font-family="inherit">
+              <text x="172" y="130" text-anchor="middle">0</text>
+              <text x="284" y="130" text-anchor="middle">1</text>
+            </g>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento numérico</span>
+          <h3><a class="card-link" href="/recursos/fracciones-vivas/">Fracciones Vivas</a></h3>
+          <p>Manipula pizzas, barras, conjuntos y la recta numérica sincronizados en tiempo real para
+             entender qué es —de verdad— una fracción.</p>
+          <div class="card-foot">
+            <span class="card-grades">3.° a 7.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Área vs Perímetro -->
+      <article class="card" data-pensamiento="metrico" data-min="3" data-max="11">
+        <div class="cover" data-preview="area" tabindex="0" role="slider"
+             aria-label="Vista previa de Área vs Perímetro: deforma el rectángulo manteniendo el perímetro"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1">
+              <path d="M0 30h180M0 55h180M0 80h180M0 105h180M0 130h180"/>
+              <path d="M30 0v158M55 0v158M80 0v158M105 0v158M130 0v158M155 0v158"/>
+            </g>
+            <rect class="pv-rect" x="60" y="48" width="62" height="62" rx="2"
+                  fill="rgba(11,192,216,.22)" stroke="#1B2A5A" stroke-width="3"/>
+            <g font-family="inherit" font-size="10" fill="#5B6B82" text-anchor="middle">
+              <text class="pv-wlab" x="91" y="126">10</text>
+              <text class="pv-hlab" x="48" y="82">10</text>
+            </g>
+            <line x1="192" y1="22" x2="192" y2="136" stroke="#E6E9EF" stroke-width="1.5"/>
+            <g font-family="inherit">
+              <text x="208" y="46" font-size="10.5" fill="#5B6B82" font-weight="700">Perímetro</text>
+              <text x="208" y="72" font-size="25" fill="#5B6B82" font-weight="800">40</text>
+              <rect x="248" y="54" width="34" height="17" rx="8.5" fill="#EEF1F6"/>
+              <text x="265" y="66" font-size="9.5" fill="#5B6B82" font-weight="700" text-anchor="middle">fijo</text>
+              <text x="208" y="102" font-size="10.5" fill="#0996AA" font-weight="700">Área</text>
+              <text class="pv-area" x="208" y="128" font-size="25" fill="#0996AA" font-weight="800">100</text>
+            </g>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento métrico</span>
+          <h3><a class="card-link" href="/recursos/area-vs-perimetro/">Área vs Perímetro</a></h3>
+          <p>Manipula un rectángulo y descubre por exploración por qué un mayor perímetro no siempre
+             implica mayor área.</p>
+          <div class="card-foot">
+            <span class="card-grades">3.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Pitágoras Interactivo -->
+      <article class="card" data-pensamiento="metrico" data-min="7" data-max="11">
+        <div class="cover" data-preview="pitagoras" tabindex="0" role="slider"
+             aria-label="Vista previa de Pitágoras Interactivo: cambia la forma del triángulo"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <path class="pv-tri" d="M20 130 L20 74 L86 130 Z" fill="#D6EEF3" stroke="#1B2A5A" stroke-width="2.6" stroke-linejoin="round"/>
+            <path class="pv-sq" d="M20 118 h12 v12 h-12 Z" fill="none" stroke="#0996AA" stroke-width="2"/>
+            <g font-family="inherit" font-size="10.5" font-weight="700">
+              <text class="pv-la" x="12" y="102" fill="#0996AA" text-anchor="end">a</text>
+              <text x="53" y="146" fill="#1B2A5A" text-anchor="middle">b</text>
+              <text class="pv-lc" x="60" y="92" fill="#C77B12" text-anchor="middle">c</text>
+            </g>
+            <g font-family="inherit" font-size="9.5" fill="#5B6B82" font-weight="700">
+              <text x="118" y="50">a² + b²</text>
+              <text x="118" y="106">c²</text>
+            </g>
+            <rect class="pv-a2" x="118" y="56" width="40" height="20" rx="3" fill="#0BC0D8"/>
+            <rect class="pv-b2" x="158" y="56" width="60" height="20" rx="3" fill="#1B2A5A" opacity=".78"/>
+            <rect class="pv-c2" x="118" y="112" width="100" height="20" rx="3" fill="#C77B12" opacity=".85"/>
+            <text class="pv-eq" x="118" y="148" font-family="inherit" font-size="11" fill="#1B2A5A" font-weight="700">36,0 + 36,0 = 72,0</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento métrico</span>
+          <h3><a class="card-link" href="/recursos/pitagoras/">Pitágoras Interactivo</a></h3>
+          <p>Arrastra los vértices de un triángulo rectángulo y descubre, por equivalencia entre áreas,
+             por qué a² + b² = c².</p>
+          <div class="card-foot">
+            <span class="card-grades">7.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Función Cuadrática -->
+      <article class="card" data-pensamiento="variacional" data-min="9" data-max="11">
+        <div class="cover" data-preview="cuadratica" tabindex="0" role="slider"
+             aria-label="Vista previa de Función Cuadrática: cambia el parámetro a"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="72">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <defs><clipPath id="pvqClip"><rect x="8" y="6" width="284" height="118"/></clipPath></defs>
+            <g stroke="#DCEDF1" stroke-width="1">
+              <path d="M8 30h284M8 104h284M104 6v118M196 6v118"/>
+            </g>
+            <g stroke="#9FD9E4" stroke-width="2"><line x1="8" y1="72" x2="292" y2="72"/><line x1="150" y1="6" x2="150" y2="124"/></g>
+            <g clip-path="url(#pvqClip)">
+              <path class="pv-par" d="" fill="none" stroke="#1B2A5A" stroke-width="3.4" stroke-linecap="round"/>
+            </g>
+            <circle cx="150" cy="72" r="5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <text class="pv-alab" x="14" y="148" font-family="inherit" font-size="13" font-weight="800"
+                  fill="#1B2A5A">y = 1,20 x²</text>
+            <text class="pv-aconc" x="286" y="148" font-family="inherit" font-size="10.5" font-weight="700"
+                  fill="#5B6B82" text-anchor="end">abre hacia arriba</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento variacional</span>
+          <h3><a class="card-link" href="/recursos/funcion-cuadratica/">Función Cuadrática</a></h3>
+          <p>Mueve los parámetros a, b y c y observa en tiempo real cómo cambian la parábola, el vértice,
+             las raíces y el eje de simetría.</p>
+          <div class="card-foot">
+            <span class="card-grades">9.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Círculo Unitario y Ondas -->
+      <article class="card" data-pensamiento="variacional" data-min="10" data-max="11">
+        <div class="cover" data-preview="circulo" tabindex="0" role="slider"
+             aria-label="Vista previa de Círculo Unitario y Ondas: gira el ángulo"
+             aria-valuemin="0" aria-valuemax="360" aria-valuenow="60">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1.6"><line x1="8" y1="79" x2="292" y2="79"/><line x1="58" y1="24" x2="58" y2="134"/></g>
+            <circle cx="58" cy="79" r="44" fill="none" stroke="#1B2A5A" stroke-width="2.4"/>
+            <line class="pv-rad" x1="58" y1="79" x2="102" y2="79" stroke="#1B2A5A" stroke-width="2.4"/>
+            <line class="pv-drop" x1="102" y1="79" x2="102" y2="79" stroke="#0996AA" stroke-width="1.8" stroke-dasharray="3 3"/>
+            <line class="pv-link" x1="102" y1="79" x2="118" y2="79" stroke="#0BC0D8" stroke-width="1.4" stroke-dasharray="2 4" opacity=".8"/>
+            <circle class="pv-pt" cx="102" cy="79" r="5.5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <path class="pv-wave" d="" fill="none" stroke="#0BC0D8" stroke-width="3" stroke-linecap="round"/>
+            <circle class="pv-wpt" cx="118" cy="79" r="4.5" fill="#1B2A5A"/>
+            <text class="pv-sin" x="292" y="146" font-family="inherit" font-size="11.5" font-weight="700"
+                  fill="#1B2A5A" text-anchor="end">sen θ = 0,00</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento variacional</span>
+          <h3><a class="card-link" href="/recursos/circulo-ondas/">Círculo Unitario y Ondas</a></h3>
+          <p>Manipula el ángulo sobre el círculo unitario y observa cómo nacen el seno, el coseno y la
+             tangente: del giro al ritmo de una onda.</p>
+          <div class="card-foot">
+            <span class="card-grades">10.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Azar y Probabilidad -->
+      <article class="card" data-pensamiento="aleatorio" data-min="6" data-max="10">
+        <div class="cover" data-preview="azar" tabindex="0" role="button"
+             aria-label="Vista previa de Azar y Probabilidad: lanza monedas y observa la convergencia">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1"><path d="M22 34h266M22 106h266"/></g>
+            <line x1="22" y1="70" x2="288" y2="70" stroke="#C77B12" stroke-width="1.6" stroke-dasharray="5 4"/>
+            <text x="288" y="50" font-family="inherit" font-size="9.5" fill="#C77B12"
+                  font-weight="700" text-anchor="end">p = 0,5</text>
+            <polyline class="pv-line" points="" fill="none" stroke="#0BC0D8" stroke-width="2.4"
+                      stroke-linejoin="round" stroke-linecap="round"/>
+            <line x1="22" y1="126" x2="288" y2="126" stroke="#9FD9E4" stroke-width="2"/>
+            <g font-family="inherit" font-size="10.5" font-weight="700" fill="#1B2A5A">
+              <text class="pv-n" x="22" y="146">n = 0</text>
+              <text class="pv-f" x="288" y="146" text-anchor="end">frecuencia = —</text>
+            </g>
+          </svg>
+          <span class="hint">Toca para lanzar</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento aleatorio</span>
+          <h3><a class="card-link" href="/recursos/azar-probabilidad/">Azar y Probabilidad</a></h3>
+          <p>Contrasta la probabilidad teórica y la frecuencial con monedas, dados, árboles y ruletas,
+             y descubre la Ley de los Grandes Números.</p>
+          <div class="card-foot">
+            <span class="card-grades">6.° a 10.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Poliedros y Redes 3D -->
+      <article class="card" data-pensamiento="espacial" data-min="5" data-max="8">
+        <div class="cover" data-preview="poliedros" tabindex="0" role="slider"
+             aria-label="Vista previa de Poliedros y Redes 3D: despliega el cubo en su red plana"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1">
+              <path d="M0 30h300M0 60h300M0 90h300M0 120h300"/>
+              <path d="M30 0v158M60 0v158M90 0v158M210 0v158M240 0v158M270 0v158"/>
+            </g>
+            <g class="pv-faces"></g>
+            <g font-family="inherit" font-weight="800" fill="#1B2A5A">
+              <text class="pv-cva" x="12" y="148" font-size="12">C 6 · V 8 · A 12</text>
+              <text class="pv-state" x="288" y="148" font-size="10.5" font-weight="700"
+                    fill="#5B6B82" text-anchor="end">red plana</text>
+            </g>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento espacial</span>
+          <h3><a class="card-link" href="/recursos/poliedros-redes-3d/">Poliedros y Redes 3D</a></h3>
+          <p>Pliega y despliega sólidos para descubrir por qué 6 cuadrados no dan 24 aristas, y dónde
+             deja de valer que C + V − A = 2.</p>
+          <div class="card-foot">
+            <span class="card-grades">5.° a 8.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+    <p class="empty" id="empty">Ningún laboratorio coincide con esos filtros todavía. Prueba con otra
+       combinación o mira el catálogo completo.</p>
+    <p class="catalog-note">Más laboratorios en camino · <a href="/recursos/">Ver directorio dedicado de recursos →</a></p>
+  </section>
+
+  <!-- ================= JUEGOS ================= -->
+  <section id="juegos" class="games-wrap">
+    <div class="wrap" style="padding-top:10px;padding-bottom:10px;">
+      <div class="games-band">
+
+        <div class="games-copy">
+          <span class="games-eyebrow">Juegos matemáticos</span>
+          <h2>La operación no va encima del juego. Es el juego.</h2>
+          <p>Para navegar entre arrecifes hay que trazar coordenadas; para encender un farol,
+             plegar un poliedro; para clavar la diana, ajustar la parábola; para frenar invasores,
+             llegar exactamente a cero.</p>
+          <ul class="games-topics">
+            <li>Plano cartesiano</li>
+            <li>Geometría 3D</li>
+            <li>Parábolas y funciones</li>
+            <li>Números enteros</li>
+            <li>Deducción numérica</li>
+          </ul>
+          <a class="games-btn" href="/juegos/">
+            Ver los 6 juegos
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <p class="games-note">Seis títulos · Descargables en un HTML · Funcionan sin conexión</p>
+        </div>
+
+        <!-- Abanico renovado con los nuevos juegos insignia -->
+        <div class="games-fan" aria-hidden="true">
+          <!-- Tarjeta 3 (fondo): El último pliegue -->
+          <span class="fan-card fan-3"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+            <defs><radialGradient id="cvPl" cx="45%" cy="40%" r="72%">
+              <stop offset="0" stop-color="#1C3E3F"/><stop offset="1" stop-color="#07191B"/></radialGradient></defs>
+            <rect width="320" height="140" fill="url(#cvPl)"/>
+            <path d="M0 112 L68 92 L152 108 L244 86 L320 100 L320 140 L0 140Z" fill="#0E282A"/>
+            <g fill="#FFDA85" opacity=".75"><circle cx="44" cy="30" r="1.6"/><circle cx="198" cy="24" r="1.4"/><circle cx="144" cy="44" r="1.1"/></g>
+            <!-- Cubo en papel marfil con bisagra ámbar -->
+            <g transform="translate(128,74)">
+              <polygon points="0,-30 34,-12 0,6 -34,-12" fill="#F9EED9" stroke="#586C66" stroke-width="1.4"/>
+              <polygon points="-34,-12 0,6 0,44 -34,26" fill="#E3D2B4" stroke="#586C66" stroke-width="1.4"/>
+              <polygon points="34,-12 0,6 0,44 34,26" fill="#C9B38C" stroke="#586C66" stroke-width="1.4"/>
+              <line x1="-34" y1="-12" x2="0" y2="-30" stroke="#FFA244" stroke-width="2.6" stroke-dasharray="5 4"/>
+              <line x1="0" y1="6" x2="34" y2="-12" stroke="#FFA244" stroke-width="2.6" stroke-dasharray="5 4"/>
+            </g>
+            <!-- Farol encendido -->
+            <g transform="translate(256,56)">
+              <circle cy="8" r="34" fill="#FFC864" opacity=".24"/>
+              <line x1="0" y1="-26" x2="0" y2="-8" stroke="#8FA39B" stroke-width="1.5"/>
+              <polygon points="0,-10 15,-1 -15,-1" fill="#183536" stroke="#75857E" stroke-width="1.2"/>
+              <polygon points="-10,-1 10,-1 8,18 -8,18" fill="#FFCB74" stroke="#FFE3AF" stroke-width="1.2"/>
+            </g>
+          </svg></span>
+
+          <!-- Tarjeta 2 (centro): La senda del arquero -->
+          <span class="fan-card fan-2"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+            <defs><linearGradient id="cvAr" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#1E2A55"/><stop offset=".68" stop-color="#E8743B"/>
+              <stop offset="1" stop-color="#F0A86A"/></linearGradient></defs>
+            <rect width="320" height="140" fill="url(#cvAr)"/>
+            <circle cx="248" cy="76" r="24" fill="#FFEEC3" opacity=".32"/>
+            <circle cx="248" cy="76" r="13" fill="#FFEEC3" opacity=".9"/>
+            <path d="M0 108 L46 86 L98 104 L164 80 L236 102 L292 84 L320 96 L320 140 L0 140Z" fill="#2A3862"/>
+            <rect y="114" width="320" height="26" fill="#101830"/>
+            <!-- Muro, aro cian y diana -->
+            <rect x="122" y="72" width="12" height="42" fill="#3F4E72"/>
+            <rect x="119" y="68" width="18" height="5" fill="#5A6A90"/>
+            <ellipse cx="164" cy="44" rx="7" ry="18" fill="none" stroke="#0BC0D8" stroke-width="3.2"/>
+            <path d="M36 112 Q164 -24 274 112" fill="none" stroke="#FFC94A" stroke-width="2.4" stroke-dasharray="6 5"/>
+            <circle cx="164" cy="44" r="3.5" fill="#5AF0FF"/>
+            <ellipse cx="274" cy="114" rx="14" ry="4.5" fill="#F6F1E6" stroke="#E0504A" stroke-width="2.5"/>
+            <line x1="274" y1="114" x2="274" y2="92" stroke="#2A2018" stroke-width="2"/>
+            <polygon points="274,92 288,96 274,100" fill="#E0504A"/>
+            <!-- Arquero -->
+            <circle cx="34" cy="96" r="4.5" fill="#070D1C"/>
+            <path d="M29 114 L33 101 L38 114Z" fill="#070D1C"/>
+            <path d="M40 94 Q50 102 40 110" fill="none" stroke="#C98B3A" stroke-width="2.4"/>
+          </svg></span>
+
+          <!-- Tarjeta 1 (frente): Rumbo Cartesiano -->
+          <span class="fan-card fan-1"><svg viewBox="0 0 320 140" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+            <defs><radialGradient id="cvRm" cx="35%" cy="28%" r="80%">
+              <stop offset="0" stop-color="#18869A"/><stop offset=".55" stop-color="#0D5A6D"/>
+              <stop offset="1" stop-color="#063342"/></radialGradient></defs>
+            <rect width="320" height="140" fill="url(#cvRm)"/>
+            <g stroke="rgba(215,245,250,.18)" stroke-width=".8">
+              <path d="M0 24h320M0 48h320M0 72h320M0 96h320M0 120h320"/>
+              <path d="M40 0v140M80 0v140M120 0v140M160 0v140M200 0v140M240 0v140M280 0v140"/>
+            </g>
+            <line x1="0" y1="72" x2="320" y2="72" stroke="rgba(247,217,151,.8)" stroke-width="1.6"/>
+            <line x1="160" y1="0" x2="160" y2="140" stroke="rgba(247,217,151,.8)" stroke-width="1.6"/>
+            <!-- Isla central -->
+            <ellipse cx="164" cy="92" rx="22" ry="16" fill="#E4C178" stroke="rgba(246,253,255,.7)" stroke-width="1.2" stroke-dasharray="4 3"/>
+            <ellipse cx="163" cy="91" rx="14" ry="10" fill="#4B9B54"/>
+            <!-- Ruta trazada -->
+            <polyline points="58,108 112,44 256,56" fill="none" stroke="#F7D997" stroke-width="2.4" stroke-dasharray="6 5"/>
+            <!-- Boya dorada y muelle destino -->
+            <circle cx="112" cy="44" r="7" fill="#F2BD52" stroke="#FFF5D6" stroke-width="1.4"/>
+            <rect x="246" y="48" width="20" height="16" rx="3" fill="#A87038" stroke="#F7D997" stroke-width="1.4"/>
+            <!-- Lancha navegando -->
+            <g transform="translate(184,50) rotate(5)">
+              <path d="M12,0 Q4,-6 -10,-4 L-10,4 Q4,6 12,0 Z" fill="#F8F2E4" stroke="#C84B39" stroke-width="1.5"/>
+              <rect x="-5" y="-2.5" width="5" height="5" fill="#F5C768"/>
+            </g>
+            <!-- Píldora de coordenada -->
+            <rect x="224" y="10" width="84" height="24" rx="7" fill="rgba(6,22,29,.88)" stroke="rgba(247,217,151,.6)" stroke-width="1.2"/>
+            <text x="266" y="26" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11.5" font-weight="800">
+              <tspan fill="#66E0F5">−2</tspan><tspan fill="#E4B55F">, </tspan><tspan fill="#FFCA70">2</tspan>
+            </text>
+          </svg></span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RUTAS DE AULA ================= -->
+  <section id="rutas" class="routes-wrap">
+    <div class="wrap" style="padding-top:26px;padding-bottom:10px;">
+      <div class="sec-head">
+        <h2>Rutas sugeridas para clase</h2>
+        <p>Laboratorios y juegos se potencian juntos: primero el estudiante descubre la relación manipulando el simulador; después la pone a prueba bajo una mecánica de juego.</p>
+      </div>
+
+      <div class="routes-grid">
+        <article class="route-card">
+          <div class="route-head">
+            <span class="route-tag">Geometría 3D</span>
+            <span class="route-grade">5.º a 9.º</span>
+          </div>
+          <h3>De la red plana al poliedro</h3>
+          <p>Visualiza por qué cambian las aristas al cerrar una red y pon a prueba ese criterio plegando cuerpos en 3D.</p>
+          <ol class="route-steps">
+            <li><a href="/recursos/poliedros-redes-3d/">Poliedros y Redes 3D</a><span>Explora desarrollos planos y la relación C + V − A = 2.</span></li>
+            <li><a href="/juegos/el-ultimo-pliegue.html">El último pliegue</a><span>Aplica bisagras y ángulos en 18 retos de geometría.</span></li>
+          </ol>
+        </article>
+
+        <article class="route-card">
+          <div class="route-head">
+            <span class="route-tag">Funciones y parábolas</span>
+            <span class="route-grade">8.º a 11.º</span>
+          </div>
+          <h3>De los parámetros a la trayectoria</h3>
+          <p>Conecta las tres formas de la función cuadrática con tiros reales y luego generaliza hacia modelos lineales y exponenciales.</p>
+          <ol class="route-steps">
+            <li><a href="/recursos/funcion-cuadratica/">Función Cuadrática</a><span>Manipula a, b y c para observar vértice y raíces.</span></li>
+            <li><a href="/juegos/senda-del-arquero.html">La senda del arquero</a><span>Traduce vértice, raíces y forma general en 20 niveles.</span></li>
+            <li><a href="/juegos/guardianes-del-claro.html">Guardianes del Claro</a><span>Identifica y evalúa nueve patrones de funciones.</span></li>
+          </ol>
+        </article>
+
+        <article class="route-card">
+          <div class="route-head">
+            <span class="route-tag">Número y plano</span>
+            <span class="route-grade">5.º a 9.º</span>
+          </div>
+          <h3>Signos, descarte y cuatro cuadrantes</h3>
+          <p>Una progresión lúdica para consolidar propiedades numéricas, ley de signos y ubicación en el plano cartesiano.</p>
+          <ol class="route-steps">
+            <li><a href="/juegos/mision-numero-secreto.html">Misión Número Secreto</a><span>Cruza pistas de divisibilidad y descarte lógico.</span></li>
+            <li><a href="/juegos/guardianes-del-cero.html">Guardianes del Cero</a><span>Neutraliza enteros negativos operando hacia el cero.</span></li>
+            <li><a href="/juegos/rumbo-cartesiano.html">Rumbo Cartesiano</a><span>Aplica signos, traslaciones y simetría en 21 misiones.</span></li>
+          </ol>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= POR QUÉ ================= -->
+  <section id="por-que" class="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Pensados para el aula</h2>
+        <p>Cada recurso está hecho para entrar a clase sin fricción: en el navegador, sin cuentas y con todo lo que el docente necesita.</p>
+      </div>
+      <div class="feat-grid">
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0"/></svg></span>
+          <div><h3>Acceso abierto</h3><p>Sin registro ni cuentas. El estudiante entra y empieza a usarlo de inmediato.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v10M8 9l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span>
+          <div><h3>Funcionan sin internet</h3><p>Un archivo, cero dependencias. Descárgalo y llévalo en USB a una sede sin conexión.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg></span>
+          <div><h3>Listos para incrustar</h3><p>Pégalos en Moodle, Google Sites o tu plataforma con un código de iframe.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span>
+          <div><h3>Alineados a estándares</h3><p>Construidos sobre los DBA de Colombia y las competencias de la prueba Saber 11.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M19 3v18"/></svg></span>
+          <div><h3>Con guía docente</h3><p>Secuencia didáctica, preguntas con retroalimentación y errores frecuentes, en PDF.</p></div>
+        </div>
+
+        <div class="feat">
+          <span class="feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15 9.5a3 3 0 1 0 0 5"/></svg></span>
+          <div><h3>Licencia abierta</h3><p>Bajo CC BY 4.0: úsalos, adáptalos y compártelos citando la fuente.</p></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INCRUSTAR ================= -->
+  <section id="incrustar" class="wrap">
+    <div class="embed">
+      <div class="embed-copy">
+        <div class="sec-head" style="margin-bottom:0">
+          <h2>Llévalo a tu plataforma</h2>
+        </div>
+        <p>Elige un laboratorio o un juego, copia el código y pégalo en tu aula virtual. El recurso queda dentro de
+           tu unidad, junto a la tarea y al foro, sin sacar al estudiante de la plataforma.</p>
+        <ol class="embed-steps">
+          <li>En Moodle, agrega una etiqueta o una página y abre el editor en modo HTML.</li>
+          <li>Pega el código de abajo y guarda.</li>
+          <li>Si prefieres trabajar sin internet, descarga el archivo HTML y súbelo directo al curso.</li>
+        </ol>
+      </div>
+      <div>
+        <div class="codebox">
+          <div class="codebox-top">
+            <label class="sr-only" for="embedSel">Recurso o juego para incrustar</label>
+            <select id="embedSel">
+              <optgroup label="Laboratorios interactivos (7)">
+                <option value="recursos/fracciones-vivas/" data-h="720">Fracciones Vivas</option>
+                <option value="recursos/area-vs-perimetro/" data-h="720" selected>Área vs Perímetro</option>
+                <option value="recursos/pitagoras/" data-h="720">Pitágoras Interactivo</option>
+                <option value="recursos/funcion-cuadratica/" data-h="720">Función Cuadrática</option>
+                <option value="recursos/circulo-ondas/" data-h="720">Círculo Unitario y Ondas</option>
+                <option value="recursos/azar-probabilidad/" data-h="720">Azar y Probabilidad</option>
+                <option value="recursos/poliedros-redes-3d/" data-h="720">Poliedros y Redes 3D</option>
+              </optgroup>
+              <optgroup label="Juegos matemáticos (6)">
+                <option value="juegos/rumbo-cartesiano.html" data-h="640">Rumbo Cartesiano</option>
+                <option value="juegos/guardianes-del-claro.html" data-h="640">Guardianes del Claro</option>
+                <option value="juegos/el-ultimo-pliegue.html" data-h="640">El último pliegue</option>
+                <option value="juegos/senda-del-arquero.html" data-h="640">La senda del arquero</option>
+                <option value="juegos/guardianes-del-cero.html" data-h="640">Guardianes del Cero</option>
+                <option value="juegos/mision-numero-secreto.html" data-h="680">Misión Número Secreto</option>
+              </optgroup>
+            </select>
+            <button class="copybtn" type="button" data-copy="embedCode">Copiar código</button>
+          </div>
+          <pre><code id="embedCode"></code></pre>
+        </div>
+        <p class="embed-note">Ancho flexible y alto recomendado según el recurso. Si tu plataforma bloquea los iframes,
+           enlaza directamente o sube el archivo HTML a tu servidor.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FUNDAMENTACIÓN ================= -->
+  <section id="fundamentacion" class="academic">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Fundamentación y uso académico</h2>
+        <p>Didaxis Lab no es una colección de actividades sueltas. Cada decisión de diseño —qué se
+           manipula, cómo se redacta la retroalimentación, por qué el archivo pesa lo que pesa— está
+           documentada y es discutible.</p>
+      </div>
+
+      <div class="acad-grid">
+        <div class="acad-copy">
+          <ul class="acad-list">
+            <li><a href="https://doi.org/10.5281/zenodo.24509602" target="_blank" rel="noopener">
+              Fundamentación teórica, didáctica y técnica (v. 1.1)
+              <span class="meta">DOI · Zenodo</span></a></li>
+            <li><a href="https://doi.org/10.5281/zenodo.24509193" target="_blank" rel="noopener">
+              Marco de calidad de los recursos (v. 2.0)
+              <span class="meta">DOI · Zenodo</span></a></li>
+            <li><a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">
+              Perfil ORCID del autor
+              <span class="meta">0009-0007-6705-0407</span></a></li>
+            <li><a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">
+              Licencia Creative Commons Atribución 4.0
+              <span class="meta">CC BY 4.0</span></a></li>
+          </ul>
+          <p>Los recursos pueden usarse, adaptarse y redistribuirse en cualquier institución, incluso con
+             fines comerciales, citando la fuente. Las adaptaciones a otros currículos hispanohablantes y
+             la investigación empírica sobre su efecto —incluidos resultados desfavorables— son
+             especialmente bienvenidas.</p>
+          <p class="acad-feedback">¿Usaste un laboratorio o un juego en tu clase, o encontraste algo por corregir?
+             <a href="/autor/">Escríbeme desde la página del autor →</a></p>
+        </div>
+
+        <aside class="citebox">
+          <h3>Cómo citar</h3>
+          <p class="cite-sub">Formato APA 7.ª edición</p>
+          <label class="sr-only" for="citePick">Qué se va a citar</label>
+          <select class="cite-pick" id="citePick">
+            <optgroup label="Proyecto y documentos marco">
+              <option value="proyecto">El proyecto Didaxis Lab</option>
+              <option value="fundamentacion">La fundamentación (v. 1.1 · DOI)</option>
+              <option value="marco">El marco de calidad (v. 2.0 · DOI)</option>
+            </optgroup>
+            <optgroup label="Laboratorios interactivos (7)">
+              <option value="lab-fracciones">Fracciones Vivas</option>
+              <option value="lab-area">Área vs Perímetro</option>
+              <option value="lab-pitagoras">Pitágoras Interactivo</option>
+              <option value="lab-cuadratica">Función Cuadrática</option>
+              <option value="lab-circulo">Círculo Unitario y Ondas</option>
+              <option value="lab-azar">Azar y Probabilidad</option>
+              <option value="lab-poliedros">Poliedros y Redes 3D</option>
+            </optgroup>
+            <optgroup label="Juegos matemáticos (6)">
+              <option value="jue-rumbo">Rumbo Cartesiano</option>
+              <option value="jue-claro">Guardianes del Claro</option>
+              <option value="jue-pliegue">El último pliegue</option>
+              <option value="jue-arquero">La senda del arquero</option>
+              <option value="jue-cero">Guardianes del Cero</option>
+              <option value="jue-secreto">Misión Número Secreto</option>
+            </optgroup>
+          </select>
+          <blockquote id="citaApa"></blockquote>
+          <button class="copybtn" type="button" data-copy="citaApa">Copiar la cita</button>
+          <p class="doi-note">Los dos documentos marco están depositados en Zenodo con DOI permanente.
+             Selecciona arriba cualquier laboratorio o juego para copiar su referencia exacta.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EL PROYECTO ================= -->
+  <section id="proyecto" class="wrap">
+    <div class="sec-head"><h2>El proyecto</h2></div>
+    <div class="about">
+      <p>Didaxis Lab es una iniciativa de recursos educativos abiertos que lleva al aula hispanohablante una matemática que se explora y se manipula, en lugar de memorizarse.</p>
+      <p class="thesis">La inteligencia artificial da fluidez. La comprensión exige sostener el porqué.</p>
+      <p>Cada laboratorio parte de un fenómeno que el estudiante descubre por sí mismo, se alinea a los Derechos Básicos de Aprendizaje y llega con evaluación formativa y guía para el docente. Todo es abierto, gratuito y funciona sin conexión.</p>
+
+      <div class="signature">
+        <img src="/img/autor-320.jpg" srcset="/img/autor-320.jpg 320w, /img/autor-640.jpg 640w"
+             sizes="92px" width="92" height="92" loading="lazy"
+             alt="Retrato de Héctor Banquez, autor de Didaxis Lab">
+        <div class="sig-body">
+          <div class="sig-name">Héctor Enrique Banquez Buendía</div>
+          <p class="sig-role">Docente de matemáticas y estadística · Doctorando en Educación Matemática ·
+             <a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">ORCID 0009-0007-6705-0407</a></p>
+          <a class="sig-more" href="/autor/">Quién está detrás y por qué →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <div class="foot-inner">
+      <div class="foot-brand">
+        <div class="row">
+          <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true">
+            <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+            <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+            <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+            <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+          </svg>
+          <span class="name">Didaxis Lab</span>
+        </div>
+        <small>Simuladores y juegos interactivos de matemáticas, abiertos para toda el aula.</small>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h4>Recursos</h4>
+          <a href="/recursos/fracciones-vivas/">Fracciones Vivas</a>
+          <a href="/recursos/area-vs-perimetro/">Área vs Perímetro</a>
+          <a href="/recursos/poliedros-redes-3d/">Poliedros y Redes 3D</a>
+          <a href="/recursos/pitagoras/">Pitágoras Interactivo</a>
+          <a href="/recursos/funcion-cuadratica/">Función Cuadrática</a>
+          <a href="/recursos/circulo-ondas/">Círculo Unitario y Ondas</a>
+          <a href="/recursos/azar-probabilidad/">Azar y Probabilidad</a>
+        </div>
+        <div class="foot-col">
+          <h4>Juegos</h4>
+          <a href="/juegos/rumbo-cartesiano.html">Rumbo Cartesiano</a>
+          <a href="/juegos/guardianes-del-claro.html">Guardianes del Claro</a>
+          <a href="/juegos/el-ultimo-pliegue.html">El último pliegue</a>
+          <a href="/juegos/senda-del-arquero.html">La senda del arquero</a>
+          <a href="/juegos/guardianes-del-cero.html">Guardianes del Cero</a>
+          <a href="/juegos/mision-numero-secreto.html">Misión Número Secreto</a>
+        </div>
+        <div class="foot-col">
+          <h4>Proyecto</h4>
+          <a href="/autor/">El autor</a>
+          <a href="#rutas">Rutas para clase</a>
+          <a href="#por-que">Por qué Didaxis Lab</a>
+          <a href="#fundamentacion">Fundamentación</a>
+          <a href="#incrustar">Llévalo a tu plataforma</a>
+          <a href="https://orcid.org/0009-0007-6705-0407" target="_blank" rel="noopener">ORCID del autor</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>
+        <span>© 2026 Didaxis Lab · Héctor Banquez</span>
+        <span>Contenido bajo licencia CC BY 4.0</span>
+      </div>
+    </div>
+  </footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function q(root, sel) { return root.querySelector(sel); }
+  function n1(x) { return x.toFixed(1).replace(".", ","); }
+  function n2(x) { return x.toFixed(2).replace(".", ","); }
+  function mk(tag, attrs) {
+    var el = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) { el.setAttribute(k, attrs[k]); }
+    return el;
+  }
+  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+
+  /* ---------------------------------------------------------------
+     Hero vivo: parábola manipulable directamente en el vértice
+  --------------------------------------------------------------- */
+  (function initHeroLab() {
+    var lab = document.getElementById("heroLab");
+    var svg = document.getElementById("heroSvg");
+    if (!lab || !svg) { return; }
+
+    var grid = document.getElementById("heroGrid");
+    var axis = document.getElementById("heroAxis");
+    var curve = document.getElementById("heroCurve");
+    var r1 = document.getElementById("heroR1");
+    var r2 = document.getElementById("heroR2");
+    var vGroup = document.getElementById("heroVertex");
+    var vCircles = vGroup.querySelectorAll("circle");
+    var tagBg = document.getElementById("heroTagBg");
+    var tagTxt = document.getElementById("heroTagTxt");
+    var eqEl = document.getElementById("heroEq");
+    var aRange = document.getElementById("heroA");
+    var aValEl = document.getElementById("heroAVal");
+    var rootsEl = document.getElementById("heroRoots");
+    var resetBtn = document.getElementById("heroReset");
+
+    var OX = 210, OY = 138, UX = 32, UY = 28;
+    var gx, gy;
+    for (gx = -6; gx <= 6; gx++) {
+      grid.appendChild(mk("line", { x1: OX + gx * UX, y1: 10, x2: OX + gx * UX, y2: 232 }));
+    }
+    for (gy = -3; gy <= 4; gy++) {
+      grid.appendChild(mk("line", { x1: 10, y1: OY - gy * UY, x2: 410, y2: OY - gy * UY }));
+    }
+
+    var state = { a: 0.5, h: 1.0, k: -2.0 };
+    var toX = function (x) { return OX + x * UX; };
+    var toY = function (y) { return OY - y * UY; };
+    var fmtClean = function (v) {
+      var r = Math.round(v * 10) / 10;
+      if (Math.abs(r) < 0.05) { return "0"; }
+      return (r < 0 ? "−" : "") + (Math.abs(r) % 1 === 0 ? String(Math.abs(r)) : Math.abs(r).toFixed(1).replace(".", ","));
+    };
+
+    function formatEq(a, h, k) {
+      if (Math.abs(a) < 0.05) { return "y = " + fmtClean(k); }
+      var aStr = Math.abs(a - 1) < 0.05 ? "" : (Math.abs(a + 1) < 0.05 ? "−" : fmtClean(a));
+      var hPart;
+      if (Math.abs(h) < 0.05) { hPart = "x²"; }
+      else if (h > 0) { hPart = "(x − " + fmtClean(h) + ")²"; }
+      else { hPart = "(x + " + fmtClean(Math.abs(h)) + ")²"; }
+      var kPart = Math.abs(k) < 0.05 ? "" : (k > 0 ? " + " + fmtClean(k) : " − " + fmtClean(Math.abs(k)));
+      return "y = " + aStr + hPart + kPart;
+    }
+
+    function render() {
+      var a = state.a, h = state.h, k = state.k;
+      var d = "", x, y, sx, sy, first = true;
+      for (x = -6.5; x <= 6.51; x += 0.12) {
+        y = a * (x - h) * (x - h) + k;
+        sx = toX(x); sy = toY(y);
+        if (sy < -140 || sy > 380) { first = true; continue; }
+        d += (first ? "M" : "L") + sx.toFixed(1) + " " + sy.toFixed(1) + " ";
+        first = false;
+      }
+      curve.setAttribute("d", d);
+      curve.setAttribute("stroke", a < -0.05 ? "#C77B12" : "#1B2A5A");
+
+      var vx = toX(h), vy = toY(k);
+      axis.setAttribute("x1", vx.toFixed(1)); axis.setAttribute("x2", vx.toFixed(1));
+      axis.setAttribute("visibility", Math.abs(a) < 0.05 ? "hidden" : "visible");
+
+      vCircles[0].setAttribute("cx", vx.toFixed(1)); vCircles[0].setAttribute("cy", vy.toFixed(1));
+      vCircles[1].setAttribute("cx", vx.toFixed(1)); vCircles[1].setAttribute("cy", vy.toFixed(1));
+
+      var label = "(" + fmtClean(h) + ", " + fmtClean(k) + ")";
+      tagTxt.textContent = label;
+      var bw = Math.max(54, label.length * 7.2 + 14);
+      var bx = vx + 12 + bw > 406 ? vx - 12 - bw : vx + 12;
+      var by = clamp(vy - 11, 14, 206);
+      tagBg.setAttribute("x", bx.toFixed(1)); tagBg.setAttribute("y", by.toFixed(1));
+      tagBg.setAttribute("width", bw.toFixed(1));
+      tagTxt.setAttribute("x", (bx + bw / 2).toFixed(1)); tagTxt.setAttribute("y", (by + 14).toFixed(1));
+
+      // Raíces reales
+      r1.setAttribute("visibility", "hidden");
+      r2.setAttribute("visibility", "hidden");
+      if (Math.abs(a) < 0.05) {
+        rootsEl.textContent = Math.abs(k) < 0.05 ? "Recta y = 0" : "Recta horizontal";
+        rootsEl.className = "hero-roots none";
+      } else {
+        var rhs = -k / a;
+        if (rhs > 0.001) {
+          var rad = Math.sqrt(rhs);
+          r1.setAttribute("cx", toX(h - rad).toFixed(1)); r1.setAttribute("visibility", "visible");
+          r2.setAttribute("cx", toX(h + rad).toFixed(1)); r2.setAttribute("visibility", "visible");
+          rootsEl.textContent = "2 raíces reales";
+          rootsEl.className = "hero-roots";
+        } else if (Math.abs(rhs) <= 0.001) {
+          r1.setAttribute("cx", toX(h).toFixed(1)); r1.setAttribute("visibility", "visible");
+          rootsEl.textContent = "1 raíz doble";
+          rootsEl.className = "hero-roots";
+        } else {
+          rootsEl.textContent = "Sin raíces reales";
+          rootsEl.className = "hero-roots none";
+        }
+      }
+
+      eqEl.textContent = formatEq(a, h, k);
+      aValEl.textContent = "a = " + fmtClean(a);
+      aRange.value = String(a);
+    }
+
+    function touch() { lab.setAttribute("data-touched", "1"); }
+    function updateFromPointer(e) {
+      var rect = svg.getBoundingClientRect();
+      if (!rect.width || !rect.height) { return; }
+      var sx = ((e.clientX - rect.left) / rect.width) * 420;
+      var sy = ((e.clientY - rect.top) / rect.height) * 242;
+      state.h = Math.round(clamp((sx - OX) / UX, -5, 5) * 2) / 2;
+      state.k = Math.round(clamp((OY - sy) / UY, -3, 4) * 2) / 2;
+      render();
+    }
+
+    var dragging = false;
+    svg.addEventListener("pointerdown", function (e) {
+      dragging = true; touch();
+      svg.classList.add("dragging");
+      if (svg.setPointerCapture) { try { svg.setPointerCapture(e.pointerId); } catch (err) {} }
+      updateFromPointer(e);
+      e.preventDefault();
+    });
+    svg.addEventListener("pointermove", function (e) {
+      if (!dragging) { return; }
+      updateFromPointer(e);
+    });
+    function endDrag() { dragging = false; svg.classList.remove("dragging"); }
+    svg.addEventListener("pointerup", endDrag);
+    svg.addEventListener("pointercancel", endDrag);
+
+    svg.addEventListener("keydown", function (e) {
+      var moved = false;
+      if (e.key === "ArrowRight") { state.h = clamp(state.h + 0.5, -5, 5); moved = true; }
+      if (e.key === "ArrowLeft")  { state.h = clamp(state.h - 0.5, -5, 5); moved = true; }
+      if (e.key === "ArrowUp")    { state.k = clamp(state.k + 0.5, -3, 4); moved = true; }
+      if (e.key === "ArrowDown")  { state.k = clamp(state.k - 0.5, -3, 4); moved = true; }
+      if (moved) { e.preventDefault(); touch(); render(); }
+    });
+
+    aRange.addEventListener("input", function () {
+      touch();
+      state.a = Math.round(parseFloat(aRange.value) * 10) / 10;
+      render();
+    });
+
+    resetBtn.addEventListener("click", function () {
+      state.a = 0.5; state.h = 1.0; state.k = -2.0;
+      render();
+    });
+
+    render();
+  })();
+
+  /* ---------------------------------------------------------------
+     Vistas previas manipulables. Cada fábrica devuelve { set(t) }
+     con t entre 0 y 1, o { pulse() } cuando la acción es un toque.
+  --------------------------------------------------------------- */
+
+  function pvFracciones(root) {
+    var pie = q(root, ".pv-pie"), bar = q(root, ".pv-bar"), ticks = q(root, ".pv-ticks");
+    var dot = q(root, ".pv-dot"), tNum = q(root, ".pv-num");
+    var D = 8, R = 41, BW = 112, CW = BW / D;
+    var i, seg, x;
+
+    for (i = 0; i < D; i++) {
+      seg = mk("path", { "stroke": "#1B2A5A", "stroke-width": "1.6", "fill": "#FFFFFF" });
+      var a0 = -Math.PI / 2 + (i * 2 * Math.PI / D);
+      var a1 = -Math.PI / 2 + ((i + 1) * 2 * Math.PI / D);
+      seg.setAttribute("d", "M0 0 L" + (R * Math.cos(a0)).toFixed(2) + " " + (R * Math.sin(a0)).toFixed(2) +
+        " A" + R + " " + R + " 0 0 1 " + (R * Math.cos(a1)).toFixed(2) + " " + (R * Math.sin(a1)).toFixed(2) + " Z");
+      pie.appendChild(seg);
+
+      bar.appendChild(mk("rect", {
+        x: (i * CW).toFixed(2), y: 0, width: (CW - 1.5).toFixed(2), height: 26, rx: 2,
+        fill: "#FFFFFF", stroke: "#1B2A5A", "stroke-width": "1.6"
+      }));
+    }
+    for (i = 0; i <= D; i++) {
+      x = 172 + i * (BW / D);
+      ticks.appendChild(mk("line", {
+        x1: x.toFixed(2), y1: 106, x2: x.toFixed(2), y2: 118,
+        stroke: "#9FD9E4", "stroke-width": i === 0 || i === D ? 2.4 : 1.4
+      }));
+    }
+    var segs = pie.childNodes, cells = bar.childNodes;
+    var words = ["cero", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho"];
+
+    return { rest: 0.63, set: function (t) {
+      var k = Math.round(clamp(t, 0, 1) * D);
+      for (var j = 0; j < D; j++) {
+        var on = j < k;
+        segs[j].setAttribute("fill", on ? "#0BC0D8" : "#FFFFFF");
+        cells[j].setAttribute("fill", on ? "#0BC0D8" : "#FFFFFF");
+      }
+      tNum.textContent = String(k);
+      dot.setAttribute("cx", (172 + k * (BW / D)).toFixed(2));
+      root.setAttribute("aria-valuenow", String(k));
+      root.setAttribute("aria-valuetext", words[k] + " octavos");
+    } };
+  }
+
+  function pvArea(root) {
+    var rect = q(root, ".pv-rect"), area = q(root, ".pv-area");
+    var wl = q(root, ".pv-wlab"), hl = q(root, ".pv-hlab");
+    var U = 5.9, CX = 92, CY = 76;
+    return { rest: 0.80, set: function (t) {
+      var w = 3 + clamp(t, 0, 1) * 14, h = 20 - w;
+      var W = w * U, H = h * U;
+      rect.setAttribute("x", (CX - W / 2).toFixed(2));
+      rect.setAttribute("y", (CY - H / 2).toFixed(2));
+      rect.setAttribute("width", W.toFixed(2));
+      rect.setAttribute("height", H.toFixed(2));
+      wl.setAttribute("x", CX); wl.setAttribute("y", (CY + H / 2 + 13).toFixed(2));
+      wl.textContent = n1(w);
+      hl.setAttribute("x", (CX - W / 2 - 11).toFixed(2)); hl.setAttribute("y", (CY + 4).toFixed(2));
+      hl.textContent = n1(h);
+      area.textContent = n1(w * h);
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "área " + n1(w * h) + ", perímetro 40");
+    } };
+  }
+
+  function pvPitagoras(root) {
+    var tri = q(root, ".pv-tri"), sq = q(root, ".pv-sq"), eq = q(root, ".pv-eq");
+    var a2 = q(root, ".pv-a2"), b2 = q(root, ".pv-b2"), c2r = q(root, ".pv-c2");
+    var la = q(root, ".pv-la"), lc = q(root, ".pv-lc");
+    var B = 6, S = 11.2, X0 = 22, Y0 = 134, SC = 1.42, BX = 118;
+    return { rest: 0.62, set: function (t) {
+      var a = 2.6 + clamp(t, 0, 1) * 5.6;
+      var ax = X0, ay = Y0 - a * S, bx = X0 + B * S;
+      tri.setAttribute("d", "M" + X0 + " " + Y0 + " L" + ax + " " + ay.toFixed(2) + " L" + bx + " " + Y0 + " Z");
+      sq.setAttribute("d", "M" + X0 + " " + (Y0 - 11) + " h11 v11 h-11 Z");
+      la.setAttribute("y", (Y0 - a * S / 2 + 4).toFixed(2));
+      lc.setAttribute("x", ((ax + bx) / 2 + 6).toFixed(2));
+      lc.setAttribute("y", ((ay + Y0) / 2 - 4).toFixed(2));
+      var A2 = a * a, B2 = B * B, C2 = A2 + B2;
+      a2.setAttribute("width", (A2 * SC).toFixed(2));
+      b2.setAttribute("x", (BX + A2 * SC).toFixed(2));
+      b2.setAttribute("width", (B2 * SC).toFixed(2));
+      c2r.setAttribute("width", (C2 * SC).toFixed(2));
+      eq.textContent = n1(A2) + " + " + n1(B2) + " = " + n1(C2);
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "cateto a igual a " + n1(a) + ", " + n1(A2) + " más " + n1(B2) + " igual " + n1(C2));
+    } };
+  }
+
+  function pvCuadratica(root) {
+    var par = q(root, ".pv-par"), lab = q(root, ".pv-alab"), conc = q(root, ".pv-aconc");
+    var OX = 150, OY = 72, SX = 47, SY = 24;
+    return { rest: 0.80, set: function (t) {
+      var a = -1.9 + clamp(t, 0, 1) * 3.8;
+      var d = "", x, px, py, first = true;
+      for (x = -3.1; x <= 3.11; x += 0.1) {
+        px = OX + x * SX; py = OY - a * x * x * SY;
+        if (py < -120 || py > 260) { first = true; continue; }
+        d += (first ? "M" : "L") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+        first = false;
+      }
+      var down = a < -0.02, flat = Math.abs(a) <= 0.02;
+      par.setAttribute("d", d);
+      par.setAttribute("stroke", down ? "#C77B12" : "#1B2A5A");
+      lab.textContent = "y = " + n2(a) + " x²";
+      lab.setAttribute("fill", down ? "#C77B12" : "#1B2A5A");
+      conc.textContent = flat ? "sin curvatura" : (down ? "abre hacia abajo" : "abre hacia arriba");
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "a igual a " + n2(a) + ", " + conc.textContent);
+    } };
+  }
+
+  function pvCirculo(root) {
+    var rad = q(root, ".pv-rad"), pt = q(root, ".pv-pt"), drop = q(root, ".pv-drop");
+    var link = q(root, ".pv-link"), wave = q(root, ".pv-wave"), wpt = q(root, ".pv-wpt");
+    var lab = q(root, ".pv-sin");
+    var CX = 58, CY = 79, R = 44, X0 = 118, X1 = 288, AMP = 40;
+    return { rest: 0.72, set: function (t) {
+      var th = clamp(t, 0, 1) * Math.PI * 2;
+      var px = CX + R * Math.cos(th), py = CY - R * Math.sin(th);
+      rad.setAttribute("x2", px.toFixed(2)); rad.setAttribute("y2", py.toFixed(2));
+      pt.setAttribute("cx", px.toFixed(2)); pt.setAttribute("cy", py.toFixed(2));
+      drop.setAttribute("x1", px.toFixed(2)); drop.setAttribute("y1", py.toFixed(2));
+      drop.setAttribute("x2", px.toFixed(2)); drop.setAttribute("y2", CY);
+      var d = "", k, ang, wx, wy;
+      for (k = 0; k <= 90; k++) {
+        ang = th * (k / 90);
+        wx = X0 + (ang / (Math.PI * 2)) * (X1 - X0);
+        wy = CY - AMP * Math.sin(ang);
+        d += (k === 0 ? "M" : "L") + wx.toFixed(1) + " " + wy.toFixed(1) + " ";
+      }
+      wave.setAttribute("d", d);
+      var ex = X0 + (th / (Math.PI * 2)) * (X1 - X0), ey = CY - AMP * Math.sin(th);
+      wpt.setAttribute("cx", ex.toFixed(2)); wpt.setAttribute("cy", ey.toFixed(2));
+      link.setAttribute("x1", px.toFixed(2)); link.setAttribute("y1", py.toFixed(2));
+      link.setAttribute("x2", ex.toFixed(2)); link.setAttribute("y2", ey.toFixed(2));
+      lab.textContent = "sen θ = " + n2(Math.sin(th));
+      root.setAttribute("aria-valuenow", Math.round(th * 180 / Math.PI));
+      root.setAttribute("aria-valuetext", Math.round(th * 180 / Math.PI) + " grados, seno " + n2(Math.sin(th)));
+    } };
+  }
+
+  function pvAzar(root) {
+    var line = q(root, ".pv-line"), tn = q(root, ".pv-n"), tf = q(root, ".pv-f");
+    var X0 = 22, X1 = 288, Y0 = 106, Y1 = 34, MAX = 300;
+    var n = 0, caras = 0, hist = [], timer = null;
+
+    function render() {
+      var pts = [], i, span = Math.max(hist.length, 1);
+      for (i = 0; i < hist.length; i++) {
+        pts.push((X0 + ((i + 1) / span) * (X1 - X0)).toFixed(1) + "," +
+                 (Y0 - hist[i] * (Y0 - Y1)).toFixed(1));
+      }
+      line.setAttribute("points", pts.join(" "));
+      tn.textContent = "n = " + n;
+      tf.textContent = n ? "frecuencia = " + n2(caras / n) : "frecuencia = —";
+      root.setAttribute("aria-label", "Azar y Probabilidad: " + n + " lanzamientos, frecuencia relativa " +
+        (n ? n2(caras / n) : "sin datos") + ". Activa para lanzar más monedas.");
+    }
+    function step() {
+      if (n >= MAX) { stop(); return; }
+      n++; if (Math.random() < 0.5) { caras++; }
+      hist.push(caras / n);
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function run(count) {
+      stop();
+      if (n >= MAX) { n = 0; caras = 0; hist = []; }
+      var left = count;
+      if (reduce) { while (left-- > 0) { step(); } render(); return; }
+      timer = setInterval(function () {
+        step(); render();
+        if (--left <= 0) { stop(); }
+      }, 24);
+    }
+    var seed = 45;
+    while (seed-- > 0) { step(); }
+    render();
+    return { pulse: function () { run(80); }, tap: true };
+  }
+
+  function pvPoliedros(root) {
+    var capa = q(root, ".pv-faces"), cva = q(root, ".pv-cva"), est = q(root, ".pv-state");
+    var RED  = [[[133.0,113.0],[167.0,113.0],[167.0,147.0],[133.0,147.0]],
+                [[133.0,79.0],[167.0,79.0],[167.0,113.0],[133.0,113.0]],
+                [[99.0,45.0],[133.0,45.0],[133.0,79.0],[99.0,79.0]],
+                [[133.0,11.0],[167.0,11.0],[167.0,45.0],[133.0,45.0]],
+                [[167.0,45.0],[201.0,45.0],[201.0,79.0],[167.0,79.0]],
+                [[133.0,45.0],[167.0,45.0],[167.0,79.0],[133.0,79.0]]];
+    var CUBO = [[[191.6,103.0],[150.0,79.0],[150.0,31.0],[191.6,55.0]],
+                [[150.0,79.0],[191.6,103.0],[150.0,127.0],[108.4,103.0]],
+                [[150.0,79.0],[108.4,103.0],[108.4,55.0],[150.0,31.0]],
+                [[108.4,55.0],[150.0,79.0],[191.6,55.0],[150.0,31.0]],
+                [[150.0,127.0],[191.6,103.0],[191.6,55.0],[150.0,79.0]],
+                [[108.4,103.0],[150.0,127.0],[150.0,79.0],[108.4,55.0]]];
+    var TONO = ["#BFE7EE","#CFEDF2","#D6EEF3","#E4F6F9","#C9EAF1","#8FD5E2"];
+    var polis = [], i;
+    for (i = 0; i < 6; i++) {
+      polis.push(capa.appendChild(mk("polygon", {
+        fill: TONO[i], stroke: "#1B2A5A", "stroke-width": "1.8", "stroke-linejoin": "round"
+      })));
+    }
+    return { rest: 0.0, set: function (t) {
+      var u = clamp(t, 0, 1), j, k, pts, a, b, x, y;
+      for (j = 0; j < 6; j++) {
+        pts = [];
+        for (k = 0; k < 4; k++) {
+          a = RED[j][k]; b = CUBO[j][k];
+          x = a[0] + (b[0] - a[0]) * u;
+          y = a[1] + (b[1] - a[1]) * u;
+          pts.push(x.toFixed(1) + "," + y.toFixed(1));
+        }
+        polis[j].setAttribute("points", pts.join(" "));
+        polis[j].setAttribute("opacity", j < 3 ? (0.45 + 0.55 * (1 - u)).toFixed(2) : "1");
+      }
+      cva.textContent = "C 6 · V 8 · A 12";
+      est.textContent = u < 0.04 ? "red plana · 24 bordes"
+                      : (u > 0.96 ? "cubo cerrado · 12 aristas" : "plegando…");
+      root.setAttribute("aria-valuenow", Math.round(u * 100));
+      root.setAttribute("aria-valuetext", est.textContent);
+    } };
+  }
+
+  var FACTORIES = {
+    fracciones: pvFracciones, area: pvArea, pitagoras: pvPitagoras,
+    cuadratica: pvCuadratica, circulo: pvCirculo, azar: pvAzar,
+    poliedros: pvPoliedros
+  };
+
+  /* ---------- Conexión con el puntero, el teclado y el viewport ---------- */
+
+  var instances = [];
+
+  Array.prototype.forEach.call(document.querySelectorAll(".cover[data-preview]"), function (cover) {
+    var factory = FACTORIES[cover.getAttribute("data-preview")];
+    if (!factory) { return; }
+    var api = factory(cover);
+    var REST = typeof api.rest === "number" ? api.rest : 0.5;
+    var state = { cover: cover, api: api, t: REST, played: false, raf: 0 };
+    instances.push(state);
+
+    function apply(t) {
+      state.t = clamp(t, 0, 1);
+      if (api.set) { api.set(state.t); }
+    }
+    function touched() { cover.setAttribute("data-touched", "1"); }
+    function fromEvent(e) {
+      var r = cover.getBoundingClientRect();
+      if (!r.width) { return; }
+      apply((e.clientX - r.left) / r.width);
+    }
+    function cancelDemo() { if (state.raf) { cancelAnimationFrame(state.raf); state.raf = 0; } }
+
+    if (api.tap) {
+      cover.addEventListener("pointerdown", function () { touched(); cancelDemo(); api.pulse(); });
+      cover.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+          e.preventDefault(); touched(); cancelDemo(); api.pulse();
+        }
+      });
+    } else {
+      apply(REST);
+      var dragging = false;
+      cover.addEventListener("pointerdown", function (e) {
+        dragging = true; touched(); cancelDemo();
+        if (cover.setPointerCapture) { try { cover.setPointerCapture(e.pointerId); } catch (err) {} }
+        fromEvent(e); e.preventDefault();
+      });
+      cover.addEventListener("pointermove", function (e) {
+        if (dragging || e.pointerType === "mouse") { touched(); cancelDemo(); fromEvent(e); }
+      });
+      cover.addEventListener("pointerup", function () { dragging = false; });
+      cover.addEventListener("pointercancel", function () { dragging = false; });
+      cover.addEventListener("keydown", function (e) {
+        var d = 0;
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") { d = 0.06; }
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { d = -0.06; }
+        if (e.key === "Home") { apply(0); touched(); cancelDemo(); e.preventDefault(); return; }
+        if (e.key === "End") { apply(1); touched(); cancelDemo(); e.preventDefault(); return; }
+        if (d) { touched(); cancelDemo(); apply(state.t + d); e.preventDefault(); }
+      });
+    }
+
+    state.demo = function () {
+      if (state.played) { return; }
+      state.played = true;
+      if (api.tap) { api.pulse(); return; }
+      if (reduce) { apply(REST); return; }
+      var start = 0, DUR = 2600;
+      function frame(ts) {
+        if (!start) { start = ts; }
+        var p = (ts - start) / DUR;
+        if (p >= 1) { apply(REST); state.raf = 0; return; }
+        var e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        var sw = Math.sin(e * Math.PI * 2);
+        apply(REST + (sw > 0 ? sw * (1 - REST) : sw * REST) * 0.92);
+        state.raf = requestAnimationFrame(frame);
+      }
+      state.raf = requestAnimationFrame(frame);
+    };
+  });
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) { return; }
+        instances.forEach(function (s) { if (s.cover === en.target) { s.demo(); } });
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.55 });
+    instances.forEach(function (s) { io.observe(s.cover); });
+  } else {
+    instances.forEach(function (s) { s.demo(); });
+  }
+
+  /* ---------------------------- Filtros ---------------------------- */
+
+  var cards = Array.prototype.slice.call(document.querySelectorAll("#grid .card"));
+  var fbtns = Array.prototype.slice.call(document.querySelectorAll(".fbtn"));
+  var fcount = document.getElementById("fcount");
+  var empty = document.getElementById("empty");
+  var sel = { pensamiento: "todos", grado: "todos" };
+
+  function applyFilters() {
+    var shown = 0;
+    cards.forEach(function (card) {
+      var okP = sel.pensamiento === "todos" || card.getAttribute("data-pensamiento") === sel.pensamiento;
+      var okG = true;
+      if (sel.grado !== "todos") {
+        var lo = parseInt(card.getAttribute("data-min"), 10);
+        var hi = parseInt(card.getAttribute("data-max"), 10);
+        var band = sel.grado === "3" ? [3, 5] : (sel.grado === "6" ? [6, 9] : [10, 11]);
+        okG = lo <= band[1] && hi >= band[0];
+      }
+      var ok = okP && okG;
+      card.hidden = !ok;
+      if (ok) { shown++; }
+    });
+    fcount.textContent = shown + " de " + cards.length +
+      (cards.length === 1 ? " laboratorio" : " laboratorios");
+    empty.className = shown ? "empty" : "empty on";
+  }
+
+  fbtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var group = btn.getAttribute("data-filter");
+      sel[group] = btn.getAttribute("data-value");
+      fbtns.forEach(function (o) {
+        if (o.getAttribute("data-filter") === group) {
+          o.setAttribute("aria-pressed", o === btn ? "true" : "false");
+        }
+      });
+      applyFilters();
+    });
+  });
+  applyFilters();
+
+  /* -------------------------- Cifras animadas -------------------------- */
+
+  var counters = Array.prototype.slice.call(document.querySelectorAll(".stat b[data-count]"));
+  function runCounters() {
+    counters.forEach(function (el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (reduce || target === 0) { el.textContent = String(target); return; }
+      var i = 0;
+      var id = setInterval(function () {
+        i++; el.textContent = String(i);
+        if (i >= target) { clearInterval(id); }
+      }, 120);
+    });
+  }
+  if ("IntersectionObserver" in window && counters.length) {
+    var io2 = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { runCounters(); io2.disconnect(); }
+    }, { threshold: 0.6 });
+    io2.observe(counters[0].closest(".stats"));
+  }
+
+  /* --------------------- Código para incrustar (labs + juegos) --------------------- */
+
+  var embedSel = document.getElementById("embedSel");
+  var embedCode = document.getElementById("embedCode");
+  function updateEmbed() {
+    var opt = embedSel.options[embedSel.selectedIndex];
+    var h = opt.getAttribute("data-h") || "720";
+    embedCode.textContent =
+      '<iframe src="https://didaxislab.com/' + embedSel.value + '"\n' +
+      '        width="100%" height="' + h + '" style="border:0;border-radius:12px"\n' +
+      '        loading="lazy" allowfullscreen\n' +
+      '        title="' + opt.text + ' — Didaxis Lab">\n' +
+      '</iframe>';
+  }
+  if (embedSel && embedCode) {
+    embedSel.addEventListener("change", updateEmbed);
+    updateEmbed();
+  }
+
+  /* ---------------------- Selector de citación APA 7.ª ---------------------- */
+
+  var CITAS = {
+    proyecto: 'Banquez Buendía, H. E. (2026). <em>Didaxis Lab: laboratorios y juegos interactivos de matemáticas</em> [Recurso educativo abierto]. https://didaxislab.com',
+    fundamentacion: 'Banquez Buendía, H. E. (2026). <em>Didaxis Lab. Matemática que se manipula: fundamentación teórica, didáctica y técnica de un laboratorio abierto de matemáticas interactivas para el aula colombiana</em> (v. 1.1). Didaxis Lab; Zenodo. https://doi.org/10.5281/zenodo.24509602',
+    marco: 'Banquez Buendía, H. E. (2026). <em>Didaxis Lab. Marco de calidad de los recursos</em> (v. 2.0). Didaxis Lab; Zenodo. https://doi.org/10.5281/zenodo.24509193',
+    "lab-fracciones": 'Banquez Buendía, H. E. (2026). <em>Fracciones Vivas</em> [Simulador educativo abierto]. Didaxis Lab. https://didaxislab.com/recursos/fracciones-vivas/',
+    "lab-area": 'Banquez Buendía, H. E. (2026). <em>Área vs Perímetro</em> [Simulador educativo abierto]. Didaxis Lab. https://didaxislab.com/recursos/area-vs-perimetro/',
+    "lab-pitagoras": 'Banquez Buendía, H. E. (2026). <em>Pitágoras Interactivo</em> [Simulador educativo abierto]. Didaxis Lab. https://didaxislab.com/recursos/pitagoras/',
+    "lab-cuadratica": 'Banquez Buendía, H. E. (2026). <em>Función Cuadrática</em> [Simulador educativo abierto]. Didaxis Lab. https://didaxislab.com/recursos/funcion-cuadratica/',
+    "lab-circulo": 'Banquez Buendía, H. E. (2026). <em>Círculo Unitario y Ondas</em> [Simulador educativo abierto]. Didaxis Lab. https://didaxislab.com/recursos/circulo-ondas/',
+    "lab-azar": 'Banquez Buendía, H. E. (2026). <em>Azar y Probabilidad</em> [Simulador educativo abierto]. Didaxis Lab. https://didaxislab.com/recursos/azar-probabilidad/',
+    "lab-poliedros": 'Banquez Buendía, H. E. (2026). <em>Poliedros y Redes 3D</em> [Simulador educativo abierto]. Didaxis Lab. https://didaxislab.com/recursos/poliedros-redes-3d/',
+    "jue-rumbo": 'Banquez Buendía, H. E. (2026). <em>Rumbo Cartesiano</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/rumbo-cartesiano.html',
+    "jue-claro": 'Banquez Buendía, H. E. (2026). <em>Guardianes del Claro</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/guardianes-del-claro.html',
+    "jue-pliegue": 'Banquez Buendía, H. E. (2026). <em>El último pliegue</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/el-ultimo-pliegue.html',
+    "jue-arquero": 'Banquez Buendía, H. E. (2026). <em>La senda del arquero</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/senda-del-arquero.html',
+    "jue-cero": 'Banquez Buendía, H. E. (2026). <em>Guardianes del Cero</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/guardianes-del-cero.html',
+    "jue-secreto": 'Banquez Buendía, H. E. (2026). <em>Misión Número Secreto</em> [Juego educativo abierto]. Didaxis Lab. https://didaxislab.com/juegos/mision-numero-secreto.html'
+  };
+  var citePick = document.getElementById("citePick");
+  var citaApa = document.getElementById("citaApa");
+  function updateCita() {
+    if (citaApa) { citaApa.innerHTML = CITAS[citePick ? citePick.value : "proyecto"]; }
+  }
+  if (citePick) { citePick.addEventListener("change", updateCita); }
+  updateCita();
+
+  /* ------------------------- Botones de copiar ------------------------- */
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"), function (btn) {
+    var original = btn.textContent;
+    btn.addEventListener("click", function () {
+      var src = document.getElementById(btn.getAttribute("data-copy"));
+      if (!src) { return; }
+      var text = (src.innerText || src.textContent || "").trim();
+      function done(ok) {
+        btn.textContent = ok ? "Copiado" : "No se pudo copiar";
+        btn.className = ok ? "copybtn done" : "copybtn";
+        setTimeout(function () { btn.textContent = original; btn.className = "copybtn"; }, 2200);
+      }
+      function legacy() {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.setAttribute("readonly", "");
+        ta.style.position = "absolute"; ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select(); ta.setSelectionRange(0, text.length);
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        document.body.removeChild(ta);
+        done(ok);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, legacy);
+      } else {
+        legacy();
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
