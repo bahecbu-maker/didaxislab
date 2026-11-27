@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recursos — Didaxis Lab</title>
+<meta name="description" content="Los siete laboratorios interactivos de Didaxis Lab: simuladores abiertos de matemáticas con preguntas tipo Saber 11 y guía docente. Fracciones, área y perímetro, Pitágoras, función cuadrática, círculo unitario, probabilidad y poliedros 3D.">
+
+<link rel="canonical" href="https://didaxislab.com/recursos/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="author" content="Héctor Enrique Banquez Buendía">
+<meta name="theme-color" content="#1B2A5A">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Didaxis Lab">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Recursos — Didaxis Lab">
+<meta property="og:description" content="Siete laboratorios interactivos de matemáticas: abiertos, gratuitos y listos para tu clase.">
+<meta property="og:url" content="https://didaxislab.com/recursos/">
+<meta property="og:image" content="https://didaxislab.com/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Recursos — Didaxis Lab">
+<meta name="twitter:description" content="Siete laboratorios interactivos de matemáticas: abiertos, gratuitos y listos para tu clase.">
+<meta name="twitter:image" content="https://didaxislab.com/og-home.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Recursos de Didaxis Lab",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "url": "https://didaxislab.com/recursos/fracciones-vivas/", "name": "Fracciones Vivas" },
+    { "@type": "ListItem", "position": 2, "url": "https://didaxislab.com/recursos/area-vs-perimetro/", "name": "Área vs Perímetro" },
+    { "@type": "ListItem", "position": 3, "url": "https://didaxislab.com/recursos/pitagoras/", "name": "Pitágoras Interactivo" },
+    { "@type": "ListItem", "position": 4, "url": "https://didaxislab.com/recursos/funcion-cuadratica/", "name": "Función Cuadrática" },
+    { "@type": "ListItem", "position": 5, "url": "https://didaxislab.com/recursos/circulo-ondas/", "name": "Círculo Unitario y Ondas" },
+    { "@type": "ListItem", "position": 6, "url": "https://didaxislab.com/recursos/azar-probabilidad/", "name": "Azar y Probabilidad" },
+    { "@type": "ListItem", "position": 7, "url": "https://didaxislab.com/recursos/poliedros-redes-3d/", "name": "Poliedros y Redes 3D" }
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --navy:#1B2A5A; --navy-dark:#0F1C3F; --cyan:#0BC0D8; --cyan-soft:#E2F7FA;
+    --cyan-deep:#0E7888; --ink:#1B2A5A; --muted:#5B6B82; --line:#E6E9EF;
+    --bg:#FAFBFC; --panel:#FFFFFF; --grid:rgba(11,192,216,0.06); --radius:16px;
+    --shadow:0 1px 2px rgba(22,36,58,.04), 0 8px 24px rgba(22,36,58,.06);
+    --shadow-lg:0 12px 40px rgba(22,36,58,.12); --maxw:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--navy);text-decoration:none;}
+  h1,h2,h3{letter-spacing:-.02em;color:var(--navy);}
+
+  /* ── Barra superior (sincronizada con la portada y juegos) ── */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(180%) blur(8px);position:sticky;top:0;z-index:30;}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:13px 22px;display:flex;
+    align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;min-height:44px;flex:0 0 auto;}
+  .brand .logo-mark{width:30px;height:30px;flex:0 0 auto;}
+  .brand .name{font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--navy);}
+  .nav{display:flex;align-items:center;gap:22px;}
+  .nav a{font-size:14.5px;font-weight:600;color:var(--muted);
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav a:hover{color:var(--navy);}
+  .nav a[aria-current="page"]{color:var(--navy);}
+  .nav .nav-cta{color:#fff;background:var(--navy);padding:8px 15px;border-radius:9px;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .nav .nav-cta:hover{background:var(--navy-dark);color:#fff;}
+
+  /* ── Encabezado de página ── */
+  .page-head{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:28px 28px;}
+  .page-head-inner{max-width:var(--maxw);margin:0 auto;padding:50px 22px 42px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);}
+  .page-head h1{font-size:clamp(32px,5vw,46px);line-height:1.08;font-weight:800;}
+  .page-head p{margin-top:14px;font-size:clamp(16px,2.2vw,18px);color:var(--muted);max-width:64ch;}
+  .head-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+  .head-chips span{font-size:12.5px;font-weight:600;color:var(--navy);background:var(--cyan-soft);
+    border:1px solid #CDEDF3;padding:5px 12px;border-radius:999px;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:34px 22px 64px;}
+
+  /* ── Filtros por pensamiento y grados ── */
+  .filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px 8px;margin-bottom:24px;
+    padding-bottom:18px;border-bottom:1px solid var(--line);}
+  .fgroup{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+  .filters .flabel{font-size:13px;font-weight:700;color:var(--muted);margin-right:2px;}
+  .fbtn{font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);background:var(--panel);
+    border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;transition:.16s;
+    min-height:44px;display:inline-flex;align-items:center;}
+  .fbtn:hover{border-color:var(--cyan);color:var(--navy);}
+  .fbtn[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .fsep{width:1px;height:22px;background:var(--line);margin:0 6px;}
+  .fcount{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+
+  /* ── Catálogo con portadas interactivas ── */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:600px){ .grid{grid-template-columns:1fr;} }
+  .card{position:relative;display:flex;flex-direction:column;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+    transition:box-shadow .18s,border-color .18s;}
+  .card:hover{box-shadow:var(--shadow-lg);border-color:#D4DAE6;}
+  .card[hidden]{display:none;}
+
+  /* La portada es manipulable: queda por encima del enlace extendido */
+  .cover{position:relative;z-index:2;height:158px;background:#F4FAFB;
+    border-bottom:1px solid var(--line);cursor:ew-resize;touch-action:pan-y;
+    display:block;overflow:hidden;}
+  .cover[data-preview="azar"]{cursor:pointer;}
+  .cover svg{display:block;width:100%;height:100%;}
+  .cover:focus-visible{outline:2px solid var(--cyan);outline-offset:-3px;}
+  .hint{position:absolute;right:9px;top:9px;font-size:10.5px;font-weight:700;letter-spacing:.03em;
+    color:var(--navy);background:rgba(255,255,255,.86);border:1px solid var(--line);
+    border-radius:999px;padding:3px 9px;pointer-events:none;transition:opacity .3s;}
+  .cover[data-touched="1"] .hint{opacity:0;}
+
+  .card-body{padding:17px 20px 20px;display:flex;flex-direction:column;flex:1;}
+  .chip{align-self:flex-start;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:999px;
+    background:var(--cyan-soft);color:var(--navy);margin-bottom:10px;}
+  .card-body h2{font-size:20px;font-weight:800;line-height:1.2;}
+  .card-link{color:var(--navy);}
+  .card-link::after{content:"";position:absolute;inset:0;z-index:1;}
+  .card:hover .card-link{color:var(--cyan-deep);}
+  .card-body p{margin-top:8px;color:var(--muted);font-size:14.5px;flex:1;}
+  .card-foot{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .card-grades{font-size:12.5px;font-weight:600;color:var(--muted);background:#EEF1F6;padding:4px 10px;border-radius:7px;}
+  .card-open{font-size:14.5px;font-weight:700;color:var(--navy);display:inline-flex;align-items:center;gap:5px;}
+  .card:hover .card-open{color:var(--cyan-deep);}
+  .catalog-note{margin-top:26px;font-size:14px;color:var(--muted);text-align:center;}
+  .empty{display:none;padding:40px 4px;text-align:center;color:var(--muted);font-size:15px;}
+  .empty.on{display:block;}
+
+  /* ── Puente a juegos ── */
+  .bridge{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:34px;
+    background:linear-gradient(135deg,#15234A,#1B2A5A);border-radius:var(--radius);
+    padding:26px;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s;}
+  .bridge:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+  .bridge-ico{flex:0 0 auto;width:54px;height:54px;border-radius:13px;background:rgba(11,192,216,.18);
+    display:flex;align-items:center;justify-content:center;color:#0BC0D8;}
+  .bridge-ico svg{width:28px;height:28px;}
+  .bridge-text{flex:1;min-width:240px;}
+  .bridge-text h2{color:#fff;font-size:21px;font-weight:800;}
+  .bridge-text p{color:rgba(226,236,248,.78);font-size:14.5px;margin-top:5px;}
+  .bridge-go{flex:0 0 auto;color:#fff;font-weight:700;font-size:15px;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);padding:10px 18px;border-radius:10px;white-space:nowrap;}
+  .bridge:hover .bridge-go{background:rgba(11,192,216,.25);border-color:#0BC0D8;}
+
+  footer{border-top:1px solid var(--line);background:var(--panel);}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:30px 22px;display:flex;
+    align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);}
+  .foot-inner .row{display:flex;align-items:center;gap:9px;}
+  .foot-inner .logo-mark{width:24px;height:24px;}
+  .foot-inner .name{font-weight:800;font-size:15px;color:var(--navy);}
+
+  a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px;}
+
+  @media (max-width:760px){
+    .topbar-inner{flex-wrap:wrap;gap:10px 0;padding:11px 18px 12px;}
+    .nav{width:100%;gap:0 16px;flex-wrap:wrap;justify-content:space-between;}
+    .nav a{font-size:14px;min-height:40px;display:inline-flex;align-items:center;}
+    .nav .nav-cta{display:none;}
+    .page-head-inner{padding:38px 18px 34px;}
+    .wrap{padding:26px 18px 50px;}
+  }
+  @media (max-width:720px){
+    .filters{gap:12px 8px;}
+    .fgroup{width:100%;}
+    .fcount{margin-left:0;width:100%;}
+    .fsep{display:none;}
+  }
+  @media (max-width:380px){
+    .nav{gap:0 10px;}
+    .nav a{font-size:13.3px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none!important;}
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="Didaxis Lab — inicio">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="/recursos/" aria-current="page">Recursos</a>
+        <a href="/juegos/">Juegos</a>
+        <a href="/#por-que">Por qué</a>
+        <a href="/#fundamentacion">Fundamentación</a>
+        <a href="/autor/">El autor</a>
+        <a class="nav-cta" href="/#proyecto">El proyecto</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-head">
+    <div class="page-head-inner">
+      <span class="eyebrow">Didaxis Lab</span>
+      <h1>Recursos</h1>
+      <p>Todos los laboratorios interactivos: simuladores abiertos de matemáticas, cada uno con preguntas tipo Saber 11 con retroalimentación y guía docente descargable. Las portadas funcionan: arrástralas para explorar antes de entrar.</p>
+      <div class="head-chips">
+        <span>7 laboratorios abiertos</span>
+        <span>5 pensamientos matemáticos</span>
+        <span>Preguntas tipo Saber 11</span>
+        <span>Guía docente en PDF</span>
+      </div>
+    </div>
+  </section>
+
+  <main class="wrap">
+
+    <div class="filters" role="group" aria-label="Filtrar laboratorios">
+      <div class="fgroup">
+        <span class="flabel">Pensamiento</span>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="todos" aria-pressed="true">Todos</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="numerico" aria-pressed="false">Numérico</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="espacial" aria-pressed="false">Espacial</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="metrico" aria-pressed="false">Métrico</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="variacional" aria-pressed="false">Variacional</button>
+        <button class="fbtn" type="button" data-filter="pensamiento" data-value="aleatorio" aria-pressed="false">Aleatorio</button>
+      </div>
+      <span class="fsep" aria-hidden="true"></span>
+      <div class="fgroup">
+        <span class="flabel">Grados</span>
+        <button class="fbtn" type="button" data-filter="grado" data-value="todos" aria-pressed="true">Todos</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="3" aria-pressed="false">3.º a 5.º</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="6" aria-pressed="false">6.º a 9.º</button>
+        <button class="fbtn" type="button" data-filter="grado" data-value="10" aria-pressed="false">10.º y 11.º</button>
+      </div>
+      <span class="fcount" id="fcount" role="status" aria-live="polite">7 de 7 laboratorios</span>
+    </div>
+
+    <div class="grid" id="grid">
+
+      <!-- Fracciones Vivas -->
+      <article class="card" data-pensamiento="numerico" data-min="3" data-max="7">
+        <div class="cover" data-preview="fracciones" tabindex="0" role="slider"
+             aria-label="Vista previa de Fracciones Vivas: cambia el numerador"
+             aria-valuemin="0" aria-valuemax="8" aria-valuenow="5" aria-valuetext="cinco octavos">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g class="pv-pie" transform="translate(56,80)"></g>
+            <circle cx="56" cy="80" r="41" fill="none" stroke="#1B2A5A" stroke-width="2.4"/>
+            <g font-family="inherit" text-anchor="middle" fill="#1B2A5A" font-weight="800">
+              <text class="pv-num" x="132" y="72" font-size="27">5</text>
+              <text class="pv-den" x="132" y="110" font-size="27">8</text>
+            </g>
+            <line x1="116" y1="80" x2="148" y2="80" stroke="#1B2A5A" stroke-width="2.6" stroke-linecap="round"/>
+            <g class="pv-bar" transform="translate(172,46)"></g>
+            <line x1="172" y1="112" x2="284" y2="112" stroke="#9FD9E4" stroke-width="2"/>
+            <g class="pv-ticks"></g>
+            <circle class="pv-dot" cx="242" cy="112" r="5.5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <g font-size="9.5" fill="#5B6B82" font-family="inherit">
+              <text x="172" y="130" text-anchor="middle">0</text>
+              <text x="284" y="130" text-anchor="middle">1</text>
+            </g>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento numérico</span>
+          <h2><a class="card-link" href="/recursos/fracciones-vivas/">Fracciones Vivas</a></h2>
+          <p>Manipula pizzas, barras, conjuntos y la recta numérica sincronizados en tiempo real para
+             entender qué es —de verdad— una fracción.</p>
+          <div class="card-foot">
+            <span class="card-grades">3.° a 7.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Área vs Perímetro -->
+      <article class="card" data-pensamiento="metrico" data-min="3" data-max="11">
+        <div class="cover" data-preview="area" tabindex="0" role="slider"
+             aria-label="Vista previa de Área vs Perímetro: deforma el rectángulo manteniendo el perímetro"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1">
+              <path d="M0 30h180M0 55h180M0 80h180M0 105h180M0 130h180"/>
+              <path d="M30 0v158M55 0v158M80 0v158M105 0v158M130 0v158M155 0v158"/>
+            </g>
+            <rect class="pv-rect" x="60" y="48" width="62" height="62" rx="2"
+                  fill="rgba(11,192,216,.22)" stroke="#1B2A5A" stroke-width="3"/>
+            <g font-family="inherit" font-size="10" fill="#5B6B82" text-anchor="middle">
+              <text class="pv-wlab" x="91" y="126">10</text>
+              <text class="pv-hlab" x="48" y="82">10</text>
+            </g>
+            <line x1="192" y1="22" x2="192" y2="136" stroke="#E6E9EF" stroke-width="1.5"/>
+            <g font-family="inherit">
+              <text x="208" y="46" font-size="10.5" fill="#5B6B82" font-weight="700">Perímetro</text>
+              <text x="208" y="72" font-size="25" fill="#5B6B82" font-weight="800">40</text>
+              <rect x="248" y="54" width="34" height="17" rx="8.5" fill="#EEF1F6"/>
+              <text x="265" y="66" font-size="9.5" fill="#5B6B82" font-weight="700" text-anchor="middle">fijo</text>
+              <text x="208" y="102" font-size="10.5" fill="#0996AA" font-weight="700">Área</text>
+              <text class="pv-area" x="208" y="128" font-size="25" fill="#0996AA" font-weight="800">100</text>
+            </g>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento métrico</span>
+          <h2><a class="card-link" href="/recursos/area-vs-perimetro/">Área vs Perímetro</a></h2>
+          <p>Manipula un rectángulo y descubre por exploración por qué un mayor perímetro no siempre
+             implica mayor área.</p>
+          <div class="card-foot">
+            <span class="card-grades">3.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Pitágoras Interactivo -->
+      <article class="card" data-pensamiento="metrico" data-min="7" data-max="11">
+        <div class="cover" data-preview="pitagoras" tabindex="0" role="slider"
+             aria-label="Vista previa de Pitágoras Interactivo: cambia la forma del triángulo"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <path class="pv-tri" d="M20 130 L20 74 L86 130 Z" fill="#D6EEF3" stroke="#1B2A5A" stroke-width="2.6" stroke-linejoin="round"/>
+            <path class="pv-sq" d="M20 118 h12 v12 h-12 Z" fill="none" stroke="#0996AA" stroke-width="2"/>
+            <g font-family="inherit" font-size="10.5" font-weight="700">
+              <text class="pv-la" x="12" y="102" fill="#0996AA" text-anchor="end">a</text>
+              <text x="53" y="146" fill="#1B2A5A" text-anchor="middle">b</text>
+              <text class="pv-lc" x="60" y="92" fill="#C77B12" text-anchor="middle">c</text>
+            </g>
+            <g font-family="inherit" font-size="9.5" fill="#5B6B82" font-weight="700">
+              <text x="118" y="50">a² + b²</text>
+              <text x="118" y="106">c²</text>
+            </g>
+            <rect class="pv-a2" x="118" y="56" width="40" height="20" rx="3" fill="#0BC0D8"/>
+            <rect class="pv-b2" x="158" y="56" width="60" height="20" rx="3" fill="#1B2A5A" opacity=".78"/>
+            <rect class="pv-c2" x="118" y="112" width="100" height="20" rx="3" fill="#C77B12" opacity=".85"/>
+            <text class="pv-eq" x="118" y="148" font-family="inherit" font-size="11" fill="#1B2A5A" font-weight="700">36,0 + 36,0 = 72,0</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento métrico</span>
+          <h2><a class="card-link" href="/recursos/pitagoras/">Pitágoras Interactivo</a></h2>
+          <p>Arrastra los vértices de un triángulo rectángulo y descubre, por equivalencia entre áreas,
+             por qué a² + b² = c².</p>
+          <div class="card-foot">
+            <span class="card-grades">7.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Función Cuadrática -->
+      <article class="card" data-pensamiento="variacional" data-min="9" data-max="11">
+        <div class="cover" data-preview="cuadratica" tabindex="0" role="slider"
+             aria-label="Vista previa de Función Cuadrática: cambia el parámetro a"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="72">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <defs><clipPath id="pvqClip"><rect x="8" y="6" width="284" height="118"/></clipPath></defs>
+            <g stroke="#DCEDF1" stroke-width="1">
+              <path d="M8 30h284M8 104h284M104 6v118M196 6v118"/>
+            </g>
+            <g stroke="#9FD9E4" stroke-width="2"><line x1="8" y1="72" x2="292" y2="72"/><line x1="150" y1="6" x2="150" y2="124"/></g>
+            <g clip-path="url(#pvqClip)">
+              <path class="pv-par" d="" fill="none" stroke="#1B2A5A" stroke-width="3.4" stroke-linecap="round"/>
+            </g>
+            <circle cx="150" cy="72" r="5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <text class="pv-alab" x="14" y="148" font-family="inherit" font-size="13" font-weight="800"
+                  fill="#1B2A5A">y = 1,20 x²</text>
+            <text class="pv-aconc" x="286" y="148" font-family="inherit" font-size="10.5" font-weight="700"
+                  fill="#5B6B82" text-anchor="end">abre hacia arriba</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento variacional</span>
+          <h2><a class="card-link" href="/recursos/funcion-cuadratica/">Función Cuadrática</a></h2>
+          <p>Mueve los parámetros a, b y c y observa en tiempo real cómo cambian la parábola, el vértice,
+             las raíces y el eje de simetría.</p>
+          <div class="card-foot">
+            <span class="card-grades">9.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Círculo Unitario y Ondas -->
+      <article class="card" data-pensamiento="variacional" data-min="10" data-max="11">
+        <div class="cover" data-preview="circulo" tabindex="0" role="slider"
+             aria-label="Vista previa de Círculo Unitario y Ondas: gira el ángulo"
+             aria-valuemin="0" aria-valuemax="360" aria-valuenow="60">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1.6"><line x1="8" y1="79" x2="292" y2="79"/><line x1="58" y1="24" x2="58" y2="134"/></g>
+            <circle cx="58" cy="79" r="44" fill="none" stroke="#1B2A5A" stroke-width="2.4"/>
+            <line class="pv-rad" x1="58" y1="79" x2="102" y2="79" stroke="#1B2A5A" stroke-width="2.4"/>
+            <line class="pv-drop" x1="102" y1="79" x2="102" y2="79" stroke="#0996AA" stroke-width="1.8" stroke-dasharray="3 3"/>
+            <line class="pv-link" x1="102" y1="79" x2="118" y2="79" stroke="#0BC0D8" stroke-width="1.4" stroke-dasharray="2 4" opacity=".8"/>
+            <circle class="pv-pt" cx="102" cy="79" r="5.5" fill="#0BC0D8" stroke="#1B2A5A" stroke-width="2"/>
+            <path class="pv-wave" d="" fill="none" stroke="#0BC0D8" stroke-width="3" stroke-linecap="round"/>
+            <circle class="pv-wpt" cx="118" cy="79" r="4.5" fill="#1B2A5A"/>
+            <text class="pv-sin" x="292" y="146" font-family="inherit" font-size="11.5" font-weight="700"
+                  fill="#1B2A5A" text-anchor="end">sen θ = 0,00</text>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento variacional</span>
+          <h2><a class="card-link" href="/recursos/circulo-ondas/">Círculo Unitario y Ondas</a></h2>
+          <p>Manipula el ángulo sobre el círculo unitario y observa cómo nacen el seno, el coseno y la
+             tangente: del giro al ritmo de una onda.</p>
+          <div class="card-foot">
+            <span class="card-grades">10.° a 11.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Azar y Probabilidad -->
+      <article class="card" data-pensamiento="aleatorio" data-min="6" data-max="10">
+        <div class="cover" data-preview="azar" tabindex="0" role="button"
+             aria-label="Vista previa de Azar y Probabilidad: lanza monedas y observa la convergencia">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1"><path d="M22 34h266M22 106h266"/></g>
+            <line x1="22" y1="70" x2="288" y2="70" stroke="#C77B12" stroke-width="1.6" stroke-dasharray="5 4"/>
+            <text x="288" y="50" font-family="inherit" font-size="9.5" fill="#C77B12"
+                  font-weight="700" text-anchor="end">p = 0,5</text>
+            <polyline class="pv-line" points="" fill="none" stroke="#0BC0D8" stroke-width="2.4"
+                      stroke-linejoin="round" stroke-linecap="round"/>
+            <line x1="22" y1="126" x2="288" y2="126" stroke="#9FD9E4" stroke-width="2"/>
+            <g font-family="inherit" font-size="10.5" font-weight="700" fill="#1B2A5A">
+              <text class="pv-n" x="22" y="146">n = 0</text>
+              <text class="pv-f" x="288" y="146" text-anchor="end">frecuencia = —</text>
+            </g>
+          </svg>
+          <span class="hint">Toca para lanzar</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento aleatorio</span>
+          <h2><a class="card-link" href="/recursos/azar-probabilidad/">Azar y Probabilidad</a></h2>
+          <p>Contrasta la probabilidad teórica y la frecuencial con monedas, dados, árboles y ruletas,
+             y descubre la Ley de los Grandes Números.</p>
+          <div class="card-foot">
+            <span class="card-grades">6.° a 10.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Poliedros y Redes 3D -->
+      <article class="card" data-pensamiento="espacial" data-min="5" data-max="8">
+        <div class="cover" data-preview="poliedros" tabindex="0" role="slider"
+             aria-label="Vista previa de Poliedros y Redes 3D: despliega el cubo en su red plana"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <svg viewBox="0 0 300 158" aria-hidden="true">
+            <g stroke="#DCEDF1" stroke-width="1">
+              <path d="M0 30h300M0 60h300M0 90h300M0 120h300"/>
+              <path d="M30 0v158M60 0v158M90 0v158M210 0v158M240 0v158M270 0v158"/>
+            </g>
+            <g class="pv-faces"></g>
+            <g font-family="inherit" font-weight="800" fill="#1B2A5A">
+              <text class="pv-cva" x="12" y="148" font-size="12">C 6 · V 8 · A 12</text>
+              <text class="pv-state" x="288" y="148" font-size="10.5" font-weight="700"
+                    fill="#5B6B82" text-anchor="end">red plana</text>
+            </g>
+          </svg>
+          <span class="hint">Arrastra</span>
+        </div>
+        <div class="card-body">
+          <span class="chip">Pensamiento espacial</span>
+          <h2><a class="card-link" href="/recursos/poliedros-redes-3d/">Poliedros y Redes 3D</a></h2>
+          <p>Pliega y despliega sólidos para descubrir por qué 6 cuadrados no dan 24 aristas, y dónde
+             deja de valer que C + V − A = 2.</p>
+          <div class="card-foot">
+            <span class="card-grades">5.° a 8.°</span>
+            <span class="card-open">Abrir recurso →</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <p class="empty" id="empty">Ningún laboratorio coincide con esos filtros todavía. Prueba con otra
+       combinación o mira el catálogo completo.</p>
+    <p class="catalog-note">Más laboratorios en camino.</p>
+
+    <a class="bridge" href="/juegos/">
+      <span class="bridge-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="2" y="6" width="20" height="12" rx="6"/>
+          <line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/>
+          <circle cx="16" cy="11" r="1.1" fill="currentColor" stroke="none"/>
+          <circle cx="18.5" cy="13.5" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <div class="bridge-text">
+        <h2>¿Y si además juegan?</h2>
+        <p>Seis juegos donde la operación es la mecánica: enteros, deducción numérica, plano cartesiano, geometría 3D y funciones.</p>
+      </div>
+      <span class="bridge-go">Ver los 6 juegos →</span>
+    </a>
+  </main>
+
+  <footer>
+    <div class="foot-inner">
+      <div class="row">
+        <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <line x1="22" y1="22" x2="78" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <line x1="78" y1="22" x2="22" y2="78" stroke="#1B2A5A" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="15" fill="#0BC0D8"/><circle cx="80" cy="20" r="15" fill="#0BC0D8"/>
+          <circle cx="80" cy="80" r="15" fill="#0BC0D8"/><circle cx="20" cy="80" r="15" fill="#0BC0D8"/>
+        </svg>
+        <span class="name">Didaxis Lab</span>
+      </div>
+      <span>© 2026 Didaxis Lab · Héctor Banquez · CC BY 4.0</span>
+    </div>
+  </footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function q(root, sel) { return root.querySelector(sel); }
+  function n1(x) { return x.toFixed(1).replace(".", ","); }
+  function n2(x) { return x.toFixed(2).replace(".", ","); }
+  function mk(tag, attrs) {
+    var el = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) { el.setAttribute(k, attrs[k]); }
+    return el;
+  }
+  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+
+  /* ---------------------------------------------------------------
+     Vistas previas manipulables (mismo motor que la portada)
+  --------------------------------------------------------------- */
+
+  function pvFracciones(root) {
+    var pie = q(root, ".pv-pie"), bar = q(root, ".pv-bar"), ticks = q(root, ".pv-ticks");
+    var dot = q(root, ".pv-dot"), tNum = q(root, ".pv-num");
+    var D = 8, R = 41, BW = 112, CW = BW / D;
+    var i, seg, x;
+
+    for (i = 0; i < D; i++) {
+      seg = mk("path", { "stroke": "#1B2A5A", "stroke-width": "1.6", "fill": "#FFFFFF" });
+      var a0 = -Math.PI / 2 + (i * 2 * Math.PI / D);
+      var a1 = -Math.PI / 2 + ((i + 1) * 2 * Math.PI / D);
+      seg.setAttribute("d", "M0 0 L" + (R * Math.cos(a0)).toFixed(2) + " " + (R * Math.sin(a0)).toFixed(2) +
+        " A" + R + " " + R + " 0 0 1 " + (R * Math.cos(a1)).toFixed(2) + " " + (R * Math.sin(a1)).toFixed(2) + " Z");
+      pie.appendChild(seg);
+
+      bar.appendChild(mk("rect", {
+        x: (i * CW).toFixed(2), y: 0, width: (CW - 1.5).toFixed(2), height: 26, rx: 2,
+        fill: "#FFFFFF", stroke: "#1B2A5A", "stroke-width": "1.6"
+      }));
+    }
+    for (i = 0; i <= D; i++) {
+      x = 172 + i * (BW / D);
+      ticks.appendChild(mk("line", {
+        x1: x.toFixed(2), y1: 106, x2: x.toFixed(2), y2: 118,
+        stroke: "#9FD9E4", "stroke-width": i === 0 || i === D ? 2.4 : 1.4
+      }));
+    }
+    var segs = pie.childNodes, cells = bar.childNodes;
+    var words = ["cero", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho"];
+
+    return { rest: 0.63, set: function (t) {
+      var k = Math.round(clamp(t, 0, 1) * D);
+      for (var j = 0; j < D; j++) {
+        var on = j < k;
+        segs[j].setAttribute("fill", on ? "#0BC0D8" : "#FFFFFF");
+        cells[j].setAttribute("fill", on ? "#0BC0D8" : "#FFFFFF");
+      }
+      tNum.textContent = String(k);
+      dot.setAttribute("cx", (172 + k * (BW / D)).toFixed(2));
+      root.setAttribute("aria-valuenow", String(k));
+      root.setAttribute("aria-valuetext", words[k] + " octavos");
+    } };
+  }
+
+  function pvArea(root) {
+    var rect = q(root, ".pv-rect"), area = q(root, ".pv-area");
+    var wl = q(root, ".pv-wlab"), hl = q(root, ".pv-hlab");
+    var U = 5.9, CX = 92, CY = 76;
+    return { rest: 0.80, set: function (t) {
+      var w = 3 + clamp(t, 0, 1) * 14, h = 20 - w;
+      var W = w * U, H = h * U;
+      rect.setAttribute("x", (CX - W / 2).toFixed(2));
+      rect.setAttribute("y", (CY - H / 2).toFixed(2));
+      rect.setAttribute("width", W.toFixed(2));
+      rect.setAttribute("height", H.toFixed(2));
+      wl.setAttribute("x", CX); wl.setAttribute("y", (CY + H / 2 + 13).toFixed(2));
+      wl.textContent = n1(w);
+      hl.setAttribute("x", (CX - W / 2 - 11).toFixed(2)); hl.setAttribute("y", (CY + 4).toFixed(2));
+      hl.textContent = n1(h);
+      area.textContent = n1(w * h);
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "área " + n1(w * h) + ", perímetro 40");
+    } };
+  }
+
+  function pvPitagoras(root) {
+    var tri = q(root, ".pv-tri"), sq = q(root, ".pv-sq"), eq = q(root, ".pv-eq");
+    var a2 = q(root, ".pv-a2"), b2 = q(root, ".pv-b2"), c2r = q(root, ".pv-c2");
+    var la = q(root, ".pv-la"), lc = q(root, ".pv-lc");
+    var B = 6, S = 11.2, X0 = 22, Y0 = 134, SC = 1.42, BX = 118;
+    return { rest: 0.62, set: function (t) {
+      var a = 2.6 + clamp(t, 0, 1) * 5.6;
+      var ax = X0, ay = Y0 - a * S, bx = X0 + B * S;
+      tri.setAttribute("d", "M" + X0 + " " + Y0 + " L" + ax + " " + ay.toFixed(2) + " L" + bx + " " + Y0 + " Z");
+      sq.setAttribute("d", "M" + X0 + " " + (Y0 - 11) + " h11 v11 h-11 Z");
+      la.setAttribute("y", (Y0 - a * S / 2 + 4).toFixed(2));
+      lc.setAttribute("x", ((ax + bx) / 2 + 6).toFixed(2));
+      lc.setAttribute("y", ((ay + Y0) / 2 - 4).toFixed(2));
+      var A2 = a * a, B2 = B * B, C2 = A2 + B2;
+      a2.setAttribute("width", (A2 * SC).toFixed(2));
+      b2.setAttribute("x", (BX + A2 * SC).toFixed(2));
+      b2.setAttribute("width", (B2 * SC).toFixed(2));
+      c2r.setAttribute("width", (C2 * SC).toFixed(2));
+      eq.textContent = n1(A2) + " + " + n1(B2) + " = " + n1(C2);
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "cateto a igual a " + n1(a) + ", " + n1(A2) + " más " + n1(B2) + " igual " + n1(C2));
+    } };
+  }
+
+  function pvCuadratica(root) {
+    var par = q(root, ".pv-par"), lab = q(root, ".pv-alab"), conc = q(root, ".pv-aconc");
+    var OX = 150, OY = 72, SX = 47, SY = 24;
+    return { rest: 0.80, set: function (t) {
+      var a = -1.9 + clamp(t, 0, 1) * 3.8;
+      var d = "", x, px, py, first = true;
+      for (x = -3.1; x <= 3.11; x += 0.1) {
+        px = OX + x * SX; py = OY - a * x * x * SY;
+        if (py < -120 || py > 260) { first = true; continue; }
+        d += (first ? "M" : "L") + px.toFixed(1) + " " + py.toFixed(1) + " ";
+        first = false;
+      }
+      var down = a < -0.02, flat = Math.abs(a) <= 0.02;
+      par.setAttribute("d", d);
+      par.setAttribute("stroke", down ? "#C77B12" : "#1B2A5A");
+      lab.textContent = "y = " + n2(a) + " x²";
+      lab.setAttribute("fill", down ? "#C77B12" : "#1B2A5A");
+      conc.textContent = flat ? "sin curvatura" : (down ? "abre hacia abajo" : "abre hacia arriba");
+      root.setAttribute("aria-valuenow", Math.round(t * 100));
+      root.setAttribute("aria-valuetext", "a igual a " + n2(a) + ", " + conc.textContent);
+    } };
+  }
+
+  function pvCirculo(root) {
+    var rad = q(root, ".pv-rad"), pt = q(root, ".pv-pt"), drop = q(root, ".pv-drop");
+    var link = q(root, ".pv-link"), wave = q(root, ".pv-wave"), wpt = q(root, ".pv-wpt");
+    var lab = q(root, ".pv-sin");
+    var CX = 58, CY = 79, R = 44, X0 = 118, X1 = 288, AMP = 40;
+    return { rest: 0.72, set: function (t) {
+      var th = clamp(t, 0, 1) * Math.PI * 2;
+      var px = CX + R * Math.cos(th), py = CY - R * Math.sin(th);
+      rad.setAttribute("x2", px.toFixed(2)); rad.setAttribute("y2", py.toFixed(2));
+      pt.setAttribute("cx", px.toFixed(2)); pt.setAttribute("cy", py.toFixed(2));
+      drop.setAttribute("x1", px.toFixed(2)); drop.setAttribute("y1", py.toFixed(2));
+      drop.setAttribute("x2", px.toFixed(2)); drop.setAttribute("y2", CY);
+      var d = "", k, ang, wx, wy;
+      for (k = 0; k <= 90; k++) {
+        ang = th * (k / 90);
+        wx = X0 + (ang / (Math.PI * 2)) * (X1 - X0);
+        wy = CY - AMP * Math.sin(ang);
+        d += (k === 0 ? "M" : "L") + wx.toFixed(1) + " " + wy.toFixed(1) + " ";
+      }
+      wave.setAttribute("d", d);
+      var ex = X0 + (th / (Math.PI * 2)) * (X1 - X0), ey = CY - AMP * Math.sin(th);
+      wpt.setAttribute("cx", ex.toFixed(2)); wpt.setAttribute("cy", ey.toFixed(2));
+      link.setAttribute("x1", px.toFixed(2)); link.setAttribute("y1", py.toFixed(2));
+      link.setAttribute("x2", ex.toFixed(2)); link.setAttribute("y2", ey.toFixed(2));
+      lab.textContent = "sen θ = " + n2(Math.sin(th));
+      root.setAttribute("aria-valuenow", Math.round(th * 180 / Math.PI));
+      root.setAttribute("aria-valuetext", Math.round(th * 180 / Math.PI) + " grados, seno " + n2(Math.sin(th)));
+    } };
+  }
+
+  function pvAzar(root) {
+    var line = q(root, ".pv-line"), tn = q(root, ".pv-n"), tf = q(root, ".pv-f");
+    var X0 = 22, X1 = 288, Y0 = 106, Y1 = 34, MAX = 300;
+    var n = 0, caras = 0, hist = [], timer = null;
+
+    function render() {
+      var pts = [], i, span = Math.max(hist.length, 1);
+      for (i = 0; i < hist.length; i++) {
+        pts.push((X0 + ((i + 1) / span) * (X1 - X0)).toFixed(1) + "," +
+                 (Y0 - hist[i] * (Y0 - Y1)).toFixed(1));
+      }
+      line.setAttribute("points", pts.join(" "));
+      tn.textContent = "n = " + n;
+      tf.textContent = n ? "frecuencia = " + n2(caras / n) : "frecuencia = —";
+      root.setAttribute("aria-label", "Azar y Probabilidad: " + n + " lanzamientos, frecuencia relativa " +
+        (n ? n2(caras / n) : "sin datos") + ". Activa para lanzar más monedas.");
+    }
+    function step() {
+      if (n >= MAX) { stop(); return; }
+      n++; if (Math.random() < 0.5) { caras++; }
+      hist.push(caras / n);
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function run(count) {
+      stop();
+      if (n >= MAX) { n = 0; caras = 0; hist = []; }
+      var left = count;
+      if (reduce) { while (left-- > 0) { step(); } render(); return; }
+      timer = setInterval(function () {
+        step(); render();
+        if (--left <= 0) { stop(); }
+      }, 24);
+    }
+    var seed = 45;
+    while (seed-- > 0) { step(); }
+    render();
+    return { pulse: function () { run(80); }, tap: true };
+  }
+
+  function pvPoliedros(root) {
+    var capa = q(root, ".pv-faces"), cva = q(root, ".pv-cva"), est = q(root, ".pv-state");
+    var RED  = [[[133.0,113.0],[167.0,113.0],[167.0,147.0],[133.0,147.0]],
+                [[133.0,79.0],[167.0,79.0],[167.0,113.0],[133.0,113.0]],
+                [[99.0,45.0],[133.0,45.0],[133.0,79.0],[99.0,79.0]],
+                [[133.0,11.0],[167.0,11.0],[167.0,45.0],[133.0,45.0]],
+                [[167.0,45.0],[201.0,45.0],[201.0,79.0],[167.0,79.0]],
+                [[133.0,45.0],[167.0,45.0],[167.0,79.0],[133.0,79.0]]];
+    var CUBO = [[[191.6,103.0],[150.0,79.0],[150.0,31.0],[191.6,55.0]],
+                [[150.0,79.0],[191.6,103.0],[150.0,127.0],[108.4,103.0]],
+                [[150.0,79.0],[108.4,103.0],[108.4,55.0],[150.0,31.0]],
+                [[108.4,55.0],[150.0,79.0],[191.6,55.0],[150.0,31.0]],
+                [[150.0,127.0],[191.6,103.0],[191.6,55.0],[150.0,79.0]],
+                [[108.4,103.0],[150.0,127.0],[150.0,79.0],[108.4,55.0]]];
+    var TONO = ["#BFE7EE","#CFEDF2","#D6EEF3","#E4F6F9","#C9EAF1","#8FD5E2"];
+    var polis = [], i;
+    for (i = 0; i < 6; i++) {
+      polis.push(capa.appendChild(mk("polygon", {
+        fill: TONO[i], stroke: "#1B2A5A", "stroke-width": "1.8", "stroke-linejoin": "round"
+      })));
+    }
+    return { rest: 0.0, set: function (t) {
+      var u = clamp(t, 0, 1), j, k, pts, a, b, x, y;
+      for (j = 0; j < 6; j++) {
+        pts = [];
+        for (k = 0; k < 4; k++) {
+          a = RED[j][k]; b = CUBO[j][k];
+          x = a[0] + (b[0] - a[0]) * u;
+          y = a[1] + (b[1] - a[1]) * u;
+          pts.push(x.toFixed(1) + "," + y.toFixed(1));
+        }
+        polis[j].setAttribute("points", pts.join(" "));
+        polis[j].setAttribute("opacity", j < 3 ? (0.45 + 0.55 * (1 - u)).toFixed(2) : "1");
+      }
+      cva.textContent = "C 6 · V 8 · A 12";
+      est.textContent = u < 0.04 ? "red plana · 24 bordes"
+                      : (u > 0.96 ? "cubo cerrado · 12 aristas" : "plegando…");
+      root.setAttribute("aria-valuenow", Math.round(u * 100));
+      root.setAttribute("aria-valuetext", est.textContent);
+    } };
+  }
+
+  var FACTORIES = {
+    fracciones: pvFracciones, area: pvArea, pitagoras: pvPitagoras,
+    cuadratica: pvCuadratica, circulo: pvCirculo, azar: pvAzar,
+    poliedros: pvPoliedros
+  };
+
+  /* ---------- Conexión con puntero, teclado y viewport ---------- */
+
+  var instances = [];
+
+  Array.prototype.forEach.call(document.querySelectorAll(".cover[data-preview]"), function (cover) {
+    var factory = FACTORIES[cover.getAttribute("data-preview")];
+    if (!factory) { return; }
+    var api = factory(cover);
+    var REST = typeof api.rest === "number" ? api.rest : 0.5;
+    var state = { cover: cover, api: api, t: REST, played: false, raf: 0 };
+    instances.push(state);
+
+    function apply(t) {
+      state.t = clamp(t, 0, 1);
+      if (api.set) { api.set(state.t); }
+    }
+    function touched() { cover.setAttribute("data-touched", "1"); }
+    function fromEvent(e) {
+      var r = cover.getBoundingClientRect();
+      if (!r.width) { return; }
+      apply((e.clientX - r.left) / r.width);
+    }
+    function cancelDemo() { if (state.raf) { cancelAnimationFrame(state.raf); state.raf = 0; } }
+
+    if (api.tap) {
+      cover.addEventListener("pointerdown", function () { touched(); cancelDemo(); api.pulse(); });
+      cover.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+          e.preventDefault(); touched(); cancelDemo(); api.pulse();
+        }
+      });
+    } else {
+      apply(REST);
+      var dragging = false;
+      cover.addEventListener("pointerdown", function (e) {
+        dragging = true; touched(); cancelDemo();
+        if (cover.setPointerCapture) { try { cover.setPointerCapture(e.pointerId); } catch (err) {} }
+        fromEvent(e); e.preventDefault();
+      });
+      cover.addEventListener("pointermove", function (e) {
+        if (dragging || e.pointerType === "mouse") { touched(); cancelDemo(); fromEvent(e); }
+      });
+      cover.addEventListener("pointerup", function () { dragging = false; });
+      cover.addEventListener("pointercancel", function () { dragging = false; });
+      cover.addEventListener("keydown", function (e) {
+        var d = 0;
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") { d = 0.06; }
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { d = -0.06; }
+        if (e.key === "Home") { apply(0); touched(); cancelDemo(); e.preventDefault(); return; }
+        if (e.key === "End") { apply(1); touched(); cancelDemo(); e.preventDefault(); return; }
+        if (d) { touched(); cancelDemo(); apply(state.t + d); e.preventDefault(); }
+      });
+    }
+
+    state.demo = function () {
+      if (state.played) { return; }
+      state.played = true;
+      if (api.tap) { api.pulse(); return; }
+      if (reduce) { apply(REST); return; }
+      var start = 0, DUR = 2600;
+      function frame(ts) {
+        if (!start) { start = ts; }
+        var p = (ts - start) / DUR;
+        if (p >= 1) { apply(REST); state.raf = 0; return; }
+        var e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        var sw = Math.sin(e * Math.PI * 2);
+        apply(REST + (sw > 0 ? sw * (1 - REST) : sw * REST) * 0.92);
+        state.raf = requestAnimationFrame(frame);
+      }
+      state.raf = requestAnimationFrame(frame);
+    };
+  });
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) { return; }
+        instances.forEach(function (s) { if (s.cover === en.target) { s.demo(); } });
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.55 });
+    instances.forEach(function (s) { io.observe(s.cover); });
+  } else {
+    instances.forEach(function (s) { s.demo(); });
+  }
+
+  /* ---------------------------- Filtros ---------------------------- */
+
+  var cards = Array.prototype.slice.call(document.querySelectorAll("#grid .card"));
+  var fbtns = Array.prototype.slice.call(document.querySelectorAll(".fbtn"));
+  var fcount = document.getElementById("fcount");
+  var empty = document.getElementById("empty");
+  var sel = { pensamiento: "todos", grado: "todos" };
+
+  function applyFilters() {
+    var shown = 0;
+    cards.forEach(function (card) {
+      var okP = sel.pensamiento === "todos" || card.getAttribute("data-pensamiento") === sel.pensamiento;
+      var okG = true;
+      if (sel.grado !== "todos") {
+        var lo = parseInt(card.getAttribute("data-min"), 10);
+        var hi = parseInt(card.getAttribute("data-max"), 10);
+        var band = sel.grado === "3" ? [3, 5] : (sel.grado === "6" ? [6, 9] : [10, 11]);
+        okG = lo <= band[1] && hi >= band[0];
+      }
+      var ok = okP && okG;
+      card.hidden = !ok;
+      if (ok) { shown++; }
+    });
+    fcount.textContent = shown + " de " + cards.length +
+      (cards.length === 1 ? " laboratorio" : " laboratorios");
+    empty.className = shown ? "empty" : "empty on";
+  }
+
+  fbtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var group = btn.getAttribute("data-filter");
+      sel[group] = btn.getAttribute("data-value");
+      fbtns.forEach(function (o) {
+        if (o.getAttribute("data-filter") === group) {
+          o.setAttribute("aria-pressed", o === btn ? "true" : "false");
+        }
+      });
+      applyFilters();
+    });
+  });
+  applyFilters();
+})();
+</script>
+
+</body>
+</html>
