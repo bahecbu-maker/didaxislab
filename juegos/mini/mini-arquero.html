@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La senda del arquero — vista en miniatura</title>
+<style>
+  /* Ocupa por completo el contenedor donde se inserte (portal o iframe). */
+  html,body{margin:0;height:100%;background:#101830;overflow:hidden}
+  #mini{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="mini" aria-label="Arquero disparando flechas en parábola sobre un muro y por un aro hasta clavar la diana"></canvas>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   LA SENDA DEL ARQUERO — miniatura en bucle
+   Un tiro corto (k = 3,5) choca en el muro y deja la curva fantasma;
+   sube k a 7, el visor ilumina hasta el vértice y el segundo tiro libra
+   el muro, cruza el aro cian y se clava en el centro de la diana.
+   ═══════════════════════════════════════════════════════════════════════ */
+const W = 960, H = 600;                      // lienzo virtual 16:10
+const cv = document.getElementById('mini');
+const ctx = cv.getContext('2d');
+const lento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let escala = 1, offX = 0, offY = 0;
+let ultimoAncho = 0, ultimoAlto = 0;
+
+function ajustar(){
+  const d = Math.min(2, devicePixelRatio || 1);
+  const r = cv.getBoundingClientRect();
+  if(r.width < 2 || r.height < 2) return false;
+
+  const nw = Math.max(1, Math.round(r.width * d));
+  const nh = Math.max(1, Math.round(r.height * d));
+  if(nw !== ultimoAncho || nh !== ultimoAlto){
+    cv.width  = ultimoAncho = nw;
+    cv.height = ultimoAlto  = nh;
+  }
+  escala = Math.max(r.width / W, r.height / H) * d;
+  offX = (cv.width  - W * escala) / 2;
+  offY = (cv.height - H * escala) / 2;
+  return true;
+}
+
+/* ── Escala del escenario (19 m × 11 m) ────────────────────────────── */
+const MARGEN_X = 78, SUELO_Y = 502, MUNDO_W = 19, MUNDO_H = 11;
+const ESC_X = (W - MARGEN_X - 48) / MUNDO_W;
+const ESC_Y = (SUELO_Y - 110) / MUNDO_H;
+const px = x => MARGEN_X + x * ESC_X;
+const py = y => SUELO_Y - y * ESC_Y;
+const ALTO_ARCO = 56;
+
+// Geometría exacta de la escena y las dos parábolas
+const MURO   = { x: 6.5, y1: 4.6, ancho: 0.65 };
+const ARO    = { x: 8,   y: 7,    r: 1.05 };
+const DIANA  = { x: 16,  y: 0,    r: 0.95 };
+const H_VERT = 8;
+
+const yPar   = (x, k) => (-k / (H_VERT * H_VERT)) * Math.pow(x - H_VERT, 2) + k;
+const dPar   = (x, k) => (-2 * k / (H_VERT * H_VERT)) * (x - H_VERT);
+const X_CHOQ = MURO.x - MURO.ancho / 2;     // x = 6.175 (impacto exacto del tiro 1)
+
+function rr(x, y, w, h, r){
+  r = Math.max(0, Math.min(r, w/2, h/2));
+  ctx.beginPath();
+  ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r); ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h); ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r); ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y); ctx.closePath();
+}
+
+/* ── Línea de tiempo del bucle (8.4 s) ─────────────────────────────── */
+const CICLO = 8.4;
+// Arranca a mitad del segundo vuelo con la curva fantasma ya dibujada
+let tCiclo = 4.35, reloj = 4.35;
+let particulas = [], floaters = [], sacudida = 0;
+let tiro1Choco = true, aroTocado = false, dianaTocada = false;
+let pulsoAro = 0;
+
+function reventar(X, Y, col, n){
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2, v = 80 + Math.random()*240;
+    particulas.push({
+      x:X, y:Y, vx:Math.cos(a)*v, vy:Math.sin(a)*v - 75,
+      r:2 + Math.random()*3.2, vida:0.75 + Math.random()*0.4, max:1.15,
+      col: Math.random() < 0.48 ? col : '#FFC94A'
+    });
+  }
+  if(particulas.length > 140) particulas.splice(0, particulas.length - 140);
+}
+
+function actualizar(dt){
+  if(!Number.isFinite(dt) || dt <= 0) return;
+  reloj += dt;
+
+  const siguiente = tCiclo + dt;
+  if(siguiente >= CICLO){
+    tCiclo = siguiente % CICLO;
+    tiro1Choco = false;
+    aroTocado = false;
+    dianaTocada = false;
+    pulsoAro = 0;
+    sacudida = 0;
+    particulas.length = 0;
+    floaters.length = 0;
+  } else {
+    tCiclo = siguiente;
+  }
+
+  // Evento 1: impacto en el muro (t = 1.75 s)
+  if(tCiclo >= 1.75 && !tiro1Choco){
+    tiro1Choco = true;
+    sacudida = 0.85;
+    reventar(px(X_CHOQ), py(yPar(X_CHOQ, 3.5)), '#E0504A', 20);
+  }
+  // Evento 2: paso limpio por el aro cian (t = 4.50 s)
+  if(tCiclo >= 4.50 && !aroTocado){
+    aroTocado = true;
+    pulsoAro = 1;
+    reventar(px(ARO.x), py(ARO.y), '#0BC0D8', 14);
+  }
+  // Evento 3: diana en 16 m (t = 5.45 s)
+  if(tCiclo >= 5.45 && !dianaTocada){
+    dianaTocada = true;
+    sacudida = 0.7;
+    reventar(px(DIANA.x), py(0), '#3FAE7A', 30);
+    floaters.push({ x: px(DIANA.x), y: py(0) - 52, txt: '¡DIANA!', col: '#7FD3A8', vida: 1.5, max: 1.5 });
+  }
+
+  sacudida = Math.max(0, sacudida - dt * 2.8);
+  pulsoAro = Math.max(0, pulsoAro - dt * 1.6);
+
+  for(let i=particulas.length-1; i>=0; i--){
+    const p = particulas[i];
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 420 * dt;
+    p.vida -= dt;
+    if(p.vida <= 0) particulas.splice(i, 1);
+  }
+  for(let i=floaters.length-1; i>=0; i--){
+    const f = floaters[i];
+    f.y -= 28 * dt; f.vida -= dt;
+    if(f.vida <= 0) floaters.splice(i, 1);
+  }
+}
+
+/* ── Escenario (estética exacta del Acto 1 · El claro) ─────────────── */
+function montes(base, altura, color, semilla){
+  ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(-24, base);
+  let x = -24, s = semilla;
+  while(x < W + 48){
+    s = (s*9301 + 49297) % 233280;
+    const paso = 72 + (s/233280)*118, alt = altura*(0.45 + (s/233280)*0.75);
+    ctx.lineTo(x + paso/2, base - alt); x += paso; ctx.lineTo(x, base - alt*0.2);
+  }
+  ctx.lineTo(W + 48, base + 70); ctx.lineTo(-24, base + 70); ctx.closePath(); ctx.fill();
+}
+
+function dibujarFondo(){
+  const g = ctx.createLinearGradient(0, -24, 0, SUELO_Y);
+  g.addColorStop(0, '#1E2A55');
+  g.addColorStop(0.72, '#E8743B');
+  g.addColorStop(1, '#F0A86A');
+  ctx.fillStyle = g;
+  ctx.fillRect(-24, -24, W + 48, SUELO_Y + 26);
+
+  // Sol cálido del claro
+  const sx = 742, sy = 368, sr = 36;
+  ctx.save(); ctx.globalAlpha = 0.85;
+  const sg = ctx.createRadialGradient(sx, sy, 8, sx, sy, sr * 5.2);
+  sg.addColorStop(0, 'rgba(255,238,195,.9)');
+  sg.addColorStop(1, 'rgba(255,238,195,0)');
+  ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(sx, sy, sr * 5.2, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = 'rgba(255,238,195,.92)';
+  ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI*2); ctx.fill();
+
+  montes(SUELO_Y - 16, 84, 'rgba(255,255,255,.06)', 77);
+  montes(SUELO_Y - 4,  60, '#2A3862', 1337);
+  montes(SUELO_Y + 6,  36, '#101830', 909);
+
+  // Suelo con sangrado para la sacudida
+  ctx.fillStyle = '#101830';
+  ctx.fillRect(-24, SUELO_Y, W + 48, H - SUELO_Y + 24);
+
+  // Siluetas de pinos al fondo
+  let s = 4211;
+  for(let i=0;i<14;i++){
+    s = (s*9301 + 49297) % 233280; const X = (s/233280) * W;
+    s = (s*9301 + 49297) % 233280; const alt = 24 + (s/233280)*30;
+    ctx.fillStyle = 'rgba(10,16,34,.72)';
+    ctx.beginPath();
+    ctx.moveTo(X, SUELO_Y - alt);
+    ctx.lineTo(X - alt*0.33, SUELO_Y + 4);
+    ctx.lineTo(X + alt*0.33, SUELO_Y + 4);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Horizonte dorado y marcas métricas
+  ctx.strokeStyle = 'rgba(255,201,74,.26)'; ctx.lineWidth = 2.2;
+  ctx.beginPath(); ctx.moveTo(-24, SUELO_Y); ctx.lineTo(W + 24, SUELO_Y); ctx.stroke();
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(246,241,230,.52)';
+  ctx.font = '800 17px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  for(let m=4; m<=16; m+=4){
+    const X = px(m);
+    ctx.fillRect(X - 1, SUELO_Y, 2.5, 9);
+    ctx.fillText(m + ' m', X, SUELO_Y + 30);
+  }
+  ctx.restore();
+}
+
+function rotulo(txt, X, Y, col){
+  ctx.save();
+  ctx.font = '800 16px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  const an = ctx.measureText(txt).width + 18, al = 24;
+  ctx.fillStyle = 'rgba(9,15,33,.84)';
+  rr(X - an/2, Y - al + 5, an, al, 12); ctx.fill();
+  ctx.fillStyle = col || '#FFE39A';
+  ctx.fillText(txt, X, Y);
+  ctx.restore();
+}
+
+function dibujarObstaculos(){
+  // Muro con almena
+  const x0 = px(MURO.x - MURO.ancho/2), x1 = px(MURO.x + MURO.ancho/2);
+  const yT = py(MURO.y1), yB = py(0);
+  const g = ctx.createLinearGradient(x0, 0, x1, 0);
+  g.addColorStop(0, '#28334E'); g.addColorStop(0.5, '#3F4E72'); g.addColorStop(1, '#1F2840');
+  ctx.fillStyle = g; ctx.fillRect(x0, yT, x1 - x0, yB - yT);
+  ctx.fillStyle = 'rgba(0,0,0,.28)';
+  for(let yy = yT + 15; yy < yB; yy += 18) ctx.fillRect(x0, yy, x1 - x0, 2);
+  ctx.fillStyle = '#4E5D80'; ctx.fillRect(x0 - 5, yT - 9, (x1 - x0) + 10, 9);
+
+  // Aro cian (en el vértice del tiro bueno)
+  const aX = px(ARO.x), aY = py(ARO.y), aR = ARO.r * ESC_X * 0.85;
+  ctx.save();
+  if(pulsoAro > 0.02){
+    ctx.strokeStyle = `rgba(90,240,255,${(pulsoAro*0.8).toFixed(2)})`;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.ellipse(aX, aY, aR*0.42 + (1-pulsoAro)*18, aR + (1-pulsoAro)*28, 0, 0, Math.PI*2);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(11,192,216,.36)'; ctx.lineWidth = 10;
+  ctx.beginPath(); ctx.ellipse(aX, aY, aR*0.42, aR, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = pulsoAro > 0.1 ? '#9BE9F4' : '#0BC0D8'; ctx.lineWidth = 4.5;
+  ctx.beginPath(); ctx.ellipse(aX, aY, aR*0.42, aR, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = 'rgba(11,192,216,.32)'; ctx.lineWidth = 2; ctx.setLineDash([5, 6]);
+  ctx.beginPath(); ctx.moveTo(aX, aY + aR); ctx.lineTo(aX, py(0)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+  rotulo('(8, 7)', aX, aY - aR - 14, '#9BE9F4');
+
+  // Diana en el suelo + banderín
+  const dX = px(DIANA.x), dY = py(0);
+  const rx = DIANA.r * ESC_X, ry = rx * 0.34;
+  ctx.save(); ctx.translate(dX, dY);
+  [[1,'#F6F1E6'],[0.72,'#E0504A'],[0.44,'#F6F1E6'],[0.20,'#E0504A']].forEach(([f, c]) => {
+    ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(0, 0, rx*f, ry*f, 0, 0, Math.PI*2); ctx.fill();
+  });
+  ctx.strokeStyle = 'rgba(10,16,34,.55)'; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.fillStyle = '#2A2018'; ctx.fillRect(-1.8, -34, 3.6, 34);
+  ctx.fillStyle = '#E0504A';
+  ctx.beginPath(); ctx.moveTo(1.8, -34); ctx.lineTo(20, -28); ctx.lineTo(1.8, -22); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  rotulo('16 m', dX, dY - 44, '#FFB3AE');
+}
+
+/* ── Curva fantasma, visor cian y trayectoria ──────────────────────── */
+function trazarCurva(k, hastaX, estilo, ancho, guion, alfa){
+  ctx.save();
+  ctx.globalAlpha = alfa;
+  ctx.strokeStyle = estilo;
+  ctx.lineWidth = ancho;
+  if(guion) ctx.setLineDash(guion);
+  ctx.beginPath();
+  let pr = true;
+  for(let x=0; x<=hastaX + 0.001; x+=0.12){
+    const xm = Math.min(hastaX, x), y = Math.max(0, yPar(xm, k));
+    pr ? (ctx.moveTo(px(xm), py(y)), pr = false) : ctx.lineTo(px(xm), py(y));
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function dibujarCurvas(){
+  const fade = tCiclo > 7.8 ? Math.max(0, (CICLO - tCiclo) / 0.6) : 1;
+
+  // Curva fantasma del tiro fallido (k = 3.5 hasta el muro)
+  if(tiro1Choco){
+    trazarCurva(3.5, X_CHOQ, 'rgba(20,14,4,.22)', 4.5, [6, 6], fade);
+    trazarCurva(3.5, X_CHOQ, 'rgba(255,226,150,.56)', 2.4, [6, 6], fade);
+  }
+
+  // Visor cian momentáneo hasta el vértice (t = 2.60 .. 3.55 s)
+  if(tCiclo >= 2.60 && tCiclo < 3.65){
+    const uIn = Math.min(1, (tCiclo - 2.60) / 0.28);
+    const uOut = tCiclo > 3.25 ? Math.max(0, 1 - (tCiclo - 3.25) / 0.40) : 1;
+    const alfa = uIn * uOut;
+    trazarCurva(7, H_VERT, 'rgba(0,0,0,.3)', 6, null, alfa);
+    trazarCurva(7, H_VERT, 'rgba(90,240,255,.95)', 3.2, [9, 7], alfa);
+    ctx.save(); ctx.globalAlpha = alfa;
+    ctx.fillStyle = '#5AF0FF';
+    ctx.beginPath(); ctx.arc(px(H_VERT), py(7), 6.5, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  // Estela completa del tiro ganador una vez clavado
+  if(tCiclo >= 5.45){
+    trazarCurva(7, DIANA.x, 'rgba(255,201,74,.48)', 2.6, null, fade);
+  }
+}
+
+/* ── Arquero en su puesto excavado ─────────────────────────────────── */
+function dibujarArquero(){
+  const X = px(0), Y = py(0), Ypies = Y + ALTO_ARCO;
+  const rx = 58, piso = SUELO_Y + 68;
+
+  // Fondo del puesto
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(X - rx, SUELO_Y);
+  ctx.bezierCurveTo(X - rx + 10, piso - 6, X + rx - 10, piso - 6, X + rx, SUELO_Y);
+  ctx.closePath();
+  const g = ctx.createLinearGradient(0, SUELO_Y, 0, piso);
+  g.addColorStop(0, '#2A3862'); g.addColorStop(0.55, '#101830'); g.addColorStop(1, '#04060D');
+  ctx.fillStyle = g; ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.48)';
+  ctx.beginPath(); ctx.ellipse(X, Ypies + 2, 18, 5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Ángulo de puntería y tensión de la cuerda según fase
+  let kAim = 3.5, tens = 0, hayFlechaEnArco = true;
+  if(tCiclo < 0.65){
+    kAim = 3.5; tens = Math.min(1, tCiclo / 0.55);
+  } else if(tCiclo < 1.75){
+    kAim = 3.5; tens = 0; hayFlechaEnArco = false;
+  } else if(tCiclo < 2.60){
+    const u = Math.min(1, (tCiclo - 1.95) / 0.55);
+    kAim = 3.5 + 3.5 * Math.max(0, u);
+    tens = Math.max(0, u) * 0.4;
+  } else if(tCiclo < 3.55){
+    kAim = 7; tens = 0.4 + 0.6 * Math.min(1, (tCiclo - 2.60) / 0.75);
+  } else {
+    kAim = 7; tens = 0; hayFlechaEnArco = false;
+  }
+
+  // Convertir pendiente matemática a ángulo visual en pantalla
+  const ang = Math.atan(dPar(0.01, kAim) * (ESC_Y / ESC_X));
+
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, W, SUELO_Y + 64); ctx.clip();
+  ctx.translate(X, Ypies); ctx.scale(1.42, 1.42);
+  ctx.fillStyle = '#070D1C';
+  ctx.beginPath();
+  ctx.moveTo(-9,0); ctx.lineTo(-4,-22); ctx.lineTo(3,-22); ctx.lineTo(9,0);
+  ctx.lineTo(4,0); ctx.lineTo(0,-13); ctx.lineTo(-4,0); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, -34, 8.5, 13, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(0, -51, 7.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-6,-56); ctx.lineTo(7,-60); ctx.lineTo(8,-52); ctx.lineTo(-5,-49);
+  ctx.closePath(); ctx.fill();
+
+  ctx.save(); ctx.translate(2, -40); ctx.rotate(-ang);
+  ctx.strokeStyle = '#C98B3A'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(10, 0, 26, -1.25, 1.25); ctx.stroke();
+
+  const tCuerda = tens * 11;
+  ctx.strokeStyle = 'rgba(246,241,230,.78)'; ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  ctx.moveTo(10 + 26*Math.cos(-1.25), 26*Math.sin(-1.25));
+  ctx.lineTo(10 - tCuerda, 0);
+  ctx.lineTo(10 + 26*Math.cos(1.25),  26*Math.sin(1.25));
+  ctx.stroke();
+
+  if(hayFlechaEnArco){
+    ctx.strokeStyle = '#FFC94A'; ctx.lineWidth = 2.6;
+    ctx.beginPath(); ctx.moveTo(10 - tCuerda, 0); ctx.lineTo(44, 0); ctx.stroke();
+    ctx.fillStyle = '#FFC94A';
+    ctx.beginPath(); ctx.moveTo(50, 0); ctx.lineTo(42, -4.2); ctx.lineTo(42, 4.2); ctx.closePath(); ctx.fill();
+  }
+  ctx.strokeStyle = '#070D1C'; ctx.lineWidth = 5.5;
+  ctx.beginPath(); ctx.moveTo(-2, 4); ctx.lineTo(9, 0); ctx.stroke();
+  ctx.restore();
+  ctx.restore();
+
+  // Labio delantero del puesto
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(X - rx - 40, SUELO_Y); ctx.lineTo(X - rx, SUELO_Y);
+  ctx.bezierCurveTo(X - rx + 18, SUELO_Y + 24, X + rx - 18, SUELO_Y + 24, X + rx, SUELO_Y);
+  ctx.lineTo(X + rx + 40, SUELO_Y); ctx.lineTo(X + rx + 40, H + 24); ctx.lineTo(X - rx - 40, H + 24);
+  ctx.closePath();
+  ctx.fillStyle = '#101830'; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(X - rx, SUELO_Y);
+  ctx.bezierCurveTo(X - rx + 18, SUELO_Y + 24, X + rx - 18, SUELO_Y + 24, X + rx, SUELO_Y);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* ── Flecha en vuelo o clavada en la diana ─────────────────────────── */
+function dibujarFlechaEn(x, k, conEstela, alfa){
+  const X = px(x), Y = py(Math.max(0, yPar(x, k)));
+  const ang = Math.atan(dPar(x, k) * (ESC_Y / ESC_X));
+
+  if(conEstela){
+    const xIni = Math.max(0, x - 4.2);
+    ctx.save();
+    ctx.globalAlpha = alfa * 0.65;
+    ctx.strokeStyle = '#FFC94A';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    let pr = true;
+    for(let s=xIni; s<=x; s+=0.15){
+      pr ? (ctx.moveTo(px(s), py(yPar(s, k))), pr = false) : ctx.lineTo(px(s), py(yPar(s, k)));
+    }
+    ctx.lineTo(X, Y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.save();
+  ctx.globalAlpha = alfa;
+  ctx.translate(X, Y);
+  ctx.rotate(-ang);
+  ctx.strokeStyle = '#FFC94A'; ctx.lineWidth = 3.2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-22, 0); ctx.lineTo(15, 0); ctx.stroke();
+  ctx.fillStyle = '#FFE39A';
+  ctx.beginPath(); ctx.moveTo(23, 0); ctx.lineTo(13, -5); ctx.lineTo(13, 5); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(246,241,230,.85)';
+  ctx.beginPath();
+  ctx.moveTo(-21, 0); ctx.lineTo(-29, -6); ctx.lineTo(-24, 0); ctx.lineTo(-29, 6); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+function dibujarFlecha(){
+  const fade = tCiclo > 7.8 ? Math.max(0, (CICLO - tCiclo) / 0.6) : 1;
+  if(tCiclo >= 0.65 && tCiclo < 1.75){
+    const u = (tCiclo - 0.65) / 1.10;
+    dibujarFlechaEn(u * X_CHOQ, 3.5, true, 1);
+  } else if(tCiclo >= 3.55 && tCiclo < 5.45){
+    const u = (tCiclo - 3.55) / 1.90;
+    dibujarFlechaEn(u * DIANA.x, 7, true, 1);
+  } else if(tCiclo >= 5.45){
+    dibujarFlechaEn(DIANA.x, 7, false, fade);
+  }
+}
+
+/* ── Píldora de ecuación (esquina superior derecha) ────────────────── */
+function dibujarPildora(){
+  const bx = W - 368, by = 24, bw = 342, bh = 58;
+  const esSegundo = tCiclo >= 2.15;
+  const pulsoK = tCiclo >= 2.15 && tCiclo < 2.95;
+
+  ctx.save();
+  rr(bx, by, bw, bh, 14);
+  ctx.fillStyle = 'rgba(17, 26, 46, 0.90)'; ctx.fill();
+  ctx.strokeStyle = tCiclo >= 5.45 ? 'rgba(63, 174, 122, 0.85)'
+                  : (pulsoK ? '#FFC94A' : 'rgba(44, 58, 92, 0.95)');
+  ctx.lineWidth = 2.2; ctx.stroke();
+
+  const cy = by + bh/2 + 1;
+  ctx.textBaseline = 'middle';
+  ctx.font = '800 25px system-ui, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#F6F1E6';
+  ctx.fillText('y = a(x − ', bx + 20, cy);
+
+  // Casilla h = 8
+  rr(bx + 135, by + 11, 40, 36, 8);
+  ctx.fillStyle = '#0A1122'; ctx.fill();
+  ctx.strokeStyle = '#0E7888'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#FFC94A';
+  ctx.fillText('8', bx + 155, cy);
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#F6F1E6';
+  ctx.fillText(')² +', bx + 181, cy);
+
+  // Casilla k (3,5 → 7)
+  rr(bx + 244, by + 11, 78, 36, 8);
+  ctx.fillStyle = '#0A1122'; ctx.fill();
+  ctx.strokeStyle = pulsoK ? '#FFC94A' : (esSegundo ? '#0BC0D8' : '#E0504A');
+  ctx.lineWidth = pulsoK ? 2.8 : 2; ctx.stroke();
+  ctx.textAlign = 'center';
+  ctx.fillStyle = esSegundo ? '#FFC94A' : '#FFB3AE';
+  ctx.fillText(esSegundo ? '7' : '3,5', bx + 283, cy);
+
+  ctx.restore();
+}
+
+function dibujarEfectos(){
+  ctx.save();
+  for(const p of particulas){
+    ctx.globalAlpha = Math.max(0, p.vida / p.max);
+    ctx.fillStyle = p.col;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.font = '900 26px system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for(const f of floaters){
+    ctx.globalAlpha = Math.min(1, f.vida * 1.8);
+    ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(7,12,25,.9)'; ctx.lineWidth = 6;
+    ctx.strokeText(f.txt, f.x, f.y);
+    ctx.fillStyle = f.col; ctx.fillText(f.txt, f.x, f.y);
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+function dibujar(){
+  if(!ajustar()) return;
+
+  // Limpieza total en coordenadas físicas para evitar restos o imágenes superpuestas
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#101830';
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.setTransform(escala, 0, 0, escala, offX, offY);
+
+  ctx.save();
+  if(sacudida > 0.02){
+    ctx.translate((Math.random()-0.5)*sacudida*12, (Math.random()-0.5)*sacudida*12);
+  }
+  dibujarFondo();
+  dibujarCurvas();
+  dibujarObstaculos();
+  dibujarArquero();
+  dibujarFlecha();
+  dibujarEfectos();
+  ctx.restore();
+
+  dibujarPildora();
+
+  // Viñeta perimetral suave
+  const v = ctx.createRadialGradient(W/2, H*0.48, H*0.45, W/2, H*0.48, W*0.84);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(7,12,25,0.42)');
+  ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+
+/* ── Bucle único con pausa inteligente y sin saltos negativos de dt ─── */
+let visibleHost = true;
+let raf = 0;
+let previo = 0;
+
+function debeCorrer(){
+  return !lento && !document.hidden && visibleHost;
+}
+
+function bucle(ahora){
+  raf = 0;
+  if(!debeCorrer()) return;
+
+  if(!previo){
+    previo = ahora;
+  }
+  const dt = Math.max(0, Math.min(0.05, (ahora - previo) / 1000));
+  previo = ahora;
+
+  actualizar(dt);
+  dibujar();
+
+  if(debeCorrer()){
+    raf = requestAnimationFrame(bucle);
+  }
+}
+
+function sincronizar(){
+  if(debeCorrer()){
+    if(!raf){
+      previo = 0;
+      raf = requestAnimationFrame(bucle);
+    }
+  } else {
+    if(raf){
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+    previo = 0;
+  }
+}
+
+function redibujarSiVisible(){
+  if(ajustar()) dibujar();
+}
+
+addEventListener('resize', redibujarSiVisible);
+if('ResizeObserver' in window){
+  new ResizeObserver(redibujarSiVisible).observe(cv);
+}
+
+addEventListener('message', e => {
+  if(e.data && e.data.type === 'didaxis-preview'){
+    visibleHost = Boolean(e.data.active);
+    if(visibleHost) redibujarSiVisible();
+    sincronizar();
+  }
+});
+document.addEventListener('visibilitychange', sincronizar);
+
+if(lento){
+  tCiclo = 4.45; tiro1Choco = true;
+  redibujarSiVisible();
+} else {
+  redibujarSiVisible();
+  sincronizar();
+}
+</script>
+</body>
+</html>
